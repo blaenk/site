@@ -1,0 +1,35 @@
+[package]
+name = "site"
+version = "0.1.0"
+authors = ["Jorge Israel Peña <jorge.israel.p@gmail.com>"]
+
+[dependencies]
+toml = "*"
+regex = "*"
+glob = "*"
+
+# due to diecast
+log = "*"
+env_logger = "*"
+rustc-serialize = "*"
+time = "*"
+
+# templates
+handlebars = "*"
+
+# ws
+websocket = "*"
+
+# git
+git2 = "*"
+
+# rss
+rss = "*"
+
+[dependencies.diecast]
+path = "../diecast"
+
+# due to diecast
+[dependencies.typemap]
+path = "../../rust-typemap"
+

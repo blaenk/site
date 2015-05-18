@@ -3,10 +3,11 @@ title = "A Simpler Vim Statusline"
 published = "December 14, 2013"
 excerpt = "Tired of overdone statuslines"
 tags = [ "Vim" ]
-toc = false
 ---
 
 Everyone that uses Vim and their grandmothers have apparently adopted the use of statusline plugins like [vim-powerline] or [vim-airline]. The latter, more recent vim-airline has gained popularity due to the fact that vim-powerline was deprecated in favor of a still-in-development [rewrite][powerline] that aims to provide a more general foundation for people to use the same kind of statusline in other areas, such as [tmux] and [shell prompts] (cringe). So now everyone can have the same look: [solarized] and some powerline-like status, _everywhere_.
+
+::toc::
 
 [vim-powerline]: https://github.com/Lokaltog/vim-powerline
 [vim-airline]: https://github.com/bling/vim-airline

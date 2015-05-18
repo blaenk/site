@@ -5,31 +5,31 @@ authors = ["Jorge Israel Peña <jorge.israel.p@gmail.com>"]
 
 [dependencies]
 toml = "*"
-regex = "*"
 glob = "*"
-
-# due to diecast
+typemap = "*"
+time = "*"
 log = "*"
 env_logger = "*"
 rustc-serialize = "*"
-time = "*"
-
-# templates
-handlebars = "*"
-
-# ws
-websocket = "*"
-
-# git
-git2 = "*"
-
-# rss
-rss = "*"
+hoedown = "*"
+zmq = "*"
+regex = "*"
 
 [dependencies.diecast]
 path = "../diecast"
 
-# due to diecast
-[dependencies.typemap]
-path = "../../rust-typemap"
+[dependencies.diecast_websocket]
+path = "../websocket"
+
+[dependencies.diecast_git]
+path = "../git"
+
+[dependencies.diecast_rss]
+path = "../rss"
+
+[dependencies.diecast_scss]
+path = "../scss"
+
+[dependencies.diecast_handlebars]
+path = "../handlebars"
 

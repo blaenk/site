@@ -40,7 +40,7 @@ use diecast::{
 use diecast::command;
 use diecast::util::route;
 use diecast::util::source;
-use diecast::util::handle::{Chain, binding, item};
+use diecast::util::handle::{Chain, bind, item};
 
 #[derive(Clone)]
 pub struct Tag {
@@ -67,10 +67,10 @@ fn slugify(s: &str) -> String {
     .collect()
 }
 
-fn tag_index(bind: Arc<::diecast::binding::Data>) -> Vec<Item> {
+fn tag_index(bind: Arc<::diecast::bind::Data>) -> Vec<Item> {
     let mut items = vec![];
 
-    if let Some(tags) = bind.dependencies["posts"].data().extensions.read().unwrap().get::<binding::Tags>() {
+    if let Some(tags) = bind.dependencies["posts"].data().extensions.read().unwrap().get::<bind::Tags>() {
         for (tag, itms) in tags {
             let url = slugify(&tag);
 
@@ -104,7 +104,7 @@ fn post_template(item: &Item) -> Json {
             bt.insert(String::from("title"), title);
         }
 
-        if let Some(path) = item.route.writing().and_then(Path::parent).and_then(Path::to_str).map(ToJson::to_json) {
+        if let Some(path) = item.route().writing().and_then(Path::parent).and_then(Path::to_str).map(ToJson::to_json) {
             bt.insert(String::from("url"), path);
         }
 
@@ -156,7 +156,7 @@ fn posts_index_template(item: &Item) -> Json {
                 itm.insert(String::from("title"), title.as_str().unwrap().to_json());
             }
 
-            if let Some(path) = post.route.writing() {
+            if let Some(path) = post.route().writing() {
                 itm.insert(String::from("url"), path.parent().unwrap().to_str().unwrap().to_json());
             }
         }
@@ -196,7 +196,7 @@ fn tags_index_template(item: &Item) -> Json {
                 }
             }
 
-            if let Some(path) = post.route.writing() {
+            if let Some(path) = post.route().writing() {
                 itm.insert(String::from("url"), path.parent().unwrap().to_str().unwrap().to_json());
             }
 
@@ -231,7 +231,7 @@ fn notes_index_template(item: &Item) -> Json {
                 itm.insert(String::from("title"), title.as_str().unwrap().to_json());
             }
 
-            if let Some(path) = post.route.writing() {
+            if let Some(path) = post.route().writing() {
                 itm.insert(String::from("url"), path.parent().unwrap().to_str().unwrap().to_json());
             }
 
@@ -279,11 +279,11 @@ fn layout_template(item: &Item) -> Json {
 
     // this should probably go in post template handler
     // move partial load to post template
-    if let Some(path) = item.route.reading() {
+    if let Some(path) = item.route().reading() {
         bt.insert(String::from("path"), path.to_str().unwrap().to_json());
     }
 
-    if let Some(path) = item.route.writing() {
+    if let Some(path) = item.route().writing() {
         bt.insert(String::from("url"), format!("{}/", path.parent().unwrap().to_str().unwrap()).to_json());
     }
 
@@ -316,7 +316,7 @@ fn main() {
         Rule::read("templates")
         .source(source::select("templates/*.html".parse::<Glob>().unwrap()))
         .handler(Chain::new()
-            .link(binding::parallel_each(item::read))
+            .link(bind::parallel_each(item::read))
             .link(diecast_handlebars::register_templates));
 
     let statics =
@@ -328,7 +328,7 @@ fn main() {
             "favicon.png",
             "CNAME"
         )))
-        .handler(binding::parallel_each(Chain::new()
+        .handler(bind::parallel_each(Chain::new()
             .link(route::identity)
             .link(item::copy)));
 
@@ -342,15 +342,15 @@ fn main() {
         .depends_on(&templates)
         .source(source::select("pages/*.markdown".parse::<Glob>().unwrap()))
         .handler(Chain::new()
-            .link(binding::parallel_each(Chain::new()
+            .link(bind::parallel_each(Chain::new()
                 .link(item::read)
                 .link(item::parse_metadata)))
             // TODO: replace with some sort of filter/only_if
-            // .link(binding::retain(item::publishable))
-            .link(binding::parallel_each(Chain::new()
+            // .link(bind::retain(item::publishable))
+            .link(bind::parallel_each(Chain::new()
                 .link(markdown(context.clone()))
                 .link(|item: &mut Item| -> diecast::Result {
-                    item.route.route_with(|path: &Path| -> PathBuf {
+                    item.route_with(|path: &Path| -> PathBuf {
                         let without = path.with_extension("");
                         let mut result = PathBuf::from(without.file_name().unwrap());
                         result.push("index.html");
@@ -360,7 +360,7 @@ fn main() {
                     Ok(())
                 })))
             .link(diecast_websocket::pipe(ws_tx.clone()))
-            .link(binding::parallel_each(Chain::new()
+            .link(bind::parallel_each(Chain::new()
                 .link(diecast_handlebars::render_template(&templates, "page", post_template))
                 .link(diecast_handlebars::render_template(&templates, "layout", layout_template))
                 .link(item::write))));
@@ -370,22 +370,22 @@ fn main() {
         .depends_on(&templates)
         .source(source::select("notes/*.markdown".parse::<Glob>().unwrap()))
         .handler(Chain::new()
-            .link(binding::parallel_each(Chain::new()
+            .link(bind::parallel_each(Chain::new()
                 .link(item::read)
                 .link(item::parse_metadata)
                 .link(item::date)))
             // TODO: replace with some sort of filter/only_if
-            // .link(binding::retain(item::publishable))
-            .link(binding::parallel_each(Chain::new()
+            // .link(bind::retain(item::publishable))
+            .link(bind::parallel_each(Chain::new()
                 .link(markdown(context.clone()))
                 .link(route::pretty)))
             .link(diecast_websocket::pipe(ws_tx.clone()))
             .link(diecast_git::git)
-            .link(binding::parallel_each(Chain::new()
+            .link(bind::parallel_each(Chain::new()
                 .link(diecast_handlebars::render_template(&templates, "note", post_template))
                 .link(diecast_handlebars::render_template(&templates, "layout", layout_template))
                 .link(item::write)))
-            .link(binding::sort_by(|a, b| {
+            .link(bind::sort_by(|a, b| {
                 let a = a.extensions.get::<item::Date>().unwrap();
                 let b = b.extensions.get::<item::Date>().unwrap();
                 b.cmp(a)
@@ -402,7 +402,7 @@ fn main() {
                 PathBuf::from(&format!("notes/{}/index.html", page))
             }
         }))
-        .handler(binding::parallel_each(Chain::new()
+        .handler(bind::parallel_each(Chain::new()
             .link(diecast_handlebars::render_template(&templates, "index", notes_index_template))
             .link(diecast_handlebars::render_template(&templates, "layout", layout_template))
             .link(item::write)));
@@ -412,25 +412,25 @@ fn main() {
         .depends_on(&templates)
         .source(source::select("posts/*.markdown".parse::<Glob>().unwrap()))
         .handler(Chain::new()
-            .link(binding::parallel_each(Chain::new()
+            .link(bind::parallel_each(Chain::new()
                 .link(item::read)
                 .link(item::parse_metadata)
                 .link(item::date)))
-            .link(binding::retain(item::publishable))
+            .link(bind::retain(item::publishable))
             // TODO need this:
-            // .link(binding::cond(item::publishable, handler))
-            .link(binding::parallel_each(Chain::new()
+            // .link(bind::cond(item::publishable, handler))
+            .link(bind::parallel_each(Chain::new()
                 .link(markdown(context.clone()))
                 .link(item::save_version("rendered"))
                 .link(route::pretty)))
-            .link(binding::tags)
+            .link(bind::tags)
             .link(diecast_websocket::pipe(ws_tx))
             .link(diecast_git::git)
-            .link(binding::parallel_each(Chain::new()
+            .link(bind::parallel_each(Chain::new()
                 .link(diecast_handlebars::render_template(&templates, "post", post_template))
                 .link(diecast_handlebars::render_template(&templates, "layout", layout_template))
                 .link(item::write)))
-            .link(binding::sort_by(|a, b| {
+            .link(bind::sort_by(|a, b| {
                 let a = a.extensions.get::<item::Date>().unwrap();
                 let b = b.extensions.get::<item::Date>().unwrap();
                 b.cmp(a)
@@ -447,7 +447,7 @@ fn main() {
                 PathBuf::from(&format!("{}/index.html", page))
             }
         }))
-        .handler(binding::parallel_each(Chain::new()
+        .handler(bind::parallel_each(Chain::new()
             .link(diecast_handlebars::render_template(&templates, "index", posts_index_template))
             .link(diecast_handlebars::render_template(&templates, "layout", layout_template))
             .link(item::write)));
@@ -458,7 +458,7 @@ fn main() {
         .depends_on(&templates)
         .depends_on(&posts)
         .source(tag_index)
-        .handler(binding::parallel_each(Chain::new()
+        .handler(bind::parallel_each(Chain::new()
             .link(diecast_handlebars::render_template(&templates, "tags", tags_index_template))
             .link(diecast_handlebars::render_template(&templates, "layout", layout_template))
             .link(item::write)));
@@ -467,7 +467,7 @@ fn main() {
         Rule::create("feed")
         .depends_on(&posts)
         .source(source::create("rss.xml"))
-        .handler(binding::each(Chain::new()
+        .handler(bind::each(Chain::new()
             .link(diecast_rss::rss)
             .link(item::write)));
 
@@ -475,7 +475,7 @@ fn main() {
         Rule::create("404")
         .depends_on(&templates)
         .source(source::create("404.html"))
-        .handler(binding::each(Chain::new()
+        .handler(bind::each(Chain::new()
             .link(diecast_handlebars::render_template(&templates, "404", |_| Json::Null))
             .link(diecast_handlebars::render_template(&templates, "layout", layout_template))
             .link(item::write)));

@@ -3,17 +3,17 @@
 [diecast]
 ignore = '^\.|^#|~$|\.swp$|4913'
 
-[diecast.live]
-address = '0.0.0.0:3000'
+[diecast.command.live]
+address = "0.0.0.0:3000"
 
-[diecast.websocket]
-address = '0.0.0.0:9160'
+[diecast.handler.websocket]
+address = "0.0.0.0:9160"
 
 # maybe this isn't the best, since you can
 # potentially use rss multiple times to create feeds for
 # multiple binds
 # probably better as a code-level option
-[diecast.rss]
+[diecast.handler.rss]
 title = "Blaenk Denum"
 root = "http://www.blaenkdenum.com"
 

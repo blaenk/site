@@ -33,3 +33,6 @@ path = "../scss"
 [dependencies.diecast_handlebars]
 path = "../handlebars"
 
+# [dependencies.diecast_live]
+# path = "../live"
+

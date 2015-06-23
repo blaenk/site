@@ -60,12 +60,11 @@ fn main() {
     // TODO: run/store this in websocket handler?
     let ws_tx = websocket::init();
 
-    let templates =
-        Rule::named("templates")
-        .matching(glob!("templates/*.html"))
-        // .matching(Glob::new("templates/*.html").unwrap())
-        .handler(chain!(bind::each(item::read), handlebars::register_templates))
-        .build();
+    let templates = rule! {
+        name: "templates",
+        pattern: glob!("templates/*.html"),
+        handler: chain!(bind::each(item::read), handlebars::register_templates)
+    };
 
     let statics = rule! {
         name: "statics",
@@ -82,7 +81,7 @@ fn main() {
 
     let scss =
         Rule::named("scss")
-        .matching(Glob::new("scss/**/*.scss").unwrap())
+        .pattern(Glob::new("scss/**/*.scss").unwrap())
         // TODO: use Item::spawn here too
         .handler(scss::scss("scss/screen.scss", "css/screen.css"))
         .build();
@@ -146,7 +145,7 @@ fn main() {
 
     let pages =
         Rule::named("pages")
-        .matching(Glob::new("pages/*.markdown").unwrap())
+        .pattern(Glob::new("pages/*.markdown").unwrap())
         .depends_on(&templates)
         .handler(chain!(
             bind::each(chain!(
@@ -165,7 +164,7 @@ fn main() {
 
     let notes =
         Rule::named("notes")
-        .matching(Glob::new("notes/*.markdown").unwrap())
+        .pattern(Glob::new("notes/*.markdown").unwrap())
         .depends_on(&templates)
         .handler(chain!(
             bind::each(chain!(

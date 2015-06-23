@@ -4,7 +4,7 @@ use std::collections::BTreeMap;
 
 use typemap;
 use toml;
-use diecast_git;
+use git;
 use rustc_serialize::json::{Json, ToJson};
 
 use diecast::Item;
@@ -40,7 +40,7 @@ pub fn post_template(item: &Item) -> Json {
             bt.insert(String::from("date"), date.format("%B %e, %Y").to_string().to_json());
         }
 
-        if let Some(git) = item.extensions.get::<diecast_git::Git>() {
+        if let Some(git) = item.extensions.get::<git::Git>() {
             let sha = git.sha.to_string().chars().take(7).collect::<String>();
             let path = item.source().unwrap();
 
@@ -148,7 +148,7 @@ pub fn notes_index_template(item: &Item) -> Json {
                 bt.insert(String::from("date"), date.format("%B %e, %Y").to_string().to_json());
             }
 
-            if let Some(git) = item.extensions.get::<diecast_git::Git>() {
+            if let Some(git) = item.extensions.get::<git::Git>() {
                 let sha = git.sha.to_string().chars().take(7).collect::<String>();
                 let path = item.source().unwrap();
 

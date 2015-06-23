@@ -7,13 +7,11 @@ use hoedown;
 use diecast::{self, Handle, Item};
 use diecast::util::handle::item;
 
-pub fn markdown(context: Arc<Mutex<zmq::Context>>) -> Markdown {
-    Markdown { context: context }
+pub fn markdown() -> Markdown {
+    Markdown
 }
 
-pub struct Markdown {
-    context: Arc<Mutex<zmq::Context>>,
-}
+pub struct Markdown;
 
 impl Handle<Item> for Markdown {
     fn handle(&self, item: &mut Item) -> diecast::Result {
@@ -84,7 +82,7 @@ impl Handle<Item> for Markdown {
             meta.and_then(|m| m.lookup("toc.show").and_then(toml::Value::as_bool))
             .unwrap_or(false);
 
-        let mut renderer = self::renderer::Renderer::new(abbrs, align, enabled, self.context.clone());
+        let mut renderer = self::renderer::Renderer::new(abbrs, align, enabled);
 
         trace!("constructed renderer");
 
@@ -178,20 +176,15 @@ mod renderer {
         toc_offset: i32,
 
         toc_align: Align,
-
-        socket: zmq::Socket,
     }
 
     impl Renderer {
-        pub fn new(abbrs: HashMap<String, String>, align: Align, enabled: bool, context: Arc<Mutex<zmq::Context>>) -> Renderer {
+        pub fn new(abbrs: HashMap<String, String>, align: Align, enabled: bool) -> Renderer {
             let joined: String =
                 abbrs.keys().cloned().collect::<Vec<String>>().connect("|");
 
             // TODO: shouldn't have | in abbr
             let matcher = Regex::new(&joined).unwrap();
-
-            let mut socket = context.lock().unwrap().socket(zmq::REQ).unwrap();
-            socket.connect("tcp://127.0.0.1:5555").unwrap();
 
             Renderer {
                 html: renderer::html::Html::new(renderer::html::Flags::empty(), 0),
@@ -203,8 +196,6 @@ mod renderer {
                 toc_level: 0,
                 toc_offset: 0,
                 toc_align: align,
-
-                socket: socket,
             }
         }
     }
@@ -217,36 +208,24 @@ mod renderer {
             &mut self.html
         }
 
-        fn code_block(&mut self, output: &mut Buffer, code: &Buffer, lang: &Buffer) {
-            use std::io::Write;
+        // fn code_block(&mut self, output: &mut Buffer, code: &Buffer, lang: &Buffer) {
+        //     use std::io::Write;
 
-            let lang = if lang.is_empty() {
-                "text"
-            } else {
-                lang.to_str().unwrap()
-            };
+        //     let lang = if lang.is_empty() {
+        //         "text"
+        //     } else {
+        //         lang.to_str().unwrap()
+        //     };
 
-            write!(output,
-r#"<figure class="codeblock">
-<pre>
-<code class="highlight language-{}">"#, lang).unwrap();
+        //     write!(output,
+// r#"<figure class="codeblock">
+// <pre>
+// <code class="highlight language-{}">"#, lang).unwrap();
 
-            if lang == "text" {
-                output.pipe(code);
-            } else {
-                let lang = zmq::Message::from_slice(lang.as_bytes()).unwrap();
-                self.socket.send_msg(lang, zmq::SNDMORE).unwrap();
+        //     output.pipe(code);
 
-                let code = zmq::Message::from_slice(&code).unwrap();
-                self.socket.send_msg(code, 0).unwrap();
-
-                let highlighted = self.socket.recv_msg(0).unwrap();
-
-                output.write(&highlighted).unwrap();
-            }
-
-            output.write(b"</code></pre></figure>").unwrap();
-        }
+        //     output.write(b"</code></pre></figure>").unwrap();
+        // }
 
         fn normal_text(&mut self, output: &mut Buffer, text: &Buffer) {
             use regex::Captures;

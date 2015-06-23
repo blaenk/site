@@ -18,21 +18,21 @@ regex = "*"
 [dependencies.diecast]
 path = "../diecast"
 
-[dependencies.diecast_websocket]
+[dependencies.diecast-live]
+path = "../live"
+
+[dependencies.diecast-websocket]
 path = "../websocket"
 
-[dependencies.diecast_git]
+[dependencies.diecast-git]
 path = "../git"
 
-[dependencies.diecast_rss]
+[dependencies.diecast-rss]
 path = "../rss"
 
-[dependencies.diecast_scss]
+[dependencies.diecast-scss]
 path = "../scss"
 
-[dependencies.diecast_handlebars]
+[dependencies.diecast-handlebars]
 path = "../handlebars"
-
-# [dependencies.diecast_live]
-# path = "../live"
 

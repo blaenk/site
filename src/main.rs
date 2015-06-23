@@ -67,18 +67,18 @@ fn main() {
         .handler(chain!(bind::each(item::read), handlebars::register_templates))
         .build();
 
-    let statics =
-        Rule::named("statics")
-        .matching(or!(
+    let statics = rule! {
+        name: "statics",
+        pattern: or!(
             glob!("images/**/*"),
             glob!("images/**/*"),
             glob!("static/**/*"),
             glob!("js/**/*"),
             "favicon.png",
             "CNAME"
-        ))
-        .handler(bind::each(chain!(route::identity, item::copy)))
-        .build();
+        ),
+        handler: bind::each(chain!(route::identity, item::copy))
+    };
 
     let scss =
         Rule::named("scss")
@@ -106,11 +106,11 @@ fn main() {
     // * full rebuild when unknown-but-matching path is changed when a simple
     //   update() would have sufficed
 
-    let posts =
-        Rule::named("posts")
-        .matching(Glob::new("posts/*.markdown").unwrap())
-        .depends_on(&templates)
-        .handler(chain!(
+    let posts = rule! {
+        name: "posts",
+        dependencies: [&templates],
+        pattern: glob!("posts/*.markdown"),
+        handler: chain!(
             bind::each(chain!(item::read, item::parse_metadata)),
             bind::retain(item::publishable),
             bind::each(chain!(
@@ -129,8 +129,8 @@ fn main() {
                 let a = a.extensions.get::<item::Date>().unwrap();
                 let b = b.extensions.get::<item::Date>().unwrap();
                 b.cmp(a)
-            })))
-        .build();
+        }))
+    };
 
     let posts_index =
         Rule::named("post index")

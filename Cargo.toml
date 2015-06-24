@@ -30,9 +30,6 @@ path = "../git"
 [dependencies.diecast-rss]
 path = "../rss"
 
-[dependencies.diecast-atom]
-path = "../atom"
-
 [dependencies.diecast-scss]
 path = "../scss"
 

@@ -4,6 +4,7 @@ extern crate diecast_live as live;
 extern crate diecast_websocket as websocket;
 extern crate diecast_git as git;
 extern crate diecast_rss as rss;
+extern crate diecast_atom as atom;
 extern crate diecast_handlebars as handlebars;
 extern crate diecast_scss as scss;
 
@@ -218,7 +219,8 @@ fn main() {
         Rule::named("feed")
         .depends_on(&posts)
         .handler(chain!(
-            rss::feed("rss.xml", "Blaenk Denum", "http://www.blaenkdenum.com", feed_handler),
+            atom::feed("atom.xml", "Blaenk Denum", "http://www.blaenkdenum.com", atom_handler),
+            rss::feed("rss.xml", "Blaenk Denum", "http://www.blaenkdenum.com", rss_handler),
             bind::each(item::write)))
         .build();
 
@@ -302,7 +304,7 @@ fn tag_index(bind: &mut Bind) -> diecast::Result {
     Ok(())
 }
 
-fn feed_handler(title: &str, url: &str, bind: &Bind) -> Vec<rss::Item> {
+fn rss_handler(title: &str, url: &str, bind: &Bind) -> Vec<rss::Item> {
     bind.dependencies["posts"].iter()
         .take(10)
         .map(|i| {
@@ -314,7 +316,7 @@ fn feed_handler(title: &str, url: &str, bind: &Bind) -> Vec<rss::Item> {
 
             feed_item.description =
                 i.extensions.get::<item::Versions>()
-                .and_then(|versions| versions.get("rendered").map(Clone::clone));
+                .and_then(|versions| versions.get("rendered").cloned());
 
             if let Some(meta) = i.extensions.get::<item::Metadata>() {
                 feed_item.title =
@@ -327,6 +329,48 @@ fn feed_handler(title: &str, url: &str, bind: &Bind) -> Vec<rss::Item> {
                     .and_then(Path::parent)
                     .and_then(Path::to_str)
                     .map(|p| format!("{}/{}", url, p));
+            }
+
+            feed_item
+        })
+    .collect()
+}
+
+fn atom_handler(title: &str, url: &str, bind: &Bind) -> Vec<atom::Entry> {
+    bind.dependencies["posts"].iter()
+        .take(10)
+        .map(|i| {
+            let mut feed_item: atom::Entry = Default::default();
+
+            feed_item.updated =
+                i.extensions.get::<item::Date>()
+                .map_or(String::new(), ToString::to_string);
+
+            feed_item.content =
+                i.extensions.get::<item::Versions>()
+                .and_then(|versions| versions.get("rendered").cloned());
+
+            if let Some(meta) = i.extensions.get::<item::Metadata>() {
+                let title =
+                    meta.lookup("title")
+                    .and_then(toml::Value::as_str)
+                    .map_or(String::from("No Title"), String::from);
+
+                feed_item.id = title.clone();
+                feed_item.title = title;
+
+                let link =
+                    i.route().writing()
+                    .and_then(Path::parent)
+                    .and_then(Path::to_str)
+                    .map(|p| format!("{}/{}", url, p));
+
+                if let Some(link) = link {
+                    feed_item.links = vec![atom::Link {
+                        href: link,
+                        .. Default::default()
+                    }]
+                }
             }
 
             feed_item

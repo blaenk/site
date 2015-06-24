@@ -3,6 +3,7 @@ name = "site"
 version = "0.1.0"
 dependencies = [
  "diecast 0.0.1",
+ "diecast-atom 0.1.0",
  "diecast-git 0.1.0",
  "diecast-handlebars 0.1.0",
  "diecast-live 0.1.0",
@@ -38,6 +39,14 @@ dependencies = [
 name = "ansi_term"
 version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "atom_syndication"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "RustyXML 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
 
 [[package]]
 name = "bitflags"
@@ -100,6 +109,15 @@ dependencies = [
  "toml 0.1.20 (registry+https://github.com/rust-lang/crates.io-index)",
  "typemap 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "walker 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "diecast-atom"
+version = "0.1.0"
+dependencies = [
+ "atom_syndication 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "diecast 0.0.1",
+ "toml 0.1.20 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]

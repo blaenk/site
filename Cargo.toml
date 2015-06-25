@@ -12,7 +12,6 @@ log = "*"
 env_logger = "*"
 rustc-serialize = "*"
 hoedown = "*"
-zmq = "*"
 regex = "*"
 
 [dependencies.diecast]

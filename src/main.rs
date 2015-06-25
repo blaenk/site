@@ -15,7 +15,6 @@ extern crate log;
 
 extern crate env_logger;
 extern crate glob;
-extern crate zmq;
 extern crate regex;
 extern crate toml;
 extern crate rustc_serialize;
@@ -23,8 +22,6 @@ extern crate time;
 extern crate typemap;
 
 use std::path::{Path, PathBuf};
-use std::process::{Command, Child};
-use std::sync::{Arc, Mutex};
 
 use glob::Pattern as Glob;
 use rustc_serialize::json::Json;
@@ -38,21 +35,10 @@ use diecast::{
 
 use diecast::{command, support};
 use diecast::util::{route, source};
-use diecast::util::handle::{Chain, bind, item};
+use diecast::util::handle::{bind, item};
 
 mod markdown;
 mod view;
-
-// TODO: implement some sort of heartbeat so that the pig
-// server dies when this process dies
-fn pig() -> Child {
-    println!("initializing pig server...");
-
-    Command::new("python")
-        .arg("scripts/pig.py")
-        .spawn()
-        .unwrap()
-}
 
 fn main() {
     env_logger::init().unwrap();
@@ -264,14 +250,17 @@ fn main() {
             // TODO this time keeping should be moved to build
             let start = PreciseTime::now();
             // TODO check Result
-            cmd.run();
+
+            match cmd.run() {
+                Ok(()) => (),
+                Err(e) => println!("command execution failed: {}", e),
+            }
+
             let end = PreciseTime::now();
             println!("time elapsed: {}", start.to(end));
         },
         Err(e) => println!("command creation failed: {}", e),
     }
-
-    // pig_handle.kill().unwrap();
 }
 
 fn tag_index(bind: &mut Bind) -> diecast::Result {
@@ -302,7 +291,7 @@ fn tag_index(bind: &mut Bind) -> diecast::Result {
     Ok(())
 }
 
-fn rss_handler(title: &str, url: &str, bind: &Bind) -> Vec<rss::Item> {
+fn rss_handler(_title: &str, url: &str, bind: &Bind) -> Vec<rss::Item> {
     bind.dependencies["posts"].iter()
         .take(10)
         .map(|i| {

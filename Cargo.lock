@@ -3,7 +3,6 @@ name = "site"
 version = "0.1.0"
 dependencies = [
  "diecast 0.0.1",
- "diecast-atom 0.1.0",
  "diecast-git 0.1.0",
  "diecast-handlebars 0.1.0",
  "diecast-live 0.1.0",
@@ -17,9 +16,8 @@ dependencies = [
  "regex 0.1.38 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc-serialize 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)",
  "time 0.1.26 (registry+https://github.com/rust-lang/crates.io-index)",
- "toml 0.1.20 (registry+https://github.com/rust-lang/crates.io-index)",
+ "toml 0.1.21 (registry+https://github.com/rust-lang/crates.io-index)",
  "typemap 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
- "zmq 0.6.7 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -39,14 +37,6 @@ dependencies = [
 name = "ansi_term"
 version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-
-[[package]]
-name = "atom_syndication"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "RustyXML 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
-]
 
 [[package]]
 name = "bitflags"
@@ -106,18 +96,9 @@ dependencies = [
  "tempdir 0.3.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "threadpool 0.1.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "time 0.1.26 (registry+https://github.com/rust-lang/crates.io-index)",
- "toml 0.1.20 (registry+https://github.com/rust-lang/crates.io-index)",
+ "toml 0.1.21 (registry+https://github.com/rust-lang/crates.io-index)",
  "typemap 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "walker 1.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "diecast-atom"
-version = "0.1.0"
-dependencies = [
- "atom_syndication 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "diecast 0.0.1",
- "toml 0.1.20 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -128,7 +109,7 @@ dependencies = [
  "env_logger 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "git2 0.2.12 (registry+https://github.com/rust-lang/crates.io-index)",
  "log 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "toml 0.1.20 (registry+https://github.com/rust-lang/crates.io-index)",
+ "toml 0.1.21 (registry+https://github.com/rust-lang/crates.io-index)",
  "typemap 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -158,7 +139,7 @@ dependencies = [
  "staticfile 0.0.3 (registry+https://github.com/rust-lang/crates.io-index)",
  "tempdir 0.3.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "time 0.1.26 (registry+https://github.com/rust-lang/crates.io-index)",
- "toml 0.1.20 (registry+https://github.com/rust-lang/crates.io-index)",
+ "toml 0.1.21 (registry+https://github.com/rust-lang/crates.io-index)",
  "typemap 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -168,7 +149,6 @@ version = "0.1.0"
 dependencies = [
  "diecast 0.0.1",
  "rss 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "toml 0.1.20 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
@@ -183,7 +163,7 @@ name = "diecast-websocket"
 version = "0.1.0"
 dependencies = [
  "diecast 0.0.1",
- "toml 0.1.20 (registry+https://github.com/rust-lang/crates.io-index)",
+ "toml 0.1.21 (registry+https://github.com/rust-lang/crates.io-index)",
  "websocket 0.12.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -577,7 +557,7 @@ dependencies = [
 
 [[package]]
 name = "toml"
-version = "0.1.20"
+version = "0.1.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "rustc-serialize 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -646,25 +626,5 @@ dependencies = [
  "rustc-serialize 0.3.15 (registry+https://github.com/rust-lang/crates.io-index)",
  "unicase 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "url 0.2.35 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "zmq"
-version = "0.6.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "libc 0.1.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "log 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "rand 0.3.8 (registry+https://github.com/rust-lang/crates.io-index)",
- "time 0.1.26 (registry+https://github.com/rust-lang/crates.io-index)",
- "zmq-sys 0.6.6 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "zmq-sys"
-version = "0.6.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "libc 0.1.8 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 

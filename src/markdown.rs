@@ -1,6 +1,3 @@
-use std::sync::{Arc, Mutex};
-
-use zmq;
 use toml;
 use hoedown;
 
@@ -109,9 +106,7 @@ mod renderer {
     use hoedown::{Buffer, Render, Wrapper, Markdown};
     use hoedown::renderer;
     use std::collections::HashMap;
-    use std::sync::{Arc, Mutex};
     use regex::Regex;
-    use zmq;
 
     pub enum Align {
         Left,

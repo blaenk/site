@@ -209,21 +209,15 @@ fn main() {
             bind::each(item::write)])
         .build();
 
-    // TODO
-    // change this to a ReadWrite
-    // read 404.markdown
-    // render(layout)
-    // output 404.html
     let not_found =
         Rule::named("404")
         .depends_on(&templates)
-        .handler(chain!(
-            bind::create("404.html"),
-            bind::each(chain!(
-                // TODO: just read 404.html
-                handlebars::render(&templates, "404", |_| Json::Null),
-                handlebars::render(&templates, "layout", view::layout_template),
-                item::write))))
+        .pattern("404.html")
+        .handler(bind::each(chain![
+            item::read,
+            route::identity,
+            handlebars::render(&templates, "layout", view::layout_template),
+            item::write]))
         .build();
 
     let rules = vec![

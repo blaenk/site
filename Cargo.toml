@@ -20,6 +20,9 @@ path = "../diecast"
 [dependencies.diecast-live]
 path = "../live"
 
+[dependencies.diecast-versions]
+path = "../versions"
+
 [dependencies.diecast-websocket]
 path = "../websocket"
 

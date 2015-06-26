@@ -6,6 +6,7 @@ extern crate diecast_git as git;
 extern crate diecast_rss as rss;
 extern crate diecast_handlebars as handlebars;
 extern crate diecast_scss as scss;
+extern crate diecast_versions as versions;
 
 #[macro_use]
 extern crate hoedown;
@@ -46,24 +47,24 @@ fn main() {
     // TODO: run/store this in websocket handler?
     let ws_tx = websocket::init();
 
-    let templates = rule! {
-        name: "templates",
-        pattern: glob!("templates/*.html"),
-        handler: chain!(bind::each(item::read), handlebars::register_templates)
-    };
+    let templates =
+        Rule::named("templates")
+        .pattern(glob!("templates/*.html"))
+        .handler(chain![bind::each(item::read), handlebars::register_templates])
+        .build();
 
-    let statics = rule! {
-        name: "statics",
-        pattern: or!(
+    let statics =
+        Rule::named("statics")
+        .pattern(or!(
             glob!("images/**/*"),
             glob!("images/**/*"),
             glob!("static/**/*"),
             glob!("js/**/*"),
             "favicon.png",
             "CNAME"
-        ),
-        handler: bind::each(chain!(route::identity, item::copy))
-    };
+        ))
+        .handler(bind::each(chain![route::identity, item::copy]))
+        .build();
 
     let scss =
         Rule::named("scss")
@@ -91,100 +92,100 @@ fn main() {
     // * full rebuild when unknown-but-matching path is changed when a simple
     //   update() would have sufficed
 
-    let posts = rule! {
-        name: "posts",
-        dependencies: [&templates],
-        pattern: glob!("posts/*.markdown"),
-        handler: chain!(
-            bind::each(chain!(item::read, item::parse_metadata)),
+    let posts =
+        Rule::named("posts")
+        .depends_on(&templates)
+        .pattern(glob!("posts/*.markdown"))
+        .handler(chain![
+            bind::each(chain![item::read, item::parse_metadata]),
             bind::retain(item::publishable),
-            bind::each(chain!(
+            bind::each(chain![
                 item::date,
                 markdown::markdown(),
-                item::save_version("rendered"),
-                route::pretty)),
+                versions::save("rendered"),
+                route::pretty]),
             bind::tags,
             websocket::pipe(ws_tx.clone()),
             git::git,
-            bind::each(chain!(
+            bind::each(chain![
                 handlebars::render(&templates, "post", view::post_template),
                 handlebars::render(&templates, "layout", view::layout_template),
-                item::write)),
+                item::write]),
             bind::sort_by(|a, b| {
                 let a = a.extensions.get::<item::Date>().unwrap();
                 let b = b.extensions.get::<item::Date>().unwrap();
                 b.cmp(a)
-        }))
-    };
+        })])
+        .build();
 
     let posts_index =
         Rule::named("post index")
         .depends_on(&posts)
         .depends_on(&templates)
-        .handler(chain!(
+        .handler(chain![
             bind::create("index.html"),
-            bind::each(chain!(
+            bind::each(chain![
                 handlebars::render(&templates, "index", view::posts_index_template),
                 handlebars::render(&templates, "layout", view::layout_template),
-                item::write))))
+                item::write])])
         .build();
 
     let pages =
         Rule::named("pages")
         .pattern(Glob::new("pages/*.markdown").unwrap())
         .depends_on(&templates)
-        .handler(chain!(
-            bind::each(chain!(
+        .handler(chain![
+            bind::each(chain![
                 item::read,
-                item::parse_metadata)),
+                item::parse_metadata]),
             bind::retain(item::publishable),
-            bind::each(chain!(
+            bind::each(chain![
                 markdown::markdown(),
-                route::pretty_page)),
+                route::pretty_page]),
             websocket::pipe(ws_tx.clone()),
-            bind::each(chain!(
+            bind::each(chain![
                 handlebars::render(&templates, "page", view::post_template),
                 handlebars::render(&templates, "layout", view::layout_template),
-                item::write))))
+                item::write])])
         .build();
 
     let notes =
         Rule::named("notes")
         .pattern(Glob::new("notes/*.markdown").unwrap())
         .depends_on(&templates)
-        .handler(chain!(
-            bind::each(chain!(
+        .handler(chain![
+            bind::each(chain![
                 item::read,
-                item::parse_metadata)),
+                item::parse_metadata]),
             bind::retain(item::publishable),
-            bind::each(chain!(
+            bind::each(chain![
                 item::date,
                 // TODO: use pulldown instead for more cross-platform?
                 markdown::markdown(),
-                route::pretty)),
+                route::pretty]),
             websocket::pipe(ws_tx.clone()),
             git::git,
-            bind::each(chain!(
+            bind::each(chain![
                 handlebars::render(&templates, "note", view::post_template),
                 handlebars::render(&templates, "layout", view::layout_template),
-                item::write)),
+                item::write]),
             bind::sort_by(|a, b| {
                 let a = a.extensions.get::<item::Date>().unwrap();
                 let b = b.extensions.get::<item::Date>().unwrap();
                 b.cmp(a)
-            })))
+            })])
         .build();
 
     let notes_index =
         Rule::named("note index")
         .depends_on(&notes)
         .depends_on(&templates)
-        .handler(chain!(
+        .handler(chain![
             bind::create("notes/index.html"),
-            bind::each(chain!(
+            bind::each(chain![
                 handlebars::render(&templates, "index", view::notes_index_template),
                 handlebars::render(&templates, "layout", view::layout_template),
-                item::write))))
+                item::write])])
         .build();
 
     // TODO: this should be expressed in such a way that it is possible to paginate
@@ -192,20 +193,20 @@ fn main() {
         Rule::named("tag index")
         .depends_on(&templates)
         .depends_on(&posts)
-        .handler(chain!(
+        .handler(chain![
             tag_index,
-            bind::each(chain!(
+            bind::each(chain![
                 handlebars::render(&templates, "tags", view::tags_index_template),
                 handlebars::render(&templates, "layout", view::layout_template),
-                item::write))))
+                item::write])])
         .build();
 
     let feed =
         Rule::named("feed")
         .depends_on(&posts)
-        .handler(chain!(
+        .handler(chain![
             rss::feed("rss.xml", "Blaenk Denum", "http://www.blaenkdenum.com", rss_handler),
-            bind::each(item::write)))
+            bind::each(item::write)])
         .build();
 
     // TODO
@@ -301,9 +302,7 @@ fn rss_handler(_title: &str, url: &str, bind: &Bind) -> Vec<rss::Item> {
                 i.extensions.get::<item::Date>()
                 .map(ToString::to_string);
 
-            feed_item.description =
-                i.extensions.get::<item::Versions>()
-                .and_then(|versions| versions.get("rendered").cloned());
+            feed_item.description = versions::get(i, "rendered");
 
             if let Some(meta) = i.extensions.get::<item::Metadata>() {
                 feed_item.title =

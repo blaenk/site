@@ -2,7 +2,6 @@ use toml;
 use hoedown;
 
 use diecast::{self, Handle, Item};
-use diecast::util::handle::item;
 
 pub fn markdown() -> Markdown {
     Markdown
@@ -34,28 +33,31 @@ impl Handle<Item> for Markdown {
 
         trace!("collected abbreviations");
 
-        let meta = item.extensions.get::<item::Metadata>();
+        // TODO metadata access
+        // let meta = item.extensions.get::<item::Metadata>();
 
-        if let Some(meta) = meta {
-            if !meta.lookup("toc.show").and_then(toml::Value::as_bool).unwrap_or(false) {
-                // TODO: tell render not to generate toc
-            }
-        }
+        // if let Some(meta) = meta {
+        //     if !meta.lookup("toc.show").and_then(toml::Value::as_bool).unwrap_or(false) {
+        //         // TODO: tell render not to generate toc
+        //     }
+        // }
 
         // if there is metadata, parse the field
         // otherwise assume left align
-        let align =
-            meta.and_then(|m|
-                m.lookup("toc.align")
-                .and_then(toml::Value::as_str)
-                .map(|align| {
-                    match align {
-                        "left" => renderer::Align::Left,
-                        "right" => renderer::Align::Right,
-                        _ => panic!("invalid value for toc.align. either `left` or `right`"),
-                    }
-                }))
-            .unwrap_or(renderer::Align::Left);
+        // let align =
+        //     meta.and_then(|m|
+        //         m.lookup("toc.align")
+        //         .and_then(toml::Value::as_str)
+        //         .map(|align| {
+        //             match align {
+        //                 "left" => renderer::Align::Left,
+        //                 "right" => renderer::Align::Right,
+        //                 _ => panic!("invalid value for toc.align. either `left` or `right`"),
+        //             }
+        //         }))
+        //     .unwrap_or(renderer::Align::Left);
+
+        let align = renderer::Align::Left;
 
         trace!("got toc alignment");
 
@@ -75,9 +77,12 @@ impl Handle<Item> for Markdown {
                 TABLES
             });
 
-        let enabled =
-            meta.and_then(|m| m.lookup("toc.show").and_then(toml::Value::as_bool))
-            .unwrap_or(false);
+        // TODO metadata access
+        // let enabled =
+        //     meta.and_then(|m| m.lookup("toc.show").and_then(toml::Value::as_bool))
+        //     .unwrap_or(false);
+
+        let enabled = true;
 
         let mut renderer = self::renderer::Renderer::new(abbrs, align, enabled);
 

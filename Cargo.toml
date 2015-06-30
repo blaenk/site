@@ -13,9 +13,20 @@ env_logger = "*"
 rustc-serialize = "*"
 hoedown = "*"
 regex = "*"
+chrono = "*"
+rss = "*"
 
 [dependencies.diecast]
 path = "../diecast"
+
+[dependencies.diecast-toml]
+path = "../toml"
+
+[dependencies.diecast-tags]
+path = "../tags"
+
+[dependencies.diecast-date]
+path = "../date"
 
 [dependencies.diecast-live]
 path = "../live"

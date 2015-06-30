@@ -144,7 +144,7 @@ fn main() {
         }
     }
 
-    fn date(item: &mut Item) -> diecast::Result<> {
+    fn date(item: &mut Item) -> diecast::Result {
         let date = try!(date_handler(item));
 
         item.extensions.insert::<PublishDate>(date);
@@ -171,8 +171,8 @@ fn main() {
                 // TODO
                 // filter_map would subtly ignore non-str tags
                 // should it be unwrap instead?
-                .map(|s| s.iter().filter_map(toml::Value::as_str).map(String::from).collect())
-                .unwrap_or(Vec::new())
+                .map_or(Vec::new(),
+                    |s| s.iter().filter_map(toml::Value::as_str).map(String::from).collect())
             }),
             websocket::pipe(ws_tx.clone()),
             git::git,

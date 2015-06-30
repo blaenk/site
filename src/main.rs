@@ -30,7 +30,6 @@ extern crate rss;
 use std::path::Path;
 use std::error::Error as StdError;
 
-use glob::Pattern as Glob;
 use time::PreciseTime;
 
 use diecast::{
@@ -46,11 +45,11 @@ use diecast::util::handle::{bind, item};
 // TODO can't depend on Metadata or "draft"
 pub fn is_draft(item: &Item) -> bool {
     item.extensions.get::<dc_toml::Metadata>()
-        .map_or(false, |meta| {
-            meta.lookup("draft")
-                .and_then(::toml::Value::as_bool)
-                .unwrap_or(false)
-        })
+    .map_or(false, |meta| {
+        meta.lookup("draft")
+        .and_then(::toml::Value::as_bool)
+        .unwrap_or(false)
+    })
 }
 
 pub fn publishable(item: &Item) -> bool {
@@ -58,6 +57,10 @@ pub fn publishable(item: &Item) -> bool {
 }
 
 pub struct PublishDate;
+
+impl typemap::Key for PublishDate {
+    type Value = chrono::NaiveDate;
+}
 
 mod markdown;
 mod view;
@@ -89,14 +92,10 @@ fn main() {
 
     let scss =
         Rule::named("scss")
-        .pattern(Glob::new("scss/**/*.scss").unwrap())
+        .pattern(glob!("scss/**/*.scss"))
         // TODO: use Item::spawn here too
         .handler(scss::scss("scss/screen.scss", "css/screen.css"))
         .build();
-
-    impl typemap::Key for PublishDate {
-        type Value = chrono::NaiveDate;
-    }
 
     // TODO
     // to abstract this:
@@ -145,7 +144,7 @@ fn main() {
         }
     }
 
-    fn date(item: &mut Item) -> diecast::Result {
+    fn date(item: &mut Item) -> diecast::Result<> {
         let date = try!(date_handler(item));
 
         item.extensions.insert::<PublishDate>(date);

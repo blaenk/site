@@ -3,7 +3,7 @@ extern crate diecast;
 extern crate diecast_live as live;
 extern crate diecast_websocket as websocket;
 extern crate diecast_git as git;
-extern crate diecast_rss as dc_rss;
+extern crate diecast_feed as feed;
 extern crate diecast_handlebars as handlebars;
 extern crate diecast_scss as scss;
 extern crate diecast_versions as versions;
@@ -219,7 +219,7 @@ fn main() {
         Rule::named("feed")
         .depends_on(&posts)
         .handler(chain![
-            dc_rss::feed("rss.xml",
+            feed::rss::create("rss.xml",
                 "Blaenk Denum",
                 "http://www.blaenkdenum.com",
                 helpers::rss_handler),

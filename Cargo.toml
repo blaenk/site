@@ -41,8 +41,9 @@ path = "../websocket"
 [dependencies.diecast-git]
 path = "../git"
 
-[dependencies.diecast-rss]
-path = "../rss"
+[dependencies.diecast-feed]
+path = "../feed"
+features = ["rss"]
 
 [dependencies.diecast-scss]
 path = "../scss"

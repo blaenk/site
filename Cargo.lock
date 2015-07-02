@@ -8,10 +8,10 @@ dependencies = [
  "diecast-git 0.1.0",
  "diecast-handlebars 0.1.0",
  "diecast-live 0.1.0",
+ "diecast-metadata 0.1.0",
  "diecast-rss 0.1.0",
  "diecast-scss 0.1.0",
  "diecast-tags 0.1.0",
- "diecast-toml 0.1.0",
  "diecast-versions 0.1.0",
  "diecast-websocket 0.1.0",
  "env_logger 0.3.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -158,6 +158,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "diecast-metadata"
+version = "0.1.0"
+dependencies = [
+ "diecast 0.0.1",
+ "regex 0.1.38 (registry+https://github.com/rust-lang/crates.io-index)",
+ "toml 0.1.21 (registry+https://github.com/rust-lang/crates.io-index)",
+ "typemap 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "diecast-rss"
 version = "0.1.0"
 dependencies = [
@@ -177,16 +187,6 @@ name = "diecast-tags"
 version = "0.1.0"
 dependencies = [
  "diecast 0.0.1",
- "typemap 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
-]
-
-[[package]]
-name = "diecast-toml"
-version = "0.1.0"
-dependencies = [
- "diecast 0.0.1",
- "regex 0.1.38 (registry+https://github.com/rust-lang/crates.io-index)",
- "toml 0.1.21 (registry+https://github.com/rust-lang/crates.io-index)",
  "typemap 0.3.3 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 

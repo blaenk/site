@@ -1,35 +1,24 @@
-use std::sync::Arc;
 use std::path::Path;
 use std::collections::BTreeMap;
 
-use typemap;
 use toml;
 use git;
+use tags;
 use rustc_serialize::json::{Json, ToJson};
 
 use diecast::Item;
 use diecast::support;
 
 // TODO toml re-export?
-use dc_toml;
+use metadata;
 
 use super::PublishDate;
-
-#[derive(Clone)]
-pub struct Tag {
-    pub tag: String,
-    pub items: Arc<Vec<Arc<Item>>>,
-}
-
-impl typemap::Key for Tag {
-    type Value = Tag;
-}
 
 pub fn post_template(item: &Item) -> Json {
     let mut bt = BTreeMap::new();
 
     // TODO: don't predicate these things on metadata existing
-    if let Some(meta) = item.extensions.get::<dc_toml::Metadata>() {
+    if let Some(meta) = item.extensions.get::<metadata::toml::Metadata>() {
         bt.insert(String::from("body"), item.body.to_json());
 
         if let Some(title) = meta.lookup("title").and_then(toml::Value::as_str).map(ToJson::to_json) {
@@ -82,7 +71,7 @@ pub fn posts_index_template(item: &Item) -> Json {
     for post in item.bind().dependencies["posts"].items() {
         let mut itm = BTreeMap::new();
 
-        if let Some(meta) = post.extensions.get::<dc_toml::Metadata>() {
+        if let Some(meta) = post.extensions.get::<metadata::toml::Metadata>() {
             if let Some(title) = meta.lookup("title") {
                 itm.insert(String::from("title"), title.as_str().unwrap().to_json());
             }
@@ -106,13 +95,13 @@ pub fn tags_index_template(item: &Item) -> Json {
     let mut items = vec![];
     let mut tg = String::new();
 
-    if let Some(tag) = item.extensions.get::<Tag>() {
+    if let Some(tag) = item.extensions.get::<tags::Tag>() {
         for post in tag.items.iter() {
             let mut itm = BTreeMap::new();
 
             tg = tag.tag.clone();
 
-            if let Some(meta) = post.extensions.get::<dc_toml::Metadata>() {
+            if let Some(meta) = post.extensions.get::<metadata::toml::Metadata>() {
                 if let Some(title) = meta.lookup("title") {
                     itm.insert(String::from("title"), title.as_str().unwrap().to_json());
                 }
@@ -139,7 +128,7 @@ pub fn notes_index_template(item: &Item) -> Json {
     for post in item.bind().dependencies["notes"].items() {
         let mut itm = BTreeMap::new();
 
-        if let Some(meta) = post.extensions.get::<dc_toml::Metadata>() {
+        if let Some(meta) = post.extensions.get::<metadata::toml::Metadata>() {
             if let Some(title) = meta.lookup("title") {
                 itm.insert(String::from("title"), title.as_str().unwrap().to_json());
             }

@@ -19,8 +19,9 @@ rss = "*"
 [dependencies.diecast]
 path = "../diecast"
 
-[dependencies.diecast-toml]
-path = "../toml"
+[dependencies.diecast-metadata]
+path = "../metadata"
+features = ["toml"]
 
 [dependencies.diecast-tags]
 path = "../tags"
@@ -48,4 +49,3 @@ path = "../scss"
 
 [dependencies.diecast-handlebars]
 path = "../handlebars"
-

@@ -10,7 +10,7 @@ pub fn markdown() -> Markdown {
 pub struct Markdown;
 
 impl Handle<Item> for Markdown {
-    fn handle(&self, item: &mut Item) -> diecast::Result {
+    fn handle(&self, item: &mut Item) -> diecast::Result<()> {
         use std::collections::HashMap;
         use regex::{Regex, Captures};
         use hoedown::Render;

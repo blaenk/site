@@ -21,7 +21,7 @@ impl Handle<Item> for Markdown {
         use hoedown::Render;
         use hoedown::renderer::html;
 
-        let pattern = Regex::new(r"(?m)^\*\[(?P<abbr>.+)\]: (?P<full>.+)$").unwrap();
+        let pattern = Regex::new(r"(?m)^\*\[(?P<abbr>[^]]+)\]: (?P<full>.+)$").unwrap();
         let mut abbrs = HashMap::new();
 
         let clean = pattern.replace_all(&item.body, |caps: &Captures| -> String {

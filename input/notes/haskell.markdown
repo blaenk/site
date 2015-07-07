@@ -17,7 +17,7 @@ I'm actually familiar with Haskell now. This very site is written in Haskell, an
 *[PLT]: Programming Language Theory
 *[GHC]: Glasgow Haskell Compiler
 
-* toc
+::toc::
 
 # User Guide
 

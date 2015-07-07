@@ -1,13 +1,18 @@
+use std::sync::{Arc, Mutex};
+
 use toml;
 use hoedown;
+use zmq;
 
 use diecast::{self, Handle, Item};
 
-pub fn markdown() -> Markdown {
-    Markdown
+pub fn markdown(context: Arc<Mutex<zmq::Context>>) -> Markdown {
+    Markdown { context: context }
 }
 
-pub struct Markdown;
+pub struct Markdown {
+    context: Arc<Mutex<zmq::Context>>,
+}
 
 impl Handle<Item> for Markdown {
     fn handle(&self, item: &mut Item) -> diecast::Result<()> {
@@ -84,7 +89,7 @@ impl Handle<Item> for Markdown {
 
         let enabled = true;
 
-        let mut renderer = self::renderer::Renderer::new(abbrs, align, enabled);
+        let mut renderer = self::renderer::Renderer::new(abbrs, align, enabled, self.context.clone());
 
         trace!("constructed renderer");
 
@@ -94,12 +99,7 @@ impl Handle<Item> for Markdown {
 
         let pattern = Regex::new(r"<p>::toc::</p>").unwrap();
 
-        let mut smartypants = hoedown::Buffer::new(64);
-        html::smartypants(&buffer, &mut smartypants);
-
-        trace!("smartypants");
-
-        item.body = pattern.replace(&smartypants.to_str().unwrap(), &renderer.toc[..]);
+        item.body = pattern.replace(&buffer.to_str().unwrap(), &renderer.toc[..]);
 
         trace!("inserted toc");
 
@@ -111,7 +111,9 @@ mod renderer {
     use hoedown::{Buffer, Render, Wrapper, Markdown};
     use hoedown::renderer;
     use std::collections::HashMap;
+    use std::sync::{Arc, Mutex};
     use regex::Regex;
+    use zmq;
 
     pub enum Align {
         Left,
@@ -176,15 +178,20 @@ mod renderer {
         toc_offset: i32,
 
         toc_align: Align,
+
+        socket: zmq::Socket,
     }
 
     impl Renderer {
-        pub fn new(abbrs: HashMap<String, String>, align: Align, enabled: bool) -> Renderer {
+        pub fn new(abbrs: HashMap<String, String>, align: Align, enabled: bool, context: Arc<Mutex<zmq::Context>>) -> Renderer {
             let joined: String =
                 abbrs.keys().cloned().collect::<Vec<String>>().connect("|");
 
             // TODO: shouldn't have | in abbr
             let matcher = Regex::new(&joined).unwrap();
+
+            let mut socket = context.lock().unwrap().socket(zmq::REQ).unwrap();
+            socket.connect("tcp://127.0.0.1:5555").unwrap();
 
             Renderer {
                 html: renderer::html::Html::new(renderer::html::Flags::empty(), 0),
@@ -196,9 +203,13 @@ mod renderer {
                 toc_level: 0,
                 toc_offset: 0,
                 toc_align: align,
+
+                socket: socket,
             }
         }
     }
+
+    wrap!(Renderer);
 
     #[allow(unused_variables)]
     impl Wrapper for Renderer {
@@ -208,31 +219,87 @@ mod renderer {
             &mut self.html
         }
 
-        // fn code_block(&mut self, output: &mut Buffer, code: &Buffer, lang: &Buffer) {
-        //     use std::io::Write;
+        fn code_block(&mut self, output: &mut Buffer, code: &Buffer, lang: &Buffer) {
+            use std::io::Write;
 
-        //     let lang = if lang.is_empty() {
-        //         "text"
-        //     } else {
-        //         lang.to_str().unwrap()
-        //     };
+            let lang = if lang.is_empty() {
+                "text"
+            } else {
+                lang.to_str().unwrap()
+            };
 
-        //     write!(output,
-// r#"<figure class="codeblock">
-// <pre>
-// <code class="highlight language-{}">"#, lang).unwrap();
+            write!(output,
+r#"<figure class="codeblock">
+<pre>
+<code class="highlight language-{}">"#, lang).unwrap();
 
-        //     output.pipe(code);
+            if lang == "text" {
+                output.pipe(code);
+            } else {
+                use sha1;
+                use std::fs::File;
+                use std::io::{Read, Write};
+                use diecast;
 
-        //     output.write(b"</code></pre></figure>").unwrap();
-        // }
+                // check cache
+                let mut hash = sha1::Sha1::new();
+                hash.update(lang.as_bytes());
+                hash.update(code);
+
+                let digest = hash.hexdigest();
+
+                // println!("code hash: {}", digest);
+
+                let cache = format!("cache/{}", digest);
+                diecast::support::mkdir_p("cache/").unwrap();
+
+                match File::open(&cache) {
+                    Ok(mut f) => {
+                        info!("[PYGMENTS] cache hit {}", digest);
+
+                        let mut contents = vec![];
+                        f.read_to_end(&mut contents).unwrap();
+                        output.write(&contents);
+                    },
+                    Err(e) => {
+                        if let ::std::io::ErrorKind::NotFound = e.kind() {
+                            println!("[PYGMENTS] cache miss {}", digest);
+
+                            let lang = zmq::Message::from_slice(lang.as_bytes()).unwrap();
+                            self.socket.send_msg(lang, zmq::SNDMORE).unwrap();
+
+                            let code = zmq::Message::from_slice(&code).unwrap();
+                            self.socket.send_msg(code, 0).unwrap();
+
+                            let highlighted = self.socket.recv_msg(0).unwrap();
+
+                            output.write(&highlighted).unwrap();
+
+                            let mut f = File::create(&cache).unwrap();
+                            f.write_all(&highlighted).unwrap();
+
+                            info!("[PYGMENTS] wrote cache {}", digest)
+                        } else {
+                            error!("[PYGMENTS] SOME ERROR");
+                        }
+                    },
+                }
+            }
+
+            output.write(b"</code></pre></figure>").unwrap();
+        }
 
         fn normal_text(&mut self, output: &mut Buffer, text: &Buffer) {
             use regex::Captures;
             use std::io::Write;
+            use hoedown::renderer::html;
 
             if self.abbreviations.is_empty() {
-                output.pipe(text);
+                let mut smartypants = Buffer::new(64);
+                html::smartypants(&text, &mut smartypants);
+
+                output.pipe(&smartypants);
+
                 return;
             }
 
@@ -244,7 +311,12 @@ mod renderer {
                 format!(r#"<abbr title="{}">{}</abbr>"#, full, abbr)
             });
 
-            output.write(replaced.as_bytes()).unwrap();
+            let input = Buffer::from(&replaced[..]);
+            let mut smartypants = Buffer::new(64);
+
+            html::smartypants(&input, &mut smartypants);
+
+            output.pipe(&smartypants);
         }
 
         fn after_render(&mut self, output: &mut Buffer, inline_render: bool) {
@@ -335,8 +407,6 @@ r##"<h2 id="{}">
 </h2>"##, sanitized, sanitized, content.to_str().unwrap()).unwrap();
         }
     }
-
-    wrap!(Renderer);
 }
 
 

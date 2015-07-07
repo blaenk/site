@@ -13,7 +13,7 @@ I've been wanting to learn about the subject of machine learning for a while now
 
 I pushed my code for the programming assignments for this class to [github](https://github.com/blaenk/learning-from-data).
 
-* toc
+::toc::
 
 # Learning Problem
 

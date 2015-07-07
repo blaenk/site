@@ -26,6 +26,11 @@ extern crate time;
 extern crate typemap;
 extern crate chrono;
 extern crate rss;
+extern crate zmq;
+extern crate sha1;
+
+use std::process::{Command, Child};
+use std::sync::{Arc, Mutex};
 
 use time::PreciseTime;
 
@@ -44,8 +49,21 @@ impl typemap::Key for PublishDate {
     type Value = chrono::NaiveDate;
 }
 
+fn pig() -> Child {
+    println!("initializing pig server...");
+
+    Command::new("python")
+        .arg("scripts/pig.py")
+        .spawn()
+        .unwrap()
+}
+
 fn main() {
     env_logger::init().unwrap();
+
+    let mut pig_handle = pig();
+
+    let context = Arc::new(Mutex::new(zmq::Context::new()));
 
     // TODO
     // run/store this in websocket handler?
@@ -107,7 +125,7 @@ fn main() {
             bind::retain(helpers::publishable),
             bind::each(chain![
                 helpers::set_date,
-                markdown::markdown(),
+                markdown::markdown(context.clone()),
                 versions::save("rendered"),
                 route::pretty]),
             tags::collect(|item: &Item| -> Vec<String> {
@@ -156,7 +174,7 @@ fn main() {
                 metadata::toml::parse]),
             bind::retain(helpers::publishable),
             bind::each(chain![
-                markdown::markdown(),
+                markdown::markdown(context.clone()),
                 route::pretty_page]),
             websocket::pipe(ws_tx.clone()),
             bind::each(chain![
@@ -176,7 +194,7 @@ fn main() {
             bind::retain(helpers::publishable),
             bind::each(chain![
                 helpers::set_date,
-                markdown::markdown(),
+                markdown::markdown(context.clone()),
                 route::pretty]),
             websocket::pipe(ws_tx.clone()),
             git::git,
@@ -272,5 +290,7 @@ fn main() {
         },
         Err(e) => println!("command creation failed: {}", e),
     }
+
+    pig_handle.kill().unwrap();
 }
 

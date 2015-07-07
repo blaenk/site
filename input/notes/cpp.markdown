@@ -94,11 +94,9 @@ With these definitions, the division of `-1 / 256` in the above equation becomes
 
 Given the above restriction on the division operation with negative operands, the definition of the modulus operation with negative operands can be simplified to:
 
-<!-- notice escaping backslash... -->
-
 $$
 \begin{align}
-  \text{mod}(\phantom {-} a, -n) &= \phantom {-} \text{mod}(a, n) \\\\
+  \text{mod}(\phantom {-} a, -n) &= \phantom {-} \text{mod}(a, n) \\
   \text{mod}(-a, \phantom {-} n) &= -\text{mod}(a, n)
 \end{align}
 $$

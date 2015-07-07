@@ -37,7 +37,10 @@ use time::PreciseTime;
 use diecast::{Rule, Bind, Item};
 use diecast::command;
 use diecast::util::route;
-use diecast::util::handle::{bind, item};
+use diecast::util::handle::{handle_if, bind, item};
+
+// item: read, write, copy
+// bind: each, retain, sort_by
 
 mod markdown;
 mod view;
@@ -56,6 +59,12 @@ fn pig() -> Child {
         .arg("scripts/pig.py")
         .spawn()
         .unwrap()
+}
+
+fn is_pushable(item: &Item) -> bool {
+    item.extensions.get::<metadata::toml::Metadata>()
+    .and_then(|m| m.lookup("push").and_then(toml::Value::as_bool))
+    .unwrap_or(false)
 }
 
 fn main() {
@@ -126,6 +135,7 @@ fn main() {
             bind::each(chain![
                 helpers::set_date,
                 markdown::markdown(context.clone()),
+                handle_if(is_pushable, websocket::pipe(ws_tx.clone())),
                 versions::save("rendered"),
                 route::pretty]),
             tags::collect(|item: &Item| -> Vec<String> {
@@ -138,7 +148,6 @@ fn main() {
                         .map(String::from)
                         .collect())
             }),
-            websocket::pipe(ws_tx.clone()),
             git::git,
             bind::each(chain![
                 handlebars::render(&templates, "post", view::post_template),
@@ -175,8 +184,8 @@ fn main() {
             bind::retain(helpers::publishable),
             bind::each(chain![
                 markdown::markdown(context.clone()),
+                handle_if(is_pushable, websocket::pipe(ws_tx.clone())),
                 route::pretty_page]),
-            websocket::pipe(ws_tx.clone()),
             bind::each(chain![
                 handlebars::render(&templates, "page", view::post_template),
                 handlebars::render(&templates, "layout", view::layout_template),
@@ -195,8 +204,8 @@ fn main() {
             bind::each(chain![
                 helpers::set_date,
                 markdown::markdown(context.clone()),
+                handle_if(is_pushable, websocket::pipe(ws_tx.clone())),
                 route::pretty]),
-            websocket::pipe(ws_tx.clone()),
             git::git,
             bind::each(chain![
                 handlebars::render(&templates, "note", view::post_template),

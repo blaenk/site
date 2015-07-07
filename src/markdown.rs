@@ -28,8 +28,7 @@ impl Handle<Item> for Markdown {
             let abbr = String::from(caps.name("abbr").unwrap());
             let full = String::from(caps.name("full").unwrap());
 
-            assert!(
-                !abbr.chars().any(|c| c == '|'),
+            assert!(!abbr.chars().any(|c| c == '|'),
                 "abbreviations shouldn't contain the '|' character!");
 
             abbrs.insert(abbr, full);
@@ -190,8 +189,11 @@ mod renderer {
             // TODO: shouldn't have | in abbr
             let matcher = Regex::new(&joined).unwrap();
 
-            let mut socket = context.lock().unwrap().socket(zmq::REQ).unwrap();
-            socket.connect("tcp://127.0.0.1:5555").unwrap();
+            let socket = {
+                let mut s = context.lock().unwrap().socket(zmq::REQ).unwrap();
+                s.connect("tcp://127.0.0.1:5555").unwrap();
+                s
+            };
 
             Renderer {
                 html: renderer::html::Html::new(renderer::html::Flags::empty(), 0),
@@ -259,7 +261,7 @@ r#"<figure class="codeblock">
 
                         let mut contents = vec![];
                         f.read_to_end(&mut contents).unwrap();
-                        output.write(&contents);
+                        output.write(&contents).unwrap();
                     },
                     Err(e) => {
                         if let ::std::io::ErrorKind::NotFound = e.kind() {
@@ -291,7 +293,6 @@ r#"<figure class="codeblock">
 
         fn normal_text(&mut self, output: &mut Buffer, text: &Buffer) {
             use regex::Captures;
-            use std::io::Write;
             use hoedown::renderer::html;
 
             if self.abbreviations.is_empty() {

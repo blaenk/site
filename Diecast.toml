@@ -1,5 +1,3 @@
-# this is a diecast configuration file
-
 [diecast]
 ignore = '^\.|^#|~$|\.swp$|4913'
 
@@ -9,19 +7,10 @@ address = "0.0.0.0:3000"
 [diecast.handler.websocket]
 address = "0.0.0.0:9160"
 
-# maybe this isn't the best, since you can
-# potentially use rss multiple times to create feeds for
-# multiple binds
-# probably better as a code-level option
-[diecast.handler.rss]
-title = "Blaenk Denum"
-root = "http://www.blaenkdenum.com"
-
 # hypothetical future
 # [[diecast.rule]]
 # name = "posts"
-# type = "reading"
-# recipe = "content"
 # dependencies = [ "templates" ]
-# source = "posts/*.markdown"
+# pattern = "posts/*.markdown"
+# recipe = "content"
 

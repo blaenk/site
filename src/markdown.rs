@@ -265,7 +265,7 @@ r#"<figure class="codeblock">
                     },
                     Err(e) => {
                         if let ::std::io::ErrorKind::NotFound = e.kind() {
-                            println!("[PYGMENTS] cache miss {}", digest);
+                            info!("[PYGMENTS] cache miss {}", digest);
 
                             let lang = zmq::Message::from_slice(lang.as_bytes()).unwrap();
                             self.socket.send_msg(lang, zmq::SNDMORE).unwrap();

@@ -252,8 +252,8 @@ r#"<figure class="codeblock">
 
                 // println!("code hash: {}", digest);
 
-                let cache = format!("cache/{}", digest);
-                diecast::support::mkdir_p("cache/").unwrap();
+                let cache = format!("cache/pygments/{}", digest);
+                diecast::support::mkdir_p("cache/pygments/").unwrap();
 
                 match File::open(&cache) {
                     Ok(mut f) => {

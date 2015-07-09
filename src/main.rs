@@ -205,7 +205,7 @@ fn main() {
                 helpers::set_date,
                 markdown::markdown(context.clone()),
                 handle_if(is_pushable, websocket::pipe(ws_tx.clone())),
-                route::pretty]),
+                route::pretty]).threads(4),
             git::git,
             bind::each(chain![
                 handlebars::render(&templates, "note", view::post_template),

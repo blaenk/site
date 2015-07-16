@@ -28,11 +28,13 @@ extern crate chrono;
 extern crate rss;
 extern crate zmq;
 extern crate sha1;
+extern crate syncbox;
 
 use std::process::{Command, Child};
 use std::sync::{Arc, Mutex};
 
 use time::PreciseTime;
+use syncbox::ThreadPool;
 
 use diecast::{Rule, Bind, Item};
 use diecast::command;
@@ -67,10 +69,29 @@ fn is_pushable(item: &Item) -> bool {
     .unwrap_or(false)
 }
 
+// TODO
+//
+// thread budget:
+//
+// total overall: 20
+//
+// total site: 12
+//
+// * websocket::init [2]
+// * evaluator [4]
+// * each pool [4]
+// * zmq (zmq::Context::socket; src/markdown.rs:193; zmq/src/lib.rs:270) [2]
+//
+// total separate: 8
+// * subtract: pygments [6]
+// * subtract: py-zmq [2
+
 fn main() {
     env_logger::init().unwrap();
 
     let mut pig_handle = pig();
+
+    // initialize_pool!(4).unwrap();
 
     let context = Arc::new(Mutex::new(zmq::Context::new()));
 
@@ -85,11 +106,13 @@ fn main() {
     // work-around: make websocket cloneable
     let ws_tx = websocket::init();
 
+    let pool = bind::PooledEach::new(ThreadPool::fixed_size(2));
+
     let templates =
         Rule::named("templates")
         .pattern(glob!("templates/*.html"))
         .handler(chain![
-            bind::each(item::read),
+            pool.each(item::read),
             handlebars::register_templates])
         .build();
 
@@ -103,7 +126,7 @@ fn main() {
             "favicon.png",
             "CNAME"
         ))
-        .handler(bind::each(chain![route::identity, item::copy]))
+        .handler(pool.each(chain![route::identity, item::copy]))
         .build();
 
     let scss =
@@ -130,9 +153,9 @@ fn main() {
         .depends_on(&templates)
         .pattern(glob!("posts/*.markdown"))
         .handler(chain![
-            bind::each(chain![item::read, metadata::toml::parse]),
+            pool.each(chain![item::read, metadata::toml::parse]),
             bind::retain(helpers::publishable),
-            bind::each(chain![
+            pool.each(chain![
                 helpers::set_date,
                 markdown::markdown(context.clone()),
                 handle_if(is_pushable, websocket::pipe(ws_tx.clone())),
@@ -149,7 +172,7 @@ fn main() {
                         .collect())
             }),
             git::git,
-            bind::each(chain![
+            pool.each(chain![
                 handlebars::render(&templates, "post", view::post_template),
                 handlebars::render(&templates, "layout", view::layout_template),
                 item::write]),
@@ -167,7 +190,7 @@ fn main() {
         .depends_on(&templates)
         .handler(chain![
             bind::create("index.html"),
-            bind::each(chain![
+            pool.each(chain![
                 handlebars::render(&templates, "index", view::posts_index_template),
                 handlebars::render(&templates, "layout", view::layout_template),
                 item::write])])
@@ -178,15 +201,15 @@ fn main() {
         .pattern(glob!("pages/*.markdown"))
         .depends_on(&templates)
         .handler(chain![
-            bind::each(chain![
+            pool.each(chain![
                 item::read,
                 metadata::toml::parse]),
             bind::retain(helpers::publishable),
-            bind::each(chain![
+            pool.each(chain![
                 markdown::markdown(context.clone()),
                 handle_if(is_pushable, websocket::pipe(ws_tx.clone())),
                 route::pretty_page]),
-            bind::each(chain![
+            pool.each(chain![
                 handlebars::render(&templates, "page", view::post_template),
                 handlebars::render(&templates, "layout", view::layout_template),
                 item::write])])
@@ -197,17 +220,17 @@ fn main() {
         .pattern(glob!("notes/*.markdown"))
         .depends_on(&templates)
         .handler(chain![
-            bind::each(chain![
+            pool.each(chain![
                 item::read,
                 metadata::toml::parse]),
             bind::retain(helpers::publishable),
-            bind::each(chain![
+            pool.each(chain![
                 helpers::set_date,
                 markdown::markdown(context.clone()),
                 handle_if(is_pushable, websocket::pipe(ws_tx.clone())),
-                route::pretty]).threads(4),
+                route::pretty]),
             git::git,
-            bind::each(chain![
+            pool.each(chain![
                 handlebars::render(&templates, "note", view::post_template),
                 handlebars::render(&templates, "layout", view::layout_template),
                 item::write]),
@@ -224,7 +247,7 @@ fn main() {
         .depends_on(&templates)
         .handler(chain![
             bind::create("notes/index.html"),
-            bind::each(chain![
+            pool.each(chain![
                 handlebars::render(&templates, "index", view::notes_index_template),
                 handlebars::render(&templates, "layout", view::layout_template),
                 item::write])])
@@ -236,7 +259,7 @@ fn main() {
         .depends_on(&posts)
         .handler(chain![
             helpers::tag_index,
-            bind::each(chain![
+            pool.each(chain![
                 handlebars::render(&templates, "tags", view::tags_index_template),
                 handlebars::render(&templates, "layout", view::layout_template),
                 item::write])])
@@ -250,14 +273,14 @@ fn main() {
                 "Blaenk Denum",
                 "http://www.blaenkdenum.com",
                 helpers::rss_handler),
-            bind::each(item::write)])
+            pool.each(item::write)])
         .build();
 
     let not_found =
         Rule::named("404")
         .depends_on(&templates)
         .pattern("404.html")
-        .handler(bind::each(chain![
+        .handler(pool.each(chain![
             item::read,
             route::identity,
             handlebars::render(&templates, "layout", view::layout_template),

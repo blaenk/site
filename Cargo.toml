@@ -17,6 +17,7 @@ chrono = "*"
 rss = "*"
 zmq = "*"
 sha1 = "*"
+syncbox = "*"
 
 [dependencies.diecast]
 path = "../diecast"

@@ -3,6 +3,10 @@ name = "site"
 version = "0.1.0"
 authors = ["Jorge Israel Peña <jorge.israel.p@gmail.com>"]
 
+[profile.dev]
+opt-level = 1
+codegen-units = 4
+
 [dependencies]
 toml = "*"
 glob = "*"

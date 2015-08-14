@@ -66,7 +66,7 @@ fn pig() -> Child {
 fn is_pushable(item: &Item) -> bool {
     item.extensions.get::<metadata::toml::Metadata>()
     .and_then(|m| m.lookup("push").and_then(toml::Value::as_bool))
-    .unwrap_or(false)
+    .unwrap_or(true)
 }
 
 // TODO

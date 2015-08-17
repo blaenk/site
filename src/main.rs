@@ -110,29 +110,32 @@ fn main() {
 
     let templates =
         Rule::named("templates")
-        .pattern(glob!("templates/*.html"))
         .handler(chain![
+            bind::select(glob!("templates/*.html")),
             pool.each(item::read),
             handlebars::register_templates])
         .build();
 
     let statics =
         Rule::named("statics")
-        .pattern(or!(
-            glob!("images/**/*"),
-            glob!("images/**/*"),
-            glob!("static/**/*"),
-            glob!("js/**/*"),
-            "favicon.png",
-            "CNAME"
-        ))
-        .handler(pool.each(chain![route::identity, item::copy]))
+        .handler(chain![
+            bind::select(or!(
+                glob!("images/**/*"),
+                glob!("images/**/*"),
+                glob!("static/**/*"),
+                glob!("js/**/*"),
+                "favicon.png",
+                "CNAME")),
+            pool.each(chain![
+                route::identity,
+                item::copy])])
         .build();
 
     let scss =
         Rule::named("scss")
-        .pattern(glob!("scss/**/*.scss"))
-        .handler(scss::scss("scss/screen.scss", "css/screen.css"))
+        .handler(chain![
+            bind::select(glob!("scss/**/*.scss")),
+            scss::scss("scss/screen.scss", "css/screen.css")])
         .build();
 
     // let scss =
@@ -151,8 +154,8 @@ fn main() {
     let posts =
         Rule::named("posts")
         .depends_on(&templates)
-        .pattern(glob!("posts/*.markdown"))
         .handler(chain![
+            bind::select(glob!("posts/*.markdown")),
             pool.each(chain![item::read, metadata::toml::parse]),
             bind::retain(helpers::publishable),
             pool.each(chain![
@@ -198,9 +201,9 @@ fn main() {
 
     let pages =
         Rule::named("pages")
-        .pattern(glob!("pages/*.markdown"))
         .depends_on(&templates)
         .handler(chain![
+            bind::select(glob!("pages/*.markdown")),
             pool.each(chain![
                 item::read,
                 metadata::toml::parse]),
@@ -217,9 +220,9 @@ fn main() {
 
     let notes =
         Rule::named("notes")
-        .pattern(glob!("notes/*.markdown"))
         .depends_on(&templates)
         .handler(chain![
+            bind::select(glob!("notes/*.markdown")),
             pool.each(chain![
                 item::read,
                 metadata::toml::parse]),
@@ -279,12 +282,13 @@ fn main() {
     let not_found =
         Rule::named("404")
         .depends_on(&templates)
-        .pattern("404.html")
-        .handler(pool.each(chain![
-            item::read,
-            route::identity,
-            handlebars::render(&templates, "layout", view::layout_template),
-            item::write]))
+        .handler(chain![
+            bind::select("404.html"),
+            pool.each(chain![
+                item::read,
+                route::identity,
+                handlebars::render(&templates, "layout", view::layout_template),
+                item::write])])
         .build();
 
     let rules = vec![

@@ -17,9 +17,17 @@ pub struct Markdown {
 impl Handle<Item> for Markdown {
     fn handle(&self, item: &mut Item) -> diecast::Result<()> {
         use std::collections::HashMap;
+        use std::fs::File;
+        use std::io::{self, Read, Write};
         use regex::{Regex, Captures};
         use hoedown::Render;
         use hoedown::renderer::html;
+        use sha1;
+
+        let mut hash = sha1::Sha1::new();
+        hash.update(item.body.as_bytes());
+
+        let digest = hash.hexdigest();
 
         let pattern = Regex::new(r"(?m)^\*\[(?P<abbr>[^]]+)\]: (?P<full>.+)$").unwrap();
         let mut abbrs = HashMap::new();
@@ -88,11 +96,37 @@ impl Handle<Item> for Markdown {
 
         let enabled = true;
 
-        let mut renderer = self::renderer::Renderer::new(abbrs, align, enabled, self.context.clone());
+        let mut renderer =
+            self::renderer::Renderer::new(abbrs, align, enabled, self.context.clone());
 
         trace!("constructed renderer");
 
-        let buffer = renderer.render(&document);
+        let cache = format!("cache/markdown/{}", digest);
+        diecast::support::mkdir_p("cache/markdown/").unwrap();
+
+        let buffer =
+            match File::open(&cache) {
+                Ok(mut f) => {
+                    use hoedown::Buffer;
+                    info!("[MARKDOWN] cache hit {}", digest);
+                    let mut contents = vec![];
+                    f.read_to_end(&mut contents).unwrap();
+                    Buffer::from(&contents[..])
+                },
+                Err(e) => {
+                    if let ::std::io::ErrorKind::NotFound = e.kind() {
+                        info!("[MARKDOWN] cache miss {}", digest);
+                        let mut f = File::create(&cache).unwrap();
+                        let buf = renderer.render(&document);
+                        f.write_all(&buf).unwrap();
+                        info!("[MARKDOWN] wrote cache {}", digest);
+                        buf
+                    } else {
+                        // TODO use Err
+                        panic!("[MARKDOWN] SOME ERROR");
+                    }
+                },
+            };
 
         trace!("rendered markdown");
 

@@ -25,7 +25,7 @@ Then, in WWDC 2014, Apple announced [Swift]. It appears to be influenced by Obje
 
 An interesting characteristic of Swift is that code written at the global scope is considered the entry point of the program.
 
-* toc
+::toc::
 
 # Basics
 

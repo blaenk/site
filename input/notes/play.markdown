@@ -14,7 +14,7 @@ So I've [learned] Scala the language, and now I think it's time to learn [Play],
 [Play]: http://www.playframework.com/
 [API documentation]: http://www.playframework.com/documentation/2.0.x/api/scala/index.html#package
 
-* toc
+::toc::
 
 # Command
 

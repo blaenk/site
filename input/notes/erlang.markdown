@@ -14,7 +14,7 @@ Now I'm back and would like to pick up Erlang and its OTP library. Even if I don
 
 [Scala]: /notes/scala/
 
-* toc
+::toc::
 
 # Modules
 

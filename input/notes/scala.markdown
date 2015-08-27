@@ -12,7 +12,7 @@ I've been meaning to learn Scala for some time. Haskell has really left me wanti
 
 *[JVM]: Java Virtual Machine
 
-* toc
+::toc::
 
 # Basics
 

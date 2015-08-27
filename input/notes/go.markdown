@@ -14,7 +14,7 @@ I've been meaning to learn Go for a while now. I've recently come to renew an in
 [go tour]: http://tour.golang.org
 [effective go]: http://golang.org/doc/effective_go.html
 
-* toc
+::toc::
 
 # Packages
 

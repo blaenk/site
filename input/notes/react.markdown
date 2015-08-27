@@ -12,7 +12,7 @@ show = true
 
 [React]: http://facebook.github.io/react/
 
-* toc
+::toc::
 
 # Components
 

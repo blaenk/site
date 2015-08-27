@@ -20,7 +20,7 @@ I didn't have an overwhelming reaction to Scala, so I decided to give Clojure a 
 [Clojure Programming]: http://amzn.com/1449394701
 [Clojure for the Brave and True]: http://www.braveclojure.com/
 
-* toc
+::toc::
 
 # Homoiconicity
 

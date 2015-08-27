@@ -21,7 +21,7 @@ On the client-side, there's the venerable [ClojureScript] which I consider to be
 [React]: http://facebook.github.io/react/
 [remarkable performance increases]: http://swannodette.github.io/2013/12/17/the-future-of-javascript-mvcs/
 
-* toc
+::toc::
 
 # Architecture {#web-application-architecture}
 

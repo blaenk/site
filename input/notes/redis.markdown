@@ -17,7 +17,7 @@ There's also a [guide on MDN] with suggestions on how to use Redis.
 
 [guide on MDN]: https://developer.mozilla.org/en-US/docs/Mozilla/Redis_Tips
 
-* toc
+::toc::
 
 # Strings
 

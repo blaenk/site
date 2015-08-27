@@ -5,7 +5,7 @@ excerpt = "Directories and Links in the POSIX standards"
 comments = false
 ---
 
-* toc
+::toc::
 
 Notes for chapter 18 concerning directories and links.
 

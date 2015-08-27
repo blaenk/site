@@ -22,7 +22,7 @@ Despite this negative perception of Java by many, I've always held a certain res
 
 These notes are a recap of Java and also cover Java 8.
 
-* toc
+::toc::
 
 # JVM
 

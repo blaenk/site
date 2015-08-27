@@ -36,7 +36,7 @@ The GDB session samples provided in this page are highlighted with a basic GDB [
 
 [Pygments lexer]: https://github.com/snarez/gdb_lexer
 
-* toc
+::toc::
 
 # Workflow
 

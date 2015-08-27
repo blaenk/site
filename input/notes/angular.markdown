@@ -21,7 +21,7 @@ My main resources include the [tutorial] and a variety of other resources such a
 [tutorial]: http://docs.angularjs.org/tutorial/step_00
 [egghead]: https://egghead.io/lessons
 
-* toc
+::toc::
 
 # Bootstrapping
 

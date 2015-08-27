@@ -18,7 +18,7 @@ My main resources are the [tutorial] and [manual], but there are [many more]. As
 [many more]: http://doc.rust-lang.org/
 [Rust by Example]: http://rustbyexample.com/
 
-* toc
+::toc::
 
 # Types
 

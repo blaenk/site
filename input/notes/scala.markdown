@@ -1132,8 +1132,6 @@ buf.toList
 
 An `ArrayBuffer` is similar to an `std::vector` in that it automatically resizes itself to fit its contents.
 
-## Implementation {#list-implementation}
-
 Lists are implemented as a covariant, abstract class `List` for which there are subclasses `::` and `Nil`. The covariant property allows a `List[Int]` to be assigned to a `List[Any]`:
 
 ``` scala
@@ -1218,8 +1216,6 @@ yield n
 ```
 
 Generators are of the form `pat <- expr` where the pattern `pat` is matched for each element in the list. If the match succeeds, the variables are bound to the pattern components. If the match fails, the element is discarded from iteration.
-
-## Translation {#for-expression-translation}
 
 The following are examples of how `for` expressions are translated into combinations of `map`, `flatMap`, and `withFilter`.
 
@@ -1424,15 +1420,11 @@ Iterators are affected by operations on them, such that for example a `map` call
 
 A `BufferedIterator` provides an extra method `head` that returns its first element without advancing the iterator.
 
-## Java Interop {#java-interop-collections}
-
 Scala provides implicit conversions for the major collection types in Java through the `JavaConversions` object.
-
-## Architecture {#collections-architecture}
 
 Most of the collection operations are implemented in terms of traversals and builders.
 
-### Builders {#builders}
+### Builders
 
 Builders are in charge of building new collections. The `result` method yields the collection that has been constructed thus far, and the builder can be reset to a clean slate to construct another collection with the `clear` method. The `mapResult` method can be used to return a result of a different type.
 
@@ -1840,7 +1832,7 @@ The `equals` method should implement an equivalence relation on non-null objects
 
 * `x.equals(null)` should return false
 
-## Subtypes {#subtype-equality}
+## Subtype Equality
 
 There's a mistake that can be made given a subtype that redefines its `equals` method. If a supertype is compared to a subtype and appears on the left hand side, it would invoke the supertype's `equals` method which would _only_ compare those properties common to both types, meaning that the equality would not be symmetric.
 

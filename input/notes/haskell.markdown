@@ -367,7 +367,7 @@ module Foo (
 -- that spans many lines
 ```
 
-## Markup {#haddock-markup}
+## Haddock Markup
 
 One or more blank lines separates two paragraphs. Emphasis is denoted by surrounding text with a forward-slash `/`, whereas bold text is denoted by surrounding the text with two underscores `__` Monospace text is denoted by surrounding it with `@`. Other markup is valid inside each of these, for example, `@'f'` will hyperlink the identifier `f` within the monospace text.
 
@@ -411,7 +411,7 @@ It's possible to denote REPL examples with `>>>`, followed by the result.
 
 Unordered lists are possible by simply preceding the paragraph with a `*` or `-`. Ordered lists are possible by preceding each item with `(n)` or `n.`.
 
-## Options {#haddock-options}
+## Haddock Options
 
 Haddock accepts some comma-separated list of options that affect how it generates documentation for that module, much like `LANGUAGE` pragmas in Haskell.
 

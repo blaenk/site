@@ -539,7 +539,7 @@ string&& move(string &str);
 
 The actual `static_cast` is what yields and returns an rvalue-reference.
 
-### Type-Matching {#rvalue-ref-type-matching}
+### Type-Matching
 
 An rvalue-reference can be converted to a `const` reference. This means that if a class defines copy constructor but not a move constructor and as a result the compiler [defines the move constructor as deleted](#move-operation-synthesis), rvalue-references will type match with `const` references and as a result, rvalue-reference arguments will use the copy constructor seamlessly.
 
@@ -614,7 +614,7 @@ struct A {
 
 In this case, if an rvalue-reference is used with the assignment operator, then the `rhs` variable is created using the move-constructor which simply allows `rhs` to steal the `B` pointer from the rvalue. Once inside the assignment operator function body, the current instance steals the `B` pointer from the `rhs` copy. The `rhs` copy is automatically destroyed when it goes out of scope.
 
-## Synthesis {#move-operation-synthesis}
+## Synthesis
 
 Unlike the copy operations that are _always_ synthesized if they're not otherwise defined or deleted, the compiler _only_ synthesizes move operations if the class doesn't define any copy operations and if every non-static data member is moveable. Moveable members include built-in types and those that define a move operation.
 

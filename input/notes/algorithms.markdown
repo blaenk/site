@@ -193,7 +193,7 @@ private void sort(Comparable[] seq, int lo, int hi) {
 }
 ```
 
-#### Improvements {#merge-sort-improvements}
+#### Merge Sort Improvements
 
 There are a couple of improvements that can be made to top-down merge sort:
 
@@ -282,7 +282,7 @@ private int partition(Comparable[] seq, int lo, int hi) {
 }
 ```
 
-### Improvements {#quick-sort-improvements}
+### Quick Sort Improvements
 
 * **use insertion sort for small sub-arrays**: Adding a cutoff size for which to apply insertion sort to small sub-arrays can improve the performance of the algorithm.
 
@@ -353,22 +353,16 @@ private void sort(Comparable[] seq, int lo, int hi) {
 
 A priority queue is an abstract data type that allows adding elements and retrieving the smallest or largest element. Priority queues are useful for an unbounded sequence for which we want to retrieve the $M$ smallest elements at any given moment.
 
-### Data Structure {#priority-queue-data-structure}
-
 The data structure commonly used to back a priority queue is an array, with the first element `seq[0]` unused, embedding the contents of a **complete binary tree** in level-order that maintains two invariants:
 
 1. the parent of $k$ is $k / 2$
 2. the children of $k$ are at $2k$ and $2k + 1$
 
-#### Insertion {#priority-queue-insertion}
+### Priority Queue Insertion
 
-<div class="right">
-
-Case   Growth
------  --------
-Worst  $O(\lg{n})$
-
-</div>
+|Case    |Growth|
+|:-----  |:--------|
+|Worst   |$O(\lg{n})$|
 
 To insert into the heap:
 
@@ -385,7 +379,7 @@ private void swim(Comparable[] seq, int k) {
 }
 ```
 
-#### Removal {#priority-queue-removal}
+### Priority Queue Removal
 
 <div class="right">
 
@@ -504,7 +498,7 @@ This is the classical data structure consisting of a binary tree where each node
 
 The performance of BSTs greatly depends on the shape of the tree, which is a result of the distribution and order of the elements that are input.
 
-### Traversal {#binary-search-tree-traversal}
+### BST Traversal
 
 There are three main forms of traversing a BST. The _order_ refers to the order in which the current node $C$ is visited, that is, the time at which $C$ is visited is the only thing that varies, so $L$ is always visited before $R$.
 
@@ -514,7 +508,7 @@ pre-order  $C \to L \to R$
 in-order   $L \to C \to R$
 post-order $L \to R \to C$
 
-### Deletion {#binary-search-tree-deletion}
+### BST Deletion
 
 Most operations such as insertion and lookup are very straightforward. Deletion is somewhat more involved.
 
@@ -543,7 +537,7 @@ void replace_node(tree *t, node *u, node *v) {
 }
 ```
 
-## 2-3 Search Trees {#two-three-search-trees}
+## 2-3 Search Trees
 
 While **2-3 search tree** can be implemented, they're mainly used to help understand the implementation of [Red-Black Trees](#red-black-trees), which have better performance.
 
@@ -557,7 +551,7 @@ A **2-3 tree** is either empty or:
     * middle for keys between the node's keys
     * right for keys larger than the right key
 
-### Searching {#two-three-tree-searching}
+### 2-3 Tree Searching
 
 Searching follows simply from the structure of the tree.
 
@@ -565,7 +559,7 @@ Searching follows simply from the structure of the tree.
 2. if not, recurse into the appropriate link
 3. **search miss** if a null link is reached
 
-### Insertion {#two-three-tree-insertion}
+### 2-3 Tree Insertion
 
 Insertion needs to take into consideration the fact that the tree must remain balanced after the operation. The general procedure is that the key is searched for until a node with a null link is reached at the bottom of the tree.
 
@@ -607,7 +601,7 @@ Worst   $O(2 \lg {n})$
 
 These properties allow red-black trees to be nearly balanced in even the worst case, allowing them more performance than regular BSTs. A very neat implementation is [available here](https://github.com/prasanthmadhavan/Red-Black-Tree/blob/master/rbtree.c).
 
-### Insertion {#red-black-tree-insertion}
+### Red-Black Tree Insertion
 
 The inserted node is attached in the same manner as for BSTs, except that every node is painted **red** on insertion. However, the inserted node has the possibility of violating any one of the 5 invariants, in which case the situation must be remedied. The following code representing the different cases that must be remedied are split into corresponding individual functions for didactic purposes.
 
@@ -714,7 +708,7 @@ void insert_case3c(node *n) {
 }
 ```
 
-### Deletion {#red-black-tree-deletion}
+### Red-Black Tree Deletion
 
 Deletion is handled similar to deletion in BSTs, but is a _lot_ more complicated because the tree has to be re-balanced if removing a node from the tree causes it to become unbalanced.
 
@@ -755,7 +749,7 @@ void delete(node *m, void *key) {
 }
 ```
 
-#### Balance {#red-black-tree-deletion-balance}
+#### Red-Black Tree Balance
 
 If the node is replaced with a successor, that successor is essentially removed from its original location, thereby possibly causing tree unbalanced. For this reason, the original successor node is removed using `delete_one_child` which re-balances the tree if necessary.
 
@@ -998,13 +992,13 @@ Linear probing is a form of open addressing that relies on empty entries in the 
     2. if the position is not empty and the key is equal, replace the value
     3. if the key is not equal, try the next entry and repeat until it can be inserted
 
-#### Deletion {#hash-table-deletion}
+#### Hash Table Deletion
 
 The insert and retrieval operations retrieve the index and perform the same operation until the entry is null. This has the consequence that deleting a node cannot _simply_ entail setting the entry to null, or it would prematurely stop the lookup of other keys.
 
 As a result, after setting the entry to null, every key to the right of the removed key also has to be removed, i.e. set to null, and then re-inserted into the hash table using the regular insertion operation.
 
-#### Load Factor {#hash-table-load-factor}
+#### Hash Table Load Factor
 
 The _load factor_ is defined by $\alpha = N/M$ where $\alpha$ is the percentage of table entries that are occupied, which can never be 1 since, if the table becomes full, a search miss would go into an infinite loop. Instead, array resizing is performed to ensure that the load factor is between $\frac {1} {8}$ and $\frac {1} {2}$.
 
@@ -1199,13 +1193,13 @@ The first vertex in a directed edge is the _head_ and the second vertex is the _
 
 Directed graphs can be represented by adjacency lists with the stricter property that if node $w$ is present in the adjacency list corresponding to $v$, it simply means that there is a directed edge $v \rightarrow w$, but not vice versa unless explicitly defined.
 
-### Reachability {#digraph-reachability}
+### Digraph Reachability
 
 The same exact implementation of reachability testing by DFS used in undirected graphs can be used for digraphs, and can be expanded to allow for reachability testing from multiple sources which has applications in regular expression matchers or mark-and-sweep garbage collection strategies, for example.
 
 Mark-and-sweep garbage collection (GC) strategies typically reserve one bit per object for the purpose of garbage collection. The GC then periodically _marks_ a set of potentially accessible objects by running digraph reachability tests on the graph of object references, then it _sweeps_ through all of the unmarked objects, collecting them for reuse for new objects.
 
-### Cycle Detection {#directed-cycle-detection}
+### Directed Cycle Detection
 
 A digraph with no directed cycles is known as a directed acyclic graph (DAG). For this reason, checking a digraph for directed cycles answers the question of whether the digraph is  DAG.
 
@@ -1490,7 +1484,7 @@ void visit(EdgeWeightedGraph G, int v) {
 }
 ```
 
-#### Eager Prim's Algorithm {#eager-prims}
+#### Eager Prim's Algorithm
 
 <div class="right">
 
@@ -1885,7 +1879,7 @@ $$ R = \frac {\text {# of constraints}} {\text {# of variables}} $$
 
 Strings have special properties which necessitate more efficient algorithms for sorting and searching. Other subjects concerning strings include tries, regular expressions, and data compression.
 
-## Sorting {#string-sorting}
+## String Sorting
 
 Certain properties of strings and alphabets can make for more efficient sorting algorithms for strings.
 
@@ -2147,7 +2141,7 @@ void collect(Node x, String prefix, String pattern, Queue<String> q) {
 }
 ```
 
-### Deletion {#trie-deletion}
+### Trie Deletion
 
 Deletion is a straightforward process in tries, simply involving finding the node and emptying its value. If this operation makes the node's parent's children all be null, then the same operation must be run on the parent.
 
@@ -2215,7 +2209,7 @@ Node put(Node x, String key, Value val, int d) {
 
 Searching for a string within another string is a very common operation that can also benefit from exploiting certain properties of strings.
 
-### Brute-Force {#brute-force-substring-search}
+### Brute-Force Substring Search
 
 The most straightforward approach is a brute-force algorithm where every character in the text is checked to see if the pattern's first character matches, and if so, checks to see if the second character in the pattern matches, and so on.
 
@@ -2244,7 +2238,7 @@ int search(String pattern, String text) {
 
 The Knuth-Morris-Pratt (KMP) substring search algorithm considers that it's probably not necessary to backtrack all the way to the beginning, since the characters along that stretch of the sequence have already been seen. One way to know the correct distance to backtrack is accomplished using a Deterministic Finite-State Automaton (DFA). There are other methods that either [build an NFA](http://algs4.cs.princeton.edu/53substring/KMPplus.java.html) or build a [partial-match table](http://www.inf.fh-flensburg.de/lang/algorithmen/pattern/kmpen.htm).
 
-#### DFA Composition {#kmp-dfa-composition}
+#### KMP DFA Composition
 
 The DFA is constructed such that every state corresponds to the characters in the patterns, storing their position in the pattern. At each state there exists a transition to the next state corresponding with the character consumed in the pattern. At each state there are also transitions going back to previous states, corresponding to backtracking on a pattern mismatch. Finally, the end state corresponds to the halt state and as such has no transitions leaving it.
 
@@ -2252,7 +2246,7 @@ The DFA is essentially represented by a table `dfa[c][j]` such that `c` correspo
 
 The value stored at `dfa[c][j]` therefore is the identifier of the state that the algorithm should jump to, which could mean either backtracking in the case of a mismatch when $C \neq pattern[J]$ or a progression to the next state when $C = pattern[J]$.
 
-#### Preventing Backtracking {#kmp-prevent-backtracking}
+#### Preventing Backtracking in KMP
 
 In a normal brute-force algorithm when a pattern matching a segment of the text starting at `t[i]` mismatches at position `j`, the entire pattern is re-checked starting on the character to the right: `t[i + 1]`, effectively having to re-check characters `t[i + 1]` to `t[i + j - 1]`.
 
@@ -2276,7 +2270,7 @@ However, this essentially means that the text segment from position 1 to 3 has t
 
 _Based on this observation_, we can conclude that at every state we can add transitions for mismatch cases based on the transitions that would be made for the equivalent mismatch that would occur at the state we would arrive at if we had fed the input `p[0 .. j - 1]` to the DFA. For this reason, a "pointer" to this state is kept at every iteration of the DFA construction, where each iteration is comprised of defining all transitions for a given state.
 
-#### DFA Construction {#kmp-dfa-construction}
+#### KMP DFA Construction
 
 Given the important observation above, the construction of the DFA is very straightforward. A pointer to a fall-back state `X` is maintained to appropriately establish transitions in the event of a mismatch.
 
@@ -2300,7 +2294,7 @@ void constructDFA(int[][] dfa, String pattern) {
 }
 ```
 
-#### KMP Search {#kmp-search}
+#### KMP Search
 
 Now that the DFA is constructed, a string can be searched easily. It simply iterates the text pointer on each iteration, while the pattern's pointer iterates based on the output from the DFA given the current text character as input. Iteration ends when the full length of either the text or the pattern is exhausted. If the full pattern was consumed then there was a match and the pointer to the start of the match is returned.
 
@@ -2320,7 +2314,7 @@ int search(String text, String pattern) {
 
 The Boyer-Moore substring search algorithm works by reading the pattern for comparison in reverse order while skipping through the text accordingly to facilitate this. When a comparison mismatches, the algorithm looks in a skip table to determine how far ahead to jump forward to begin the next match attempt. This behavior is known as the mismatched character heuristic.
 
-#### Skip Table {#bm-skip-table}
+#### BM Skip Table
 
 The mismatched character heuristic makes use of the aforementioned skip table. The table is indexed by a character from the alphabet and gives the index of its rightmost occurrence in the pattern, or -1 if not present. That very value defines how far ahead to skip if that character from the text caused the mismatch.
 
@@ -2338,7 +2332,7 @@ void constructSkipTable(String pattern) {
 }
 ```
 
-#### Search {#bm-search}
+#### BM Search
 
 The searching algorithm, as previously stated, iterates the text pointer `i` from left-to-right and the pattern pointer `j` right-to-left. If there is a mismatch with character `c` in the text, then one of three things can occur:
 
@@ -2452,7 +2446,7 @@ As the text input is fed to the NFA, on input character the following conditions
 
 The NFA is simply represented by the pattern string and a digraph representing the $\epsilon$-transitions.
 
-### Match Checking {#regex-match-checking}
+### Regex Match Checking
 
 From this information, it is possible to create an algorithm that determines whether a regular expression matches the provided text. Reachability is determined by a Directed DFS implementation [^directed_dfs]. This is straightforward because the DFS would only operate on the digraph, which only represents $\epsilon$-transitions.
 
@@ -2501,7 +2495,7 @@ Once the entire text has been consumed, the final iteration of the above loop wo
 }
 ```
 
-### NFA Construction {#regex-nfa-construction}
+### Regex NFA Construction
 
 The construction of the NFA is accomplished similar to how Djikstra's [shunting-yard algorithm](http://en.wikipedia.org/wiki/Shunting-yard_algorithm) works for evaluating mathematical expressions in infix notation by using two stacks: one for operators and another for values.
 
@@ -2706,7 +2700,7 @@ Miscellaneous algorithms follow.
 
 A B-Trees of order $M$ is a tree consisting of internal and external $k$-nodes each consisting of $k$ keys where $2 \leq k \leq M - 1$ at the root and $M/2 \leq k \leq M - 1$ at every other node. _Internal nodes_ contain copies of keys, where every key is greater than or equal to its parent node's associated key, but not greater than the parent node's next largest key. _External nodes_ are the leaves of the tree that associate keys with data. A _sentinel key_ is created to be less than all other keys and is the first key in the root node.
 
-### Insertion {#b-tree-insertion}
+### B-Tree Insertion
 
 To insert a key, the tree is recursively descended by following the link pertaining to the interval upon which the inserted key falls until an external node is reached. The tree is balanced on the way up the tree after the recursive call. If a node is full it is split into two $M/2$-nodes and attached to a parent 2-node (if at the root) or a $(k + 1)$-node where $k$ was the original size of the full node's parent. Whenever a node is split, the smallest key in the new node (or both smallest keys from both nodes if at the root) is inserted into the parent node.
 

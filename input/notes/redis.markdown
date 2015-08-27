@@ -73,9 +73,9 @@ The `HGETALL` command can get all of the key-value pairs, though it's possible t
 
 `HINCRBY`/`HINCRBYFLOAT` can be used to increment a value by a specific amount.
 
-# Publish/Subscribe {#publish-subscribe}
+# Publish-Subscribe
 
-Redis supports publish/subscribe operations. There are straightforward commands `SUBSCRIBE`, `UNSUBSCRIBE`, and `PUBLISH`. There are also (un)subscribe commands that apply to channels that match a given pattern: `PSUBSCRIBE` and `PUNSUBSCRIBE`.
+Redis supports publish-subscribe operations. There are straightforward commands `SUBSCRIBE`, `UNSUBSCRIBE`, and `PUBLISH`. There are also (un)subscribe commands that apply to channels that match a given pattern: `PSUBSCRIBE` and `PUNSUBSCRIBE`.
 
 If a client gets disconnected and a message is sent before it can reconnect, it will never see the message. For this reason, it may be desirable to use a message broker such as [RabbitMQ]. The `client-output-buffer-limit` option is used to configure the maximum client buffer size.
 

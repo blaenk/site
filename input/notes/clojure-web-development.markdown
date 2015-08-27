@@ -23,7 +23,7 @@ On the client-side, there's the venerable [ClojureScript] which I consider to be
 
 ::toc::
 
-# Architecture {#web-application-architecture}
+# Architecture
 
 A general architecture can be one where handlers, routes, models, and views are split off into their own namespaces. Routes relating to specific workflows would be defined in their own namespaces where that behavior is defined. The routes can then be combined into a single handler using Compojure's `routes` macro.
 
@@ -665,7 +665,7 @@ The [Domina] library is a ClojueScript interface to the DOM manipulation facilit
 [Domina]: https://github.com/levand/domina
 [cljs-ajax]: https://github.com/JulianBirch/cljs-ajax
 
-## Building {#building-clojurescript}
+## Building
 
 The [lein-cljsbuild] plug-in for lein can automate the compilation of ClojureScript by defining---in the <span class="path">project.clj</span> file---the namespaces to reference and the JavaScript files to output.
 

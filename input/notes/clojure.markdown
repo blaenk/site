@@ -163,7 +163,7 @@ Commas are considered whitespace by the reader. Whether to use them or not is a 
 (create-user {:name user, :email email})
 ```
 
-## Collections {#collection-literals}
+## Collection Literals
 
 There are literals for lists, vectors, maps, and sets. Note that since lists denote calls in Clojure, it's necessary to quote them to prevent their evaluation as a call.
 
@@ -379,7 +379,7 @@ The special form `do` evaluates all of the expressions provided to it in order a
   (+ a b))
 ```
 
-## Vars
+## Defining Vars
 
 The special form `def` defines or redefines a var with an optional value within the current namespace. Other forms implicitly create or redefine vars and are usually prefixed with `def` such as `defn` and `defn-`.
 
@@ -1348,7 +1348,7 @@ Refs are the coordinate reference type which ensure that multiple identities can
 
 See the section on [Software Transactional Memory](#software-transactional-memory) for more information.
 
-### Vars {#reference-types-vars}
+### Vars
 
 Vars are generally used implicitly in Clojure. Top-level functions and values are stored in vars, which are defined in the current namespace using the special form `def` or its derivatives, which also copies the metadata provided. [Recall](#symbols) that vars can be created with reader syntax `#'`, but they can also be explicitly created using the `var` function.
 
@@ -1369,7 +1369,7 @@ map
 ;= #<core$map ...>
 ```
 
-#### Private vars
+#### Private Vars
 
 Private vars can only be referred to using the fully qualified name when in another namespace and their value can only be manually dereferenced. They're created by providing the `:private` metadata key as true. The `defn-` form creates private functions.
 
@@ -1835,7 +1835,7 @@ Whereas function calls are provided their arguments already evaluated, macros ar
 
 Macros are expanded at compile time so the compiler can catch compile-time errors.
 
-## Debugging {#debugging-macros}
+## Debugging Macros
 
 It's easy to refer to vars within macros that aren't yet defined, and this would produce an error when the macro is actually used. This is because macros are expanded at compile time, at which time Clojure can't know if the symbol will refer to a var that has a defined value at runtime.
 

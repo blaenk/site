@@ -48,7 +48,7 @@ Together, $\cal A$ and $\cal H$ are known as the _learning model_.
 
 ## Perceptrons
 
-### Model {#perceptron-model}
+### Perceptron Model
 
 Given input $\def \feature {\mathbf x} \feature = (x_1, x_2, \dots, x_n)$:
 
@@ -80,7 +80,7 @@ $$
 h(x) = \sign(\weight \bullet \feature)
 $$
 
-### Learning Algorithm {#perceptron-learning-algorithm}
+### Perceptron Learning Algorithm
 
 **Given the perceptron**:
 
@@ -151,7 +151,7 @@ The problem so far is that the hypothesis $h$ is fixed, and for a given $h$, $\n
 
 Instead, to make it a learning process, then there needs to be no guarantee that $\nu$ will be small, and we need to choose from multiple $h$'s. To generalize the bin model to more than one hypothesis, we can use multiple bins. Out of the many bins that were created, the hypothesis responsible for the bin with the smallest $\mu$---the fraction of red marbles in the bin---is chosen.
 
-## Notation {#notation-for-learning}
+## Learning Notation
 
 Both $\mu$ and $\nu$ depend on which hypothesis $h$:
 
@@ -269,7 +269,7 @@ $$
 
 The dimension of $\mathrm {X}^\mathrm {T}$ is $(d + 1) \times N$, so the dimension of $\mathrm X$ is $N \times (d + 1)$. This means that even if $N$ is some large number, their product results in a small square matrix of dimensions $(d + 1) \times (d + 1)$. This means that the dimensions of $\mathrm {X}^\dagger$ will be $(d + 1) \times N$.
 
-### Algorithm {#linear-regression-algorithm}
+### Linear Regression Algorithm
 
 The algorithm for linear regression is therefore:
 
@@ -281,7 +281,7 @@ $$
                 —\ x_2^{\mathrm {T}}\ — \\
                 \vdots \\
                 —\ x_n^{\mathrm {T}}\ —
-              \end{bmatrix},\ 
+              \end{bmatrix},\
 \mathrm {y} = \begin{bmatrix}
                 y_1 \\
                 y_2 \\
@@ -293,7 +293,7 @@ $$
 2. compute the pseudo inverse $\mathrm {X}^\dagger = \left( \mathrm {X}^{\mathrm {T}} \mathrm {X} \right)^{-1} \mathrm {X}^{\mathrm {T}}$
 3. return the weight vector $\mathrm {w} = \mathrm {X}^\dagger \mathrm {y}$
 
-### Classification {#linear-regression-for-classification}
+### Linear Regression for Classification
 
 Linear regression learns a real-valued function $y = f(x) \in \mathbb {R}$. However, binary-valued functions are also real-valued: $\pm 1 \in \mathbb {R}$. Therefore, we can use linear regression to find $\mathrm w$ where:
 
@@ -503,7 +503,7 @@ $$ P(\xpoint) P(y \mid \xpoint) \equiv P(\xpoint \cap y) $$
 
 This merging mixes two concepts. $P(\xpoint \cap y)$ is not a target distribution for supervised learning. The target distribution that we are actually trying to learn is $P(y \mid \xpoint)$.
 
-# Training vs. Testing {#training-vs-testing}
+# Training vs. Testing
 
 Learning is feasible because it is likely that:
 
@@ -523,8 +523,6 @@ Learning thus reduces to two questions:
 
 1. Can we make sure that $\outsample(g)$ is close enough to $\insample(g)$?
 2. Can we make $\insample(g)$ small enough?
-
-## Difference {#difference-between-testing-and-training}
 
 There is a difference between training and testing. It's analogous to when one takes a practice exam compared to when one takes a final exam.
 
@@ -800,7 +798,7 @@ $$ B(N, k) \leq B(N - 1, k) + B(N - 1, k - 1) $$
 
 To define this recursive bound, we will have to compute the values of the bound for smaller values of $N$ and $k$.
 
-### Numerically {#numerical-bound-computation}
+### Numerical Derivation
 
 We can start doing this by filling out a table with the left hand side being $N$ and the top being $k$, where any element in the table specifies the maximum number of dichotomies for that combination $B(N, k)$. We begin doing this by filling out the bounds for when $k = 1$ and when $N = 1$.
 
@@ -818,12 +816,12 @@ $$ B(N, k) \leq B(N - 1, k) + B(N - 1, k - 1) $$
 
 We can take an example such as $B(3, 3)$. To get this value, we add $B(N - 1, k - 1) = B(2, 2) = 3$, with $B(N - 1, k) = B(2, 3) = 4$, resulting in $B(3, 3) = 7$.
 
-### Analytically {#analytical-bound-computation}
+### Analytical Derivation
 
 A more analytic solution for computing the bound is given by the theorem:
 
 $$
-\def \upperbound {\sum_{i = 0}^{k - 1} {N \choose i}} 
+\def \upperbound {\sum_{i = 0}^{k - 1} {N \choose i}}
 B(N, k) \leq \upperbound
 $$
 
@@ -935,7 +933,7 @@ The key observation here is that this statement is **independent of**:
 
 The only things that factor into this are the training examples, the hypothesis set, and the final hypothesis.
 
-## Perceptrons {#vc-dimension-of-perceptrons}
+## VC Dimension of Perceptrons
 
 We already know that $\vc = 3$ for $d = 2$ (2D). However, we would like to generalize this for any dimension. We will argue that $\vc = d + 1$. We prove this by showing that $\vc \leq d + 1$ and $\vc \geq d + 1$.
 
@@ -1050,7 +1048,7 @@ $$ \vc = d = 1 $$
 
 What is $d + 1$ in the perceptron? It is the number of parameters in the perceptron model: $w_0, w_1, \dots, w_d$. In essence, this means that when we have a higher number of parameters, we will have a higher $\vc$.
 
-## Interpretation {#vc-dimension-interpretation}
+## Interpretation of VC Dimension
 
 The parameters in the weight vector correspond to degrees of freedom that allow us to create a specific hypothesis. The number of parameters correspond to _analog_ degrees of freedom: varying any single parameter---which is itself continuous---yields an entirely new perceptron. The VC dimension translated these into _binary_ degrees of freedom, since we're only trying to get a different dichotomy.
 
@@ -1153,7 +1151,7 @@ $$
 \avghypo(\mathbf x) \approx \frac 1 K \sum_{k = 1}^K g^{(\mathcal D_k)}(\mathbf x)
 $$
 
-## Representation {#bias-variance-representation}
+## Bias-Variance Representation
 
 We will now decompose the expected error into two components, bias and variance:
 
@@ -1394,7 +1392,7 @@ And we want to learn $g$:
 
 $$ g(\mathbf x) = \theta(\mathbf w^{\mathrm T} \mathbf x) \approx f(\mathbf x) $$
 
-### Error Measure {#logistic-regression-error-measure}
+### Logistic Regression Error Measure
 
 We have established that for each data point $(\mathbf x, y)$, $y$ is generated by the probability $f(\mathbf x)$. The plausible error measure is based on _likelihood_, that is, we are going to grade different hypotheses according to the likelihood that they are actually the target that generated the data. In other words, we are going to assume that a given hypothesis is indeed the target function, and then we will determine how likely it is to get a given result from its corresponding feature vector. Expressed mathematically:
 
@@ -1442,7 +1440,7 @@ $$
 \end{align}
 $$
 
-### Learning Algorithm {#logistic-regression-learning-algorithm}
+### Logistic Regression Learning Algorithm
 
 Now that we have the learning model and error measure we can define the learning algorithm. Compared to the closed-form solution from the other two models, we will have to use an iterative solution called _gradient descent_, which is a general method for non-linear optimization.
 
@@ -1584,7 +1582,7 @@ We can take the dot product between the user and movie vector as a measure of ho
 
 $$ \mathbf e_{ij} = \left( r_{ij} - \sum_{k = 1}^K u_{ik} v_{jk} \right)^2 $$
 
-## Model {#neural-network-model}
+## Neural Network Model
 
 The perceptron model has a break point of 4 because it couldn't properly model situations such as the following:
 
@@ -1653,7 +1651,7 @@ $$
 
 The neural network is then constructed by applying the feature vector $\feature$ to the first layer in the neural network $x^{(0)}_1, \dots, x^{(0)}_{d^{(0)}}$ such that it eventually ends up in one scalar valued output from the last layer $\smash {x^{(L)}_1}$, which is the value that we will say that $h(\feature)$ produces.
 
-## Backpropagation {#neural-network-backpropagation}
+## Neural Network Backpropagation
 
 We will now apply stochastic gradient descent to our neural network. With SGD, whenever an example passes through the neural network, we will adjust all of the weights in the network in the direction of the negative of the gradient of that single example.
 
@@ -1992,7 +1990,7 @@ In neural networks, the term $\weightT \weight$ can be computed by considering a
 
 $$ \weightT \weight = \sum_{l = 1}^L \sum_{i = 0}^{d^{(l - 1)}} \sum_{j = 1}^{d^{(l)}} \left( \neuronweight \right)^2 $$
 
-### Variations {#variations-of-weight-decay}
+### Variations of Weight Decay
 
 Instead of having a fixed budget $C$ and having the sum of the squared weights being less than or equal to $C$, we could emphasize certain weights by using this regularizer:
 
@@ -2042,7 +2040,7 @@ If we choose a bad regularizer $\Omega$, we still have $\lambda$ that can save u
 
 Remember that the [$\tanh$](#tanh) function acts linear for small value ranges and binary for larger value ranges.
 
-### Weight Decay {#neural-network-weight-decay}
+### Neural Network Weight Decay
 
 If we use small weights, then the signal is constrained to the range that produces linear-like values, so every neuron would essentially be computing the linear function. With multiple hidden layers in a neural network, this essentially becomes a complex neural network that is computing a very simple linear function.
 
@@ -2050,7 +2048,7 @@ If weights are increased to the maximum, $\tanh$ outputs binary values, which re
 
 Given these two extremes, it's apparent that as weights are increased, the model produces more complex models. This represents a clear correspondence between the simplicity of the function being implemented and the size of the weights, which is properly represented by _weight decay_.
 
-### Weight Elimination {#neural-network-weight-elimination}
+### Neural Network Weight Elimination
 
 _Weight elimination_ works by remembering that the VC dimension of neural networks is more or less the number of weights, so it simply eliminates some of the weights by forcing them to be $0$, so that the number of free parameters decreases, as does the VC dimension, leading to a better chance of generalizing and less chance of overfitting.
 
@@ -2060,7 +2058,7 @@ $$
 \Omega(\weight) = \sum_{i,j,l} \frac {\left( \neuronweight \right)^2} {\beta^2 + \left( \neuronweight \right)^2}
 $$
 
-### Early Stopping {#neural-network-early-stopping}
+### Early Stopping in Neural Networks
 
 Recall that [early stopping](#early-stopping) consists of stopping before $\outsample$ begins to increase. This is regularization through the optimizer. The point at which to stop is determined through [validation](#validation).
 
@@ -2134,7 +2132,7 @@ Then we will use $\trainingset$ to learn $g_m^-$ for each model. The hypothesis 
 
 <img src="/images/notes/machine-learning/validation/model-selection.png" class="center">
 
-## Bias {#validation-bias}
+## Validation Bias
 
 The bias is introduced because we chose the model $\mathcal H_{m^*}$ using $\validationset$, so $\valerror(g_{m^*}^-)$ is a biased estimate of $\outsample(g_{m^*}^-)$. The following graph depicts two models to choose between, one being 2nd-order and the other 5th-order polynomials. It's not shown which model was chosen.
 
@@ -2225,7 +2223,7 @@ From this graph it seems that the best number of features to use is 6. Without v
   <img src="/images/notes/machine-learning/validation/with-validation.png">
 </div>
 
-## Optimization {#cross-validation-optimization}
+## Cross-Validation Optimization
 
 When we use leave one out, we have $N$ training sessions on $N - 1$ points each. We would like to use more points for validation. We take the data and break it into different folds, such as 10 folds, making it 10-fold cross-validation. We use one fold for validation and the other 9 for training. In other words, it's similar to leave one out except instead of leaving one point out we leave out a chunk/fold.
 
@@ -2439,7 +2437,7 @@ We can also solve for the bias $b$ corresponding to threshold term using ***any*
 
 $$y_n(\weightT \feature_n + b) = 1$$
 
-## Non-Linear Transformations {#svm-non-linear-transformations}
+## SVM Non-Linear Transformations
 
 Although all of this so far has only handled situations where the data is linearly separable, it's possible to attempt to solve it using non-linear transformations in the $\mathcal Z$-space as we did with perceptrons.
 
@@ -2619,7 +2617,7 @@ There are two main kinds of non-separable situations. Slightly non-separable (le
 
 Slightly-separable data can be handled by soft-margin SVM, while seriously non-separable data can be handled by kernel functions. In real world data sets, however, it's likely that there will be elements of both: built-in non-linearity with outliers. For this reason, we would be combining kernels with soft-margin SVMs in almost all of the problems that we would encounter.
 
-### Error Measure {#soft-margin-svm-error-measure}
+### Soft-Margin SVM Error Measure
 
 The error measure will be defined by a so-called margin violation, which could be the point within the margin in the image below. Even though it is correctly classified by the hyperplane, it's considered a _margin violation_ because it falls within the margin.
 
@@ -2633,7 +2631,7 @@ The total violation made by a derived SVM can be expressed as the sum of the sla
 
 $$\text {Total violation } = \sum_{n = 1}^N \xi_n$$
 
-### Optimization {#soft-margin-svm-optimization}
+### Soft-Margin SVM Optimization
 
 The previous optimization that we performed was to minimize the following quantity, which had the effect of maximizing the margin:
 
@@ -2779,7 +2777,7 @@ The image on the right shows the effect of choosing a larger $\gamma$. The inter
 
 It's apparent that $\gamma$ has an effect on the performance of interpolation, and that it seems to depend on the data set in question, specifically, how far apart the points are. We will cover the choice of $\gamma$ later on.
 
-## Classification {#rbf-classification}
+## RBF Classification
 
 The model described above was a regression model, where we considered the output to be real-valued which was matched with the target output which was also real-valued. It's possible to use RBFs for classification, however, by modifying the hypothesis function to be:
 
@@ -2815,7 +2813,7 @@ $$h(\feature) = \sum_{k = 1}^K w_k \exp\left(-\gamma\ \lVert \feature - \mu_k \r
 
 This hypothesis function now reflects the fact that every point $\feature_n$ is being compared against every center $\mathbf \mu_k$. We now have to determine how to choose the centers $\mathbf \mu_k$ and the weights $w_k$.
 
-### K-Means Clustering {#k-center-rbf-center-selection}
+### K-Means Clustering
 
 To choose the $K$ centers, we are going to choose the centers as representative of the data inputs, that is, a representative center will exist for every cluster of data points. Such representative centers would be achieved by minimizing the distance between $\feature_n$ and the **closest** center $\mathbf \mu_k$. This is called _K-means clustering_ because the center of a cluster will end up being the mean of the points in that cluster.
 
@@ -2852,7 +2850,7 @@ Notice that since we cluster values without looking at the label $y_n$, we can h
 
 <img src="/images/notes/machine-learning/radial-basis-functions/rbf-centers.png" class="center">
 
-### Calculating Weights {#rbf-centers-calculating-weights}
+### RBF Calculating Weights
 
 Now that we have determined the centers we can determine the weights. Again the hypothesis function was defined as:
 
@@ -2898,7 +2896,7 @@ In this case the "features" are $\smash {\basis {\feature} {\center_k}}$. The no
 
 A bias term ($b$ or $w_0$) is often added at the final layer.
 
-### Neural Network Comparison {#rbf-neural-network-comparison}
+### RBF vs. Neural Networks
 
 A two-layer neural network can be compared to an RBF network.
 
@@ -2933,7 +2931,7 @@ The performance of both models can be observed in the image below. It's apparent
 
 <img src="/images/notes/machine-learning/radial-basis-functions/rbf-vs-svm.png" class="center">
 
-## Regularization {#rbf-regularization}
+## RBF Regularization
 
 RBFs can be derived based purely on regularization. Take a 1D function with many data points and we want to inter/extra-polate between the points in order to get the whole function. With regularization there are usually two terms: one two minimize $\insample$ and the regularization term.
 
@@ -3116,7 +3114,7 @@ The key problem is that we're matching a ***particular*** data set too well; we'
 
 For example, the observation that, in the original data set, whenever a particular pair of points is close, there is always another point on the same line far away---this is clearly an idiosyncrasy of the data set, so that it would be pointless to try to find it in another data set from the same distribution since we may assume that if doesn't exhibit this same quality, it must be from another distribution. The truth is that the data set is generated from the same distribution, it's just that we got too used to the data set to the point where we were fitting the noise.
 
-### Remedies {#data-snooping-remedies}
+### Data Snooping Remedies
 
 There are two remedies to data snooping: avoiding it or accounting for it. Avoiding it naturally requires very strict discipline. Accounting for data snooping concerns keeping track of how much data contamination has occurred on each data set. The most vulnerable part is looking at the data, because it's very difficult to model ourselves and say what is the hypothesis set that we explored in order to come up with a particular model by looking at the data.
 

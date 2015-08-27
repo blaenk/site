@@ -9,7 +9,7 @@ comments = false
 
 # General Usage
 
-CMake directives are stored in files named `CMakeLists.txt`{.path}, and there is usually one such file present for each sub-directory in the source tree, each one conventionally containing directives pertinent to the files in that directory. These separate CMake files are then "merged together" using the `add_subdirectory` directive, which immediately makes the CMake interpreter load and evaluate the CMake file in the provided directory.
+CMake directives are stored in files named <span class="path">CMakeLists.txt</span>, and there is usually one such file present for each sub-directory in the source tree, each one conventionally containing directives pertinent to the files in that directory. These separate CMake files are then "merged together" using the `add_subdirectory` directive, which immediately makes the CMake interpreter load and evaluate the CMake file in the provided directory.
 
 Variables can be set using the `set` directive in the following format:
 
@@ -47,7 +47,7 @@ Targets are essentially products of the build process: oftentimes this is either
 add_executable (sometarget file.cpp)
 ```
 
-In the above, `file.cpp`{.path} refers to the file containing the `main` entry point. Likewise, a library can be created using the `add_library` directive:
+In the above, <span class="path">file.cpp</span> refers to the file containing the `main` entry point. Likewise, a library can be created using the `add_library` directive:
 
 ``` cmake
 add_library (sometarget STATIC ${SRC})
@@ -85,7 +85,7 @@ install (TARGET sometarget
          LIBRARY DESTINATION lib)
 ```
 
-This would install to `/usr/local/bin`{.path} and `/usr/local/lib`{.path} on POSIX.
+This would install to <span class="path">/usr/local/bin</span> and <span class="path">/usr/local/lib</span> on POSIX.
 
 A configuration include file can be created using `configure_file`:
 

@@ -242,7 +242,7 @@ The `uppercaseString` and `lowercaseString` properties can yield their respectiv
 
 ## Unicode
 
-Characters are represented in Unicode by one or more Unicode scalars. A unicode scalar is a 21-bit number (and a name) for a character or modifier, e.g. `U+0061`{.path} is LOWERCASE LATIN LETTER A, `a`.
+Characters are represented in Unicode by one or more Unicode scalars. A unicode scalar is a 21-bit number (and a name) for a character or modifier, e.g. <span class="path">U+0061</span> is LOWERCASE LATIN LETTER A, `a`.
 
 Unicode scalars are encoded as small chunks called code units, which in UTF-8 would be 8-bit code units, and so on.
 

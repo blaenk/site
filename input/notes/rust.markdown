@@ -2400,7 +2400,7 @@ The testsuite supports ratcheting against a metrics file, which basically compar
 
 # Cargo
 
-[Cargo] is the package manager for Rust, which actually reminds me a lot of Haskell's [Cabal]. The package configuration is defined in a `Cargo.toml`{.path} file which is written in [TOML] format. The TOML file [contains] a `package` section which establishes the project's metadata. A `[[bin]]` section can also be created to specify that the target is to be a binary, as well as information pertaining to it, such as its name.
+[Cargo] is the package manager for Rust, which actually reminds me a lot of Haskell's [Cabal]. The package configuration is defined in a <span class="path">Cargo.toml</span> file which is written in [TOML] format. The TOML file [contains] a `package` section which establishes the project's metadata. A `[[bin]]` section can also be created to specify that the target is to be a binary, as well as information pertaining to it, such as its name.
 
 [Cargo]: http://crates.io/
 [TOML]: https://github.com/toml-lang/toml

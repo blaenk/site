@@ -11,9 +11,9 @@ As I've [explained before](/posts/xmonad-ignores-bindings/#media-keys), I use a 
 >
 > <cite><strong>Arch Wiki</strong></cite>
 
-As a result, I decided to look for a way to have my solution work alongside Gnome's initialization of XKB. There was _very_ little information on Gnome's interaction with XKB short of reading Gnome's source, but after searching around for a long time, I found that there is indeed a dconf option hidden away at `/org/gnome/desktop/input-sources/xkb-options`{.path}. Before I could use this though, I had to make my XKB option available system-wide.
+As a result, I decided to look for a way to have my solution work alongside Gnome's initialization of XKB. There was _very_ little information on Gnome's interaction with XKB short of reading Gnome's source, but after searching around for a long time, I found that there is indeed a dconf option hidden away at <span class="path">/org/gnome/desktop/input-sources/xkb-options</span>. Before I could use this though, I had to make my XKB option available system-wide.
 
-First the symbol file has to be placed in the symbols directory `/usr/share/X11/xkb/symbols`{.path}. This file simply binds the keys I want to use to the XF86 designated media keys. This way the Gnome binder will pick them up without complaining when I bind them to the volume keys, since it otherwise seems to prevent the binding of these very keys as they are. In other words, with this symbol file, RCTRL will be interpreted by the system as if I had pressed XF86AudioRaiseVolume, which is what an actual volume-up media key would yield:
+First the symbol file has to be placed in the symbols directory <span class="path">/usr/share/X11/xkb/symbols</span>. This file simply binds the keys I want to use to the XF86 designated media keys. This way the Gnome binder will pick them up without complaining when I bind them to the volume keys, since it otherwise seems to prevent the binding of these very keys as they are. In other words, with this symbol file, RCTRL will be interpreted by the system as if I had pressed XF86AudioRaiseVolume, which is what an actual volume-up media key would yield:
 
 ```
 partial hidden modifier_keys
@@ -24,13 +24,13 @@ xkb_symbols "bottom_right" {
 };
 ```
 
-Now an option has to be created for this symbol file and then listed in the system-wide options list for the rule set you're using, in my case evdev, at `/usr/share/X11/xkb/rules/evdev`{.path}. Here, `volume_keys` corresponds to the filename of the symbol file, and `bottom_right` is the name I gave the group:
+Now an option has to be created for this symbol file and then listed in the system-wide options list for the rule set you're using, in my case evdev, at <span class="path">/usr/share/X11/xkb/rules/evdev</span>. Here, `volume_keys` corresponds to the filename of the symbol file, and `bottom_right` is the name I gave the group:
 
 ```
 volume_keys:bottom_right = +volume_keys(bottom_right)
 ```
 
-Now the option can be referenced system-wide, so it can be entered into the the Gnome XKB options dconf key at `/org/gnome/desktop/input-sources/xkb-options`{.path}. Put it inside the list as `'volume_keys:bottom_right'`, for example mine is set to:
+Now the option can be referenced system-wide, so it can be entered into the the Gnome XKB options dconf key at <span class="path">/org/gnome/desktop/input-sources/xkb-options</span>. Put it inside the list as `'volume_keys:bottom_right'`, for example mine is set to:
 
 ```
 ['volume_keys:bottom_right', 'compose:ralt']
@@ -40,6 +40,6 @@ You can now go ahead and bind the appropriate keys to volume functions inside Gn
 
 Given that it's tucked away deep inside dconf, and given Gnome developers' track record of pruning "cruft" or anything that the lowest common denominator user doesn't use, the future availability of this option is in question. That said, it currently works perfectly fine.
 
-**Update**: On archlinux, `pacman -Qo` shows that the `evdev`{.path} file is owned by the [xkeyboard-config] package. Whenever this package is updated, it overwrites this file, necessitating the change to be added once again. I'll have to look into a more resilient way to have this setup.
+**Update**: On archlinux, `pacman -Qo` shows that the <span class="path">evdev</span> file is owned by the [xkeyboard-config] package. Whenever this package is updated, it overwrites this file, necessitating the change to be added once again. I'll have to look into a more resilient way to have this setup.
 
 [xkeyboard-config]: https://www.archlinux.org/packages/extra/any/xkeyboard-config/

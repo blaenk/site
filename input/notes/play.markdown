@@ -34,7 +34,7 @@ Running `play` without any options starts the Play console. The `console` comman
 
 # Configuration
 
-The `conf/application.conf`{.path} file is the master configuration file in Play. From there all aspects of Play and other third-party libraries like Akka can be configured. The configuration format is based on the [config] library which supports a superset of JSON, Java Properties, comments, file includes, file merging, units (e.g. days, MB, etc.), and so on.
+The <span class="path">conf/application.conf</span> file is the master configuration file in Play. From there all aspects of Play and other third-party libraries like Akka can be configured. The configuration format is based on the [config] library which supports a superset of JSON, Java Properties, comments, file includes, file merging, units (e.g. days, MB, etc.), and so on.
 
 [config]: https://github.com/typesafehub/config
 
@@ -92,7 +92,7 @@ current.configuration.getConfig("db.default").map {
 
 ## Routing
 
-The `conf/routes`{.path} file contains the mapping of routes to controller actions.
+The <span class="path">conf/routes</span> file contains the mapping of routes to controller actions.
 
 ```
 GET /         controllers.Products.home()
@@ -130,7 +130,7 @@ def delete(ean: Long) = Action {
 
 ## Environments
 
-It's straightforward to setup different configuration environments by using the `include` directive in configuration files. Production configuration files would need to use the `classpath` function to refer to files within the deployed archive. This can be used to define a configuration file at a system path such as `/etc/paperclips/production.conf`{.path}, which can then be imported with the `-Dconfig.file` parameter.
+It's straightforward to setup different configuration environments by using the `include` directive in configuration files. Production configuration files would need to use the `classpath` function to refer to files within the deployed archive. This can be used to define a configuration file at a system path such as <span class="path">/etc/paperclips/production.conf</span>, which can then be imported with the `-Dconfig.file` parameter.
 
 ```
 include classpath("application.conf")
@@ -161,7 +161,7 @@ object Product {
 
 ## Persistence
 
-Play allows for _evolutions_ which are similar to Rails database migrations, which are stored in `conf/evolutions/default/`{.path} and are named `#.sql` where `#` is the revision number. Play automatically asks to apply the evolution the next time the application is accessed. Evolutions take the following form:
+Play allows for _evolutions_ which are similar to Rails database migrations, which are stored in <span class="path">conf/evolutions/default/</span> and are named `#.sql` where `#` is the revision number. Play automatically asks to apply the evolution the next time the application is accessed. Evolutions take the following form:
 
 ``` sql
 # --- !Ups
@@ -438,15 +438,15 @@ It's possible to define implicit parameters on template parameter lists to avoid
 
 ## Localization
 
-Localization is pretty straightforward in Play. The `application.conf`{.path} file can take an `application.langs`{.path} option that defines a comma-separated list of languages in ISO 639-2 format optionally followed by an ISO 3166-1 alpha-2 country code.
+Localization is pretty straightforward in Play. The <span class="path">application.conf</span> file can take an <span class="path">application.langs</span> option that defines a comma-separated list of languages in ISO 639-2 format optionally followed by an ISO 3166-1 alpha-2 country code.
 
 ```
 application.langs="en,en-US,nl"
 ```
 
-For each of these languages there should be a corresponding `conf/messages.lang`{.path} file which defines localized messages. These messages can then be referenced using the `Messages` object which takes the message's key as well as an implicit `Lang` value which can be implicitly converted from a `Request` in the scope.
+For each of these languages there should be a corresponding <span class="path">conf/messages.lang</span> file which defines localized messages. These messages can then be referenced using the `Messages` object which takes the message's key as well as an implicit `Lang` value which can be implicitly converted from a `Request` in the scope.
 
-Messages in the file are patterns formatted using [`java.text.MessageFormat`{.path}][messageformat], so that arguments can be inserted with `{#}` where the `#` is the position of the argument. It's also possible to define different messages for zero, one, more items:
+Messages in the file are patterns formatted using [<span class="path">java.text.MessageFormat</span>][messageformat], so that arguments can be inserted with `{#}` where the `#` is the position of the argument. It's also possible to define different messages for zero, one, more items:
 
 [messageformat]: http://docs.oracle.com/javase/8/docs/api/java/text/MessageFormat.html
 
@@ -853,7 +853,7 @@ The above handler would correspond to the following.
 
 # JSON
 
-Play's `play.api.libs.json.Json`{.path} module contains support for JSON. Default types can be converted to JSON with the `toJson` method resulting in a `JsValue`, which can be converted to a string with the `stringify` method. The response methods such as `Ok` know about `JsValue` and automatically set the `Content-Type` header to `application/json`. The JSON types include:
+Play's <span class="path">play.api.libs.json.Json</span> module contains support for JSON. Default types can be converted to JSON with the `toJson` method resulting in a `JsValue`, which can be converted to a string with the `stringify` method. The response methods such as `Ok` know about `JsValue` and automatically set the `Content-Type` header to `application/json`. The JSON types include:
 
 * `JsString`
 * `JsNumber`
@@ -995,11 +995,11 @@ object ApplicationBuild extends Build {
 }
 ```
 
-Creating modules is also straightforward and begins by creating a new Play application and only keeping the necessary files. This means that if we can remove `app/public`{.path} and `app/views`{.path} if we don't need them. It's important to keep in mind naming collisions however, which is why it's useful to create packages out of source files with the `package` keyword in Scala.
+Creating modules is also straightforward and begins by creating a new Play application and only keeping the necessary files. This means that if we can remove <span class="path">app/public</span> and <span class="path">app/views</span> if we don't need them. It's important to keep in mind naming collisions however, which is why it's useful to create packages out of source files with the `package` keyword in Scala.
 
 # Deployment
 
-Play has two commands that make it very easy to deploy. The `stage` command compiles the application to a JAR file together with all dependency JARs and places the file in `target/staged`{.path} along with script `target/start`{.path} which can be used to start the application. The `dist` command packages up start script and dependencies into a zip archive which can easily be transferred.
+Play has two commands that make it very easy to deploy. The `stage` command compiles the application to a JAR file together with all dependency JARs and places the file in <span class="path">target/staged</span> along with script <span class="path">target/start</span> which can be used to start the application. The `dist` command packages up start script and dependencies into a zip archive which can easily be transferred.
 
 Packaging up the application in this manner allows it to be deployed on any target that contains a Java runtime installation.
 
@@ -1025,7 +1025,7 @@ def itemList() = Action {
 
 # Caching
 
-There's a caching API represented by the `Cache` object that can be accessed by having an implicit `play.api.Application`{.path} in the scope, which can be fulfilled by importing `play.api.Play.current`{.path}.  The `getOrElse` method can get a value for a given key and if not found, compute it and store it with an optional expiration time.
+There's a caching API represented by the `Cache` object that can be accessed by having an implicit <span class="path">play.api.Application</span> in the scope, which can be fulfilled by importing <span class="path">play.api.Play.current</span>.  The `getOrElse` method can get a value for a given key and if not found, compute it and store it with an optional expiration time.
 
 ``` scala
 Cache.set("user-key", User("John Doe"))

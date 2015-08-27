@@ -24,11 +24,11 @@ The following two draft system implementations exemplify the two approaches I ca
 
 [Octopress](http://octopress.org/) had support for drafts hacked onto Jekyll by way of a plugin that allowed a metadata field `published` to be set that, if set to **false**, would establish an environment variable that would be detected on site generation in order to regenerate the site without the draft posts. This consequently meant that draft posts were stored in the same directory as regular posts.
 
-[Jekyll](http://jekyllrb.com) implemented support for this in its 1.0 version by allowing a new directory, `_drafts/`{.path}, to store draft posts which could be previewed by specifying the `--drafts` flag to most operations. However, it was right after Jekyll 1.0 was released that I decided to switch to Hakyll.
+[Jekyll](http://jekyllrb.com) implemented support for this in its 1.0 version by allowing a new directory, <span class="path">_drafts/</span>, to store draft posts which could be previewed by specifying the `--drafts` flag to most operations. However, it was right after Jekyll 1.0 was released that I decided to switch to Hakyll.
 
 Octopress' draft system was pretty straightforward in my opinion, despite being a pretty hack-ish implementation. I would create drafts in the same directory as all of the other posts, and would simply set metadata `published: false`. This would allow the draft to show up when I previewed the site, but not when it was ultimately deployed. This was accomplished by regenerating the site on deploy, this time without the preview posts.
 
-The other solution I could think of consisted of detecting when the site was being previewed, and if that were the case, establish a different output directory and a different posts pattern which would include the posts in a separate `drafts/`{.path} directory. When the site _wasn't_ being previewed, the regular output directory would be used.
+The other solution I could think of consisted of detecting when the site was being previewed, and if that were the case, establish a different output directory and a different posts pattern which would include the posts in a separate <span class="path">drafts/</span> directory. When the site _wasn't_ being previewed, the regular output directory would be used.
 
 ## Implementation
 
@@ -43,7 +43,7 @@ main = do
 
 If the **preview** action is being run, the Hakyll configuration data structure's `destinationDirectory` field, i.e. the output directory, is changed to a separate one for previewing purposes. This implies that the field is set to the deployable output directory by default. This is important because it means that all actions other than **preview** will _ignore_ drafts.
 
-Furthermore, if we are previewing, the pattern used to fetch posts is changed to also include the posts in the `drafts/`{.path} directory. This is achieved by using the [`.||.`](http://hackage.haskell.org/packages/archive/hakyll/4.2.2.0/doc/html/Hakyll-Core-Identifier-Pattern.html#v:.-38--38-.) function to compose two `Pattern` types.
+Furthermore, if we are previewing, the pattern used to fetch posts is changed to also include the posts in the <span class="path">drafts/</span> directory. This is achieved by using the [`.||.`](http://hackage.haskell.org/packages/archive/hakyll/4.2.2.0/doc/html/Hakyll-Core-Identifier-Pattern.html#v:.-38--38-.) function to compose two `Pattern` types.
 
 ``` haskell
   let previewMode  = action == "preview"

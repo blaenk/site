@@ -324,7 +324,7 @@ pub struct Rule<C> where C: Compile {
 
 This would necessitate creating a `Chain` for a sequence of compilers. The `Chain` would handle behavior with respect to keeping track of the position of the sequence and propagating pauses and errors.
 
-One consequence of this is that it would be possible to nest `Chain`s, allowing for the pattern of packaging up common sequences of compilers into chains, such as Ring's [`wrap-defaults`{.path}](https://github.com/ring-clojure/ring-defaults#basic-usage).
+One consequence of this is that it would be possible to nest `Chain`s, allowing for the pattern of packaging up common sequences of compilers into chains, such as Ring's [<span class="path">wrap-defaults</span>](https://github.com/ring-clojure/ring-defaults#basic-usage).
 
 ``` rust
 fn setup() -> Chain {

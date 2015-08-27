@@ -34,6 +34,12 @@ $solar-green:   #718C00 !default; //
 // $solar-cyan:    #2aa198 !default; // haskell: let, where, operator
 // $solar-green:   #859900 !default; //
 
+.path,
+.entry-content code,
+.entry-content pre {
+  font-family: $font-mono;
+}
+
 .language-javascript {
   .kd { color: $solar-cyan; }
   .nx { color: inherit; }
@@ -107,7 +113,7 @@ code {
   padding: 1px 5px;
 }
 
-code.path {
+.path {
   background-color: inherit;
   padding: 0;
 }
@@ -252,9 +258,3 @@ figure.codeblock {
     }
   }
 }
-
-.entry-content code,
-.entry-content pre {
-  font-family: $font-mono;
-}
-

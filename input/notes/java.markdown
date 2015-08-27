@@ -883,7 +883,7 @@ A superclass version of a method may be referred to with the `super` keyword.
 super::methodName;
 ```
 
-JDK 8 contains predefined functional interfaces in `java.util.function`{.path}.
+JDK 8 contains predefined functional interfaces in <span class="path">java.util.function</span>.
 
 # IO
 

@@ -27,7 +27,7 @@ On the client-side, there's the venerable [ClojureScript] which I consider to be
 
 A general architecture can be one where handlers, routes, models, and views are split off into their own namespaces. Routes relating to specific workflows would be defined in their own namespaces where that behavior is defined. The routes can then be combined into a single handler using Compojure's `routes` macro.
 
-The `project.clj`{.path} file should contain the `:ring` declaration which defines the application handler and, optionally, functions to run on application startup and shutdown.
+The <span class="path">project.clj</span> file should contain the `:ring` declaration which defines the application handler and, optionally, functions to run on application startup and shutdown.
 
 ``` clojure
 :ring {:handler guestbook.handler/app
@@ -61,15 +61,15 @@ Middleware can wrap handlers to modify the way the request is processed, or more
 (def app (wrap-nocache handler))
 ```
 
-A decent middleware combination to use for a typical site is `compojure.handler/site`{.path}, which includes support for sessions, cookies, flash, and parameter destructuring.
+A decent middleware combination to use for a typical site is <span class="path">compojure.handler/site</span>, which includes support for sessions, cookies, flash, and parameter destructuring.
 
 The [lib-noir] library contains a variety of middleware, such as session and cookie handling, redirects, input validation, password hashing, and so on. Each middleware can wrap a previously defined application handler.
 
 [lib-noir]: https://github.com/noir-clojure/lib-noir
 
-Redirection is possible via `ring.util.response/redirect`{.path} which comes with Ring, however, lib-noir also has such a function as `noir.response/redirect`{.path}, which accepts an optional status code to supply. Both functions take a path---relative to the root---to which to redirect.
+Redirection is possible via <span class="path">ring.util.response/redirect</span> which comes with Ring, however, lib-noir also has such a function as <span class="path">noir.response/redirect</span>, which accepts an optional status code to supply. Both functions take a path---relative to the root---to which to redirect.
 
-Session management is also provided by the `noir.session`{.path} namespace. The session store is handled by Ring, and a type of store must be specified, such as `ring.middleware.session.memory`{.path}, though there are other available back-ends for the session, such as Redis. The following session management functions are available:
+Session management is also provided by the <span class="path">noir.session</span> namespace. The session store is handled by Ring, and a type of store must be specified, such as <span class="path">ring.middleware.session.memory</span>, though there are other available back-ends for the session, such as Redis. The following session management functions are available:
 
 Function    Description
 ---------   ------------
@@ -80,7 +80,7 @@ Function    Description
 `put!`      set session value
 `remove!`   remove session value
 
-Input validation is provided by `noir.validation`{.path}. Validation is performed by specifying a set of rules for a handler using the `rule` function, which accepts a condition that must be satisfied, and a vector consisting of a field name as a keyword and an error to associate with it in the event that the condition is not satisfied. The `errors?` function is then used to see if there were any unsatisfied validations, in order to provide an alternative response, for example.
+Input validation is provided by <span class="path">noir.validation</span>. Validation is performed by specifying a set of rules for a handler using the `rule` function, which accepts a condition that must be satisfied, and a vector consisting of a field name as a keyword and an error to associate with it in the event that the condition is not satisfied. The `errors?` function is then used to see if there were any unsatisfied validations, in order to provide an alternative response, for example.
 
 ``` clojure
 (defn handle-login [id pass]
@@ -103,11 +103,11 @@ The `on-error` function can be used to format the error messages, if there are a
       (fn [errors] (apply str errors)))))
 ```
 
-Hashing is exposed via `noir.util.crypt`{.path}, particularly functions `compare` and `encrypt`.
+Hashing is exposed via <span class="path">noir.util.crypt</span>, particularly functions `compare` and `encrypt`.
 
-There are helper functions for specifying content-type in `noir.response`{.path}. The `content-type` function can take a MIME type and the response. There is also a `json` function that can automatically serialize a data structure passed to it.
+There are helper functions for specifying content-type in <span class="path">noir.response</span>. The `content-type` function can take a MIME type and the response. There is also a `json` function that can automatically serialize a data structure passed to it.
 
-It's possible to specify access rules for a group of paths by using `noir.util.middleware/wrap-access-rules`{.path} to wrap the access rules around the application handler.
+It's possible to specify access rules for a group of paths by using <span class="path">noir.util.middleware/wrap-access-rules</span> to wrap the access rules around the application handler.
 
 ``` clojure
 (defn user-access [req]
@@ -430,7 +430,7 @@ Being JVM-based, Clojure has access to the various Java database libraries such 
 
 ## JDBC
 
-The `clojure.java.jdbc`{.path} namespace provides a thin layer between Clojure and [JDBC]. A database "spec" is created that is essentially a map of configuration data to locate the JDBC driver and configure it and its connections. Alternatively, a JDBC data source instance can be used.
+The <span class="path">clojure.java.jdbc</span> namespace provides a thin layer between Clojure and [JDBC]. A database "spec" is created that is essentially a map of configuration data to locate the JDBC driver and configure it and its connections. Alternatively, a JDBC data source instance can be used.
 
 [JDBC]: http://en.wikipedia.org/wiki/Java_Database_Connectivity
 
@@ -603,7 +603,7 @@ Properties are accessed using `.-` prefix notation. Properties can be set with t
   (set! (.-width canvas) 42))
 ```
 
-Macros must be referenced with the `:require-macros` keyword in the namespace declaration. The macros must be defined in a _regular_ Clojure file with a `.clj`{.path} extension, and can have the same name for file and namespace as the file which references it.
+Macros must be referenced with the `:require-macros` keyword in the namespace declaration. The macros must be defined in a _regular_ Clojure file with a <span class="path">.clj</span> extension, and can have the same name for file and namespace as the file which references it.
 
 ``` clojure
 (ns my.app
@@ -667,7 +667,7 @@ The [Domina] library is a ClojueScript interface to the DOM manipulation facilit
 
 ## Building {#building-clojurescript}
 
-The [lein-cljsbuild] plug-in for lein can automate the compilation of ClojureScript by defining---in the `project.clj`{.path} file---the namespaces to reference and the JavaScript files to output.
+The [lein-cljsbuild] plug-in for lein can automate the compilation of ClojureScript by defining---in the <span class="path">project.clj</span> file---the namespaces to reference and the JavaScript files to output.
 
 [lein-cljsbuild]: https://github.com/emezeske/lein-cljsbuild
 
@@ -790,7 +790,7 @@ Om components have to be built using `build` for single components or `build-all
           (om/build-all contact-view (:contacts app)))))))
 ```
 
-Components can communicate using `core.async`{.path} channels. To use this it is recommended to use `IRenderState` instead of `IRender`, so that state can be passed to it as the component state.
+Components can communicate using <span class="path">core.async</span> channels. To use this it is recommended to use `IRenderState` instead of `IRender`, so that state can be passed to it as the component state.
 
 ``` clojure
 (defn contact-view [contact owner]
@@ -803,7 +803,7 @@ Components can communicate using `core.async`{.path} channels. To use this it is
           #js {:onClick (fn [e] (put! delete @contact))} "Delete")))))
 ```
 
-The encompassing component can implement `IInitState` in order to initialize the state, which in this case is simply a `core.async`{.path} channel. This implements `IRenderState` as well so that it can receive the state and pass it on to its children.
+The encompassing component can implement `IInitState` in order to initialize the state, which in this case is simply a <span class="path">core.async</span> channel. This implements `IRenderState` as well so that it can receive the state and pass it on to its children.
 
 ``` clojure
 (defn contacts-view [app owner]
@@ -836,7 +836,7 @@ The protocol `IWillMount` is then implemented to establish a `go` loop that list
 
 # Deployment
 
-Clojure web applications are generally packaged and deployed as servlets. Servlets are Java classes that extend the `javax.servlet.http.HttpServlet`{.path} base class, which itself defines an interface for handling HTTP requests. Servlets can be deployed to one of many application servers. Application servers usually provide multitenancy, so that multiple applications can be deployed to the same application server. Most application servers are also web servers, but it's possible to proxy to a dedicated web server as well.
+Clojure web applications are generally packaged and deployed as servlets. Servlets are Java classes that extend the <span class="path">javax.servlet.http.HttpServlet</span> base class, which itself defines an interface for handling HTTP requests. Servlets can be deployed to one of many application servers. Application servers usually provide multitenancy, so that multiple applications can be deployed to the same application server. Most application servers are also web servers, but it's possible to proxy to a dedicated web server as well.
 
 A Clojure web application using Ring, for example, can produce a servlet wrapper at runtime and hand that to the application server that runs embedded within the same process.
 
@@ -845,11 +845,11 @@ A Clojure web application using Ring, for example, can produce a servlet wrapper
 (def server (run-jetty #'app {:port 8080 :join? false}))
 ```
 
-It's also possible to deploy to a standalone application server, however, by packaging up the web application into a war file. The war files are a variation of jar files. They contain a `web.xml`{.path} file that describes how the war file should be deployed, a `lib/`{.path} directory containing the application's dependencies so as to make the war self-contained, and a `classes/`{.path} directory containing the Clojure source files, JVM class files, and other assets.
+It's also possible to deploy to a standalone application server, however, by packaging up the web application into a war file. The war files are a variation of jar files. They contain a <span class="path">web.xml</span> file that describes how the war file should be deployed, a <span class="path">lib/</span> directory containing the application's dependencies so as to make the war self-contained, and a <span class="path">classes/</span> directory containing the Clojure source files, JVM class files, and other assets.
 
-The `web.xml`{.path} file specifies the configuration for the deployment of the war file, including servlet mount points, behavior of user sessions, and app-server specific features.
+The <span class="path">web.xml</span> file specifies the configuration for the deployment of the war file, including servlet mount points, behavior of user sessions, and app-server specific features.
 
-Leiningen can build war files---as well as accompanying `web.xml`{.path} files---using plug-ins such as `lein-ring`. This plugin requires a `:ring :handler` slot which specifies the namespace-qualified name of the top-level application request handler.
+Leiningen can build war files---as well as accompanying <span class="path">web.xml</span> files---using plug-ins such as `lein-ring`. This plugin requires a `:ring :handler` slot which specifies the namespace-qualified name of the top-level application request handler.
 
 ``` clojure
 (defproject com.some/project "1.0.0"
@@ -876,7 +876,7 @@ $ lein ring server
 
 ## HTTP Kit
 
-[HTTP kit] is a highly-concurrent HTTP server for Clojure. It's a near drop-in replacement for Jetty. A `main` method must be created that is accessible from Java, and the namespace that defines it must ensure that it is AOT compiled with the `:gen-class` key in the `ns` form. It's also necessary to define the entry-point in the `project.clj`{.path} file.
+[HTTP kit] is a highly-concurrent HTTP server for Clojure. It's a near drop-in replacement for Jetty. A `main` method must be created that is accessible from Java, and the namespace that defines it must ensure that it is AOT compiled with the `:gen-class` key in the `ns` form. It's also necessary to define the entry-point in the <span class="path">project.clj</span> file.
 
 [HTTP kit]: http://http-kit.org/
 

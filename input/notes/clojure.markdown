@@ -126,7 +126,7 @@ Syntax               Type
 
 ## Regular Expressions
 
-Strings prefixed with a hash `#` are regex literals which yield `java.util.regex.Pattern`{.path} instances.
+Strings prefixed with a hash `#` are regex literals which yield <span class="path">java.util.regex.Pattern</span> instances.
 
 ``` clojure
 (re-seq #"(\d+)-(\d+)" "1-3")
@@ -180,7 +180,7 @@ Record literals consist of the pound sign `#` followed by the record name and a 
 
 ## Tagged Literals
 
-Tagged literals are custom data readers. On startup, Clojure looks for files named `data_readers.clj`{.path} at the root of the classpath which must contain a map of symbols mapping tags---to be recognized by the Clojure reader---to the name of fully-qualified Vars that are invoked by the reader to parse the form following the tag.
+Tagged literals are custom data readers. On startup, Clojure looks for files named <span class="path">data_readers.clj</span> at the root of the classpath which must contain a map of symbols mapping tags---to be recognized by the Clojure reader---to the name of fully-qualified Vars that are invoked by the reader to parse the form following the tag.
 
 ``` clojure
 {foo/bar my.project.foo/bar
@@ -285,7 +285,7 @@ The `use` function is similar to `require`, except that it `refer`s the specifie
 
 The aforementioned functions create mappings from symbols to vars, but namespaces can also contain Java classes and interfaces. Mappings to these can be created with the `import` function, which essentially makes the class' short name available for use. This function also supports the common-prefixed collection that `require` accepts.
 
-There is no equivalent of the Java wildcard import. Inner classes such as `java.util.Map.Entry`{.path} can be referred to by the Java-internal notation e.g. `java.util.Map$Entry`{.path}.
+There is no equivalent of the Java wildcard import. Inner classes such as <span class="path">java.util.Map.Entry</span> can be referred to by the Java-internal notation e.g. <span class="path">java.util.Map$Entry</span>.
 
 ``` clojure
 (import 'java.util.Date 'java.text.SimpleDateFormat)
@@ -299,7 +299,7 @@ The aforementioned namespace functions are mainly useful in a REPL. In actual so
 
 The `:refer` keyword can be used in a `:require` form similar to `:only`, to allow the use of the provided symbols in an unqualified manner. In fact, the `:use` form can be obviated entirely by passing `:all` to `:refer` instead of a vector of symbols.
 
-The `:refer-clojure` form is a synonym for `refer`ing to the `clojure.core`{.path} namespace, which is particularly useful for the purpose of `:exclude`ing symbols to avoid collisions.
+The `:refer-clojure` form is a synonym for `refer`ing to the <span class="path">clojure.core</span> namespace, which is particularly useful for the purpose of `:exclude`ing symbols to avoid collisions.
 
 The following are equivalent.
 
@@ -431,7 +431,7 @@ The `let` form also allows _destructuring_ similar to pattern-matching in langua
 ;= [42 "foo" 99.2 [5 12] 141.2]
 ```
 
-Maps can also be destructured in a similar manner. This works with Clojure's `hash-map`, `array-map`, records, collections implementing `java.util.Map`{.path}, and values supported by the `get` function such as Clojure vectors, strings, and array can be keyed by their indices.
+Maps can also be destructured in a similar manner. This works with Clojure's `hash-map`, `array-map`, records, collections implementing <span class="path">java.util.Map</span>, and values supported by the `get` function such as Clojure vectors, strings, and array can be keyed by their indices.
 
 ``` clojure
 (def m {:a 5 :b 6
@@ -1066,7 +1066,7 @@ c
 
 # Zippers
 
-Zippers are a stack of all nodes traversed, thereby serving as a cursor into a data structure [^xmonad]. The `clojure.zip`{.path} namespace provides a `zipper` factory and specialized zipper instances `seq-zip` for nested sequences, `vector-zip` for nested vectors, and `xml-zip` for `clojure.xml`{.path}.
+Zippers are a stack of all nodes traversed, thereby serving as a cursor into a data structure [^xmonad]. The <span class="path">clojure.zip</span> namespace provides a `zipper` factory and specialized zipper instances `seq-zip` for nested sequences, `vector-zip` for nested vectors, and `xml-zip` for <span class="path">clojure.xml</span>.
 
 Zippers can be moved with operations `up` and `down`, `left` and `right` to move along siblings, `prev` and `next` which are depth-first traversals, and `leftmost` and `rightmost` to move to the first or last sibling.
 
@@ -1817,7 +1817,7 @@ The `ensure` function is equivalent to dummy writes, which end up requiring that
 
 ## Channels
 
-The [`core.async`{.path}](https://clojure.github.io/core.async/) library provides an implementation of channels similar to Go's. `go` is a macro that examines its body for any channel operations and turns it into a state machine, immediately returning a channel on which it eventually places the value of its body's last expression, if non-nil, and closes it. Upon a blocking operation, the state machine is parked and the actual thread of control is released. The body is resumed on a thread-pool thread (or the sole JavaScript VM thread) when the blocking operation completes,
+The [<span class="path">core.async</span>](https://clojure.github.io/core.async/) library provides an implementation of channels similar to Go's. `go` is a macro that examines its body for any channel operations and turns it into a state machine, immediately returning a channel on which it eventually places the value of its body's last expression, if non-nil, and closes it. Upon a blocking operation, the state machine is parked and the actual thread of control is released. The body is resumed on a thread-pool thread (or the sole JavaScript VM thread) when the blocking operation completes,
 
 The primary channel operations within go blocks are `>!` for putting and `<!` for taking. There are also analogous operations for ordinary threads which block the thread on which they're called until complete `->!!` for putting and `<!!` for taking. These can be used on threads created with, for example, `future`, but there's also a macro called `thread` that's similar to `go` which launches a first-class thread and returns a channel, and should be preferred over `future` for channel work.
 
@@ -2078,7 +2078,7 @@ Point
 ;= user.Point
 ```
 
-It's also possible to provide type metadata for primitive and non-primitive fields, otherwise they are assumed to be `java.lang.Object`{.path}.
+It's also possible to provide type metadata for primitive and non-primitive fields, otherwise they are assumed to be <span class="path">java.lang.Object</span>.
 
 ``` clojure
 (defrecord NamedPoint [^String name ^long x ^long y])
@@ -2162,7 +2162,7 @@ Protocols can be extended to existing types using the aforementioned `extend*` f
 
 Inline implementations correspond to Java interface implementations, which means that inline implementation methods have direct access to fields, whereas external implementations must use Java interop or keyword accessors, and method calls will be as fast as Java interface method calls.
 
-However, this has a variety of consequences. For example, clashes can occur by implementing two protocols each containing methods with the same name and signature, which can occur with those interfaces for which `defrecord` automatically provides implementations, or even by implementing protocols whose methods conflict with `java.lang.Object`{.path} methods.
+However, this has a variety of consequences. For example, clashes can occur by implementing two protocols each containing methods with the same name and signature, which can occur with those interfaces for which `defrecord` automatically provides implementations, or even by implementing protocols whose methods conflict with <span class="path">java.lang.Object</span> methods.
 
 Since inline implementations are baked into the type, those implementations can't be changed at runtime without redefining the entire type, necessitating the re-evaluation of all code that depends on the type. Worse, existing instances will not be updated after this redefinition and re-evaluation.
 
@@ -2382,7 +2382,7 @@ The `type` function is similar to the `class` function, except that if a `:type`
 
 # Build Tools
 
-The most popular build tool in the Java world is Maven. Maven's dependency management model consists of _artifacts_, which are files that are the product of the build process. Artifacts are identified by _coordinates_, which are a group of attributes that uniquely identify a particular version of an artifact, in the form `groupId:artifactId:packaging:version`{.path}.
+The most popular build tool in the Java world is Maven. Maven's dependency management model consists of _artifacts_, which are files that are the product of the build process. Artifacts are identified by _coordinates_, which are a group of attributes that uniquely identify a particular version of an artifact, in the form <span class="path">groupId:artifactId:packaging:version</span>.
 
 Attribute  Meaning
 ---------- --------
@@ -2391,7 +2391,7 @@ artifactId project identifier
 packaging  type of artifact (jar)
 version    version string
 
-A project defines its own coordinates in a Maven `pom.xml`{.path} or Leiningen `project.cjl`{.path} file. The `pom.xml`{.path} file can be uploaded to a Maven repository in order to make it available to others. The most popular Maven repositories consist of Maven central and, for Clojure, [clojars.org](http://clojars.org).
+A project defines its own coordinates in a Maven <span class="path">pom.xml</span> or Leiningen <span class="path">project.cjl</span> file. The <span class="path">pom.xml</span> file can be uploaded to a Maven repository in order to make it available to others. The most popular Maven repositories consist of Maven central and, for Clojure, [clojars.org](http://clojars.org).
 
 Dependencies can be expressed by specifying the versions that are required. There are snapshot and release version types, where snapshot versions are tracked "bleeding edge" releases suffixed with `-SNAPSHOT` and release versions are frozen releases that may follow [semantic versioning practices].
 
@@ -2410,7 +2410,7 @@ Although Maven is the most popular build tool in Java, its dependency management
 
 [Leiningen]: http://leiningen.org/
 
-A `project.cjl`{.path} file is used for project configuration and dependency management. The `defproject` macro is used takes as first two arguments the projects coordinates, with the second of the two being the version string on its own, so that Maven's coordinate `com.abc:site:1.0.0`{.path} corresponds to `com.abc/site "1.0.0"` in Leiningen. If the first argument is an unnamespaced symbol, then it's assumed that the artifact ID and the group ID are the same.
+A <span class="path">project.cjl</span> file is used for project configuration and dependency management. The `defproject` macro is used takes as first two arguments the projects coordinates, with the second of the two being the version string on its own, so that Maven's coordinate <span class="path">com.abc:site:1.0.0</span> corresponds to `com.abc/site "1.0.0"` in Leiningen. If the first argument is an unnamespaced symbol, then it's assumed that the artifact ID and the group ID are the same.
 
 ``` clojure
 (defproject leiningen.org "1.0.0"
@@ -2633,7 +2633,7 @@ Annotations can be created using regular metadata syntax on class-generation for
 
 In the REPL, `*n` contains the `n`th recently evaluated expression's result, i.e. `*1` refers to the most recent result, `*e` refers to the last uncaught exception.
 
-The `clojure.repl`{.path} namespace contains various REPL utilities. The `pst` function could be used to print the stack trace of the provided exception, or `*e` if not provided. The `apropos` function shows which functions in the loaded namespaces matches the provided regular expression or string, whereas `find-doc` is similar but it searches within the documentation. The `source` function can output the source code for the provided function. The `doc` function can print out the documentation for a given var, and `dir` can print a list of public vars in the given namespace.
+The <span class="path">clojure.repl</span> namespace contains various REPL utilities. The `pst` function could be used to print the stack trace of the provided exception, or `*e` if not provided. The `apropos` function shows which functions in the loaded namespaces matches the provided regular expression or string, whereas `find-doc` is similar but it searches within the documentation. The `source` function can output the source code for the provided function. The `doc` function can print out the documentation for a given var, and `dir` can print a list of public vars in the given namespace.
 
 ``` clojure
 (apropos #"^ref")
@@ -2672,7 +2672,7 @@ When comparing numbers, `=` returns true if the numbers are the same and within 
 
 # Testing
 
-The `clojure.test`{.path} namespace contains the official Clojure test framework. Assertions are possible with the `is` macro, which takes an expression it evaluates to determine if it is logically true and an optional message which will be printed if the assertion fails.
+The <span class="path">clojure.test</span> namespace contains the official Clojure test framework. Assertions are possible with the `is` macro, which takes an expression it evaluates to determine if it is logically true and an optional message which will be printed if the assertion fails.
 
 ``` clojure
 (use 'clojure.test)

@@ -18,11 +18,11 @@ As a result I ended up buying a [cheap standalone mic](http://amzn.com/B00029MTM
 
 My solution to this problem in Windows and Mac is to bind the bottom right keys to media keys as follows:
 
-Key            Purpose
----            -------
-Right Control   Volume Up
-Menu            Volume Down
-Right Windows   Volume Mute
+|Key            |Purpose|
+|:---           |:-------|
+|Right Control  |Volume Up|
+|Menu           |Volume Down|
+|Right Windows  |Volume Mute|
 
 ## Binding
 

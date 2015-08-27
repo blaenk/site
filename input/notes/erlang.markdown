@@ -35,13 +35,11 @@ $ erlc hello.erl
 $ erl -noshell -s hello start -s init stop
 ```
 
-## Example {#module-example}
-
 The following describes a file server. It defines a convenience function `start` which spawns a process that forever performs the `loop` function inside a particular directory, which simply waits for a message to be received and processes it. Notice that `loop` performs a tail-recursive call; Erlang has tail-call optimization, so there's no need to worry about overflowing the stack.
 
 This server simply responds to two simple messages: one which requests a file listing and another which request file contents. Notice that the messages are distinguished by pattern matching, which works on atoms as well, such as `list_dir`.
 
-~~~ {.erlang text="server"}
+``` erlang
 -module(afile_server).
 -export([start/1, loop/1]).
 
@@ -56,11 +54,11 @@ loop(Dir) ->
       Client ! {self(), file:read_file(Full)}
   end,
   loop(Dir).
-~~~
+```
 
 The client simply serves to provide client-facing functions that abstract away the server protocol, i.e. the exact messages sent. These simply send the appropriate message and wait for the response.
 
-~~~ {.erlang text="client"}
+``` erlang
 -module(afile_client).
 -export([ls/1, get_file/2]).
 
@@ -77,7 +75,7 @@ get_file(Server, File) ->
     {Server, Content} ->
       Content
   end.
-~~~
+```
 
 # Processes
 

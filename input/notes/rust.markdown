@@ -238,26 +238,26 @@ extern crate farm = "farm";
 
 For example, here's an example library, its compilation, and usage:
 
-~~~ {.rust text="world.rs"}
+``` rust
 #[crate_name = "world"];
 #[crate_type = "lib"];
 
 pub fn explore() -> &'static str { "world" }
-~~~
+```
 
-~~~ {.rust text="main.rs"}
+``` rust
 extern crate world;
 fn main() {
   println!("hello {}", world::explore());
 }
-~~~
+```
 
-~~~ {.bash text="compilation"}
+``` bash
 $ rustc world.rs     # compiles libworld-<HASH>-0.42.so
 $ rustc main.rs -L . # include local dir in library search path
 $ ./main
 "hello world"
-~~~
+```
 
 Many predefined items such as `range` and `Option<T>` come from the standard library's prelude, similar to Haskell's. The rust compiler automatically inserts the following into the crate root:
 
@@ -2478,40 +2478,40 @@ pub use std::option::Option;
 
 Code examples can be provided within documentation as regular code blocks, and those marked as being Rust code can be tested using the `--test` option with `rustdoc`. The `ignore` directive can be provided instead of a language to not run that code block but still highlight it as rust. The `should_fail` directive specifies that the code block is expected to fail, and thus shouldn't be considered an error when testing. The `no_run` directive specifies that the code block should be compiled but not run. The `test_harness` directive compiles the code as if `--test` were passed to the compiler.
 
-~~~ rust
-```rust{.example}
-// some code
-```
+``` rust
+  ``` rust{.example}
+  // some code
+  ```
 
-```test_harness
-#[test]
-fn foo() {
-  panic!("runs and registers as failure");
-}
+  ``` test_harness
+  #[test]
+  fn foo() {
+    panic!("runs and registers as failure");
+  }
+  ```
 ```
-~~~
 
 Tests are facilitated by implicitly adding `extern crate doc-target` at the top of each code example.
 
 If a line is prefixed with `#`, then the line won't show up in the resulting HTML but it _will_ be used when testing the code block.
 
-~~~ rust
+``` rust
+  ```
+  # fn fib(n: int) { n + 2 }
+  spawn(proc() { fib(200); })
+  ```
 ```
-# fn fib(n: int) { n + 2 }
-spawn(proc() { fib(200); })
-```
-~~~
 
 API stability can be documented by using stability attributes. There are six stability levels, where levels _stable_, _frozen_, and _locked_ convey a guarantee of backwards-compatibility. The levels are listed below in order of increasing stability.
 
-Level        Meaning
-------       --------
-deprecated   should no longer be used
-experimental may change or be removed
-unstable     still under development
-stable       will not change significantly
-frozen       very stable; unlikely to change
-locked       never change unless there are bugs
+|Level        |Meaning|
+|:------      |:--------|
+|deprecated   |should no longer be used|
+|experimental |may change or be removed|
+|unstable     |still under development|
+|stable       |will not change significantly|
+|frozen       |very stable; unlikely to change|
+|locked       |never change unless there are bugs|
 
 Individual items such as functions and structs can be annotated with an API stability level of the form `#[level]`.
 

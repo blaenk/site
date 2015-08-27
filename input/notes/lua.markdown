@@ -21,16 +21,16 @@ LuaJIT has an FFI which allows code to be JIT compiled, whereas regular C API ca
 
 Using the FFI in LuaJIT is pretty straightforward. A shared library has to be created that exposes the C functions:
 
-~~~ {lang="cpp"}
+``` cpp
 extern "C" {
   DLLEXPORT void some_function();
   DLLEXPORT int get_count();
 }
-~~~
+```
 
 Where `DLLEXPORT` is `__declspec(dllexport)` on Windows. This can then be loaded by a Lua script:
 
-~~~ {lang="lua"}
+``` lua
 local ffi = require('ffi')
 
 ffi.cdef[[
@@ -41,7 +41,7 @@ int get_count();
 local api = ffi.load("thelibrary")
 api.some_function();
 local count = api.get_count();
-~~~
+```
 
 Official FFI Resources
 

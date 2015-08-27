@@ -155,12 +155,12 @@ Default constructors are synthesized only if all of the following criteria are m
 
 If other constructors are defined but otherwise all other criteria is met for synthesizing a default constructor, the default constructor can be constructed using the `= default` directive:
 
-~~~ {.cpp}
+``` cpp
 class A {
   A() = default;
   A(int a, int b);
 };
-~~~
+```
 
 Class members can be initialized inside the class definition. These initializers are known as _in-class initializers_. In-class initializers must be defined either using the `=` assignment operator or list initialization syntax `{}`.
 

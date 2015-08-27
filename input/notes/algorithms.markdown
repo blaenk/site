@@ -46,7 +46,7 @@ Algorithm operation:
 
 This essentially splits the sequence into a left sorted region and a right unsorted region.
 
-~~~ {lang="java" text="selection sort <a href=\"http://www.sorting-algorithms.com/selection-sort\">visualize</a>"}
+``` java
 public void sort(Comparable[] seq) {
   int N = seq.length;
 
@@ -59,7 +59,7 @@ public void sort(Comparable[] seq) {
     swap(seq[i], seq[min]);
   }
 }
-~~~
+```
 
 ## Insertion Sort
 
@@ -84,7 +84,7 @@ The benefit of insertion sort is that if the sequence is already sorted then the
 
 **Performance Factors**: order of the items
 
-~~~ {lang="java" text="insertion sort <a href=\"http://www.sorting-algorithms.com/insertion-sort\">visualize</a>"}
+``` java
 public void sort(Comparable[] seq) {
   int N = seq.length;
 
@@ -92,7 +92,7 @@ public void sort(Comparable[] seq) {
     for (int j = i; j > 0 && seq[j] < seq[j - 1]; j--)
       swap(seq[j], seq[j - 1]);
 }
-~~~
+```
 
 ## Shell Sort
 
@@ -123,7 +123,7 @@ This sequence begins at the largest increment less than $N/3$ and decreases to 1
 
 The effect of shell sort is that it sorts elements that are $H$ elements apart with one swap instead of $H$. The granularity of the sorting operation increases as $H$ itself decreases such that every element is eventually sorted, but with the added benefit that as $H$ decreases, the distance of the longest-distance swap decreases.
 
-~~~ {lang="java" text="shell sort <a href=\"http://www.sorting-algorithms.com/shell-sort\">visualize</a>"}
+``` java
 public void sort(Comparable[] seq) {
   int N = seq.length;
   int h = 1;
@@ -139,7 +139,7 @@ public void sort(Comparable[] seq) {
     h = h / 3;
   }
 }
-~~~
+```
 
 ## Merge Sort
 
@@ -156,7 +156,7 @@ This is a _stable_ algorithm and the first algorithm that is linearithmic in com
 
 The main drawback is that it has $O(n)$ space complexity because an auxiliary sequence has to be created to facilitate the merging process.
 
-~~~ {lang="java" text="merge algorithm"}
+``` java
 public void merge(Comparable[] seq, int lo, int mid, int hi) {
   int i = lo, j = mid + 1;
 
@@ -169,13 +169,13 @@ public void merge(Comparable[] seq, int lo, int mid, int hi) {
     else if (aux[j] < aux[i]) seq[k] = aux[j++];
     else                      seq[k] = aux[i++];
 }
-~~~
+```
 
 ### Top-Down
 
 This is a recursive approach that works by splitting the array into two pieces until the pieces consist of pairs of elements. On each recurrence, the two pieces that were split for that recurrence are merged back.
 
-~~~ {lang="java" text="merge sort – top-down"}
+``` java
 public void sort(Comparable[] seq) {
   aux = new Comparable[seq.length];
   sort(seq, 0, seq.length - 1);
@@ -191,7 +191,7 @@ private void sort(Comparable[] seq, int lo, int hi) {
 
   merge(seq, lo, mid, hi);
 }
-~~~
+```
 
 #### Improvements {#merge-sort-improvements}
 
@@ -209,7 +209,7 @@ The other approach to merge sort is bottom-up, that is, starting with arrays con
 
 One **advantage** of bottom-up merge sort is that it can be modified to perform on linked-lists **in place**.
 
-~~~ {lang="java" text="merge sort – bottom-up"}
+``` java
 public void sort(Comparable[] seq) {
   int N = seq.length;
   aux = new Comparable[N];
@@ -218,7 +218,7 @@ public void sort(Comparable[] seq) {
     for (int lo = 0; lo < N - sz; lo += sz + sz)
       merge(seq, lo, lo + sz - 1, min(lo + sz + sz - 1, N - 1));
 }
-~~~
+```
 
 ## Quick Sort
 
@@ -233,7 +233,7 @@ Space  $O(\lg{n})$
 
 This is a divide-and-conquer algorithm that works by essentially partitioning the array into two sub-arrays and sorting them independently. It is typically faster than merge sort because it does less data movement.
 
-~~~ {lang="java" text="quick sort <a href=\"http://www.sorting-algorithms.com/quick-sort\">visualize</a>"}
+``` java
 public void sort(Comparable[] seq) {
   shuffle(seq);
   sort(seq, 0, seq.length - 1);
@@ -247,7 +247,7 @@ private void sort(Comparable[] seq, int lo, int hi) {
   sort(seq, lo, j - 1);
   sort(seq, j + 1, hi);
 }
-~~~
+```
 
 The partition algorithm is similar to merge in merge sort in that it is what actually does the sorting.
 
@@ -263,7 +263,7 @@ The partition algorithm is similar to merge in merge sort in that it is what act
 
 The sorting algorithm then recurses on the two partitions.
 
-~~~ {lang="java" text="partition algorithm"}
+``` java
 private int partition(Comparable[] seq, int lo, int hi) {
   int i = lo, j = hi + 1;
   Comparable v = a[lo];
@@ -280,7 +280,7 @@ private int partition(Comparable[] seq, int lo, int hi) {
   swap(seq[lo], seq[j]);
   return j;
 }
-~~~
+```
 
 ### Improvements {#quick-sort-improvements}
 
@@ -288,15 +288,15 @@ private int partition(Comparable[] seq, int lo, int hi) {
 
     Instead of:
 
-    ~~~ {lang="java"}
+    ``` java
     if (hi <= lo) return;
-    ~~~
+    ```
 
     use:
 
-    ~~~ {lang="java"}
+    ``` java
     if (hi <= lo + M) { insertionSort(seq, lo, hi); return; }
-    ~~~
+    ```
 
     where `M` is the cutoff. Recommended sizes are between 5 and 15.
 
@@ -329,7 +329,7 @@ One problem with quick sort as it is implemented above is that items with keys e
 
 Quick sort performs a lot better than merge sort in sequences that have duplicate keys. Its time is reduced from linearithmic to linear for sequences with large numbers of duplicate keys.
 
-~~~ {lang="java" text="three-way partitioning"}
+``` java
 private void sort(Comparable[] seq, int lo, int hi) {
   if (hi <= lo) return;
 
@@ -347,7 +347,7 @@ private void sort(Comparable[] seq, int lo, int hi) {
   sort(seq, lo, lt - 1);
   sort(seq, gt + 1, hi);
 }
-~~~
+```
 
 ## Priority Queues
 
@@ -376,14 +376,14 @@ To insert into the heap:
 2. increment heap size
 3. swim up the heap to restore heap order
 
-~~~ {lang="java" text="swim"}
+``` java
 private void swim(Comparable[] seq, int k) {
   while (k > 1 && seq[k / 2] < seq[k]) {
     swap(seq[k / 2], seq[k]);
     k = k / 2;
   }
 }
-~~~
+```
 
 #### Removal {#priority-queue-removal}
 
@@ -402,7 +402,7 @@ To remove the maximum from the heap:
 3. decrement heap size
 4. sink down the heap to restore heap order
 
-~~~ {lang="java" text="sink"}
+``` java
 private void sink(Comparable[] seq, int k) {
   while (2 * k <= N) {
     int j = 2 * k;
@@ -414,7 +414,7 @@ private void sink(Comparable[] seq, int k) {
     k = j
   }
 }
-~~~
+```
 
 ### Heap Sort
 
@@ -442,7 +442,7 @@ Assuming a maximum-oriented priority queue, the sorting is then accomplished by:
 3. sink the new root
 4. repeat 1-3 until the priority queue becomes empty
 
-~~~ {lang="java" text="heap sort"}
+``` java
 public void sort(Comparable[] seq) {
   int N = seq.length;
 
@@ -454,7 +454,7 @@ public void sort(Comparable[] seq) {
     sink(seq, 1, N);
   }
 }
-~~~
+```
 
 ## Selection
 
@@ -468,7 +468,7 @@ Average $\Theta(n)$
 
 Selecting the $k$ smallest items in a sequence can be accomplished by using the quick sort algorithm's partition algorithm. This is guaranteed by the invariant held by quick sort's partition algorithm which states that given the partition index $j$, all elements to the left are less than or equal to $j$ and all elements to the right are greater than or equal to $j$, effectively making the sub-sequence up to $j$ consist of the smallest $j$ elements in the sequence.
 
-~~~ {lang="java" text="selection"}
+``` java
 public Comparable select(Comparable[] seq, int k) {
   shuffle(seq);
 
@@ -484,7 +484,7 @@ public Comparable select(Comparable[] seq, int k) {
 
   return seq[k];
 }
-~~~
+```
 
 # Searching
 
@@ -528,7 +528,7 @@ To delete node $z$:
 
 The transplant operation can be handled by simply associating the parent with the new child and vice versa:
 
-~~~ {lang="c"}
+``` c
 void replace_node(tree *t, node *u, node *v) {
   if (u->p == t->nil)
     t->root = v;
@@ -541,7 +541,7 @@ void replace_node(tree *t, node *u, node *v) {
   if (v != NULL)
     v->p = u->p;
 }
-~~~
+```
 
 ## 2-3 Search Trees {#two-three-search-trees}
 
@@ -621,25 +621,25 @@ Note that scenarios 1 and 3 violate the properties of red-black trees.
 
 **First**, the inserted node may be the only node in the tree, making it the root. Since all nodes are inserted as **red**, it should be repainted **black** to satisfy property **2** (root is **black**):
 
-~~~ {lang="c"}
+``` c
 void insert_case1(node *n) {
   if (n->parent == NULL)
     n->color = BLACK;
   else
     insert_case2(n);
 }
-~~~
+```
 
 **Second**, if the parent of the inserted node is **black**, the insertion is complete because it is not possible for that to have violated any of the properties:
 
-~~~ {lang="c"}
+``` c
 void insert_case2(node *n) {
   if (n->parent->color == BLACK)
     return;
   else
     insert_case3(n);
 }
-~~~
+```
 
 **Third**, it is possible that the inserted node creates two consecutive **red** nodes, violating property **3** (both children of **red** nodes are **black**). For this, there are three different scenarios:
 
@@ -651,7 +651,7 @@ C.  new node and parent lean in the same direction
 
 <img src="/images/notes/algorithms/red-black-trees/insert_1.png" class="center">
 
-~~~ {lang="c"}
+``` c
 void insert_case3a(node *n) {
   node *u = uncle(n), *g;
 
@@ -666,7 +666,7 @@ void insert_case3a(node *n) {
   } else
     insert_case4(n);
 }
-~~~
+```
 
 **Second**, the new node could be added diagonal to a **red** parent node, meaning for example the parent node being **red** and the **left child** of its parent and the new node could be **red** (as always) and the **right child** of its parent.
 
@@ -676,7 +676,7 @@ There are still consecutive **red** nodes after this rotation, albeit leaning in
 
 <img src="/images/notes/algorithms/red-black-trees/insert_2.png" class="center">
 
-~~~ {lang="c"}
+``` c
 void insert_case3b(node *n) {
   node *g = grandparent(n);
 
@@ -690,7 +690,7 @@ void insert_case3b(node *n) {
 
   insert_case5(n);
 }
-~~~
+```
 
 **Third**, the new node could be added below a **red** parent node and leaning in the same direction. For example, the new node is the **left child** of its parent and its parent is the **left child** of its parent (grandparent of the new node) as well.
 
@@ -700,7 +700,7 @@ The grandparent was known to be **black**, since the **red** parent could not ha
 
 <img src="/images/notes/algorithms/red-black-trees/insert_3.png" class="center">
 
-~~~ {lang="c"}
+``` c
 void insert_case3c(node *n) {
   node *g = grandparent(n);
 
@@ -712,7 +712,7 @@ void insert_case3c(node *n) {
   else
     rotate_left(g);
 }
-~~~
+```
 
 ### Deletion {#red-black-tree-deletion}
 
@@ -722,7 +722,7 @@ Every resource I looked at---books, sites, university slides---simply hand-waive
 
 **First**, if the node to be deleted has two children then it is replaced by its successor. The successor then has to be deleted, and by definition the successor will have at most one non-leaf child, otherwise it would not be the minimum in that subtree and the left child would have been followed.
 
-~~~ {lang="c"}
+``` c
 void delete(node *m, void *key) {
   if (node == NULL) return;
 
@@ -734,26 +734,26 @@ void delete(node *m, void *key) {
       node *c = minimum_node(m->right);
       m->key = c->key;
       delete(c, c->key);
-~~~
+```
 
 **Second**, if the node to be deleted has one child, simply replace the successor with its child.
 
-~~~ {lang="c"}
+``` c
     } else if (m->left != NULL || m->right != NULL) {
       // replace with child, delete child
       delete_one_child(m);
-~~~
+```
 
 **Third**, if the node to be deleted has no children, then it is possible to simply delete it.
 
-~~~ {lang="c"}
+``` c
     } else {
       // no children, just delete
       free(m);
     }
   }
 }
-~~~
+```
 
 #### Balance {#red-black-tree-deletion-balance}
 
@@ -768,30 +768,30 @@ If the node is replaced with a successor, that successor is essentially removed 
 
 **First**, if $M$ is **red**, then simply replace it with its child $C$ which must be **black** by property 4 (both children of **red** nodes are **black**). Any paths that passed through the deleted node will simply pass through one fewer **red** node, maintaining balance:
 
-~~~ {lang="c"}
+``` c
 void delete_one_child(node *n) {
   node *child = is_leaf(n->right) ? n->left : n->right;
 
   replace_node(n, child);
-~~~
+```
 
 **Second**, if $M$ is **black** and $C$ is **red**, paint $C$ **black** and put it in $M$'s place. This preserves the same amount of **black** nodes along that path:
 
-~~~ {lang="c"}
+``` c
   if (n->color == BLACK)
     if (child->color == RED)
       child->color = BLACK;
-~~~
+```
 
 **Third**, the most complex case is when both $M$ and $C$ are **black**. Replacing one with the other effectively removes one black node along that path, unbalancing the tree. Begin by replacing $M$ with its child $C$, then proceed to the first re-balancing case:
 
-~~~ {lang="c"}
+``` c
     else
       delete_case1(child);
 
   free(n);
 }
-~~~
+```
 
 When both $M$ and $C$ are **black** nodes, four situations [^rbtree_case_merge] can arise that require re-balancing, unless $C$'s new position $N$ is the new root. If $C$ becomes the root it simply means that a **black** node was removed from all paths, effectively decreasing the black-height of every path by one and the tree therefore requires no re-balancing.
 
@@ -799,7 +799,7 @@ When both $M$ and $C$ are **black** nodes, four situations [^rbtree_case_merge] 
 
 <img src="/images/notes/algorithms/red-black-trees/delete_1.png" class="center">
 
-~~~ {lang="c"}
+``` c
 void delete_case1(node *n) {
   if (n->parent == NULL) return;
 
@@ -817,7 +817,7 @@ void delete_case1(node *n) {
 
   delete_case2(n);
 }
-~~~
+```
 
 **Second**: $P$, $S$, and $S$'s children are all **black**. Repaint $S$ **red** so that all paths passing through $S$ have the same black-height as those that go through $N$.
 
@@ -829,7 +829,7 @@ If $P$ is **red**, then the tree is violating property **4** (both children of *
 
 Otherwise, if $P$ was already **black**, however, then after the painting of $S$ to **red**, $P$ now has effectively lost one level from its black-height, so case 1 should be applied to $P$:
 
-~~~ {lang="c"}
+``` c
 void delete_case2(node *n) {
   node *s = sibling(n);
 
@@ -845,13 +845,13 @@ void delete_case2(node *n) {
   } else
     delete_case3(n);
 }
-~~~
+```
 
 **Third**: $S$ is **black**, $S_{L}$ is **red**, $S_{R}$ is **black**, $N$ is left child of its $P$. Rotate $S$ right, then exchange colors of $S$ and its new parent. This case just prepares the tree for falling into case 6, since $N$ now has a **black** sibling---$S_{L}$---whose right child is **red**.
 
 <img src="/images/notes/algorithms/red-black-trees/delete_3.png" class="center">
 
-~~~ {lang="c"}
+``` c
 void delete_case3(node *n) {
   node *s = sibling(n);
 
@@ -867,7 +867,7 @@ void delete_case3(node *n) {
 
   delete_case4(n);
 }
-~~~
+```
 
 **Fourth**: $S$ is **black**, $S_{R}$ is **red**, $N$ is left child of its $P$. Rotate $P$ left, exchange colors of $P$ and $S$, and make $S_{R}$ **black**.
 
@@ -875,7 +875,7 @@ This unbalances the tree by increasing black-height of paths through $N$ by one 
 
 <img src="/images/notes/algorithms/red-black-trees/delete_4.png" class="center">
 
-~~~ {lang="c"}
+``` c
 void delete_case4(node *n) {
   node *s = sibling(n);
 
@@ -890,7 +890,7 @@ void delete_case4(node *n) {
     rotate_right(n->parent);
   }
 }
-~~~
+```
 
 ## Interval Trees
 
@@ -1071,7 +1071,7 @@ Adjacency lists have the best balance between space and time performance. They h
 
 Depth-First Search (DFS) is a graph traversal algorithm that visits a vertex, marks that vertex as visited, then visits all unmarked adjacent vertices.
 
-~~~ {lang="cpp" text="depth-first search"}
+``` cpp
 void dfs(const Graph &G, int v) {
   marked[v] = true;
   count++;
@@ -1082,7 +1082,7 @@ void dfs(const Graph &G, int v) {
       dfs(G, w);
     }
 }
-~~~
+```
 
 To trace the paths in the graph, an array can be kept of size $V$ indexed by a given vertex whose value is the vertex that connects to it. This array of edges represents a tree rooted at the source vertex.
 
@@ -1095,7 +1095,7 @@ Breadth-First Search (BFS) traversal aids in finding the shortest path between t
 3. mark and enqueue all adjacent vertices
 4. repeat 2-3 until the queue is empty
 
-~~~ {lang="cpp" text="breadth-first search"}
+``` cpp
 void bfs(const Graph &G, int s) {
   queue<int> vertexQueue;
   marked[s] = true;
@@ -1112,7 +1112,7 @@ void bfs(const Graph &G, int s) {
       }
   }
 }
-~~~
+```
 
 ### Connected Components
 
@@ -1120,7 +1120,7 @@ Depth-First Search can also be used to find connected components of a graph. Thi
 
 A run of DFS finds, and thus marks, every vertex in a connected component. Upon completing such a run, a counter variable signifying the connected componenet identifier is incremented and then it is called on the next unmarked vertex in the graph, i.e. a vertex not in a connected component found so far.
 
-~~~ {lang="cpp" text="finding connected components"}
+``` cpp
 void findConnectedComponents(const Graph &G) {
   vector<int> id(G.V());
   vector<bool> marked(G.V());
@@ -1141,7 +1141,7 @@ void dfs(const Graph &G, int v) {
     if (!marked[w])
       dfs(G, w);
 }
-~~~
+```
 
 Compared to [Union-Find](#dynamic-connectivity), the DFS approach is theoretically faster because it provides a constant-time guarantee. However, in practice the difference is negligible and Union-Find tends to be faster because it doesn't have to build a full representation of a graph. Perhaps more importantly, the DFS approach has to preprocess the graph by running DFS on the separate connected components. As a result, Union-Find is an online algorithm where it can be queried even while new edges are added without having to re-preprocess the graph.
 
@@ -1149,7 +1149,7 @@ Compared to [Union-Find](#dynamic-connectivity), the DFS approach is theoretical
 
 DFS can also be used to determine if there are cycles present in a graph. This is accomplished by keeping track of the vertex previous to the one being focused on by the DFS. If one of the current vertex' neighbors is already marked and it is not the previous vertex, then it means that there is an edge to an already marked vertex, thus forming a cycle.
 
-~~~ {lang="cpp" text="cycle detection"}
+``` cpp
 bool detectCycles(const Graph &G) {
   for (int s = 0; s < G.V(); s++)
     if (!marked[s])
@@ -1165,7 +1165,7 @@ bool dfs(const Graph &G, int v, int u) {
     else if (w != u)
       hasCycle = true;
 }
-~~~
+```
 
 ### Bipartite Detection
 
@@ -1173,7 +1173,7 @@ DFS can also be used to determine whether or not the graph is bipartite. Another
 
 This is accomplished by maintaining a vertex-indexed array that will store that vertex' color. As DFS traverses the graph, it will alternate the color of every vertex it visits. The graph starts out as assumed to be bipartite, and only if DFS encounters a marked vertex whose color is the same as the current vertex does it conclude that the graph is not bipartite.
 
-~~~ {lang="cpp" text="bipartite detection"}
+``` cpp
 bool bipartiteDetect(const Graph &G) {
   for (int s = 0; s < G.V(); s++)
     if (!marked[s])
@@ -1189,7 +1189,7 @@ bool dfs(const Graph &G, int v) {
       dfs(G, w);
     } else if (color[w] == color[v]) isBipartite = false;
 }
-~~~
+```
 
 ## Directed Graphs
 
@@ -1211,7 +1211,7 @@ A digraph with no directed cycles is known as a directed acyclic graph (DAG). Fo
 
 Directed cycle detection is accomplished by maintaining a boolean array representing whether or not a directed path belongs to the same connected component. Then during DFS if the encountered vertex is already marked and is part of the same component, it returns the path from the current vertex through the cycle back to the current vertex. If no such cycle exists, the graph is a DAG.
 
-~~~ {lang="cpp" text="directed cycle detection"}
+``` cpp
 void dfs(const Graph &G, int v) {
   onStack[v] = true;
   marked[v] = true;
@@ -1234,7 +1234,7 @@ void dfs(const Graph &G, int v) {
 
   onStack[v] = false;
 }
-~~~
+```
 
 ### Topological Order
 
@@ -1261,7 +1261,7 @@ The algorithm can answer the following questions:
 * are two given vertices strongly connected?
 * how many strong components does the digraph contain?
 
-~~~ {lang="cpp" text="kosaraju-sharir algorithm"}
+``` cpp
 void findStrongComponents(const Digraph &G) {
   Digraph reverse = G.reverse();
 
@@ -1280,7 +1280,7 @@ void dfs(const Digraph &G, int v) {
     if (!marked[w])
       dfs(G, w);
 }
-~~~
+```
 
 The algorithm can be understood by considering a kernel DAG, or _condensation digraph_, associated with each digraph, formed by collapsing all vertices in each strong component to a single vertex. This DAG can then be put into reverse topological order. Remember that reverse postorder of a DAG is equivalent to topological sort.
 
@@ -1328,7 +1328,7 @@ Union operates as follows:
 2. goes through the whole array, setting sites which were part of $P$'s component to now be part of $Q$'s
 3. decrements the number of components in the disjoint-set
 
-~~~ {lang="java" text="quick-find"}
+``` java
 public int find(int site) { return id[site]; }
 
 public void union(int p, int q) {
@@ -1342,7 +1342,7 @@ public void union(int p, int q) {
 
   count--;
 }
-~~~
+```
 
 ### Quick-Union
 
@@ -1361,7 +1361,7 @@ This is accomplished by creating a tree-like relationship between sites. With a 
 
 As a result of this, the `find()` operation needs to walk up the tree from any given site to find the root note which designates the component to which the given site belongs to. The walk is terminated when it encounters a site whose component is itself.
 
-~~~ {lang="java" text="quick-union"}
+``` java
 public int find(int p) {
   while (p != id[p]) p = id[p];
   return p;
@@ -1377,7 +1377,7 @@ public void union(int p, int q) {
 
   count--;
 }
-~~~
+```
 
 ### Weighted Quick-Union
 
@@ -1404,7 +1404,7 @@ Weighted Quick-Union fixes this by keeping track of each component's size in a s
 
 In the example above, by step 2, component 1 is size 2, so component 2, being size 1, is merged under component 1 and not the other way around.
 
-~~~ {lang="java" text="weighted quick-union"}
+``` java
 public void union(int p, int q) {
   int i = find(p);
   int j = find(q);
@@ -1416,7 +1416,7 @@ public void union(int p, int q) {
 
   count--;
 }
-~~~
+```
 
 #### Path Compression
 
@@ -1430,14 +1430,14 @@ Union            $\approx 1$
 
 A further improvement can be done called _path compression_ in which every site traversed due to a call to `find()` is directly linked to the component root.
 
-~~~ {lang="java" text="path compression"}
+``` java
 public int find(int p) {
   if (p != id[p])
     id[p] = find(id[p]);
 
   return id[p];
 }
-~~~
+```
 
 ## Minimum Spanning Trees
 
@@ -1464,7 +1464,7 @@ The vertices in the tree being built are represented using a vertex-indexed bool
 
 The act of adding an edge to the tree corresponds to adding a vertex to the tree. When this occurs, all edges from the newly added vertex to all vertices not in the tree must be added to the crossing edges priority queue. Furthermore, any edges previously in the priority queue that connected the newly added vertex to a vertex already in the tree become _ineligible_---otherwise they would create a cycle---and should be ignored or removed.
 
-~~~ {lang="java" text="prim's algorithm"}
+``` java
 void prim(EdgeWeightedGraph G) {
   visit(G, 0); // start at arbitrary vertex
 
@@ -1488,7 +1488,7 @@ void visit(EdgeWeightedGraph G, int v) {
   for (Edge e : G.adj(v))
     if (!marked[e.other(v)]) pq.insert(e);
 }
-~~~
+```
 
 #### Eager Prim's Algorithm {#eager-prims}
 
@@ -1512,7 +1512,7 @@ For each vertex present in the above arrays, the vertex index associated with it
 
 An improvement from the lazy implementation is that the eager implementation uses space proportional to $V$ whereas the lazy implementation uses $E$.
 
-~~~ {lang="java" text="eager prim's algorithm"}
+``` java
 void primEager(EdgeWeightedGraph G) {
   for (int v = 0; v < G.V(); v++) {
     distTo[v] = Double.POSITIVE_INFINITY;
@@ -1540,7 +1540,7 @@ void visit(EdgeWeightedGraph G, int v) {
     }
   }
 }
-~~~
+```
 
 ### Kruskal's Algorithm
 
@@ -1559,7 +1559,7 @@ The implementation uses a priority queue of edges based on their weight, a union
 
 Despite the simplicity of Kruskal's algorithm, it is generally slower than Prim's because it has to check if an edge is already connected using the union-find data structure on each edge that is considered for the MST.
 
-~~~ {lang="java" text="kruskal's algorithm"}
+``` java
 void kruskal(EdgeWeightedGraph G) {
   mst = new Queue<Edge>();
   pq = new MinPQ<Edge>();
@@ -1576,7 +1576,7 @@ void kruskal(EdgeWeightedGraph G) {
     mst.enqueue(e); // add the edge to result
   }
 }
-~~~
+```
 
 ## Shortest Paths
 
@@ -1584,7 +1584,7 @@ The _shortest path_ from vertex $s$ to $t$ in an edge-weighted digraph is a dire
 
 _Edge relaxation_ refers to replacing an existing edge that reaches $w$ with a new edge $v \rightarrow w$ if the new edge makes the path from the source vertex to $w$ be of lower cost than it was previously.
 
-~~~ {lang="java" text="edge relaxation"}
+``` java
 void relax(DirectedEdge e) {
   int v = e.from(), w = e.to();
 
@@ -1593,11 +1593,11 @@ void relax(DirectedEdge e) {
     edgeTo[w] = e;
   }
 }
-~~~
+```
 
 _Vertex relaxation_ is similar to edge relaxation except that it relaxes all of the edges pointing from a given vertex.
 
-~~~ {lang="java" text="vertex relaxation"}
+``` java
 void relax(EdgeWeightedDigraph G, int v) {
   for (DirectedEdge e : G.adj(v)) {
     int w = e.to();
@@ -1608,7 +1608,7 @@ void relax(EdgeWeightedDigraph G, int v) {
     }
   }
 }
-~~~
+```
 
 ### Dijkstra's Algorithm
 
@@ -1625,7 +1625,7 @@ Dijkstra's alrogithm is similar to Prim's algorithm for finding the MST. Dijkstr
 
 Dijkstra's algorithm _requires_ that edges be non-negative.
 
-~~~ {lang="java" text="dijkstra's algorithm"}
+``` java
 void dijkstra(EdgeWeightedDigraph G, int s) {
   for (int v = 0; v < G.V(); v++)
     distTo[v] = Double.POSITIVE_INFINITY;
@@ -1650,7 +1650,7 @@ void relax(EdgeWeightedDigraph G, int v) {
     }
   }
 }
-~~~
+```
 
 To specifically find the shortest path from the source vertex to an arbitrary vertex, simply terminate the search as soon as the target vertex comes off of the priority queue.
 
@@ -1667,7 +1667,7 @@ Space   $O(V)$
 
 Shortest paths can be found much more efficiently in acyclic graphs, specifically, the single-source problem can be solved in linear time, negative edge weights are easily handled, and other related problems such as finding the longest paths are solvable. This is possible by relaxing vertices in topological order.
 
-~~~ {lang="java" text="shortest-paths in DAG"}
+``` java
 void shortestPathAcyclic(EdgeWeightedDigraph G, int s) {
   for (int v = 0; v < G.V(); v++) 
     distTo[v] = Double.POSITIVE_INFINITY;
@@ -1676,7 +1676,7 @@ void shortestPathAcyclic(EdgeWeightedDigraph G, int s) {
   for (int v : G.topologicalOrder())
     relax(G, v);
 }
-~~~
+```
 
 This approach can be used for finding the longest path between two vertices in a DAG, accomplished by creating a copy of the DAG and negating the weight of every edge.
 
@@ -1706,7 +1706,7 @@ A _negative cycle_ is a directed cycle with net negative weight. No shortest pat
 
 To prevent the Bellman-Ford algorithm from looping infinitely due to negative cycles, it has to ensure to terminate after $V$ passes either by keeping track with a counter or by detecting negative cycles within a subgraph.
 
-~~~ {lang="java" text="bellman-ford algorithm"}
+``` java
 void bellmanFord(EdgeWeightedDigraph G, int s) {
   queue.enqueue(s);
   onQ[s] = true;
@@ -1736,13 +1736,13 @@ void relax(EdgeWeightedDigraph G, int v) {
       findNegativeCycle();
   }
 }
-~~~
+```
 
 If the queue is not empty after $V$ passes through each edge then there is a negative cycle. By extension, if a negative cycle is present in a graph, the Bellman-Ford algorithm can end up in an infinite loop, continuously lowering the weight of each affected path.
 
 This is mitigated by checking for negative cycles on every $V^{th}$ call to relax, as on line 26 of the above code listing. On every such interval, a [cycle finder](#directed-cycle-detection) is initiated on the sub-graph denoted by the edges so-far considered by Bellman-Ford.
 
-~~~ {lang="java" text="negative cycle finder"}
+``` java
 void findNegativeCycle() {
   int V = edgeTo.length;
   EdgeWeightedDigraph spt = new EdgeWeightedDigraph(V);
@@ -1755,7 +1755,7 @@ void findNegativeCycle() {
 
   cycle = cf.cycle();
 }
-~~~
+```
 
 ## Constraint Satisfaction Problems
 
@@ -1893,7 +1893,7 @@ Certain properties of strings and alphabets can make for more efficient sorting 
 
 Counting sort, also known as key-indexed counting, essentially involves computing a histogram of the number of occurrences of each character, then regenerating the array in sorted order using that information.
 
-~~~ {lang="java" text="counting sort"}
+``` java
 int N = a.length;
 
 int[] aux = new String[N];
@@ -1914,7 +1914,7 @@ for (int i = 0; i < N; i++)
 // copy back to original array
 for (int i = 0; i < N; i++)
   a[i] aux[i];
-~~~
+```
 
 ### Least Significant Digit Sort
 
@@ -1929,7 +1929,7 @@ Space   $O(N)$
 
 Least Significant Digit (LSD) sort works by sorting the strings based on the last character and then repeating this operation up until the first character. This is accomplished by modifying the counting sort algorithm so that it does a pass for every character in the string. This is mainly useful if all strings are the same length $W$ and relatively small alphabet size $R$.
 
-~~~ {lang="java" text="least significant digit sort"}
+``` java
 void sort(String[] a, int W) {
   int N = a.length;
   int R = 256;
@@ -1956,7 +1956,7 @@ void sort(String[] a, int W) {
       a[i] aux[i];
   }
 }
-~~~
+```
 
 ### Most Significant Digit Sort
 
@@ -1980,7 +1980,7 @@ This order is maintained by keeping a separate count of such strings that have h
 
 On each recursion of the sorting operation, an array for counts is allocated whose size is proportional to the alphabet size, occurrences are counted, transformed to key ranges, and so on. The point is that these operations can come to dominate the sorting operation, which makes having a cutoff for small sub-arrays crucial. After the cutoff, insertion sort takes over, with the slight modification that it only operates on the $d^{th}$ character position onward.
 
-~~~ {lang="java" text="most significant digit sort"}
+``` java
 void charAt(String s, int d) {
   if (d < s.length())
     return s.charAt(d);
@@ -2023,7 +2023,7 @@ void sort(String[] a, int lo, int hi, int d) {
   for (int r = 0; r < R; r++)
     sort(a, lo + count[r], lo + count[r + 1] - 1, d + 1);
 }
-~~~
+```
 
 ### Three-way String QuickSort
 
@@ -2045,7 +2045,7 @@ A direct result of only splitting into three sub-arrays is that more data moveme
 
 Research has shown that no algorithm can beat 3-way string quicksort by more than a constant factor.
 
-~~~ {lang="java" text="string quicksort"}
+``` java
 void stringQuickSort(String[] a, int lo, int hi, int d) {
   if (hi <= lo) return;
 
@@ -2065,7 +2065,7 @@ void stringQuickSort(String[] a, int lo, int hi, int d) {
   if (v >= 0) sort(a, lt, gt, d + 1);
   sort(a, gt + 1, hi, d);
 }
-~~~
+```
 
 ## Tries
 
@@ -2077,7 +2077,7 @@ The structure of tries is comprised of a tree where every node has $R$ _links_ w
 
 A _search hit_ occurs when the trie search arrives at the final node and that node's value is not empty. A _search hit_ occurs both if the final node's value is empty or if the search terminated on a null link.
 
-~~~ {lang="java" text="trie search"}
+``` java
 Value get(String key) {
   Node x = get(root, key, 0);
   if (x == null) return null;
@@ -2090,11 +2090,11 @@ Node get(Node x, String key, int d) {
   char c = key.charAt(d);
   return get(x.next[c], key, d + 1);
 }
-~~~
+```
 
 Trie insertion simply consists of searching for the key and setting the value. If the key does not already exist, then create nodes for every character not yet in the trie.
 
-~~~ {lang="java" text="trie insertion"}
+``` java
 void put(String key, Value val) { root = put(root, key, val, 0); }
 
 Node put(Node x, String key, Value val, int d) {
@@ -2104,11 +2104,11 @@ Node put(Node x, String key, Value val, int d) {
   x.next[c] = put(x.next[c], key, val, d + 1);
   return x;
 }
-~~~
+```
 
 Tries also allow operations for collecting keys with a common prefix. This is accomplished by finding the node at the end of the prefix' path and then recursively performing BFS on every node and enqueueing any node that has a non-empty value.
 
-~~~ {lang="java" text="trie key collection"}
+``` java
 Queue<String> keysWithPrefix(String prefix) {
   Queue<String> q = new Queue<String>();
   collect(get(root, prefix, 0), prefix, q);
@@ -2122,11 +2122,11 @@ void collect(Node x, String prefix, Queue<String> q) {
   for (char c = 0; c < R; c++)
     collect(x.next[c], prefix + c, q);
 }
-~~~
+```
 
 This can also be modified to allow wildcard pattern matches, for example, keys that match `fin.` could include `fine`, `find`, etc.
 
-~~~ {lang="java" text="trie key wildcards"}
+``` java
 Queue<String> keysWithPrefix(String pattern) {
   Queue<String> q = new Queue<String>();
   collect(root, "", pattern, q);
@@ -2145,13 +2145,13 @@ void collect(Node x, String prefix, String pattern, Queue<String> q) {
     if (next == '.' || next == c)
       collect(x.next[c], prefix + c, pattern, q);
 }
-~~~
+```
 
 ### Deletion {#trie-deletion}
 
 Deletion is a straightforward process in tries, simply involving finding the node and emptying its value. If this operation makes the node's parent's children all be null, then the same operation must be run on the parent.
 
-~~~ {lang="java" text="trie deletion"}
+``` java
 void delete(String key) { root = delete(root, key, 0); }
 
 Node delete(Node x, String key, int d) {
@@ -2171,7 +2171,7 @@ Node delete(Node x, String key, int d) {
 
   return null;
 }
-~~~
+```
 
 ### Ternary Search Trees
 
@@ -2179,7 +2179,7 @@ Ternary Search Trees (TSTs) seek to avoid the excessive space cost of regular R-
 
 R-way tries can provide the fastest search, finishing the operation with a constant number of compares. However, space usage increases rapidly with larger alphabets TSTs are preferable, sacrificing a constant number of compares for a logarithmic number of compares.
 
-~~~ {lang="java" text="ternary search tree search"}
+``` java
 Node get(Node x, String key, int d) {
   if (x == null) return null;
   char c = key.charAt(d);
@@ -2190,11 +2190,11 @@ Node get(Node x, String key, int d) {
                     return get(x.mid,   key, d);
   else return x;
 }
-~~~
+```
 
 Insertion is similar to insertion with tries except that only one of three links can be taken, instead of $R$ links.
 
-~~~ {lang="java" text="ternary search tree insertion"}
+``` java
 void put(String key, Value val) { root = put(root, key, val, 0); }
 
 Node put(Node x, String key, Value val, int d) {
@@ -2209,7 +2209,7 @@ Node put(Node x, String key, Value val, int d) {
   else x.val = val;
   return x;
 }
-~~~
+```
 
 ## Substring Search
 
@@ -2221,7 +2221,7 @@ The most straightforward approach is a brute-force algorithm where every charact
 
 If any character in the pattern matches during this check, the pattern iterator is not incremented and instead the text iterator is set back the amount of spaces equal to the pattern iterator, which essentially moves the text iterator one position past the position where the match checking was initiated. The pattern iterator is then reset to zero.
 
-~~~ {lang="java" text="brute-force substring search"}
+``` java
 int search(String pattern, String text) {
   int j, M = pattern.length();
   int i, N = text.length();
@@ -2238,7 +2238,7 @@ int search(String pattern, String text) {
   if (j == M) return i - M;
   else        return N;
 }
-~~~
+```
 
 ### Knuth-Morris-Pratt
 
@@ -2258,19 +2258,19 @@ In a normal brute-force algorithm when a pattern matching a segment of the text 
 
 For example, the following mismatches at position 4:
 
-~~~
+```
 0 1 2 3 4 5
 A B C D E F
 A B C D F
-~~~
+```
 
 So in a brute-force algorithm the pattern would have to be shifted to the right by one position:
 
-~~~
+```
 0 1 2 3 4 5
 A B C D E F
   A B C D F
-~~~
+```
 
 However, this essentially means that the text segment from position 1 to 3 has to be rechecked, which we would prefer to avoid. The important observation to make is that the text had _already matched_ the pattern _up to_ (but not including) position `j` where the mismatch occurred. That is, the text segment `t[i .. i + j - 1]` is equal to `p[0 .. j - 1]` where `p` is the pattern. Since we would have to shift to the right one character, this means that the text that would have to be rechecked corresponds to `p[1 .. j - 1]`. Feeding this to the DFA takes us to the state where we can appropriately handle `t[i + j]`.
 
@@ -2286,7 +2286,7 @@ Given the important observation above, the construction of the DFA is very strai
     2. a match transition is created for the current pattern character
     3. the pointer to the fall-back state is updated to the state arrived at by following the transition corresponding to the current pattern character from the previous fall-back state
 
-~~~ {lang="java" text="DFA construction"}
+``` java
 void constructDFA(int[][] dfa, String pattern) {
   dfa[pattern.charAt(0)][0] = 1;
 
@@ -2298,13 +2298,13 @@ void constructDFA(int[][] dfa, String pattern) {
     X = dfa[pattern.charAt(j)][X];
   }
 }
-~~~
+```
 
 #### KMP Search {#kmp-search}
 
 Now that the DFA is constructed, a string can be searched easily. It simply iterates the text pointer on each iteration, while the pattern's pointer iterates based on the output from the DFA given the current text character as input. Iteration ends when the full length of either the text or the pattern is exhausted. If the full pattern was consumed then there was a match and the pointer to the start of the match is returned.
 
-~~~ {lang="java" text="KMP search"}
+``` java
 int search(String text, String pattern) {
   int i, j, N = text.length(), M = pattern.length();
   
@@ -2314,7 +2314,7 @@ int search(String text, String pattern) {
   if (j == M) return i - M;
   else        return N;
 }
-~~~
+```
 
 ### Boyer-Moore
 
@@ -2326,7 +2326,7 @@ The mismatched character heuristic makes use of the aforementioned skip table. T
 
 The table is constructed by first setting all entries to -1, then for every character in the pattern, set that character's entry to its position in the pattern.
 
-~~~ {lang="java" text="skip table construction"}
+``` java
 void constructSkipTable(String pattern) {
   int[] right = new int[R];
 
@@ -2336,7 +2336,7 @@ void constructSkipTable(String pattern) {
   for (int j = 0; j < M; j++)
     right[pattern.charAt(j)] = j;
 }
-~~~
+```
 
 #### Search {#bm-search}
 
@@ -2348,7 +2348,7 @@ The searching algorithm, as previously stated, iterates the text pointer `i` fro
 
 The above cases are handled with the simple statement `skip = j - right[text.charAt(i + j)]`. Case 1 is handled because characters not present in the pattern are stored as -1 in the table, thereby turning the statement into `skip = j + 1`. Case 2 is handled normally by finding the right-most occurrence' position of `c` in the table and subtracting that from `j`. Case 3 is handled by simply checking if `skip` is less than one and if so setting it to one. If `skip` was never changed from its initial value of zero, then a match was found.
 
-~~~ {lang="java" text="boyer-moore search"}
+``` java
 int search(String text, String pattern) {
   int N = text.length();
   int M = pattern.length();
@@ -2371,20 +2371,20 @@ int search(String text, String pattern) {
 
   return N;
 }
-~~~
+```
 
 ### Rabin-Karp
 
 The Rabin-Karp algorithm conceptually works by computing a hash of the pattern and then hashing every equal-lengthed substring in the text to find a match. The key idea is that a string of length $M$ corresponds to an $M$-digit base-$R$ number. So a proper hash function would convert an $M$-digit base-$R$ number to an integer value between $0$ and $Q - 1$ where $Q$ is some very large prime number. This is possible with a simple modular hashing scheme, by taking the remainder of dividing the number by $Q$.
 
-~~~ {lang="java" text="modular hash function via horner's method"}
+``` java
 long hash(String key, int M) {
   long h = 0;
   for (int j = 0; j < M; j++)
     h = (R * h + key.charAt(j)) % Q;
   return h;
 }
-~~~
+```
 
 The problem with using the above approach for the text is that it incurs the cost of multiplication, addition, and remainder calculations for _each character_. Instead, for an $M$-character substring of the text where $t_i$ corresponds to `text.charAt(i)` the hash $x_i$ can be computed as:
 
@@ -2396,7 +2396,7 @@ $$ x_{i + 1} = \left( x_i - t_i R^{M - 1} \right) R + t_{i + M} $$
 
 That is, the original hash minus the hash component of the first character of the previous text, plus the hash component of the new ending character.
 
-~~~ {lang="java" text="rabin-karp"}
+``` java
 int search(String pattern, String text) {
   int M = pattern.length();
   long Q = longRandomPrime();
@@ -2424,7 +2424,7 @@ int search(String pattern, String text) {
 // return true for Monte Carlo
 // or check pattern vs text[i .. i - M + 1] for Las Vegas
 boolean check(int i) { return true; }
-~~~
+```
 
 ## Regular Expressions
 
@@ -2458,7 +2458,7 @@ From this information, it is possible to create an algorithm that determines whe
 
 First, the set of states reachable via $\epsilon$-transitions from the start state are collected:
 
-~~~ {lang="java"}
+``` java
 boolean match(String text) {
   Bag<Integer> pc = new Bag<Integer>();
   DirectedDFS dfs = new DirectedDFS(G, 0);
@@ -2468,19 +2468,19 @@ boolean match(String text) {
 
   for (int i = 0; i < text.length(); i++) {
     Bag<Integer> matches = new Bag<Integer>();
-~~~
+```
 
 As the text is fed into the NFA one character at a time, the set of reachable states is checked for a match with the current character. For each match, its next state is added to the collection of matches representing the set of states reachable from the current state(s).
 
-~~~ {lang="java"}
+``` java
     for (int v : pc)
       if (v < M && re[v] == text.charAt(i) || re[v] == '.')
         matches.add(v + 1);
-~~~
+```
 
 Each of the states reachable via $\epsilon$-transitions from each of the states collected are added to the collection:
 
-~~~ {lang="java"}
+``` java
     pc = new Bag<Integer>();
     dfs = new DirectedDFS(G, matches);
 
@@ -2488,18 +2488,18 @@ Each of the states reachable via $\epsilon$-transitions from each of the states 
       if (dfs.marked(v))
         pc.add(v);
   }
-~~~
+```
 
 Once the entire text has been consumed, the final iteration of the above loop would leave the final set of reachable states intact. If this set contains the final, _accept_ state, then the NFA accepts the text. Otherwise, there wasn't a match.
 
-~~~ {lang="java" text="regular expression matching"}
+``` java
   for (int v : pc)
     if (v == M)
       return true;
 
   return false;
 }
-~~~
+```
 
 ### NFA Construction {#regex-nfa-construction}
 
@@ -2507,7 +2507,7 @@ The construction of the NFA is accomplished similar to how Djikstra's [shunting-
 
 In this context, a stack is maintained for the operators and a digraph the size of the length of the pattern plus one (to account for the accept state) is maintained to represent the NFA's $\epsilon$-transitions. _Concatenation_ is already handled implicitly by nature of how the pattern is stored.
 
-~~~ {lang="java"}
+``` java
 Digraph NFA(String regex) {
   Stack<Integer> ops = new Stack<Integer>();
   re = regex.toCharArray();
@@ -2516,18 +2516,18 @@ Digraph NFA(String regex) {
 
   for (int i = 0; i < M; i++) {
     int lp = i;
-~~~
+```
 
 For _parentheses_ and _or expressions_, the position of the `(` or `|` is pushed.
 
-~~~ {lang="java"}
+``` java
     if (re[i] == '(' || re[i] == '|')
       ops.push(i);
-~~~
+```
 
 If a `)` is encountered and it signified the end of an _or expression_, then the appropriate edges must be created. A regex `(A | B)` is handled by adding two $\epsilon$-transitions: one from the `(` to the `B` and the other from the `|` to the `)`. Push the position of the `|` (having previously pushed the `(`).
 
-~~~ {lang="java"}
+``` java
     else if (re[i] == ')') {
       int or = ops.pop();
 
@@ -2537,27 +2537,27 @@ If a `)` is encountered and it signified the end of an _or expression_, then the
         G.addEdge(or, i);
       } else lp = or;
     }
-~~~
+```
 
 _Closures_ are detected by looking ahead of the current state (if possible). If one is found, then an edge is created to the `*` and another is created from the `*` to the current state.
 
-~~~ {lang="java"}
+``` java
     if (i < M - 1 && re[i + 1] == '*') {
       G.addEdge(lp, i + 1);
       G.addEdge(i + 1, lp);
     }
-~~~
+```
 
 Finally, `)`, `*`, and `)` each also have an $\epsilon$-transition leading to the next state in the pattern.
 
-~~~ {lang="java" text="NFA construction"}
+``` java
     if (re[i] == '(' || re[i] == '*' || re[i] == ')')
       G.addEdge(i, i + 1);
   }
 
   return G;
 }
-~~~
+```
 
 ## Data Compression
 
@@ -2567,15 +2567,15 @@ Universally good lossless data compression is impossible because, for example, i
 
 Run-Length Encoding (RLE) is a classic method of encryption that replaces repeat occurrences of characters with their repeat count. For example, the following consists of 15 zeros, 7 ones, 7 zeros, and 11 ones:
 
-~~~
+```
 0000000000000001111111000000011111111111
-~~~
+```
 
 With RLE, given a count size of 4 bits, it can be replaced with 15 (`1111`), 7 (`0111`), 7, and 11 (`1011`):
 
-~~~
+```
 1111011101111011
-~~~
+```
 
 In general, each count is encoded in one byte. If a run of repeated characters is greater than the maximum size representable by the count size (i.e. 255), the first 255 is encoded, then a zero-lengthed run of the alternate character, then again the next chunk of the original long repeated character.
 
@@ -2591,7 +2591,7 @@ Prefix-free codes can be easily represented using a trie where left links are `0
 
 Constructing the trie consists of first creating a forest of 1-node trees---all of which are leaves---one for each character in the input, with its frequency variable set to the number of times it appears in the input. The trie is then constructed from the bottom-up by merging the two least frequent characters (nodes) with a new parent node with its frequency set to their sum. This is greatly facilitated by a priority queue:
 
-~~~ {lang="java" text="trie construction"}
+``` java
 Node buildTrie(int[] freq) {
   MinPQ<Node> pq = new MinPQ<Node>();
 
@@ -2609,7 +2609,7 @@ Node buildTrie(int[] freq) {
 
   return pq.delMin();
 }
-~~~
+```
 
 The way in which the trie is constructed ensures that the more frequent characters (nodes) are closer to the root, and as a result are encoded with fewer bits.
 
@@ -2631,7 +2631,7 @@ LZW _compression_ works by having variable-length code words for fixed-length in
 1. the longest prefix of the input present in the trie is found and its value output to the compressed stream
 2. if the length of the prefix is shorter than the remaining input length, a new code is added for the string consisting of the prefix concatenated with the next character in the input stream. This is a simple operation, essentially done by adding a new node with the new code to the node at which the prefix ends
 
-~~~ {lang="java" text="LZW compression"}
+``` java
 void compress(String input) {
   TST<Integer> st = new TST<Integer>();
 
@@ -2654,7 +2654,7 @@ void compress(String input) {
   BinaryStdOut.write(R, W);
   BinaryStdOut.close();
 }
-~~~
+```
 
 _Decompression_ depends on a table indexed by codes and valued by strings (prefixes), this is constructed from the alphabet. The code of the first character in the input stream is read and its associated string is retrieved from the table. Decompression continues until the EOF character is encountered, on each iteration doing the following:
 
@@ -2664,7 +2664,7 @@ _Decompression_ depends on a table indexed by codes and valued by strings (prefi
 4. if the current code counter is equal to the next (lookahead) code---therefore making it impossible to read what the next code's first character is, since it's in the process of being constructed---then first character of the string currently being constructed is appended to its end, following basic logic
 5. a new code is added to the table at an incremented code corresponding to the previously read string concatenated with the first character of the current string's first character
 
-~~~ {lang="java" text="LZW decompression"}
+``` java
 void decompress() {
   String[] st = new String[L];
   int codeword = BinaryStdIn.readInt(W);
@@ -2696,7 +2696,7 @@ void decompress() {
 
   BinaryStdOut.close();
 }
-~~~
+```
 
 # Context
 
@@ -2710,7 +2710,7 @@ A B-Trees of order $M$ is a tree consisting of internal and external $k$-nodes e
 
 To insert a key, the tree is recursively descended by following the link pertaining to the interval upon which the inserted key falls until an external node is reached. The tree is balanced on the way up the tree after the recursive call. If a node is full it is split into two $M/2$-nodes and attached to a parent 2-node (if at the root) or a $(k + 1)$-node where $k$ was the original size of the full node's parent. Whenever a node is split, the smallest key in the new node (or both smallest keys from both nodes if at the root) is inserted into the parent node.
 
-~~~ {lang="java" text="B-Tree insertion"}
+``` java
 void add(Key key) {
   add(root, key);
 
@@ -2735,13 +2735,13 @@ void add(Page h, Key key) {
 
   next.close();
 }
-~~~
+```
 
 ## Suffix Arrays
 
 Suffix arrays are arrays of suffixes of a given text which help with procedures such as finding the longest repeated substring in some text.
 
-~~~ {lang="java" text="suffix array"}
+``` java
 class SuffixArray {
   private final String[] suffixes;
   private final int N;
@@ -2764,11 +2764,11 @@ class SuffixArray {
   public String select(int i) { return suffixes[i]; }
   public int index(int i) { return N - suffixes[i].length(); }
 }
-~~~
+```
 
 Using this suffix array class, the longest repeated substring can be found efficiently:
 
-~~~ {lang="java" text="longest repeated substring"}
+``` java
 void main(String[] args) {
   String text = StdIn.readAll();
   int N = text.length();
@@ -2783,7 +2783,7 @@ void main(String[] args) {
 
   StdOut.println(lrs);
 }
-~~~
+```
 
 ## Network-Flow
 

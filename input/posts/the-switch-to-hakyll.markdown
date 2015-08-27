@@ -5,9 +5,9 @@ excerpt = "Migrating from Jekyll to Hakyll"
 tags = [ "Hakyll", "Haskell", "Pandoc" ]
 ---
 
-* toc
-
 This site was originally built with [Jekyll](http://jekyllrb.com/). Technically I began with the pre-packaged distribution known as [Octopress](http://octopress.org/) which offered a Rakefile for common tasks as well as an out-of-the-box directory structure. I didn't use many of these features, however, so I had been wanting to shed traces of Octopress, partly motivated by the pursuit of increased speed in site generation. I found the opportunity to do this when Jekyll 1.0 was released recently.
+
+::toc::
 
 To cut away the unnecessary components of Octopress, I decided to go through every file and keep only what I absolutely needed. This is evident in commits after [`712168ec`](https://github.com/blaenk/blaenk.github.com.jekyll/commit/712168ec33004b693cc8cfb553a6a861da6a8708).
 
@@ -103,7 +103,7 @@ To accomplish this, I had to implement what was essentially a mirror copy of [Ha
 getResourceString >>= withItemBody (shellFilter "sass -s --scss")
 ```
 
-### Abbreviations {#abbreviations}
+### Abbreviations
 
 One feature I missed from [kramdown](http://kramdown.rubyforge.org/) that wasn't available in my new markdown processor, [Pandoc](http://johnmacfarlane.net/pandoc/), was abbreviation substitution. It consists of writing abbreviation definitions which are then used to turn every occurrence of the abbreviation into a proper [`abbr`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/abbr) HTML tag with an accompanying tooltip consisting of the definition.
 
@@ -160,7 +160,7 @@ There is actually work towards implementing abbreviation substitution according 
 
 > Note that the pandoc document model does not support abbreviations, so if this extension is enabled, abbreviation keys are simply skipped (as opposed to being parsed as paragraphs).
 
-### Pygments {#pygments}
+### Pygments
 
 **Update**: This has been through two redesigns since this was written. The first involved an fs-backed caching system, but this was still too slow, since the bottleneck seemed to be caused by continuously spawning a new pygmentize process. Most recently I've created a pygments server that the site opens alongside it at launch, and this Pandoc AST transformer communicates with it through its stdout/stdin handles. It works perfectly and the site compiles a lot quicker. It also fully supports UTF-8:
 
@@ -204,7 +204,7 @@ pygments (CodeBlock (_, _, namevals) contents) =
       text = fromMaybe "" $ lookup "text" namevals
       colored = renderHtml $ H.div ! A.class_ "code-container" $ do
                   preEscapedToHtml $ pygmentize lang contents
-      caption = if text /= "" 
+      caption = if text /= ""
                 then renderHtml $ H.figcaption $ H.span $ H.toHtml text
                 else ""
       composed = renderHtml $ H.figure ! A.class_ "code" $ do
@@ -213,7 +213,7 @@ pygments (CodeBlock (_, _, namevals) contents) =
 pygments x = x
 ```
 
-### Table of Contents {#table-of-contents}
+### Table of Contents
 
 The more sophisticated and complex of the AST transformers I wrote for Pandoc is table of contents generation. This is something that kramdown had out of the box, though not as fancy. Paired with automatic id generation for headers, this meant that simply placing `{:toc}` in my page would replace that with automatically generated table of contents based on the headers used in the page.
 

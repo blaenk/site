@@ -2,10 +2,10 @@
 title = "Terminal Customization"
 published = "February 12, 2013"
 excerpt = "Various urxvt and zsh customizations"
-tags = "Linux"
+tags = [ "Linux" ]
 ---
 
-* toc
+::toc::
 
 A while back I switched over to [zsh](http://en.wikipedia.org/wiki/Z_shell) as my shell and used [oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh) to get up and running quickly. I barely used any of the features it provided, so I recently decided to do away with it and get zsh setup from scratch. At the same time I decided it'd be a good idea to do the same for [urxvt](http://en.wikipedia.org/wiki/Rxvt-unicode). These initiatives had the consequence that I ended up completely redoing the way I maintained my dotfiles which had the effect of greatly improving my overall setup.
 
@@ -95,7 +95,7 @@ Once again in text:
 
 ```
 [someserver] λ ~/.dots (master) ➜ 
-~~~
+```
 
 **Update: October 28, 2013**
 

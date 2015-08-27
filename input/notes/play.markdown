@@ -20,13 +20,13 @@ So I've [learned] Scala the language, and now I think it's time to learn [Play],
 
 The `play` command is similar to the `rails` command. The `new` option bootstraps a simple application with the following directory structure:
 
-Directory  Purpose
----------- --------
-app        application source
-conf       configuration files/data
-project    project build scripts
-public     static files
-test       tests
+|Directory   |Purpose|
+|:---------- |:--------|
+|app         |application source|
+|conf        |configuration files/data|
+|project     |project build scripts|
+|public      |static files|
+|test        |tests|
 
 The `run` option starts the Play server and runs the application. Specifying it as `~run` performs compilation as files are modified, whereas regular `run` recompiles upon the next HTTP request.
 
@@ -52,7 +52,7 @@ log.error  = ${log.directory}/error.log
 
 It's also possible to include other files, which allows to create context-specific configuration files that are then included into the larger configuration file. Objects can be merged together as well based on the order in which they appear.
 
-~~~ {text="db.conf"}
+```
 db: {
   default: {
     driver: "org.h2.Driver",
@@ -61,14 +61,14 @@ db: {
     password: "",
   }
 }
-~~~
+```
 
-~~~ {text="application.conf"}
+```
 include "db.conf"
 
 db.default.user = products
 db.default.password = clippy
-~~~
+```
 
 There's also a configuration API for type-safe access to configuration properties. Currently the supported types are `String`, `Int`, and `Boolean`, where `Boolean` can take on `true`, `yes`, and `enabled` (and their opposites).
 
@@ -400,22 +400,22 @@ All Scala expressions' output is escaped. Values can be output unescaped by wrap
 
 There is no distinction between partials, known as _includes_ in Play, and regular templates. Any template can be embedded within another by simply calling the generated object's apply method in a Scala expression.
 
-~~~ {.html text="partial.scala.html"}
+``` html
 @()
 <strong>This is a partial</strong>
-~~~
+```
 
-~~~ {.html text="index.scala.html"}
+``` html
 <div class="announcement">
   @navigation()
 </div>
-~~~
+```
 
 ## Layouts
 
 A layout can be created in a straightforward manner from the template concepts covered so far. First it's necessary to add a parameter of type `Html` to the layout template. Other templates that want to embed themselves in a layout simply call the layout template and use the braces `{}` method call syntax to pass the entire template to the layout.
 
-~~~ {.html text="main.scala.html"}
+``` html
 @(title="Default Title")(content: Html)
 <!DOCTYPE html>
 <html>
@@ -426,13 +426,13 @@ A layout can be created in a straightforward manner from the template concepts c
   @content
 </body>
 </html>
-~~~
+```
 
-~~~ {.html text="products.scala.html"}
+``` html
 @main("Products") {
   <strong>Some Products</strong>
 }
-~~~
+```
 
 It's possible to define implicit parameters on template parameter lists to avoid having to explicitly pass parameters to the templates. A common pattern is to define a reusable trait with the appropriate implicit values. The `WrappedRequest` class wraps a `Request` and can be extended by a class that defines other values that should be accessible by a template.
 

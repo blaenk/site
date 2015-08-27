@@ -202,13 +202,14 @@ article {
       border-bottom: 1px solid #ccc;
     }
 
-    a[id^="fnref"] {
+    sup[id^="fnref"] {
       color: #990000;
+      vertical-align: baseline;
+      font-family: $font-mono;
+      font-size: inherit;
 
-      sup {
-        vertical-align: baseline;
-        font-family: $font-mono;
-        font-size: inherit;
+      a {
+        color: #990000;
 
         &:before { content: "[#"; }
 

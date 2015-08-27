@@ -436,10 +436,10 @@ r#"<figure class="codeblock">
             self.toc.push_str("</a>\n");
 
             write!(output,
-r##"<h2 id="{}">
+r##"<h{level} id="{id}">
 <span class="hash">#</span>
-<a href="#{}" class="header-link">{}</a>
-</h2>"##, sanitized, sanitized, content.to_str().unwrap()).unwrap();
+<a href="#{id}" class="header-link">{content}</a>
+</h{level}>"##, level=level, id=sanitized, content=content.to_str().unwrap()).unwrap();
         }
     }
 }

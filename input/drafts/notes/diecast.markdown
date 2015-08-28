@@ -3,13 +3,9 @@ title = "Diecast"
 published = "November 7, 2014"
 excerpt = "Static Site Generator written in Rust"
 comments = false
-
-[toc]
-show = true
-align = "right"
 ---
 
-* toc
+<toc align="right"/>
 
 A `Generator` generates a site, maintaining a notion of input and output directories and bindings used to compile trees in the input directory to the output directory.
 

@@ -3,14 +3,11 @@ title = "Algorithms"
 published = "July 15, 2013"
 excerpt = "Classical and crucial algorithms"
 comments = false
-
-[toc]
-show = true
 ---
 
 What follows are some notes on algorithms I've been reviewing from [Algorithms](http://amzn.com/032157351X) by Robert Sedgewick and Kevin Wayne, [The Algorithm Design Manual](http://amzn.com/1849967202) by Steven S. Skiena, and other sources around the Internet [^mit] [^umd] [^umgd]. I wanted to write some notes on the material so that I could easily look back on it, but mainly so that I could be sure that I understand the material.
 
-::toc::
+<toc/>
 
 # Sorting
 
@@ -28,13 +25,9 @@ A sorting algorithm is known as _stable_ if it maintains the same relative order
 
 ## Selection Sort
 
-<div class="right">
-
-Case    Growth
------   --------
-Any     $\Theta(n^2)$
-
-</div>
+|Case    |Growth|
+|:-----  |:--------|
+|Any     |$\Theta(n^2)$|
 
 This is a pretty naive algorithm that is mainly useful for didactic purposes.
 
@@ -63,14 +56,10 @@ public void sort(Comparable[] seq) {
 
 ## Insertion Sort
 
-<div class="right">
-
-Case   Growth
------  --------
-Best   $\Theta(n)$
-Worst  $O(n^2)$
-
-</div>
+|Case   |Growth|
+|:----- |:--------|
+|Best   |$\Theta(n)$|
+|Worst  |$O(n^2)$|
 
 This is a _stable_ algorithm that is still pretty straightforward but somewhat improves upon selection sort if the array is already sorted or if it's nearly sorted.
 
@@ -96,13 +85,9 @@ public void sort(Comparable[] seq) {
 
 ## Shell Sort
 
-<div class="right">
-
-Case   Growth
------  --------
-Worst  $O(n^{3/_2})$
-
-</div>
+|Case   |Growth|
+|:----- |:--------|
+|Worst  |$O(n^{3/_2})$|
 
 While insertion sort can be faster than selection sort, one problem with it is that the swap operations are done one at a time. This means that in the worst case, when sorting position 1 of the array, the smallest element could be at the very end of the array, meaning a total of $N - 1$ swaps where $N$ is the length of the array.
 
@@ -143,14 +128,10 @@ public void sort(Comparable[] seq) {
 
 ## Merge Sort
 
-<div class="right">
-
-Case   Growth
------  --------
-Worst  $O(n\lg{n})$
-Space  $O(n)$
-
-</div>
+|Case   |Growth|
+|:----- |:--------|
+|Worst  |$O(n\lg{n})$|
+|Space  |$O(n)$|
 
 This is a _stable_ algorithm and the first algorithm that is linearithmic in complexity. The general idea is that the sequence is split into many pieces and then they're all merged back together. The sorting occurs during the merging phase. The merging algorithm works such that the resultant merged piece is sorted.
 
@@ -222,14 +203,10 @@ public void sort(Comparable[] seq) {
 
 ## Quick Sort
 
-<div class="right">
-
-Case   Growth
------  --------
-Worst  $O(n\lg{n})$
-Space  $O(\lg{n})$
-
-</div>
+|Case   |Growth|
+|:----- |:--------|
+|Worst  |$O(n\lg{n})$|
+|Space  |$O(\lg{n})$|
 
 This is a divide-and-conquer algorithm that works by essentially partitioning the array into two sub-arrays and sorting them independently. It is typically faster than merge sort because it does less data movement.
 
@@ -304,15 +281,11 @@ private int partition(Comparable[] seq, int lo, int hi) {
 
 ### Three-way Partitioning
 
-<div class="right">
-
-Case   Growth
------  --------
-Best   $O(n)$
-Worst  $O(n\lg{n})$
-Space  $O(\lg{n})$
-
-</div>
+|Case   |Growth|
+|:----- |:--------|
+|Best   |$O(n)$|
+|Worst  |$O(n\lg{n})$|
+|Space  |$O(\lg{n})$|
 
 One problem with quick sort as it is implemented above is that items with keys equal to that of the partition item are nonetheless swapped, unnecessarily. Three-way partitioning aims to resolve this by partitioning into three separate sub-arrays, the middle of which corresponds to those items with keys equal to the partition point. E. W. Dijkstra popularized this as the _Dutch National Flag_ problem.
 
@@ -381,13 +354,9 @@ private void swim(Comparable[] seq, int k) {
 
 ### Priority Queue Removal
 
-<div class="right">
-
-Case   Growth
------  --------
-Worst  $O(\lg{n})$
-
-</div>
+|Case   |Growth|
+|:----- |:--------|
+|Worst  |$O(\lg{n})$|
 
 To remove the maximum from the heap:
 
@@ -412,13 +381,9 @@ private void sink(Comparable[] seq, int k) {
 
 ### Heap Sort
 
-<div class="right">
-
-Case   Growth
------  --------
-Worst  $O(n\lg{n})$
-
-</div>
+|Case   |Growth|
+|:----- |:--------|
+|Worst  |$O(n\lg{n})$|
 
 Heap sort is a sorting algorithm facilitated by a priority queue which performs well when backed by a binary heap. Heap sort more or less amounts to:
 
@@ -452,13 +417,9 @@ public void sort(Comparable[] seq) {
 
 ## Selection
 
-<div class="right">
-
-Case    Growth
------   --------
-Average $\Theta(n)$
-
-</div>
+|Case    |Growth|
+|:-----  |:--------|
+|Average |$\Theta(n)$|
 
 Selecting the $k$ smallest items in a sequence can be accomplished by using the quick sort algorithm's partition algorithm. This is guaranteed by the invariant held by quick sort's partition algorithm which states that given the partition index $j$, all elements to the left are less than or equal to $j$ and all elements to the right are greater than or equal to $j$, effectively making the sub-sequence up to $j$ consist of the smallest $j$ elements in the sequence.
 
@@ -486,13 +447,9 @@ public Comparable select(Comparable[] seq, int k) {
 
 ## Binary Search Trees
 
-<div class="right">
-
-Case    Growth
------   --------
-Worst   $O(n)$
-
-</div>
+|Case    |Growth|
+|:-----  |:--------|
+|Worst   |$O(n)$|
 
 This is the classical data structure consisting of a binary tree where each node has two children. The sub-tree to the left of each node consists of elements smaller than the node and the sub-tree to the right of each node consists of elements greater than the node.
 
@@ -502,11 +459,11 @@ The performance of BSTs greatly depends on the shape of the tree, which is a res
 
 There are three main forms of traversing a BST. The _order_ refers to the order in which the current node $C$ is visited, that is, the time at which $C$ is visited is the only thing that varies, so $L$ is always visited before $R$.
 
-Traversal  Order
----------- -----
-pre-order  $C \to L \to R$
-in-order   $L \to C \to R$
-post-order $L \to R \to C$
+|Traversal   |Order|
+|:---------- |:-----|
+|pre-order   |$C \to L \to R$|
+|in-order    |$L \to C \to R$|
+|post-order  |$L \to R \to C$|
 
 ### BST Deletion
 
@@ -583,13 +540,9 @@ The **problem** with implementing a direct representation of 2-3 trees is that t
 
 ## Red-Black Trees
 
-<div class="right">
-
-Case    Growth
------   --------
-Worst   $O(2 \lg {n})$
-
-</div>
+|Case    |Growth|
+|:-----  |:--------|
+|Worst   |$O(2 \lg {n})$|
 
 [Red-Black trees](http://en.wikipedia.org/wiki/Red–black_tree) are trees that guarantee near-perfect balance by maintaining 5 invariants:
 
@@ -957,13 +910,9 @@ int hash = ((R + day) * R + month) * R + year;
 
 ### Separate Chaining
 
-<div class="right">
-
-Case    Growth
------   --------
-Worst   $O(\lg {n})$
-
-</div>
+|Case    |Growth|
+|:-----  |:--------|
+|Worst   |$O(\lg {n})$|
 
 This collision resolution strategy involves storing a linked-list at every entry in the array. The intent is to choose the size of the array large enough so that the linked-lists are sufficiently short.
 
@@ -976,13 +925,9 @@ A property of separate chaining is that the average length of the lists is alway
 
 ### Linear Probing
 
-<div class="right">
-
-Case    Growth
------   --------
-Worst   $O(c \lg {n})$
-
-</div>
+|Case    |Growth|
+|:-----  |:--------|
+|Worst   |$O(c \lg {n})$|
 
 Linear probing is a form of open addressing that relies on empty entries in the array for collision resolution. Linear probing simply consists of:
 
@@ -1304,14 +1249,10 @@ A _site_ is an element or node in a disjoint set. The disjoint set is known as a
 
 ### Quick-Find
 
-<div class="right">
-
-Operation    Growth
-----------  --------
-Find        $O(1)$
-Union       $O(n)$
-
-</div>
+|Operation   |Growth|
+|:---------- |:--------|
+|Find        |$O(1)$|
+|Union       |$O(n)$|
 
 This algorithm favors a quick `find()` operation by sacrificing the `union()` operation.
 
@@ -1340,14 +1281,10 @@ public void union(int p, int q) {
 
 ### Quick-Union
 
-<div class="right">
-
-Operation    Growth
-----------  --------
-Find        $\text{tree height}$
-Union       $\text{tree height}$
-
-</div>
+|Operation   |Growth|
+|:---------- |:--------|
+|Find        |$\text{tree height}$|
+|Union       |$\text{tree height}$|
 
 This algorithm aims to speed up the `union()` operation by avoiding the act of going through the whole array to change the component of every affected site.
 
@@ -1375,14 +1312,10 @@ public void union(int p, int q) {
 
 ### Weighted Quick-Union
 
-<div class="right">
-
-Operation         Growth
-----------       --------
-Find             $\lg(n)$
-Union            $\lg(n)$
-
-</div>
+|Operation   |Growth|
+|:---------- |:--------|
+|Find        |$\lg(n)$|
+|Union       |$\lg(n)$|
 
 The problem with vanilla Quick-Union is that the trees are merged arbitrarily. This can cause bad performance depending on which tree is merged under the other.
 
@@ -1414,13 +1347,9 @@ public void union(int p, int q) {
 
 #### Path Compression
 
-<div class="right">
-
-Operation         Growth
-----------       --------
-Union            $\approx 1$
-
-</div>
+|Operation   |Growth|
+|:---------- |:--------|
+|Union       |$\approx 1$|
 
 A further improvement can be done called _path compression_ in which every site traversed due to a call to `find()` is directly linked to the component root.
 
@@ -1443,14 +1372,10 @@ Adding an edge to a tree creates a cycle and removing an edge from a tree breaks
 
 ### Prim's Algorithm
 
-<div class="right">
-
-Case    Growth
------   --------
-Worst   $O(E \lg {E})$
-Space   $O(E)$
-
-</div>
+|Case    |Growth|
+|:-----  |:--------|
+|Worst   |$O(E \lg {E})$|
+|Space   |$O(E)$|
 
 This method of finding the MST operates by attaching a new edge to a growing tree at each step. Starting with any vertex from the graph to create a single-vertex tree, each time taking the minimum-weight edge that connects a vertex on the tree to a vertex not yet on the tree.
 
@@ -1486,14 +1411,10 @@ void visit(EdgeWeightedGraph G, int v) {
 
 #### Eager Prim's Algorithm
 
-<div class="right">
-
-Case    Growth
------   --------
-Worst   $O(E \lg {E})$
-Space   $O(V)$
-
-</div>
+|Case    |Growth|
+|:-----  |:--------|
+|Worst   |$O(E \lg {E})$|
+|Space   |$O(V)$|
 
 The above implementation is lazy with respect to ignoring ineligible edges in the priority queue. That approach leaves ineligible edges in the priority queue until they're dequeued for consideration and discarded if they are ineligible.
 
@@ -1538,14 +1459,10 @@ void visit(EdgeWeightedGraph G, int v) {
 
 ### Kruskal's Algorithm
 
-<div class="right">
-
-Case    Growth
------   --------
-Worst   $O(E \lg {E})$
-Space   $O(E)$
-
-</div>
+|Case    |Growth|
+|:-----  |:--------|
+|Worst   |$O(E \lg {E})$|
+|Space   |$O(E)$|
 
 An alternative method for finding the MST is to process the edges in increasing order of their weight values, each time taking an edge for the MST that doesn't form a cycle, stopping once $V-1$ edges have been aggregated. The edges form a forest of trees, gradually growing into a single tree (the MST). The algorithm can be thought of as starting with a forest of $V$ single-vertex trees, and on each step finding an edge to connect two trees until there is only one left (the MST).
 
@@ -1606,14 +1523,10 @@ void relax(EdgeWeightedDigraph G, int v) {
 
 ### Dijkstra's Algorithm
 
-<div class="right">
-
-Case    Growth
------   --------
-Worst   $O(E \lg {V})$
-Space   $O(V)$
-
-</div>
+|Case    |Growth|
+|:-----  |:--------|
+|Worst   |$O(E \lg {V})$|
+|Space   |$O(V)$|
 
 Dijkstra's alrogithm is similar to Prim's algorithm for finding the MST. Dijkstra's algorithm finds the SPT by finding the lowest-weight non-tree vertex as provided by an index minimum-priority queue and relaxing that vertex.
 
@@ -1650,14 +1563,10 @@ To specifically find the shortest path from the source vertex to an arbitrary ve
 
 ### Topological Sort
 
-<div class="right">
-
-Case    Growth
------   --------
-Worst   $O(E + V)$
-Space   $O(V)$
-
-</div>
+|Case   |Growth|
+|:----- |:--------|
+|Worst  |$O(E + V)$|
+|Space  |$O(V)$|
 
 Shortest paths can be found much more efficiently in acyclic graphs, specifically, the single-source problem can be solved in linear time, negative edge weights are easily handled, and other related problems such as finding the longest paths are solvable. This is possible by relaxing vertices in topological order.
 
@@ -1684,15 +1593,11 @@ Relative deadlines can be encoded as a negative weighted edge going from the con
 
 ### Bellman-Ford Algorithm
 
-<div class="right">
-
-Case    Growth
------   --------
-Worst   $O(VE)$
-Average $O(E + V)$
-Space   $O(V)$
-
-</div>
+|Case    |Growth|
+|:-----  |:--------|
+|Worst   |$O(VE)$|
+|Average |$O(E + V)$|
+|Space   |$O(V)$|
 
 The problem of finding the shortest paths can be generalized to graphs containing negative cycles. The Bellman-Ford algorithm accomplishes this by adding the source vertex to a queue and entering a loop where a vertex is dequeued and relaxed, and any vertex affected by that relaxation gets enqueued.
 
@@ -1769,15 +1674,11 @@ Example problems that may be modeled as CSPs are map coloring, N-Queens, and Sud
 
 ### Backtracking Search
 
-<div class="right">
+|Case  |Growth|
+|:-----|:-------|
+|Worst |$O(d^n)$|
 
-Case    Growth
------   -------
-Worst   $O(d^n)$
-
-Table: $d:$ domain size
-
-</div>
+<aside class="table-caption">where $d$ is domain size</aside>
 
 Given a state tree of the constraint satisfaction problem, all of the solutions would be at the bottom, so BFS would experience the worst-case. DFS with its backtracking gets to the bottom quicker, but it must be adapted to the context of CSPs in order to be optimal.
 
@@ -1823,15 +1724,11 @@ _Strong N-Consistency_ requires that all of the lower orders of K-Consistency ar
 
 ### Tree-Structured CSPs
 
-<div class="right">
+|Case   |Growth|
+|:----- |:-------|
+|Worst  |$O(n d^2)$|
 
-Case    Growth
------   -------
-Worst   $O(n d^2)$
-
-Table: $d:$ domain size
-
-</div>
+<aside class="table-caption">where $d$ is domain size</aside>
 
 The CSP can be solved _much_ faster if there are no cycles in the constraint graph, specifically linear in the size of the graph and quadratic in the size of the domains.
 
@@ -1843,15 +1740,11 @@ The tree must first be re-ordered by choosing a root variable so that all parent
 
 ### Cutset Conditioning
 
-<div class="right">
+|Case   |Growth|
+|:----- |:-------|
+|Worst  |$O(d^c\ (n - c)\ d^2)$|
 
-Case    Growth
------   -------
-Worst   $O(d^c\ (n - c)\ d^2)$
-
-Table: $c:$ cutset size
-
-</div>
+<aside class="table-caption">where $c$ is cutset size</aside>
 
 This optimization only applies to tree-structured CSPs, but not all problems are tree-structured. However, sometimes a constraint graph can easily be converted into a tree-structured CSP by removing a particular set of nodes. This is accomplished by setting the value of the variable and then severing the connection to its neighbors, imposing an additional unary constraint on the neighbors reflecting the value the node was set to, essentially removing the now-invalid values from the domains of the neighbors.
 
@@ -1912,14 +1805,10 @@ for (int i = 0; i < N; i++)
 
 ### Least Significant Digit Sort
 
-<div class="right">
-
-Case    Growth
------   --------
-Worst   $O(NW)$
-Space   $O(N)$
-
-</div>
+|Case   |Growth|
+|:----- |:--------|
+|Worst  |$O(NW)$|
+|Space  |$O(N)$|
 
 Least Significant Digit (LSD) sort works by sorting the strings based on the last character and then repeating this operation up until the first character. This is accomplished by modifying the counting sort algorithm so that it does a pass for every character in the string. This is mainly useful if all strings are the same length $W$ and relatively small alphabet size $R$.
 
@@ -1954,17 +1843,13 @@ void sort(String[] a, int W) {
 
 ### Most Significant Digit Sort
 
-<div class="right">
+|Case    |Growth|
+|:-----  |:--------|
+|Best    |$\Omega (N)$|
+|Worst   |$O(Nw)$|
+|Space   |$O(N + WR)$|
 
-Case    Growth
------   --------
-Best    $\Omega (N)$
-Worst   $O(Nw)$
-Space   $O(N + WR)$
-
-Table: $w:$ average string length
-
-</div>
+<aside class="table-caption">Table: $w:$ average string length</aside>
 
 Most Significant Digit (MSD) sort is similar to LSD except that it operates in left-to-right order instead, meaning it works fine for variable-length strings. This is accomplished by performing counting sort to sort the array of strings based on their first character, then recursively performing the same operation on the sub-array of strings with the same first letter.
 
@@ -2021,17 +1906,13 @@ void sort(String[] a, int lo, int hi, int d) {
 
 ### Three-way String QuickSort
 
-<div class="right">
+|Case   |Growth|
+|:----- |:--------|
+|Best   |$\Omega (N)$|
+|Worst  |$O(Nw \lg {R})$|
+|Space  |$O(W + \lg {N})$|
 
-Case    Growth
------   --------
-Best    $\Omega (N)$
-Worst   $O(Nw \lg {R})$
-Space   $O(W + \lg {N})$
-
-Table: $w:$ average string length
-
-</div>
+<aside class="table-caption">Table: $w:$ average string length</aside>
 
 Three-way quicksort can be adapted to work on a per-character basis similar to MSD. The advantages of this are that the algorithm doesn't use extra space---unlike MSD---and that the number of sub-arrays per recurse is bounded at three.
 

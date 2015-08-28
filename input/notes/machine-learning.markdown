@@ -4,16 +4,13 @@ published = "September 30, 2013"
 excerpt = "Machine Learning concepts"
 comments = false
 push = false
-
-[toc]
-show = true
 ---
 
 I've been wanting to learn about the subject of machine learning for a while now. I'm familiar with some basic concepts, as well as reinforcement learning. What follows are notes on my attempt to comprehend the subject. The primary learning resource I'm using is Cal Tech's CS 1156 on edX, with supplementary material from Stanford's CS 229 on Coursera.
 
 I pushed my code for the programming assignments for this class to [github](https://github.com/blaenk/learning-from-data).
 
-::toc::
+<toc/>
 
 # Learning Problem
 
@@ -712,12 +709,12 @@ On the other hand, if there _is_ a break point, then $\growthfunc(n)$ is guarant
 
 For example, consider a puzzle where there are three binary points $\mathbf x_1$, $\mathbf x_2$, and $\mathbf x_3$. The constraint is that the breaking point is $k = 2$, this effectively means that no combination of 2 points can be shattered, which in this context means that no two points can hold every possible combination: 00, 01, 10, and 11. A possible solution to the puzzle is:
 
- $\mathbf x_1$   $\mathbf x_2$   $\mathbf x_3$ 
---------------- --------------- ---------------
-&#9675;         &#9675;         &#9675;
-&#9675;         &#9675;         &#9679;
-&#9675;         &#9679;         &#9675;
-&#9679;         &#9675;         &#9675;
+| $\mathbf x_1$  | $\mathbf x_2$  | $\mathbf x_3$ |
+|:--------------:|:--------------:|:-------------:|
+|       ○        |       ○        |       ○       |
+|       ○        |       ○        |       ●       |
+|       ○        |       ●        |       ○       |
+|       ●        |       ○        |       ○       |
 
 # Theory of Generalization
 
@@ -1546,11 +1543,11 @@ Now that we have all of the pieces we can construct the learning algorithm:
 
 To recap the three linear models we've learned so far, here is a table for their possible uses within the context of credit analysis:
 
-task                   model               error measure        algorithm
------                  ------              --------------       ----------
-approve or deny        perceptron          classification error PLA, Pocket, ...
-amount of credit       linear regression   squared error        pseudo-inverse
-probability of default logistic regression cross-entropy error  gradient descent
+|task                   |model               |error measure        |algorithm|
+|:-----                 |:------             |:--------------      |:----------|
+|approve or deny        |perceptron          |classification error |PLA, Pocket, ...|
+|amount of credit       |linear regression   |squared error        |pseudo-inverse|
+|probability of default |logistic regression |cross-entropy error  |gradient descent|
 
 # Neural Networks
 
@@ -1753,10 +1750,10 @@ If we try to model the first target function using two models, a 2nd and 10th-or
 
 The error measures clearly show that the 10th-order fit is a case of overfitting, showing the effects of how the 10th-order fit bends itself just to fit noise:
 
-error         2nd-order   10th-order
-------       ----------- ------------
-$\insample$  $0.050$     $0.034$
-$\outsample$ $0.127$     $9.00$
+|error        |2nd-order    |10th-order|
+|:------      |:----------- |:------------|
+|$\insample$  |$0.050$      |$0.034$|
+|$\outsample$ |$0.127$      |$9.00$|
 
 Now we can try using the same order fits to model the second target function. Remember that the target is a 50th-order polynomial:
 
@@ -1764,10 +1761,10 @@ Now we can try using the same order fits to model the second target function. Re
 
 In this case, the 10th-order polynomial can fit the sample data very well, but the out of sample error is even worse. This is clearly another case of overfitting, because this target function actually _does_ have noise, but it isn't the usual kind of noise:
 
-error         2nd-order   10th-order
-------       ----------- ------------
-$\insample$  $0.029$     $10^{-5}$
-$\outsample$ $0.120$     $7680$
+|error        |2nd-order    |10th-order|
+|:------      |:----------- |:------------|
+|$\insample$  |$0.029$      |$10^{-5}$|
+|$\outsample$ |$0.120$      |$7680$|
 
 In the case of the 10th-order target, we can think of the 2nd-order fit as learner $R$ (for restricted) and the 10th-order fit as learner $O$ (for overfit). It can be said that $O$ chose $\mathcal H_{10}$ because it knew that the target is a 10th-order polynomial. On the other hand, $R$ chose $\mathcal H_2$ because it considered the number of points available in the training set, $15$. Choosing a 2nd-order polynomial provides three parameters, such that the ratio of points to degrees of freedom is 5:1, so we're pushing our luck since we know the rule of thumb is for it to be 10:1, but we do so because we figure we can't use a simple line when we _know_ that the target is a 10th-order polynomial.
 
@@ -2322,10 +2319,10 @@ $$
 
 We [found](#solution-vectors) that $\nabla \insample$ was normal to the constraint. This presents a conceptual dichotomy between regularization and SVM. In regularization, we optimize the in-sample error $\insample$ under the constraint $\weightT \weight$. Conversely, with SVM we are optimizing $\weightT \weight$ under the constraint that $\insample = 0$.
 
-method          optimize           constraint
--------------- ----------         ------------
-Regularization $\insample$        $\weightT \weight$
-SVM            $\weightT \weight$ $\insample$
+|method          |optimize           |constraint|
+|:-------------- |:----------        |:------------|
+|Regularization  |$\insample$        |$\weightT \weight$|
+|SVM             |$\weightT \weight$ |$\insample$|
 
 ## Lagrange Formulation
 
@@ -2979,15 +2976,13 @@ You get a letter Monday morning predicting the outcome of Monday night's game. A
 
 We shouldn't. The guy isn't sending only to us, but to 32 other people. In the first game, to half of those people he said the home team would lose, and the other half that they would win. The home team lost that first week. The second week, he did the same thing with the half of the recipients for which he sent the correct result. He repeated this process for 5 weeks until there was only one person left for him all "predictions" were correct.
 
-<!-- this is one nasty table -->
-
-Distribution of Predictions                                                                                         Result
--------------                                                                                                      --------
-$\style{color:green}{0000000000000000}\style{color:red}{1111111111111111}$                                         $0$
-$\style{color:green}{00000000}\style{color:red}{11111111}\style{color:gray}{0000000011111111}$                     $1$
-$\style{color:gray}{00001111}\style{color:green}{0000}\style{color:red}{1111}\style{color:gray}{0000111100001111}$ $0$
-$\style{color:gray}{00110011}\style{color:green}{00}\style{color:red}{11}\style{color:gray}{00110011001100110011}$ $1$
-$\style{color:gray}{0101010101}\style{color:green}0\style{color:red}1\style{color:gray}{01010101010101010101}$     $1$
+|Distribution of Predictions                                                                                        |Result|
+|:-------------                                                                                                     |:--------|
+|$\style{color:green}{0000000000000000}\style{color:red}{1111111111111111}$                                         |$0$|
+|$\style{color:green}{00000000}\style{color:red}{11111111}\style{color:gray}{0000000011111111}$                     |$1$|
+|$\style{color:gray}{00001111}\style{color:green}{0000}\style{color:red}{1111}\style{color:gray}{0000111100001111}$ |$0$|
+|$\style{color:gray}{00110011}\style{color:green}{00}\style{color:red}{11}\style{color:gray}{00110011001100110011}$ |$1$|
+|$\style{color:gray}{0101010101}\style{color:green}0\style{color:red}1\style{color:gray}{01010101010101010101}$     |$1$|
 
 We thought that the prediction ability was great since we only saw our letters (and we are the last remaining recipient for which all predictions were "correct"). We figured there was one hypothesis, and it predicted perfectly. The problem is that the hypothesis set is actually very complex, so the prediction value is meaningless, we simply didn't know since we didn't see the hypothesis set.
 
@@ -3044,15 +3039,15 @@ This method doesn't work if there is a region in the input space where the proba
 
 A bank wants to approve credit automatically by going through the historical records of previous applicants who were given credit cards with 3-4 years of credit behavior. The input is the information they provided on the credit application, since this is the data that would be available from a new customer:
 
------------------- --------
-age                23 years
-gender             male
-annual salary      $30,000
-years in residence 1 year
-years in job       1 year
-current debt       $15,000
-...                ...
------------------- --------
+| data              | value |
+|:----------------- |:--------|
+|age                |23 years|
+|gender             |male|
+|annual salary      |$30,000|
+|years in residence |1 year|
+|years in job       |1 year|
+|current debt       |$15,000|
+|...                |...|
 
 The target is whether or not the person was profitable for the bank. For example, someone flirting with disaster who maxed out but paid the debt was profitable as long as they didn't default.
 
@@ -3106,7 +3101,7 @@ To recap, there's **nothing wrong with normalization**, as long as the normaliza
 
 If we try one model after another **on the same data set**, we will eventually "succeed." The problem is that in doing this, we're increasing the VC dimension without realizing it, since the final model that we end up using in order to learn is **the union of all of the attempted models**. Think of the VC dimension of the _total_ learning model.
 
-> <p style="text-align:center">If you torture the data long enough, it will confess.</p>
+> If you torture the data long enough, it will confess.
 
 This problem could occur not only due to the different models that we have attempted, but _also_ due to what ***others*** have attempted. Imagine we decide to try our methods on some data set and we avoid looking at it. We decide to read papers about other people who have used the data set. In the end, we may not have looked at the data ourselves, but we used something that was affected by the data: the papers that others wrote. So that even if we only determined a couple of parameters and yielded great performance, we can't simply conclude that we have a VC dimension of 2 and 7,000 data points and that we'll do great out of sample. This is because we don't _only_ have 2 parameters, but all of the decisions that led up to that model.
 

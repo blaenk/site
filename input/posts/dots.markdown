@@ -4,13 +4,9 @@ published = "February 16, 2014"
 excerpt = "Simple dotfiles system"
 tags = [ "Linux" ]
 draft = false
-
-[toc]
-show = true
-align = "right"
 ---
 
-::toc::
+<toc align="right"/>
 
 It's become a common practice to keep one's [dotfiles] version controlled, oftentimes mirrored somewhere like Github. A lot of people start their own dotfile collection based (forked) off of someone else', but that never felt right to me. In my view, dotfiles are personal, sensitive configuration files that are explicitly defined to one's own taste. It never made sense to me to want to use a giant wad of files with who knows what configuration directives in there. It seemed a lot like [cargo culting] to me.
 

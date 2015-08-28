@@ -3,9 +3,6 @@ title = "Swift"
 published = "July 5, 2014"
 excerpt = "A surprising new language from Apple"
 comments = false
-
-[toc]
-show = true
 ---
 
 People have been wishing for a new language to work with in the Apple environment. There were rumors that Ruby would be chosen, but that didn't seem to pan-out. Instead, a variety of different companies have created products that allow different languages to compile to iOS, such as [Xamarin], [RubyMotion], and many others, particularly game engines like [Unity] and the [Unreal Engine].
@@ -25,7 +22,7 @@ Then, in WWDC 2014, Apple announced [Swift]. It appears to be influenced by Obje
 
 An interesting characteristic of Swift is that code written at the global scope is considered the entry point of the program.
 
-::toc::
+<toc/>
 
 # Basics
 
@@ -206,10 +203,10 @@ The `String` type in Swift is interchangeable with Foundation's `NSString` and t
 
 Unicode scalars can be inserted into strings using the following notation, where the `n` sequences represent hexadecimal digits:
 
-Notation    Type
----------   -----
-Single-byte `\xnn`
-Arbitrary   `\u{nnnn}`
+|Notation    |Type|
+|:---------  |:-----|
+|Single-byte |`\xnn`|
+|Arbitrary   |`\u{nnnn}`|
 
 The `isEmpty` property can be used to determine if the string is empty.
 
@@ -248,12 +245,12 @@ Unicode scalars are encoded as small chunks called code units, which in UTF-8 wo
 
 Unicode strings can be represented in Swift as a collection of characters, UTF-8 or UTF-16 code units, or 21-bit Unicode scalar values.
 
-Collection Of                Accessor
----------                    ---------
-characters                   `for-in`
-UTF-8 code units             `utf8`
-UTF-16 code units            `utf16`
-21-bit Unicode scalar values `unicodeScalars`
+|Collection Of                |Accessor|
+|:---------                   |:---------|
+|characters                   |`for-in`|
+|UTF-8 code units             |`utf8`|
+|UTF-16 code units            |`utf16`|
+|21-bit Unicode scalar values |`unicodeScalars`|
 
 For example `utf8` is a property of type `UTF8View` which is a collection of `UInt8` values. In this representation, the last four code units are the four-byte UTF-8 representation of the DOG FACE character.
 
@@ -1450,11 +1447,11 @@ Xcode 6 beta 4 [added support][access-control] for [access control][access-contr
 
 [^rust_access_control]: This reminds me of Rust, where access control isn't specific to classes but rather to modules, so that an access control modifier on a structure member is enforced at the module level.
 
-Level      Accessible From
-------     -------------
-`private`  within source file where defined
-`internal` entire module (app or framework) that includes definition
-`public`   any file that imports the module (for APIs)
+|Level      |Accessible From|
+|:------    |:-------------|
+|`private`  |within source file where defined|
+|`internal` |entire module (app or framework) that includes definition|
+|`public`   |any file that imports the module (for APIs)|
 
 ``` swift
 public class ListItem {

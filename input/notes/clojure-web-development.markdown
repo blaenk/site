@@ -3,9 +3,6 @@ title = "Clojure Web Development"
 published = "July 2, 2014"
 excerpt = "Exploring the rich Clojure web development environment"
 comments = false
-
-[toc]
-show = true
 ---
 
 I've noticed a lot of very interesting ideas coming out of the Clojure web development environment lately, so I decided to explore this space after [learning about Clojure](/notes/clojure/).
@@ -21,7 +18,7 @@ On the client-side, there's the venerable [ClojureScript] which I consider to be
 [React]: http://facebook.github.io/react/
 [remarkable performance increases]: http://swannodette.github.io/2013/12/17/the-future-of-javascript-mvcs/
 
-::toc::
+<toc/>
 
 # Architecture
 
@@ -71,14 +68,14 @@ Redirection is possible via <span class="path">ring.util.response/redirect</span
 
 Session management is also provided by the <span class="path">noir.session</span> namespace. The session store is handled by Ring, and a type of store must be specified, such as <span class="path">ring.middleware.session.memory</span>, though there are other available back-ends for the session, such as Redis. The following session management functions are available:
 
-Function    Description
----------   ------------
-`clear!`    clear entire session
-`flash-put` store flash value
-`flash-get` get flash value
-`get`       get session value
-`put!`      set session value
-`remove!`   remove session value
+|Function    |Description|
+|:---------  |:------------|
+|`clear!`    |clear entire session|
+|`flash-put` |store flash value|
+|`flash-get` |get flash value|
+|`get`       |get session value|
+|`put!`      |set session value|
+|`remove!`   |remove session value|
 
 Input validation is provided by <span class="path">noir.validation</span>. Validation is performed by specifying a set of rules for a handler using the `rule` function, which accepts a condition that must be satisfied, and a vector consisting of a field name as a keyword and an error to associate with it in the event that the condition is not satisfied. The `errors?` function is then used to see if there were any unsatisfied validations, in order to provide an alternative response, for example.
 

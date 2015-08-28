@@ -2,7 +2,6 @@
 title = "Lately"
 published = "December 28, 2012"
 comments = false
-toc = false
 ---
 
 This page lists some of the things that I've been up to lately. I try my best to keep it up-to-date.

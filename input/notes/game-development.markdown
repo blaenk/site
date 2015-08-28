@@ -3,13 +3,9 @@ title = "Game Development"
 published = "September 6, 2013"
 excerpt = "My experiences from creating a game"
 comments = false
-
-[toc]
-show = true
-align = "right"
 ---
 
-::toc::
+<toc align="right"/>
 
 I've been wanting to create a very specific kind of game for a few years now. Game Development was _one_ of the reasons why I initially became interested in software development, but I quickly lost interest in it relative to other areas that piqued my interests. Still, I was always interested in Game Development, particularly with how it seemed to me like a tour de force in software development, requiring expertise in a variety of areas in order to produce a working game.
 

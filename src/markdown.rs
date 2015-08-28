@@ -45,32 +45,6 @@ impl Handle<Item> for Markdown {
 
         trace!("collected abbreviations");
 
-        // TODO metadata access
-        // let meta = item.extensions.get::<item::Metadata>();
-
-        // if let Some(meta) = meta {
-        //     if !meta.lookup("toc.show").and_then(toml::Value::as_bool).unwrap_or(false) {
-        //         // TODO: tell render not to generate toc
-        //     }
-        // }
-
-        // if there is metadata, parse the field
-        // otherwise assume left align
-        // let align =
-        //     meta.and_then(|m|
-        //         m.lookup("toc.align")
-        //         .and_then(toml::Value::as_str)
-        //         .map(|align| {
-        //             match align {
-        //                 "left" => renderer::Align::Left,
-        //                 "right" => renderer::Align::Right,
-        //                 _ => panic!("invalid value for toc.align. either `left` or `right`"),
-        //             }
-        //         }))
-        //     .unwrap_or(renderer::Align::Left);
-
-        let align = renderer::Align::Left;
-
         trace!("got toc alignment");
 
         let document =
@@ -89,52 +63,43 @@ impl Handle<Item> for Markdown {
                 TABLES
             });
 
-        // TODO metadata access
-        // let enabled =
-        //     meta.and_then(|m| m.lookup("toc.show").and_then(toml::Value::as_bool))
-        //     .unwrap_or(false);
-
-        let enabled = true;
+        let enabled = clean.contains("<toc");
 
         let mut renderer =
-            self::renderer::Renderer::new(abbrs, align, enabled, self.context.clone());
+            self::renderer::Renderer::new(abbrs, enabled, self.context.clone());
 
         trace!("constructed renderer");
 
         let cache = format!("cache/markdown/{}", digest);
         diecast::support::mkdir_p("cache/markdown/").unwrap();
 
-        let buffer =
-            match File::open(&cache) {
-                Ok(mut f) => {
-                    use hoedown::Buffer;
-                    info!("[MARKDOWN] cache hit {}", digest);
-                    let mut contents = vec![];
-                    f.read_to_end(&mut contents).unwrap();
-                    Buffer::from(&contents[..])
-                },
-                Err(e) => {
-                    if let ::std::io::ErrorKind::NotFound = e.kind() {
-                        info!("[MARKDOWN] cache miss {}", digest);
-                        let mut f = File::create(&cache).unwrap();
-                        let buf = renderer.render(&document);
-                        f.write_all(&buf).unwrap();
-                        info!("[MARKDOWN] wrote cache {}", digest);
-                        buf
-                    } else {
-                        // TODO use Err
-                        panic!("[MARKDOWN] SOME ERROR");
-                    }
-                },
-            };
+        match File::open(&cache) {
+            Ok(mut f) => {
+                info!("[MARKDOWN] cache hit {}", digest);
+                let mut contents = String::new();
+                f.read_to_string(&mut contents).unwrap();
+                item.body = contents;
+            },
+            Err(e) => {
+                if let ::std::io::ErrorKind::NotFound = e.kind() {
+                    info!("[MARKDOWN] cache miss {}", digest);
+                    let mut f = File::create(&cache).unwrap();
+                    let buf = renderer.render(&document);
 
-        trace!("rendered markdown");
+                    let pattern = Regex::new(r"<p><toc[^>]*/></p>").unwrap();
 
-        let pattern = Regex::new(r"<p>::toc::</p>").unwrap();
+                    let rendered =
+                        pattern.replace(&buf.to_str().unwrap(), &renderer.toc[..]);
 
-        item.body = pattern.replace(&buffer.to_str().unwrap(), &renderer.toc[..]);
-
-        trace!("inserted toc");
+                    f.write_all(rendered.as_bytes()).unwrap();
+                    info!("[MARKDOWN] wrote cache {}", digest);
+                    item.body = rendered;
+                } else {
+                    // TODO use Err
+                    panic!("[MARKDOWN] SOME ERROR");
+                }
+            },
+        };
 
         Ok(())
     }
@@ -216,7 +181,7 @@ mod renderer {
     }
 
     impl Renderer {
-        pub fn new(abbrs: HashMap<String, String>, align: Align, enabled: bool, context: Arc<Mutex<zmq::Context>>) -> Renderer {
+        pub fn new(abbrs: HashMap<String, String>, enabled: bool, context: Arc<Mutex<zmq::Context>>) -> Renderer {
             let joined: String =
                 abbrs.keys().cloned().collect::<Vec<String>>().connect("|");
 
@@ -238,7 +203,7 @@ mod renderer {
                 toc: String::new(),
                 toc_level: 0,
                 toc_offset: 0,
-                toc_align: align,
+                toc_align: Align::Left,
 
                 socket: socket,
             }
@@ -253,6 +218,25 @@ mod renderer {
 
         fn base(&mut self) -> &mut renderer::html::Html {
             &mut self.html
+        }
+
+        fn html_span(&mut self, output: &mut Buffer, text: &Buffer) -> bool {
+            let s = text.to_str().unwrap();
+
+            // this is deliberately very naive to avoid the
+            // perf-cost of a more strict parse, since I have
+            // no need for it and I'm going to be the only one
+            // using this
+            //
+            // toc_align is already left by default, so only change
+            // if it's set to right
+            if s.starts_with("<toc") && s.contains("right") {
+                self.toc_align = Align::Right;
+            }
+
+            output.pipe(text);
+
+            true
         }
 
         fn code_block(&mut self, output: &mut Buffer, code: &Buffer, lang: &Buffer) {
@@ -283,8 +267,6 @@ r#"<figure class="codeblock">
                 hash.update(code);
 
                 let digest = hash.hexdigest();
-
-                // println!("code hash: {}", digest);
 
                 let cache = format!("cache/pygments/{}", digest);
                 diecast::support::mkdir_p("cache/pygments/").unwrap();
@@ -370,47 +352,48 @@ r#"<figure class="codeblock">
         fn header(&mut self, output: &mut Buffer, content: &Buffer, level: i32) {
             use std::io::Write;
 
-            if !self.is_toc_enabled {
-                return;
-            }
+            if self.is_toc_enabled {
+                // first header sighted
+                if self.toc_level == 0 {
+                    self.toc_offset = level - 1;
 
-            // first header sighted
-            if self.toc_level == 0 {
-                self.toc_offset = level - 1;
+                    self.toc.push_str(r#"<nav id="toc""#);
 
-                self.toc.push_str(r#"<nav id="toc""#);
+                    if let Align::Right = self.toc_align {
+                        self.toc.push_str(r#"class="right-toc""#)
+                    }
 
-                if let Align::Right = self.toc_align {
-                    self.toc.push_str(r#"class="right-toc""#)
+                    self.toc.push_str(">\n<h3>Contents</h3>");
                 }
 
-                self.toc.push_str(">\n<h3>Contents</h3>");
-            }
+                let level = level - self.toc_offset;
 
-            let level = level - self.toc_offset;
+                if level > self.toc_level {
+                    while level > self.toc_level {
+                        self.toc.push_str("<ol>\n<li>\n");
+                        self.toc_level += 1;
+                    }
+                } else if level < self.toc_level {
+                    self.toc.push_str("</li>\n");
 
-            if level > self.toc_level {
-                while level > self.toc_level {
-                    self.toc.push_str("<ol>\n<li>\n");
-                    self.toc_level += 1;
+                    while level < self.toc_level {
+                        self.toc.push_str("</ol>\n</li>\n");
+                        self.toc_level -= 1;
+                    }
+
+                    self.toc.push_str("<li>\n");
+                } else {
+                    self.toc.push_str("</li>\n<li>\n");
                 }
-            } else if level < self.toc_level {
-                self.toc.push_str("</li>\n");
-
-                while level < self.toc_level {
-                    self.toc.push_str("</ol>\n</li>\n");
-                    self.toc_level -= 1;
-                }
-
-                self.toc.push_str("<li>\n");
-            } else {
-                self.toc.push_str("</li>\n<li>\n");
             }
 
             let sanitized = sanitize(content.to_str().unwrap());
-            self.toc.push_str(r##"<a href="#"##);
-            self.toc.push_str(&sanitized);
-            self.toc.push_str(r#"">"#);
+
+            if self.is_toc_enabled {
+                self.toc.push_str(r##"<a href="#"##);
+                self.toc.push_str(&sanitized);
+                self.toc.push_str(r#"">"#);
+            }
 
             let bytes: &[u8] = content.as_ref();
 
@@ -432,8 +415,10 @@ r#"<figure class="codeblock">
 
             let rendered = self.html.render_inline(&doc);
 
-            self.toc.push_str(rendered.to_str().unwrap());
-            self.toc.push_str("</a>\n");
+            if self.is_toc_enabled {
+                self.toc.push_str(rendered.to_str().unwrap());
+                self.toc.push_str("</a>\n");
+            }
 
             write!(output,
 r##"<h{level} id="{id}">
@@ -443,5 +428,3 @@ r##"<h{level} id="{id}">
         }
     }
 }
-
-

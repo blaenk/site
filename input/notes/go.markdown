@@ -3,9 +3,6 @@ title = "Go"
 published = "December 20, 2013"
 excerpt = "A simple C-like language from Google"
 comments = false
-
-[toc]
-show = true
 ---
 
 I've been meaning to learn Go for a while now. I've recently come to renew an interest in simple, no non-sense languages like Python, and what I imagine Go to be. The resources I'll be using are the [go specification], [go tour], and [effective go]. A lot of this is straight from these sources, with my commentary of how I come to understand it.
@@ -14,7 +11,7 @@ I've been meaning to learn Go for a while now. I've recently come to renew an in
 [go tour]: http://tour.golang.org
 [effective go]: http://golang.org/doc/effective_go.html
 
-::toc::
+<toc/>
 
 # Packages
 

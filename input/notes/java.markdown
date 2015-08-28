@@ -3,9 +3,6 @@ title = "Java"
 published = "July 6, 2014"
 excerpt = "A recap of a traditional language"
 comments = false
-
-[toc]
-show = true
 ---
 
 Java is considered by many to be a very boring language, relegated to insurance applications---or the enterprise in general. Compared to many other languages, it's dry and monotone. It has a reputation of being over-engineered, being home to the classic `FactoryFactory` joke [^over_engineered]. In the past, programs written in Java were generally regarded as being slow and bloated resource hogs.
@@ -22,7 +19,7 @@ Despite this negative perception of Java by many, I've always held a certain res
 
 These notes are a recap of Java and also cover Java 8.
 
-::toc::
+<toc/>
 
 # JVM
 
@@ -407,13 +404,13 @@ The default access specification is that, if a class member doesn't have an expl
 
 The following table specifies whether a class member with a particular access modifier is accessible by other package components.
 
-Class Member Accessible By      Public   Protected   No Modifier   Private
--------------                  -------- ----------- ------------- ---------
-Same Class                     Yes      Yes         Yes           Yes
-Same Package SubClass          Yes      Yes         Yes           No
-Same Package Non-SubClass      Yes      Yes         Yes           No
-Different Package SubClass     Yes      Yes         No            No
-Different Package Non-SubClass Yes      No          No            No
+|Class Member Accessible By     |Public    |Protected    |No Modifier    |Private|
+|:-------------                 |:-------- |:----------- |:------------- |:---------|
+|Same Class                     |Yes       |Yes          |Yes            |Yes|
+|Same Package SubClass          |Yes       |Yes          |Yes            |No|
+|Same Package Non-SubClass      |Yes       |Yes          |Yes            |No|
+|Different Package SubClass     |Yes       |Yes          |No             |No|
+|Different Package Non-SubClass |Yes       |No           |No             |No|
 
 Packages can be imported using the `imported` keyword in order to avoid having to fully qualify package contents. The import statement may import either a classname or the `*` to import all classes.
 
@@ -693,11 +690,11 @@ int val() default 3;
 
 Annotation retention policies refer to how long the annotation is retained. Regardless of the policy, annotations on local variable declarations are not retained in `.class` files.
 
-Policy    Lifetime
--------   ---------
-`SOURCE`  source code
-`CLASS`   `.class` files
-`RUNTIME` `.class` files; available at runtime
+|Policy    |Lifetime|
+|:-------  |:---------|
+|`SOURCE`  |source code|
+|`CLASS`   |`.class` files|
+|`RUNTIME` |`.class` files; available at runtime|
 
 Annotation retention policies are specified using the `@Retention` annotation.
 
@@ -756,18 +753,18 @@ The `@Target` annotation specifies the types of items to which the annotation ma
 @interface Whatever {}
 ```
 
-Constant          Applicable To
----------         --------------
-`ANNOTATION_TYPE` another annotation
-`CONSTRUCTOR`     constructor
-`FIELD`           field
-`LOCAL_VARIABLE`  local variable
-`METHOD`          method
-`PACKAGE`         package
-`PARAMETER`       parameter
-`TYPE`            class, interface, enumeration
-`TYPE_PARAMETER`  type parameter (JDK 8)
-`TYPE_USE`        type use (JDK 8)
+|Constant          |Applicable To|
+|:---------        |:--------------|
+|`ANNOTATION_TYPE` |another annotation|
+|`CONSTRUCTOR`     |constructor|
+|`FIELD`           |field|
+|`LOCAL_VARIABLE`  |local variable|
+|`METHOD`          |method|
+|`PACKAGE`         |package|
+|`PARAMETER`       |parameter|
+|`TYPE`            |class, interface, enumeration|
+|`TYPE_PARAMETER`  |type parameter (JDK 8)|
+|`TYPE_USE`        |type use (JDK 8)|
 
 The `@Inherited` annotation can only be applied to annotations being applied to class declarations, causing the annotation of a superclass to be inherited by a subclass. That is, if a subclass is searched for a given annotation and it's not found, its superclass is searched.
 

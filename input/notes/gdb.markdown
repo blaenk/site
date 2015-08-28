@@ -3,9 +3,6 @@ title = "GDB"
 published = "February 18, 2014"
 excerpt = "Because printf-debugging is tedious"
 comments = false
-
-[toc]
-show = true
 ---
 
 It seems that using a debugger like the [GNU Debugger] (GDB) has become something of a lost art for the generation of developers whom are more involved with higher-level languages. Instead, it seems many people resort to so-called `printf`-debugging, where one places print statements all over the place to sort of trace the state of the program's execution at any given moment. Of course, this is very tedious, and can be done more naturally and efficiently with a dedicated debugger.
@@ -36,7 +33,7 @@ The GDB session samples provided in this page are highlighted with a basic GDB [
 
 [Pygments lexer]: https://github.com/snarez/gdb_lexer
 
-::toc::
+<toc/>
 
 # Workflow
 
@@ -317,19 +314,19 @@ $1 = 12
 
 The `print` command has support for printing in a variety of different format, which is done with `p/fmt var` where `fmt` is any one of:
 
-Format                  Code
--------                ------
-address                a
-binary                 t
-char                   c
-decimal                d
-float                  f
-hex                    x
-hex (left zero padded) z
-instruction            i
-octal                  o
-unsigned decimal       u
-string                 s
+|Format                 |Code|
+|:-------               |:------|
+|address                |a|
+|binary                 |t|
+|char                   |c|
+|decimal                |d|
+|float                  |f|
+|hex                    |x|
+|hex (left zero padded) |z|
+|instruction            |i|
+|octal                  |o|
+|unsigned decimal       |u|
+|string                 |s|
 
 There is also a `printf` function which behaves the same way as the function of the same name in C, but like `print` in GDB, the parentheses are optional.
 
@@ -536,44 +533,44 @@ Many commands have abbreviations which are simpler to enter:
   </thead>
   <tbody>
     <tr class="odd">
-      <td>**b**ack**t**race</td>
+      <td><strong>b</strong>ack<strong>t</strong>race</td>
     </tr>
     <tr class="even">
-      <td>**b**reak</td>
+      <td><strong>b</strong>reak</td>
     </tr>
     <tr class="odd">
-      <td>**cond**ition</td>
+      <td><strong>cond</strong>ition</td>
     </tr>
     <tr class="even">
-      <td>**c**ontinue</td>
+      <td><strong>c</strong>ontinue</td>
     <tr class="odd">
-      <td>**dis**able</td>
+      <td><strong>dis</strong>able</td>
     <tr class="even">
-      <td>**disp**lay</td>
+      <td><strong>disp</strong>lay</td>
     <tr class="odd">
-      <td>**ena**ble</td>
+      <td><strong>ena</strong>ble</td>
     <tr class="even">
-      <td>**fin**ish</td>
+      <td><strong>fin</strong>ish</td>
     <tr class="odd">
-      <td>**i**nfo</td>
+      <td><strong>i</strong>nfo</td>
     <tr class="even">
-      <td>**n**ext</td>
+      <td><strong>n</strong>ext</td>
     <tr class="odd">
-      <td>**p**rint</td>
+      <td><strong>p</strong>rint</td>
     <tr class="even">
-      <td>**pt**ype</td>
+      <td><strong>pt</strong>ype</td>
     <tr class="odd">
-      <td>**q**uit</td>
+      <td><strong>q</strong>uit</td>
     <tr class="even">
-      <td>**r**un</td>
+      <td><strong>r</strong>un</td>
     <tr class="odd">
-      <td>**s**tep</td>
+      <td><strong>s</strong>tep</td>
     <tr class="even">
-      <td>**tb**reak</td>
+      <td><strong>tb</strong>reak</td>
     <tr class="odd">
-      <td>**undisp**lay</td>
+      <td><strong>undisp</strong>lay</td>
     <tr class="even">
-      <td>**u**ntil</td>
+      <td><strong>u</strong>ntil</td>
   </tbody>
 </table>
 

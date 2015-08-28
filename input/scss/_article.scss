@@ -197,6 +197,10 @@ article {
       tr:nth-of-type(2n) { background: #D0E9FF; }
     }
 
+    aside.table-caption {
+        text-align: center;
+    }
+
     abbr {
       cursor: default;
       border-bottom: 1px solid #ccc;

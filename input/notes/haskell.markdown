@@ -3,9 +3,6 @@ title = "Haskell"
 published = "March 5, 2014"
 excerpt = "An exceedingly elegant functional programming language"
 comments = false
-
-[toc]
-show = true
 ---
 
 I originally chose [Erlang] as the first functional programming language to attempt learning. However, the combination of different programming paradigm, obscure Prolog-like syntax, and unfamiliar concurrency paradigm made it particularly difficult for me to see the big picture of functional programming.
@@ -17,7 +14,7 @@ I'm actually familiar with Haskell now. This very site is written in Haskell, an
 *[PLT]: Programming Language Theory
 *[GHC]: Glasgow Haskell Compiler
 
-::toc::
+<toc/>
 
 # User Guide
 
@@ -213,13 +210,13 @@ An argument to `rpar` is called a _spark_. The runtime collects sparks in a pool
 SPARKS: 100 (100 converted, 0 overflowed, 0 dud, 0 GC'd, 0 fizzled)
 ```
 
-Term       Definition
------      -----------
-converted  evaluated in parallel
-overflowed didn't fit in the spark pool
-dud        already evaluated, ignored
-GC'd       unused, garbage collected
-fizzled    evaluated some place else
+|Term       |Definition|
+|:-----     |:-----------|
+|converted  |evaluated in parallel|
+|overflowed |didn't fit in the spark pool|
+|dud        |already evaluated, ignored|
+|GC'd       |unused, garbage collected|
+|fizzled    |evaluated some place else|
 
 ## Deepseq
 
@@ -419,13 +416,13 @@ Haddock accepts some comma-separated list of options that affect how it generate
 {-# OPTIONS_HADDOCK hide, prune #-}
 ```
 
-Option          Effect
--------         -------
-hide            omits module; doesn't affect re-exported definitions
-prune           omits definitions with no annotations
-ignore-exports  ignore export list; all top-level declarations are exported
-not-home        module shouldn't be considered to be home module
-show-extensions include all language extensions used in the module
+|Option          |Effect|
+|:-------        |:-------|
+|hide            |omits module; doesn't affect re-exported definitions|
+|prune           |omits definitions with no annotations|
+|ignore-exports  |ignore export list; all top-level declarations are exported|
+|not-home        |module shouldn't be considered to be home module|
+|show-extensions |include all language extensions used in the module|
 
 # GHC Extensions
 

@@ -3,10 +3,6 @@ title = "Distributed Systems"
 published = "September 15, 2014"
 excerpt = "Solving problems with multiple computers"
 comments = false
-
-[toc]
-show = true
-align = "left"
 ---
 
 I'm using [Distributed Systems for Fun and Profit] for an introduction to the field of distributed systems.

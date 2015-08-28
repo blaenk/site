@@ -3,9 +3,6 @@ title = "Erlang and the OTP"
 published = "February 26, 2014"
 excerpt = "A very stable and robust fault-tolerant, concurrent programming language"
 comments = false
-
-[toc]
-show = true
 ---
 
 Erlang was the first functional programming language I took a shot at learning. I started with the Manning book _Erlang in Action_ which also explained the OTP. The problem was that I was combining learning functional programming with the pretty fringe environment that is Erlang. So instead I took a break from that and decided to learn Haskell, and loved it.
@@ -14,7 +11,7 @@ Now I'm back and would like to pick up Erlang and its OTP library. Even if I don
 
 [Scala]: /notes/scala/
 
-::toc::
+<toc/>
 
 # Modules
 

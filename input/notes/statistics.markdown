@@ -3,14 +3,11 @@ title = "Statistics"
 published = "September 15, 2013"
 excerpt = "Descriptive statistics, probabilities, and inference"
 comments = false
-
-[toc]
-show = true
 ---
 
-I want to freshen up on statistics and probabilities, which are very important for machine learning. The primary source material comes from the UC Berkeley Stat 2.1, 2.2, and 2.3 classes on edX which concern descriptive statistics, probabilities, and inference respectively. Supplementary material at times from Khan Academy. 
+I want to freshen up on statistics and probabilities, which are very important for machine learning. The primary source material comes from the UC Berkeley Stat 2.1, 2.2, and 2.3 classes on edX which concern descriptive statistics, probabilities, and inference respectively. Supplementary material at times from Khan Academy.
 
-::toc::
+<toc/>
 
 # Descriptive Statistics
 

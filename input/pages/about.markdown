@@ -2,7 +2,6 @@
 title = "About"
 published = "September 21, 2012"
 comments = false
-toc = false
 ---
 
 <img src="/images/me.png" class="right" width="128" id="me">

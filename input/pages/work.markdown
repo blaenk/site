@@ -2,7 +2,6 @@
 title = "Work"
 published = "December 29, 2012"
 comments = false
-toc = false
 ---
 
 This is an aggregation of the different work I've done in terms of open source contributions and projects.

@@ -3,9 +3,6 @@ title = "Rust"
 published = "December 29, 2013"
 excerpt = "An exciting multiparadigm language from Mozilla"
 comments = false
-
-[toc]
-show = true
 ---
 
 I took a shot at [learning Go] recently and I found its simplicity to be refreshing. Rust is a similar language from Mozilla which I've been interested in for a while now.
@@ -18,19 +15,19 @@ My main resources are the [tutorial] and [manual], but there are [many more]. As
 [many more]: http://doc.rust-lang.org/
 [Rust by Example]: http://rustbyexample.com/
 
-::toc::
+<toc/>
 
 # Types
 
 There are no implicit type conversions. Instead, the `as` keyword is used to perform explicit type conversions. The `type` keyword can be used to create type aliases.
 
-Category          Types
----------         ------
-signed integers   `i8`, `i16`, `i32`, `i64`, `int` (word size)
-unsigned integers `u8`, `u16`, `u32`, `u64`, `uint` (word size)
-floating point    `f32`, `f64`
-Unicode scalars   `char`
-booleans          `bool`
+|Category          |Types|
+|:---------        |:------|
+|signed integers   |`i8`, `i16`, `i32`, `i64`, `int` (word size)|
+|unsigned integers |`u8`, `u16`, `u32`, `u64`, `uint` (word size)|
+|floating point    |`f32`, `f64`|
+|Unicode scalars   |`char`|
+|booleans          |`bool`|
 
 The `Box<T>` type represents a boxed value allocated on the heap. The `Vec<T>` type represents a growable vector. The `String` type represents a growable UTF-8 encoded buffer.
 
@@ -1231,11 +1228,11 @@ As in C++, unboxed closures essentially expand to an anonymous structure which c
 
 In this context, the receiving parameter `self` refers to the instance of the generated structure, so that the type of `self` determines whether the upvars can be moved or mutated. This is exactly the difference between the three unboxed closure traits.
 
-Trait    Self
------    ----
-`Fn`     `&self`
-`FnMut`  `&mut self`
-`FnOnce` `self`
+|Trait    |Self|
+|:-----   |:----|
+|`Fn`     |`&self`|
+|`FnMut`  |`&mut self`|
+|`FnOnce` |`self`|
 
 The RFC defines two types of closures: escaping and non-escaping closures. _Escaping closures_ are closures that will escape the stack frame that created them---such as task bodies---and are created using the `move ||` syntax. _Non-escaping closures_ are the most common and therefore use the default `||` syntax.
 
@@ -1249,11 +1246,11 @@ Notice that moving an upvar out of the closure essentially means to move it out 
 
 The trait above is inferred, but inference of these traits is not completely implemented yet. As a result, there exists syntax sugar to explicitly declare which trait to choose.
 
-Trait    Sugar
-------   ------
-`Fn`     `|&:|`
-`FnMut`  `|&mut:|`
-`FnOnce` `|:|`
+|Trait    |Sugar|
+|:------  |:------|
+|`Fn`     |`|&:|`|
+|`FnMut`  |`|&mut:|`|
+|`FnOnce` |`|:|`|
 
 A simple way to remember this sugar is to imagine that the `self` keyword precedes the colon `:`, which makes it obvious that this sugar is designating the type of the `self` parameter, which corresponds to the appropriate trait.
 
@@ -2002,18 +1999,18 @@ my_macro!(i verbatim 2+2);
 
 Items prefixed by `$` are ways to refer to different types of syntax such as identifiers, expressions, types, and so on. The `$` is followed by a name to give it within the transcription syntax body followed by the fragment specifier.
 
-Designator  Type
------------ -----
-`block`     code block
-`expr`      expressions
-`ident`     identifiers
-`item`      [crate component](http://doc.rust-lang.org/rust.html#items)
-`matchers`  LHS of `=>` in macro
-`pat`       patterns
-`path`      module path
-`stmt`      statement
-`tt`        RHS of `=>` in macro
-`ty`        types
+|Designator   |Type|
+|:----------- |:-----|
+|`block`      |code block|
+|`expr`       |expressions|
+|`ident`      |identifiers|
+|`item`       |[crate component](http://doc.rust-lang.org/rust.html#items)|
+|`matchers`   |LHS of `=>` in macro|
+|`pat`        |patterns|
+|`path`       |module path|
+|`stmt`       |statement|
+|`tt`         |RHS of `=>` in macro|
+|`ty`         |types|
 
 The `tt` specifier seems to refer to token tree, and it seems to refer to code within a block's delimiters `{}`. It's used for implementing macros that are [called with code blocks], reminiscent of the removed do-notation syntax.
 
@@ -2076,16 +2073,16 @@ println!("{}", min!(5u, 2u * 3, 4u));
 
 There are a variety of built-in syntax extensions which expand to expressions with values.
 
-Extension      Purpose
----------      -------
-`format!`      format data into a string
-`env!`         lookup env-var at compile-time
-`file!`        path to file being compiled
-`stringify!`   pretty-print Rust expression
-`include!`     include expression in given file
-`include_str!` include contents of file as string
-`include_bin!` include contents of file as binary
-`info!`        print diagnostics. also `error!`, `warn!`, and `debug!`
+|Extension      |Purpose|
+|:---------     |:-------|
+|`format!`      |format data into a string|
+|`env!`         |lookup env-var at compile-time|
+|`file!`        |path to file being compiled|
+|`stringify!`   |pretty-print Rust expression|
+|`include!`     |include expression in given file|
+|`include_str!` |include contents of file as string|
+|`include_bin!` |include contents of file as binary|
+|`info!`        |print diagnostics. also `error!`, `warn!`, and `debug!`|
 
 # Foreign Function Interface
 
@@ -2206,10 +2203,10 @@ The `unsafe` blocks are mainly used for dereferencing raw pointers, calling FFI 
 
 There are two additional raw pointer types that are an approximation of pointer types in C, namely `*const T` which is an approximation of `const T*` and `*mut T` is an approximation of `T*`.
 
-Rust       C
------      --
-`*const T` `const T*`
-`*mut T`   `T*`
+|Rust       |C|
+|:-----     |:--|
+|`*const T` |`const T*`|
+|`*mut T`   |`T*`|
 
 Rust pointer types aren't guaranteed to not be null or even to point to valid memory, nor do they also don't implement RAII for automatic resource management, like `Box`. Raw pointers are considered plain-old-data, and don't have a notion of move ownership so that Rust can't protect against bugs like use-after-free. Raw pointers are also considered sendable, allowing them to be access from multiple concurrent threads without synchronization.
 

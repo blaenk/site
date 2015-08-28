@@ -3,16 +3,13 @@ title = "React"
 published = "July 25, 2014"
 excerpt = "A novel library for building interfaces"
 comments = false
-
-[toc]
-show = true
 ---
 
 [React] is a library for building user interface out of individual, composable components.
 
 [React]: http://facebook.github.io/react/
 
-::toc::
+<toc/>
 
 # Components
 
@@ -181,11 +178,11 @@ As a disclaimer, never access refs within any component's `render` method or whi
 
 Form components differ from native components because they can be mutated by user interactions. Specifically, they support props that are affected by user actions.
 
-Prop       Components
------      -----------
-`value`    `input` and `textarea`
-`checked`  `checkbox` and `radio`
-`selected` `option`
+|Prop       |Components|
+|:-----     |:-----------|
+|`value`    |`input` and `textarea`|
+|`checked`  |`checkbox` and `radio`|
+|`selected` |`option`|
 
 Although in HTML the value of `textarea` is set via children, it should be set via `value` in React. The `onChange` prop can be listened to for when these properties change in response to user interactions.
 

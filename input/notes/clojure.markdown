@@ -3,9 +3,6 @@ title = "Clojure"
 published = "April 6, 2014"
 excerpt = "A lisp-inspired, dynamic JVM language"
 comments = false
-
-[toc]
-show = true
 ---
 
 Recently I've been thinking about my opinions on the various languages I know, particularly with regards to which I should focus on, and I decided that knowing a JVM language would be very beneficial because of how robust and time-proven the JVM is, especially compared to other language VMs. For this reason I considered Scala and Clojure, and Scala seemed more like Haskell to me so I decided to [go with that one first].
@@ -20,7 +17,7 @@ I didn't have an overwhelming reaction to Scala, so I decided to give Clojure a 
 [Clojure Programming]: http://amzn.com/1449394701
 [Clojure for the Brave and True]: http://www.braveclojure.com/
 
-::toc::
+<toc/>
 
 # Homoiconicity
 
@@ -116,13 +113,13 @@ The variables can be referred to directly by prefixing a symbol with `#'`.
 
 Numeric literals exist for a variety of number types. Custom numerical bases can be used with the `#r` prefix where `#` would be the desired number base.
 
-Syntax               Type
--------              -----
-42, 0xff, 2r101, 040 long
-3.14, 6.02e23        double
-42N                  clojure.lang.BigInt
-0.01M                java.math.BigDecimal
-22/7                 clojure.lang.Ratio
+|Syntax               |Type|
+|:-------             |:-----|
+|42, 0xff, 2r101, 040 |long|
+|3.14, 6.02e23        |double|
+|42N                  |clojure.lang.BigInt|
+|0.01M                |java.math.BigDecimal|
+|22/7                 |clojure.lang.Ratio|
 
 ## Regular Expressions
 
@@ -716,13 +713,13 @@ Functions can be memoized using the `memoize` function.
 
 There are a set of core collection functions which allow data structures to participate in the common collection abstraction. These consist of the following functions:
 
-Function  Purpose
---------- --------
-`conj`    add item
-`seq`     yield sequence
-`count`   count items
-`empty`   yield empty instance
-`=`       check equality
+|Function   |Purpose|
+|:--------- |:--------|
+|`conj`     |add item|
+|`seq`      |yield sequence|
+|`count`    |count items|
+|`empty`    |yield empty instance|
+|`=`        |check equality|
 
 The `conj` function has the guarantee that it adds values efficiently, so that it _prepends_ items to lists instead of appending them [^haskell_cons].
 
@@ -732,13 +729,13 @@ The `conj` function has the guarantee that it adds values efficiently, so that i
 
 Sequences are an abstraction to obtain and traverse sequential views over arbitrary values, such as in a collection. Sequences provide a base set of operations:
 
-Function   Purpose
----------  --------
-`seq`      produces sequence
-`first`    yields first item
-`rest`     yields items excluding first
-`next`     consumes current item
-`lazy-seq` yields lazy sequence
+|Function   |Purpose|
+|:--------- |:--------|
+|`seq`      |produces sequence|
+|`first`    |yields first item|
+|`rest`     |yields items excluding first|
+|`next`     |consumes current item|
+|`lazy-seq` |yields lazy sequence|
 
 The important distinction between `next` and `rest` is that `next` yields `nil` when the sequence is empty, whereas `rest` continues to yield an empty sequence.
 
@@ -819,12 +816,12 @@ Inserting into a map or set, or using the `=` or `count` functions on a sequence
 
 Like sequences, associative is an abstraction shared by data structures that associate keys with values, the most common one being a map. These consist of the following functions:
 
-Function    Purpose
----------   --------
-`assoc`     establish new association
-`dissoc`    drop association
-`get`       get value for given key
-`contains?` check if association exists
+|Function    |Purpose|
+|:---------  |:--------|
+|`assoc`     |establish new association|
+|`dissoc`    |drop association|
+|`get`       |get value for given key|
+|`contains?` |check if association exists|
 
 The `get` function returns `nil` if the key doesn't exist in the association. This poses a problem because it may be intentional to associate `nil` with a key, making it ambiguous as to whether or not the association exists. The solution is to use `find`, which always returns the entire association as a tuple, which in Clojure is expressed as a vector.
 
@@ -890,11 +887,11 @@ The `get` and `assoc` functions can also be used on vectors, where the indices w
 
 Clojure doesn't have a distinct stack type, but it supports stack operations on lists and vectors through the following functions:
 
-Function  Purpose
---------- --------
-`conj`    push value
-`pop`     pop value
-`peek`    peek top value
+|Function   |Purpose|
+|:--------- |:--------|
+|`conj`     |push value|
+|`pop`      |pop value|
+|`peek`     |peek top value|
 
 ## Sets
 
@@ -904,11 +901,11 @@ Sets can be added to with `conj` and can be tested for membership with `get`, ac
 
 The sorted abstraction guarantees that items in the collection will be maintained in a stable ordering. This abstraction supports maps and sets with following functions:
 
-Function  Purpose
---------- --------
-`rseq`    reverse sequence in constant time
-`subseq`  return sequence of values within a certain range
-`rsubseq` reversed `subseq`
+|Function   |Purpose|
+|:--------- |:--------|
+|`rseq`     |reverse sequence in constant time|
+|`subseq`   |return sequence of values within a certain range|
+|`rsubseq`  |reversed `subseq`|
 
 Sorted maps and sets can be created with `sorted-map`, `sorted-set`, or with the `sorted-map-by` and `sorted-set-by` functions which accept a predicate or comparator which defines the sort order.
 
@@ -2384,12 +2381,12 @@ The `type` function is similar to the `class` function, except that if a `:type`
 
 The most popular build tool in the Java world is Maven. Maven's dependency management model consists of _artifacts_, which are files that are the product of the build process. Artifacts are identified by _coordinates_, which are a group of attributes that uniquely identify a particular version of an artifact, in the form <span class="path">groupId:artifactId:packaging:version</span>.
 
-Attribute  Meaning
----------- --------
-groupId    organizational/project identifier
-artifactId project identifier
-packaging  type of artifact (jar)
-version    version string
+|Attribute   |Meaning|
+|:---------- |:--------|
+|groupId     |organizational/project identifier|
+|artifactId  |project identifier|
+|packaging   |type of artifact (jar)|
+|version     |version string|
 
 A project defines its own coordinates in a Maven <span class="path">pom.xml</span> or Leiningen <span class="path">project.cjl</span> file. The <span class="path">pom.xml</span> file can be uploaded to a Maven repository in order to make it available to others. The most popular Maven repositories consist of Maven central and, for Clojure, [clojars.org](http://clojars.org).
 
@@ -2397,10 +2394,10 @@ Dependencies can be expressed by specifying the versions that are required. Ther
 
 [semantic versioning practices]: http://semver.org/
 
-Type     Example
------    --------
-Release  0.2.1-beta5
-Snapshot 1.0.0-SNAPSHOT
+|Type     |Example|
+|:-----   |:--------|
+|Release  |0.2.1-beta5|
+|Snapshot |1.0.0-SNAPSHOT|
 
 Version ranges can be used to restrict or relax certain dependencies. Version range format uses [mathematical range format] to express inclusive or exclusive ends, where an omitted end represents "infinity." A version without range delimiters refers to a "soft" version requirement so that the version chosen is deferred to the one required by any other transitive dependency, if any. Conversely, version number within brackets specifies a "hard" version dependency.
 
@@ -2423,15 +2420,15 @@ A <span class="path">project.cjl</span> file is used for project configuration a
 
 Leiningen has a variety of sub-commands to the main `lein` command.
 
-Command   Use
---------  --------
-`repl`    start REPL with dependencies in classpath
-`test`    run all tests
-`jar`     package project into a jar file
-`uberjar` like `jar` command but unpacks all dependencies into it as well
-`compile` perform ahead-of-time compilation
-`pom`     generate Maven-compatible `pom.xml` file; for repo publishing
-`deps`    downloads all dependencies if necessary
+|Command   |Use|
+|:-------- |:--------|
+|`repl`    |start REPL with dependencies in classpath|
+|`test`    |run all tests|
+|`jar`     |package project into a jar file|
+|`uberjar` |like `jar` command but unpacks all dependencies into it as well|
+|`compile` |perform ahead-of-time compilation|
+|`pom`     |generate Maven-compatible `pom.xml` file; for repo publishing|
+|`deps`    |downloads all dependencies if necessary|
 
 To perform ahead-of-time (AOT) compilation, an `:aot` slot needs to be added to the `defproject` macro with a value of `:all` to compile all namespaces in the project, or a vector of namespaces specifying which to compile.
 
@@ -2520,16 +2517,16 @@ There are also helper functions to create primitive arrays, such as `boolean-arr
 
 Sometimes it's necessary to get the class of an array type to, for example, implement a protocol for an array of that type. Classes for arrays are written using JVM notation with left brackets `[` for each array dimension followed by a letter denoting the array type.
 
-Type       Letter
------     --------
-`boolean` Z
-`byte`    B
-`char`    C
-`long`    J
-`int`     I
-`short`   S
-`double`  D
-`float`   F
+|Type      |Letter|
+|:-----    |:--------|
+|`boolean` |Z|
+|`byte`    |B|
+|`char`    |C|
+|`long`    |J|
+|`int`     |I|
+|`short`   |S|
+|`double`  |D|
+|`float`   |F|
 
 The `Class/forName` function can then be used to yield a class from this notation.
 

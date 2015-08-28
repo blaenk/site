@@ -3,9 +3,6 @@ title = "Angular.js"
 published = "January 1, 2014"
 excerpt = "A framework for developing webapps"
 comments = false
-
-[toc]
-show = true
 ---
 
 I've been meaning to learn Google's [Angular.js] framework for a while now. I of course have experience with straight up jQuery, but that inevitably becomes a mishmash of code. I do have some experience with [Backbone.js], which has been [battle tested] on many of websites such as Pandora, but something about angular seems a bit cleaner.
@@ -21,7 +18,7 @@ My main resources include the [tutorial] and a variety of other resources such a
 [tutorial]: http://docs.angularjs.org/tutorial/step_00
 [egghead]: https://egghead.io/lessons
 
-::toc::
+<toc/>
 
 # Bootstrapping
 

@@ -3,10 +3,6 @@ title = "RabbitMQ"
 published = "July 27, 2014"
 excerpt = "Open source AMQP-compliant message broker"
 comments = false
-
-[toc]
-show = true
-align = "false"
 ---
 
 For every TCP connection there could be multiple channels through which AMQP commands may be sent, each channel with its own unique ID. There are three parts to successful routing of an AMQP message: exchanges, queues, and bindings. Exchanges are where produces publish messages, bindings are how messages get routed from an exchange to a given queue, and queues are where messages end up.

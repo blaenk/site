@@ -7,7 +7,7 @@ tags = [ "Hakyll", "Haskell", "Pandoc" ]
 
 This site was originally built with [Jekyll](http://jekyllrb.com/). Technically I began with the pre-packaged distribution known as [Octopress](http://octopress.org/) which offered a Rakefile for common tasks as well as an out-of-the-box directory structure. I didn't use many of these features, however, so I had been wanting to shed traces of Octopress, partly motivated by the pursuit of increased speed in site generation. I found the opportunity to do this when Jekyll 1.0 was released recently.
 
-::toc::
+<toc/>
 
 To cut away the unnecessary components of Octopress, I decided to go through every file and keep only what I absolutely needed. This is evident in commits after [`712168ec`](https://github.com/blaenk/blaenk.github.com.jekyll/commit/712168ec33004b693cc8cfb553a6a861da6a8708).
 

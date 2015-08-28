@@ -3,15 +3,11 @@ title = "Live Editing with Hakyll"
 published = "December 20, 2013"
 excerpt = "See changes as you write them"
 tags = [ "Hakyll", "Haskell" ]
-
-[toc]
-show = true
-align = "right"
 ---
 
 A recent trend in developer-oriented blogging is to use static site generators, perhaps the most popular being Jekyll written in Ruby. The general workflow when writing posts with static site generators is the classic edit, save, reload.
 
-::toc::
+<toc align="right"/>
 
 A while back, a friend was telling me about his Jekyll setup and in passing mentioned how indispensable some "LiveReload" tool was. I previously did use Jekyll myself, but I hadn't heard of this LiveReload tool. For me, reloading didn't feel like such a hassle, so having a tool that "only" automatically reloaded the page for me didn't feel entirely beneficial.
 

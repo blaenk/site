@@ -2,7 +2,6 @@
 title = "Binary and Hexadecimal"
 published = "November 1, 2013"
 excerpt = "A basic guide to binary and hexadecimal"
-toc = false
 ---
 
 This is a very old guide I wrote when I was 15, in 2005. It gained some popularity at the time, with visitors coming in from Wikipedia and other sources. I only have it here because someone, after all these years, requested it.

@@ -3,6 +3,7 @@ title = "Julia"
 published = "July 23, 2014"
 excerpt = "A high-performance dynamic language for numerical computing"
 comments = false
+draft = true
 ---
 
 # Types

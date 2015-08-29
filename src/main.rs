@@ -223,6 +223,26 @@ fn main() {
         .depends_on(&templates)
         .handler(chain![
             bind::select(glob!("notes/*.markdown")),
+            pool.each(chain![
+                item::read,
+                metadata::toml::parse]),
+            bind::retain(helpers::publishable),
+            pool.each(chain![
+                helpers::set_date,
+                markdown::markdown(context.clone()),
+                handle_if(is_pushable, websocket::pipe(ws_tx.clone())),
+                route::pretty]),
+            git::git,
+            pool.each(chain![
+                handlebars::render(&templates, "note", view::post_template),
+                handlebars::render(&templates, "layout", view::layout_template),
+                item::write]),
+            bind::sort_by(|a, b| {
+                let a = a.extensions.get::<PublishDate>().unwrap();
+                let b = b.extensions.get::<PublishDate>().unwrap();
+                b.cmp(a)
+            })])
+        .build();
 
     // TODO
     // find a way to DRY this, it's basically
@@ -243,13 +263,15 @@ fn main() {
                 route::pretty]),
             git::git,
             pool.each(chain![
-                handlebars::render(&templates, "note", view::post_template),
+                handlebars::render(&templates, "work", view::post_template),
                 handlebars::render(&templates, "layout", view::layout_template),
                 item::write]),
             bind::sort_by(|a, b| {
-                let a = a.extensions.get::<PublishDate>().unwrap();
-                let b = b.extensions.get::<PublishDate>().unwrap();
-                b.cmp(a)
+                let a = a.extensions.get::<metadata::toml::Metadata>().unwrap();
+                let b = b.extensions.get::<metadata::toml::Metadata>().unwrap();
+                let a_title = a.lookup("title").unwrap().as_str().unwrap();
+                let b_title = b.lookup("title").unwrap().as_str().unwrap();
+                a_title.cmp(b_title)
             })])
         .build();
 

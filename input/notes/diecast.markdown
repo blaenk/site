@@ -3,6 +3,7 @@ title = "Diecast"
 published = "November 7, 2014"
 excerpt = "Static Site Generator written in Rust"
 comments = false
+draft = true
 ---
 
 <toc align="right"/>

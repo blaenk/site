@@ -36,7 +36,7 @@ use std::sync::{Arc, Mutex};
 use time::PreciseTime;
 use syncbox::ThreadPool;
 
-use diecast::{Rule, Bind, Item};
+use diecast::{Site, Rule, Bind, Item};
 use diecast::command;
 use diecast::util::route;
 use diecast::util::handle::{handle_if, bind, item};
@@ -350,15 +350,19 @@ fn main() {
         not_found,
     ];
 
+    let site = Site::new(rules);
+
     let command =
-        command::Builder::new()
+        command::Builder::new(site)
         .plugin(live::plugin())
-        .rules(rules)
         .build();
 
     match command {
         Ok(mut cmd) => {
-            // TODO this time keeping should be moved to build
+            // TODO
+            // this time keeping should be moved to build
+            // especially because it doesn't make much sense
+            // to time certain things, like 'live'?
             let start = PreciseTime::now();
 
             match cmd.run() {
@@ -374,4 +378,3 @@ fn main() {
 
     pig_handle.kill().unwrap();
 }
-

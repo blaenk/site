@@ -223,6 +223,15 @@ fn main() {
         .depends_on(&templates)
         .handler(chain![
             bind::select(glob!("notes/*.markdown")),
+
+    // TODO
+    // find a way to DRY this, it's basically
+    // identical to the `notes` rule
+    let work =
+        Rule::named("work")
+        .depends_on(&templates)
+        .handler(chain![
+            bind::select(glob!("work/*.markdown")),
             pool.each(chain![
                 item::read,
                 metadata::toml::parse]),
@@ -252,6 +261,18 @@ fn main() {
             bind::create("notes/index.html"),
             pool.each(chain![
                 handlebars::render(&templates, "index", view::notes_index_template),
+                handlebars::render(&templates, "layout", view::layout_template),
+                item::write])])
+        .build();
+
+    let work_index =
+        Rule::named("work index")
+        .depends_on(&work)
+        .depends_on(&templates)
+        .handler(chain![
+            bind::create("work/index.html"),
+            pool.each(chain![
+                handlebars::render(&templates, "index", view::work_index_template),
                 handlebars::render(&templates, "layout", view::layout_template),
                 item::write])])
         .build();
@@ -301,6 +322,8 @@ fn main() {
         tags,
         notes,
         notes_index,
+        work,
+        work_index,
         feed,
         not_found,
     ];

@@ -14,52 +14,91 @@ use metadata;
 
 use super::PublishDate;
 
+#[inline]
+fn item_meta(item: &Item) -> Option<&toml::Value> {
+    item.extensions.get::<metadata::toml::Metadata>()
+}
+
+#[inline]
+fn item_title(item: &Item) -> Option<String> {
+    item_meta(item)
+        .and_then(|m|
+            m.lookup("title")
+                .and_then(toml::Value::as_str)
+                .map(String::from))
+}
+
+#[inline]
+fn item_tags(item: &Item) -> Option<String> {
+    item_meta(item)
+        .and_then(|m|
+            m.lookup("tags")
+            .and_then(toml::Value::as_slice)
+            .map(|tags|
+                tags.iter()
+                .map(|tag| {
+                    if let Some(tag) = tag.as_str() {
+                        let url = support::slugify(&tag);
+                        format!(r#"<a href="/tags/{}">{}</a>"#, url, tag)
+                    } else {
+                        String::new()
+                    }
+                })
+                .collect::<Vec<String>>()
+                .connect(", ")))
+}
+
+#[inline]
+fn item_url(item: &Item) -> Option<String> {
+    item.route().writing()
+        .and_then(Path::parent)
+        .and_then(Path::to_str)
+        .map(String::from)
+}
+
+#[inline]
+fn item_path(item: &Item) -> Option<String> {
+    item.route().reading()
+        .and_then(Path::to_str)
+        .map(String::from)
+}
+
+#[inline]
+fn item_date(item: &Item) -> Option<String> {
+    item.extensions.get::<PublishDate>()
+        .map(|d| d.format("%B %e, %Y").to_string())
+}
+
+#[inline]
+fn item_git(item: &Item) -> Option<String> {
+    item.extensions.get::<git::Git>()
+    .and_then(|git|
+        item.source()
+            .and_then(|path| path.to_str().map(String::from))
+            .map(|path| (git, path)))
+    .map(|(git, path)| {
+        let sha = git.sha.to_string().chars().take(7).collect::<String>();
+        // TODO
+        // detect user/repo by parsing remote?
+        let stem = "blaenk/site";
+        format!(
+    "<a href=\"https://github.com/{stem}/commits/master/{path}\">History</a>\
+    <span class=\"hash\">, \
+    <a href=\"https://github.com/{stem}/commit/{sha}\" title=\"{message}\">{sha}</a>\
+    </span>",
+        path=path, stem=stem, sha=sha, message=git.message)
+    })
+}
+
 pub fn post_template(item: &Item) -> Json {
     let mut bt = BTreeMap::new();
 
-    // TODO: don't predicate these things on metadata existing
-    if let Some(meta) = item.extensions.get::<metadata::toml::Metadata>() {
-        bt.insert(String::from("body"), item.body.to_json());
-
-        if let Some(title) = meta.lookup("title").and_then(toml::Value::as_str).map(ToJson::to_json) {
-            bt.insert(String::from("title"), title);
-        }
-
-        if let Some(path) = item.route().writing().and_then(Path::parent).and_then(Path::to_str).map(ToJson::to_json) {
-            bt.insert(String::from("url"), path);
-        }
-
-        if let Some(date) = item.extensions.get::<PublishDate>() {
-            bt.insert(String::from("date"), date.format("%B %e, %Y").to_string().to_json());
-        }
-
-        if let Some(git) = item.extensions.get::<git::Git>() {
-            let sha = git.sha.to_string().chars().take(7).collect::<String>();
-            let path = item.source().unwrap();
-
-            // TODO: change the url and branch when ready
-            let res =
-                format!(
-"<a href=\"https://github.com/blaenk/diecast/commits/master/{}\">History</a>\
-<span class=\"hash\">, \
-<a href=\"https://github.com/blaenk/diecast/commit/{}\" title=\"{}\">{}</a>\
-</span>",
-                path.to_str().unwrap(), sha, git.message, sha);
-
-            bt.insert(String::from("git"), res.to_json());
-        }
-
-        if let Some(tags) = meta.lookup("tags").and_then(toml::Value::as_slice) {
-            let tags = tags.iter().map(|t| {
-                let tag = t.as_str().unwrap();
-                let url = support::slugify(&tag);
-                // TODO: sanitize the tag url
-                format!("<a href=\"/tags/{}\">{}</a>", url, tag)
-            })
-            .collect::<Vec<String>>();
-            bt.insert(String::from("tags"), tags.connect(", ").to_json());
-        }
-    }
+    bt.insert(String::from("body"),  item.body.to_json());
+    bt.insert(String::from("title"), item_title(&item).to_json());
+    bt.insert(String::from("url"),   item_url(&item).to_json());
+    bt.insert(String::from("date"),  item_date(&item).to_json());
+    bt.insert(String::from("git"),   item_git(&item).to_json());
+    bt.insert(String::from("tags"),   item_tags(&item).to_json());
 
     Json::Object(bt)
 }
@@ -71,15 +110,8 @@ pub fn posts_index_template(item: &Item) -> Json {
     for post in item.bind().dependencies["posts"].items() {
         let mut itm = BTreeMap::new();
 
-        if let Some(meta) = post.extensions.get::<metadata::toml::Metadata>() {
-            if let Some(title) = meta.lookup("title") {
-                itm.insert(String::from("title"), title.as_str().unwrap().to_json());
-            }
-
-            if let Some(path) = post.route().writing() {
-                itm.insert(String::from("url"), path.parent().unwrap().to_str().unwrap().to_json());
-            }
-        }
+        itm.insert(String::from("title"), item_title(post).to_json());
+        itm.insert(String::from("url"), item_url(post).to_json());
 
         items.push(itm);
     }
@@ -101,15 +133,8 @@ pub fn tags_index_template(item: &Item) -> Json {
 
             tg = tag.tag.clone();
 
-            if let Some(meta) = post.extensions.get::<metadata::toml::Metadata>() {
-                if let Some(title) = meta.lookup("title") {
-                    itm.insert(String::from("title"), title.as_str().unwrap().to_json());
-                }
-            }
-
-            if let Some(path) = post.route().writing() {
-                itm.insert(String::from("url"), path.parent().unwrap().to_str().unwrap().to_json());
-            }
+            itm.insert(String::from("title"), item_title(&post).to_json());
+            itm.insert(String::from("url"), item_url(&post).to_json());
 
             items.push(itm);
         }
@@ -128,35 +153,10 @@ pub fn notes_index_template(item: &Item) -> Json {
     for post in item.bind().dependencies["notes"].items() {
         let mut itm = BTreeMap::new();
 
-        if let Some(meta) = post.extensions.get::<metadata::toml::Metadata>() {
-            if let Some(title) = meta.lookup("title") {
-                itm.insert(String::from("title"), title.as_str().unwrap().to_json());
-            }
-
-            if let Some(path) = post.route().writing() {
-                itm.insert(String::from("url"), path.parent().unwrap().to_str().unwrap().to_json());
-            }
-
-            if let Some(date) = item.extensions.get::<PublishDate>() {
-                bt.insert(String::from("date"), date.format("%B %e, %Y").to_string().to_json());
-            }
-
-            if let Some(git) = item.extensions.get::<git::Git>() {
-                let sha = git.sha.to_string().chars().take(7).collect::<String>();
-                let path = item.source().unwrap();
-
-                // TODO: change the url and branch when ready
-                let res =
-                    format!(
-    "<a href=\"https://github.com/blaenk/diecast/commits/master/{}\">History</a>\
-    <span class=\"hash\">, \
-    <a href=\"https://github.com/blaenk/diecast/commit/{}\" title=\"{}\">{}</a>\
-    </span>",
-                    path.to_str().unwrap(), sha, git.message, sha);
-
-                bt.insert(String::from("git"), res.to_json());
-            }
-        }
+        itm.insert(String::from("title"), item_title(&post).to_json());
+        itm.insert(String::from("url"), item_url(&post).to_json());
+        itm.insert(String::from("date"), item_date(&post).to_json());
+        itm.insert(String::from("git"), item_git(&post).to_json());
 
         items.push(itm);
     }
@@ -167,7 +167,7 @@ pub fn notes_index_template(item: &Item) -> Json {
 }
 
 // TODO
-// DRY this, it's identical to prev func
+// DRY this since it's identical to prev func
 pub fn work_index_template(item: &Item) -> Json {
     let mut bt = BTreeMap::new();
     let mut items = vec![];
@@ -175,35 +175,10 @@ pub fn work_index_template(item: &Item) -> Json {
     for post in item.bind().dependencies["work"].items() {
         let mut itm = BTreeMap::new();
 
-        if let Some(meta) = post.extensions.get::<metadata::toml::Metadata>() {
-            if let Some(title) = meta.lookup("title") {
-                itm.insert(String::from("title"), title.as_str().unwrap().to_json());
-            }
-
-            if let Some(path) = post.route().writing() {
-                itm.insert(String::from("url"), path.parent().unwrap().to_str().unwrap().to_json());
-            }
-
-            if let Some(date) = item.extensions.get::<PublishDate>() {
-                bt.insert(String::from("date"), date.format("%B %e, %Y").to_string().to_json());
-            }
-
-            if let Some(git) = item.extensions.get::<git::Git>() {
-                let sha = git.sha.to_string().chars().take(7).collect::<String>();
-                let path = item.source().unwrap();
-
-                // TODO: change the url and branch when ready
-                let res =
-                    format!(
-    "<a href=\"https://github.com/blaenk/diecast/commits/master/{}\">History</a>\
-    <span class=\"hash\">, \
-    <a href=\"https://github.com/blaenk/diecast/commit/{}\" title=\"{}\">{}</a>\
-    </span>",
-                    path.to_str().unwrap(), sha, git.message, sha);
-
-                bt.insert(String::from("git"), res.to_json());
-            }
-        }
+        itm.insert(String::from("title"), item_title(&post).to_json());
+        itm.insert(String::from("url"), item_url(&post).to_json());
+        itm.insert(String::from("date"), item_date(&post).to_json());
+        itm.insert(String::from("git"), item_git(&post).to_json());
 
         items.push(itm);
     }
@@ -217,18 +192,8 @@ pub fn layout_template(item: &Item) -> Json {
     let mut bt = BTreeMap::new();
 
     bt.insert(String::from("body"), item.body.to_json());
-
-    // this should probably go in post template handler
-    // move partial load to post template
-    if let Some(path) = item.route().reading() {
-        bt.insert(String::from("path"), path.to_str().unwrap().to_json());
-    }
-
-    if let Some(path) = item.route().writing() {
-        bt.insert(String::from("url"), format!("{}/", path.parent().unwrap().to_str().unwrap()).to_json());
-    }
+    bt.insert(String::from("path"), item_path(&item).to_json());
+    bt.insert(String::from("url"), item_url(&item).to_json());
 
     Json::Object(bt)
 }
-
-

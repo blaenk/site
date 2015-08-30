@@ -36,14 +36,14 @@ fn item_tags(item: &Item) -> Option<String> {
             .and_then(toml::Value::as_slice)
             .map(|tags|
                 tags.iter()
-                .map(|tag| {
+                .map(|tag|
                     if let Some(tag) = tag.as_str() {
                         let url = support::slugify(&tag);
                         format!(r#"<a href="/tags/{}">{}</a>"#, url, tag)
                     } else {
                         String::new()
                     }
-                })
+                )
                 .collect::<Vec<String>>()
                 .connect(", ")))
 }
@@ -74,18 +74,19 @@ fn item_git(item: &Item) -> Option<String> {
     item.extensions.get::<git::Git>()
     .and_then(|git|
         item.source()
-            .and_then(|path| path.to_str().map(String::from))
-            .map(|path| (git, path)))
+        .and_then(|path|
+            path.to_str()
+            .map(|s| (git, String::from(s)))))
     .map(|(git, path)| {
         let sha = git.sha.to_string().chars().take(7).collect::<String>();
         // TODO
         // detect user/repo by parsing remote?
         let stem = "blaenk/site";
         format!(
-    "<a href=\"https://github.com/{stem}/commits/master/{path}\">History</a>\
-    <span class=\"hash\">, \
-    <a href=\"https://github.com/{stem}/commit/{sha}\" title=\"{message}\">{sha}</a>\
-    </span>",
+"<a href=\"https://github.com/{stem}/commits/master/{path}\">History</a>\
+<span class=\"hash\">, \
+<a href=\"https://github.com/{stem}/commit/{sha}\" title=\"{message}\">{sha}</a>\
+</span>",
         path=path, stem=stem, sha=sha, message=git.message)
     })
 }
@@ -99,24 +100,6 @@ pub fn post_template(item: &Item) -> Json {
     bt.insert(String::from("date"),  item_date(&item).to_json());
     bt.insert(String::from("git"),   item_git(&item).to_json());
     bt.insert(String::from("tags"),   item_tags(&item).to_json());
-
-    Json::Object(bt)
-}
-
-pub fn posts_index_template(item: &Item) -> Json {
-    let mut bt = BTreeMap::new();
-    let mut items = vec![];
-
-    for post in item.bind().dependencies["posts"].items() {
-        let mut itm = BTreeMap::new();
-
-        itm.insert(String::from("title"), item_title(post).to_json());
-        itm.insert(String::from("url"), item_url(post).to_json());
-
-        items.push(itm);
-    }
-
-    bt.insert(String::from("items"), items.to_json());
 
     Json::Object(bt)
 }
@@ -146,19 +129,44 @@ pub fn tags_index_template(item: &Item) -> Json {
     Json::Object(bt)
 }
 
+pub fn posts_index_template(item: &Item) -> Json {
+    let mut bt = BTreeMap::new();
+    let mut items = vec![];
+
+    for post in item.bind().dependencies["posts"].items() {
+        let mut itm = BTreeMap::new();
+
+        itm.insert(String::from("title"), item_title(post).to_json());
+        itm.insert(String::from("url"), item_url(post).to_json());
+
+        items.push(itm);
+    }
+
+    bt.insert(String::from("items"), items.to_json());
+
+    Json::Object(bt)
+}
+
+pub fn note_item(item: &Item) -> BTreeMap<String, Json> {
+    let mut itm = BTreeMap::new();
+
+    itm.insert(String::from("title"), item_title(&item).to_json());
+    itm.insert(String::from("url"), item_url(&item).to_json());
+    itm.insert(String::from("date"), item_date(&item).to_json());
+    itm.insert(String::from("git"), item_git(&item).to_json());
+
+    itm
+}
+
+// TODO
+// this and the next functions only differ by
+// the dependency being captured
 pub fn notes_index_template(item: &Item) -> Json {
     let mut bt = BTreeMap::new();
     let mut items = vec![];
 
     for post in item.bind().dependencies["notes"].items() {
-        let mut itm = BTreeMap::new();
-
-        itm.insert(String::from("title"), item_title(&post).to_json());
-        itm.insert(String::from("url"), item_url(&post).to_json());
-        itm.insert(String::from("date"), item_date(&post).to_json());
-        itm.insert(String::from("git"), item_git(&post).to_json());
-
-        items.push(itm);
+        items.push(note_item(post));
     }
 
     bt.insert(String::from("items"), items.to_json());
@@ -173,14 +181,7 @@ pub fn work_index_template(item: &Item) -> Json {
     let mut items = vec![];
 
     for post in item.bind().dependencies["work"].items() {
-        let mut itm = BTreeMap::new();
-
-        itm.insert(String::from("title"), item_title(&post).to_json());
-        itm.insert(String::from("url"), item_url(&post).to_json());
-        itm.insert(String::from("date"), item_date(&post).to_json());
-        itm.insert(String::from("git"), item_git(&post).to_json());
-
-        items.push(itm);
+        items.push(note_item(post));
     }
 
     bt.insert(String::from("items"), items.to_json());

@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <!-- <title>{{page_title}}</title> -->
-  <title>CHANGE THIS</title>
+  <title>{{page_title}}</title>
   <meta name="author" content="Jorge Israel Peña">
   <meta name="description" content="AKA Blaenk Denum">
 
@@ -25,9 +24,13 @@
 </head>
 <body>
   <div class="page-wrapper">
-    {{> header}}
-    {{{body}}}
-    {{> footer}}
+    {{> header this}}
+    {{#if partial}}
+        {{> (partial) this}}
+    {{else}}
+        {{{body}}}
+    {{/if}}
+    {{> footer this}}
   </div>
 </body>
 </html>

@@ -110,4 +110,3 @@ pub fn rss_handler(_title: &str, url: &str, bind: &Bind) -> Vec<rss::Item> {
         })
     .collect()
 }
-

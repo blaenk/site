@@ -138,19 +138,6 @@ fn main() {
             scss::scss("scss/screen.scss", "css/screen.css")])
         .build();
 
-    // let scss =
-    //     Rule::named("scss")
-    //     .pattern(glob!("scss/**/*.scss"))
-    //     .build();
-
-    // let css =
-    //     Rule::named("css")
-    //     .depends_on(&scss)
-    //     .handler(chain![
-    //         scss::compiler("scss/screen.scss", "css/screen.css"),
-    //         item::write])
-    //     .build();
-
     let posts =
         Rule::named("posts")
         .depends_on(&templates)
@@ -176,8 +163,7 @@ fn main() {
             }),
             git::git,
             pool.each(chain![
-                handlebars::render(&templates, "post", view::post_template),
-                handlebars::render(&templates, "layout", view::layout_template),
+                handlebars::render(&templates, "layout", view::post_template),
                 item::write]),
             bind::sort_by(|a, b| {
                 let a = a.extensions.get::<PublishDate>().unwrap();
@@ -194,8 +180,7 @@ fn main() {
         .handler(chain![
             bind::create("index.html"),
             pool.each(chain![
-                handlebars::render(&templates, "index", view::posts_index_template),
-                handlebars::render(&templates, "layout", view::layout_template),
+                handlebars::render(&templates, "layout", view::posts_index_template),
                 item::write])])
         .build();
 
@@ -213,8 +198,7 @@ fn main() {
                 handle_if(is_pushable, websocket::pipe(ws_tx.clone())),
                 route::pretty_page]),
             pool.each(chain![
-                handlebars::render(&templates, "page", view::post_template),
-                handlebars::render(&templates, "layout", view::layout_template),
+                handlebars::render(&templates, "layout", view::post_template),
                 item::write])])
         .build();
 
@@ -234,8 +218,7 @@ fn main() {
                 route::pretty]),
             git::git,
             pool.each(chain![
-                handlebars::render(&templates, "note", view::post_template),
-                handlebars::render(&templates, "layout", view::layout_template),
+                handlebars::render(&templates, "layout", view::post_template),
                 item::write]),
             bind::sort_by(|a, b| {
                 let a = a.extensions.get::<PublishDate>().unwrap();
@@ -263,8 +246,7 @@ fn main() {
                 route::pretty]),
             git::git,
             pool.each(chain![
-                handlebars::render(&templates, "work", view::post_template),
-                handlebars::render(&templates, "layout", view::layout_template),
+                handlebars::render(&templates, "layout", view::post_template),
                 item::write]),
             bind::sort_by(|a, b| {
                 let a = a.extensions.get::<metadata::toml::Metadata>().unwrap();
@@ -282,8 +264,7 @@ fn main() {
         .handler(chain![
             bind::create("notes/index.html"),
             pool.each(chain![
-                handlebars::render(&templates, "index", view::notes_index_template),
-                handlebars::render(&templates, "layout", view::layout_template),
+                handlebars::render(&templates, "layout", view::notes_index_template),
                 item::write])])
         .build();
 
@@ -294,8 +275,7 @@ fn main() {
         .handler(chain![
             bind::create("work/index.html"),
             pool.each(chain![
-                handlebars::render(&templates, "index", view::work_index_template),
-                handlebars::render(&templates, "layout", view::layout_template),
+                handlebars::render(&templates, "layout", view::work_index_template),
                 item::write])])
         .build();
 
@@ -306,8 +286,7 @@ fn main() {
         .handler(chain![
             helpers::tag_index,
             pool.each(chain![
-                handlebars::render(&templates, "tags", view::tags_index_template),
-                handlebars::render(&templates, "layout", view::layout_template),
+                handlebars::render(&templates, "layout", view::tags_index_template),
                 item::write])])
         .build();
 
@@ -330,7 +309,7 @@ fn main() {
             pool.each(chain![
                 item::read,
                 route::identity,
-                handlebars::render(&templates, "layout", view::layout_template),
+                handlebars::render(&templates, "layout", view::with_body),
                 item::write])])
         .build();
 

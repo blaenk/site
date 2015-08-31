@@ -91,12 +91,30 @@ fn item_git(item: &Item) -> Option<String> {
     })
 }
 
+pub fn empty(item: &Item) -> Json {
+    Json::Null
+}
+
+pub fn with_body(item: &Item) -> Json {
+    let mut bt = BTreeMap::new();
+    bt.insert(String::from("body"),  item.body.to_json());
+    bt.to_json()
+}
+
+pub fn append_site(title: Option<String>) -> Option<String> {
+    title.map(|t| format!("{} - Blaenk Denum", t))
+}
+
 pub fn post_template(item: &Item) -> Json {
     let mut bt = BTreeMap::new();
 
-    bt.insert(String::from("body"),  item.body.to_json());
+    bt.insert(String::from("partial"), String::from("post").to_json());
+
     bt.insert(String::from("title"), item_title(&item).to_json());
+    bt.insert(String::from("page_title"), append_site(item_title(&item)).to_json());
     bt.insert(String::from("url"),   item_url(&item).to_json());
+    bt.insert(String::from("path"), item_path(&item).to_json());
+    bt.insert(String::from("body"),  item.body.to_json());
     bt.insert(String::from("date"),  item_date(&item).to_json());
     bt.insert(String::from("git"),   item_git(&item).to_json());
     bt.insert(String::from("tags"),   item_tags(&item).to_json());
@@ -123,6 +141,8 @@ pub fn tags_index_template(item: &Item) -> Json {
         }
     }
 
+    bt.insert(String::from("partial"), String::from("tags").to_json());
+    bt.insert(String::from("page_title"), format!("Posts tagged: {}", tg).to_json());
     bt.insert(String::from("tag"), tg.to_json());
     bt.insert(String::from("items"), items.to_json());
 
@@ -142,6 +162,8 @@ pub fn posts_index_template(item: &Item) -> Json {
         items.push(itm);
     }
 
+    bt.insert(String::from("partial"), String::from("index").to_json());
+    bt.insert(String::from("page_title"), String::from("Blaenk Denum").to_json());
     bt.insert(String::from("items"), items.to_json());
 
     Json::Object(bt)
@@ -151,6 +173,7 @@ pub fn note_item(item: &Item) -> BTreeMap<String, Json> {
     let mut itm = BTreeMap::new();
 
     itm.insert(String::from("title"), item_title(&item).to_json());
+    itm.insert(String::from("page_title"), append_site(item_title(&item)).to_json());
     itm.insert(String::from("url"), item_url(&item).to_json());
     itm.insert(String::from("date"), item_date(&item).to_json());
     itm.insert(String::from("git"), item_git(&item).to_json());
@@ -158,7 +181,7 @@ pub fn note_item(item: &Item) -> BTreeMap<String, Json> {
     itm
 }
 
-// TODO
+// TODO: DRY
 // this and the next functions only differ by
 // the dependency being captured
 pub fn notes_index_template(item: &Item) -> Json {
@@ -169,13 +192,13 @@ pub fn notes_index_template(item: &Item) -> Json {
         items.push(note_item(post));
     }
 
+    bt.insert(String::from("partial"), String::from("index").to_json());
+    bt.insert(String::from("page_title"), String::from("Notes - Blaenk Denum").to_json());
     bt.insert(String::from("items"), items.to_json());
 
     Json::Object(bt)
 }
 
-// TODO
-// DRY this since it's identical to prev func
 pub fn work_index_template(item: &Item) -> Json {
     let mut bt = BTreeMap::new();
     let mut items = vec![];
@@ -184,6 +207,8 @@ pub fn work_index_template(item: &Item) -> Json {
         items.push(note_item(post));
     }
 
+    bt.insert(String::from("partial"), String::from("index").to_json());
+    bt.insert(String::from("page_title"), String::from("Work - Blaenk Denum").to_json());
     bt.insert(String::from("items"), items.to_json());
 
     Json::Object(bt)

@@ -24,13 +24,13 @@
 </head>
 <body>
   <div class="page-wrapper">
-    {{> header this}}
+    {{> header}}
     {{#if partial}}
-        {{> (partial) this}}
+        {{> (partial)}}
     {{else}}
         {{{body}}}
     {{/if}}
-    {{> footer this}}
+    {{> footer}}
   </div>
 </body>
 </html>

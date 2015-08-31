@@ -1,6 +1,5 @@
 use std::sync::{Arc, Mutex};
 
-use toml;
 use hoedown;
 use zmq;
 
@@ -18,10 +17,9 @@ impl Handle<Item> for Markdown {
     fn handle(&self, item: &mut Item) -> diecast::Result<()> {
         use std::collections::HashMap;
         use std::fs::File;
-        use std::io::{self, Read, Write};
+        use std::io::{Read, Write};
         use regex::{Regex, Captures};
         use hoedown::Render;
-        use hoedown::renderer::html;
         use sha1;
 
         let mut hash = sha1::Sha1::new();

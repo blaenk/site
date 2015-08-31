@@ -36,7 +36,7 @@ use std::sync::{Arc, Mutex};
 use time::PreciseTime;
 use syncbox::ThreadPool;
 
-use diecast::{Site, Rule, Bind, Item};
+use diecast::{Site, Rule, Item};
 use diecast::command;
 use diecast::util::route;
 use diecast::util::handle::{handle_if, bind, item};

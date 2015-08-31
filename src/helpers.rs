@@ -13,11 +13,6 @@ use versions;
 
 use super::PublishDate;
 
-fn get_published(item: &Item) -> Option<&str> {
-    item.extensions.get::<metadata::toml::Metadata>()
-    .and_then(|meta| meta.lookup("published").and_then(toml::Value::as_str))
-}
-
 fn date_handler(item: &Item) -> diecast::Result<chrono::NaiveDate> {
     if let Some(meta) = item.extensions.get::<metadata::toml::Metadata>() {
         if let Some(date) = meta.lookup("published").and_then(toml::Value::as_str) {

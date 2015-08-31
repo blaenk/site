@@ -91,10 +91,6 @@ fn item_git(item: &Item) -> Option<String> {
     })
 }
 
-pub fn empty(item: &Item) -> Json {
-    Json::Null
-}
-
 pub fn with_body(item: &Item) -> Json {
     let mut bt = BTreeMap::new();
     bt.insert(String::from("body"),  item.body.to_json());
@@ -210,16 +206,6 @@ pub fn work_index_template(item: &Item) -> Json {
     bt.insert(String::from("partial"), String::from("index").to_json());
     bt.insert(String::from("page_title"), String::from("Work - Blaenk Denum").to_json());
     bt.insert(String::from("items"), items.to_json());
-
-    Json::Object(bt)
-}
-
-pub fn layout_template(item: &Item) -> Json {
-    let mut bt = BTreeMap::new();
-
-    bt.insert(String::from("body"), item.body.to_json());
-    bt.insert(String::from("path"), item_path(&item).to_json());
-    bt.insert(String::from("url"), item_url(&item).to_json());
 
     Json::Object(bt)
 }

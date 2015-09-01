@@ -65,6 +65,7 @@ fn github_pages_deploy(remote: &'static str, branch: &'static str,
         diecast::support::file_exists(git);
 
     if !initialized {
+        println!("  [*] initializing repository");
         // git init --separate-git-dir .deploy.git
         Command::new("git")
             .arg("init").arg("--bare").arg(git)
@@ -88,6 +89,7 @@ fn github_pages_deploy(remote: &'static str, branch: &'static str,
     env::set_var("GIT_WORK_TREE", target);
 
     if !initialized {
+        println!("  [*] setting remote");
         // git remote add upstream <remote>
         Command::new("git")
             .arg("remote").arg("add").arg("upstream")
@@ -96,6 +98,7 @@ fn github_pages_deploy(remote: &'static str, branch: &'static str,
             .unwrap_or_else(|e|
                 panic!("git init failed: {}", e));
 
+        println!("  [*] fetching remote");
         // git fetch upstream
         Command::new("git")
             .arg("fetch").arg("upstream")
@@ -103,6 +106,7 @@ fn github_pages_deploy(remote: &'static str, branch: &'static str,
             .unwrap_or_else(|e|
                 panic!("git init failed: {}", e));
 
+        println!("  [*] resetting to {}", branch);
         // git reset upstream/master
         Command::new("git")
             .arg("reset").arg(format!("upstream/{}", branch))
@@ -111,6 +115,7 @@ fn github_pages_deploy(remote: &'static str, branch: &'static str,
                 panic!("git init failed: {}", e));
     }
 
+    println!("  [*] staging all files");
     // git add --all .
     Command::new("git")
         .arg("add").arg("--all").arg(".")
@@ -118,6 +123,7 @@ fn github_pages_deploy(remote: &'static str, branch: &'static str,
         .unwrap_or_else(|e|
             panic!("git init failed: {}", e));
 
+    println!("  [*] deploying site generated from {}", short);
     // git commit -m "generated from <sha>"
     Command::new("git")
         .arg("commit").arg("-m").arg(format!("generated from {}", short))
@@ -125,6 +131,7 @@ fn github_pages_deploy(remote: &'static str, branch: &'static str,
         .unwrap_or_else(|e|
             panic!("git init failed: {}", e));
 
+    println!("  [*] pushing");
     // git push upstream HEAD:master -f
     Command::new("git")
         .arg("push").arg("upstream").arg("master").arg("-f")
@@ -134,6 +141,8 @@ fn github_pages_deploy(remote: &'static str, branch: &'static str,
 
     env::remove_var("GIT_DIR");
     env::remove_var("GIT_WORK_TREE");
+
+    println!("  [*] deploy complete");
 }
 
 fn pig() -> Child {
@@ -231,6 +240,8 @@ fn main() {
                 helpers::set_date,
                 markdown::markdown(context.clone()),
                 handle_if(is_pushable, websocket::pipe(ws_tx.clone())),
+                // TODO
+                // this isn't even being used
                 versions::save("rendered"),
                 route::pretty]),
             tags::collect(|item: &Item| -> Vec<String> {
@@ -416,6 +427,8 @@ fn main() {
     let command =
         command::Builder::new()
         .command("live", live::Live::new("0.0.0.0:4000"))
+        // TODO
+        // if config.output dir doesn't exist, site.build()?
         .command("deploy",
                  command::deploy::Deploy::new(|_: &Site| -> diecast::Result<()> {
                      github_pages_deploy(

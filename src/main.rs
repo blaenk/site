@@ -54,6 +54,77 @@ impl typemap::Key for PublishDate {
     type Value = chrono::NaiveDate;
 }
 
+fn github_pages_deploy(remote: &'static str, branch: &'static str,
+                       git: &'static str, target: &'static str) {
+    use std::process::Command;
+    use std::env;
+    use diecast;
+
+    // has the repo been initialized?
+    let initialized =
+        diecast::support::file_exists(git);
+
+    if !initialized {
+        // git init --separate-git-dir .deploy.git
+        Command::new("git")
+            .arg("init").arg("--bare").arg(git)
+            .status()
+            .unwrap_or_else(|e|
+                panic!("git init failed: {}", e));
+    }
+
+    env::set_var("GIT_DIR", git);
+    env::set_var("GIT_WORK_TREE", target);
+
+    if !initialized {
+        // git remote add upstream <remote>
+        Command::new("git")
+            .arg("remote").arg("add").arg("upstream")
+            .arg(remote)
+            .status()
+            .unwrap_or_else(|e|
+                panic!("git init failed: {}", e));
+
+        // git fetch upstream
+        Command::new("git")
+            .arg("fetch").arg("upstream")
+            .status()
+            .unwrap_or_else(|e|
+                panic!("git init failed: {}", e));
+
+        // git reset upstream/master
+        Command::new("git")
+            .arg("reset").arg(format!("upstream/{}", branch))
+            .status()
+            .unwrap_or_else(|e|
+                panic!("git init failed: {}", e));
+    }
+
+    // git add --all .
+    Command::new("git")
+        .arg("add").arg("--all").arg(".")
+        .status()
+        .unwrap_or_else(|e|
+            panic!("git init failed: {}", e));
+
+    // git commit -m "generated from <sha>"
+    Command::new("git")
+        .arg("commit").arg("-m").arg("generated from <sha>")
+        .status()
+        .unwrap_or_else(|e|
+            panic!("git init failed: {}", e));
+
+    // git push upstream HEAD:master -f
+    Command::new("git")
+        .arg("push").arg("upstream").arg("master").arg("-f")
+        .status()
+        .unwrap_or_else(|e|
+            panic!("git init failed: {}", e));
+
+    env::remove_var("GIT_DIR");
+    env::remove_var("GIT_WORK_TREE");
+}
+
 fn pig() -> Child {
     println!("initializing pig server...");
 
@@ -329,11 +400,19 @@ fn main() {
         not_found,
     ];
 
-    let site = Site::new(rules);
+    let mut site = Site::new(rules);
 
     let command =
-        command::Builder::new(site)
-        .plugin(live::plugin())
+        command::Builder::new()
+        .command("live", live::Live::new("0.0.0.0:4000"))
+        .command("deploy",
+                 command::deploy::Deploy::new(|_: &Site| -> diecast::Result<()> {
+                     github_pages_deploy(
+                         "git@github.com:blaenk/blaenk.github.io.git", "master",
+                         ".deploy.git", "output");
+
+                     Ok(())
+                 }))
         .build();
 
     match command {
@@ -344,7 +423,7 @@ fn main() {
             // to time certain things, like 'live'?
             let start = PreciseTime::now();
 
-            match cmd.run() {
+            match cmd.run(&mut site) {
                 Ok(()) => (),
                 Err(e) => println!("command execution failed: {}", e),
             }

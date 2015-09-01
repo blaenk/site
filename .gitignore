@@ -1,3 +1,4 @@
 target
 output
-cache/
+cache
+.deploy.git

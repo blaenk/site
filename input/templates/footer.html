@@ -17,7 +17,9 @@
 
 {{> push-js}}
 
-{{> comments-js}}
+{{#if comments}}
+    {{> comments-js}}
+{{/if}}
 
 <!-- google analytics -->
 <script async="true" type="text/javascript">

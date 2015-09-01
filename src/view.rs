@@ -28,6 +28,16 @@ fn item_title(item: &Item) -> Option<String> {
                 .map(String::from))
 }
 
+// have comments on by default unless explicitly disabled
+#[inline]
+fn item_comments(item: &Item) -> bool {
+    item_meta(item)
+        .and_then(|m|
+            m.lookup("comments")
+                .and_then(toml::Value::as_bool))
+        .unwrap_or(true)
+}
+
 #[inline]
 fn item_tags(item: &Item) -> Option<String> {
     item_meta(item)
@@ -108,12 +118,28 @@ pub fn post_template(item: &Item) -> Json {
 
     bt.insert(String::from("title"), item_title(&item).to_json());
     bt.insert(String::from("page_title"), append_site(item_title(&item)).to_json());
+    bt.insert(String::from("comments"),   item_comments(&item).to_json());
     bt.insert(String::from("url"),   item_url(&item).to_json());
     bt.insert(String::from("path"), item_path(&item).to_json());
     bt.insert(String::from("body"),  item.body.to_json());
     bt.insert(String::from("date"),  item_date(&item).to_json());
     bt.insert(String::from("git"),   item_git(&item).to_json());
     bt.insert(String::from("tags"),   item_tags(&item).to_json());
+
+    Json::Object(bt)
+}
+
+pub fn page_template(item: &Item) -> Json {
+    let mut bt = BTreeMap::new();
+
+    bt.insert(String::from("partial"), String::from("page").to_json());
+
+    bt.insert(String::from("title"), item_title(&item).to_json());
+    bt.insert(String::from("page_title"), append_site(item_title(&item)).to_json());
+    bt.insert(String::from("url"),   item_url(&item).to_json());
+    bt.insert(String::from("comments"),   item_comments(&item).to_json());
+    bt.insert(String::from("path"), item_path(&item).to_json());
+    bt.insert(String::from("body"),  item.body.to_json());
 
     Json::Object(bt)
 }
@@ -169,6 +195,7 @@ pub fn note_item(item: &Item) -> BTreeMap<String, Json> {
     let mut itm = BTreeMap::new();
 
     itm.insert(String::from("title"), item_title(&item).to_json());
+    itm.insert(String::from("comments"),   item_comments(&item).to_json());
     itm.insert(String::from("page_title"), append_site(item_title(&item)).to_json());
     itm.insert(String::from("url"), item_url(&item).to_json());
     itm.insert(String::from("date"), item_date(&item).to_json());

@@ -291,7 +291,7 @@ fn main() {
                 handle_if(is_pushable, websocket::pipe(ws_tx.clone())),
                 route::pretty_page]),
             pool.each(chain![
-                handlebars::render(&templates, "layout", view::post_template),
+                handlebars::render(&templates, "layout", view::page_template),
                 item::write])])
         .build();
 

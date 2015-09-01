@@ -73,6 +73,17 @@ fn github_pages_deploy(remote: &'static str, branch: &'static str,
                 panic!("git init failed: {}", e));
     }
 
+    // git rev-parse --short HEAD
+    let out =
+    Command::new("git")
+        .arg("rev-parse").arg("--short").arg("HEAD")
+        .output()
+        .unwrap_or_else(|e|
+            panic!("git rev-parse failed: {}", e));
+
+    let sha = String::from_utf8_lossy(&out.stdout).into_owned();
+    let short = sha.trim_right();
+
     env::set_var("GIT_DIR", git);
     env::set_var("GIT_WORK_TREE", target);
 
@@ -109,7 +120,7 @@ fn github_pages_deploy(remote: &'static str, branch: &'static str,
 
     // git commit -m "generated from <sha>"
     Command::new("git")
-        .arg("commit").arg("-m").arg("generated from <sha>")
+        .arg("commit").arg("-m").arg(format!("generated from {}", short))
         .status()
         .unwrap_or_else(|e|
             panic!("git init failed: {}", e));

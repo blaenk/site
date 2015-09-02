@@ -16,16 +16,13 @@ pub struct Markdown {
 impl Handle<Item> for Markdown {
     fn handle(&self, item: &mut Item) -> diecast::Result<()> {
         use std::collections::HashMap;
-        use std::fs::File;
-        use std::io::{Read, Write};
+        use std::io::Read;
         use regex::{Regex, Captures};
         use hoedown::Render;
         use sha1;
 
         let mut hash = sha1::Sha1::new();
         hash.update(item.body.as_bytes());
-
-        let digest = hash.hexdigest();
 
         let pattern = Regex::new(r"(?m)^\*\[(?P<abbr>[^]]+)\]: (?P<full>.+)$").unwrap();
         let mut abbrs = HashMap::new();
@@ -68,46 +65,25 @@ impl Handle<Item> for Markdown {
 
         trace!("constructed renderer");
 
-        let cache = format!("cache/markdown/{}", digest);
-        diecast::support::mkdir_p("cache/markdown/").unwrap();
+        let buf = renderer.render(&document);
 
-        match File::open(&cache) {
-            Ok(mut f) => {
-                info!("[MARKDOWN] cache hit {}", digest);
-                let mut contents = String::new();
-                f.read_to_string(&mut contents).unwrap();
-                item.body = contents;
-            },
-            Err(e) => {
-                if let ::std::io::ErrorKind::NotFound = e.kind() {
-                    info!("[MARKDOWN] cache miss {}", digest);
-                    let mut f = File::create(&cache).unwrap();
-                    let buf = renderer.render(&document);
+        let pattern = Regex::new(r"<p><toc[^>]*/></p>").unwrap();
 
-                    let pattern = Regex::new(r"<p><toc[^>]*/></p>").unwrap();
+        let rendered =
+            pattern.replace(&buf.to_str().unwrap(), &renderer.toc[..]);
 
-                    let rendered =
-                        pattern.replace(&buf.to_str().unwrap(), &renderer.toc[..]);
-
-                    f.write_all(rendered.as_bytes()).unwrap();
-                    info!("[MARKDOWN] wrote cache {}", digest);
-                    item.body = rendered;
-                } else {
-                    // TODO use Err
-                    panic!("[MARKDOWN] SOME ERROR");
-                }
-            },
-        };
+        item.body = rendered;
 
         Ok(())
     }
 }
 
 mod renderer {
-    use hoedown::{Buffer, Render, Wrapper, Markdown};
-    use hoedown::renderer;
     use std::collections::HashMap;
     use std::sync::{Arc, Mutex};
+    use std::io::Write;
+    use hoedown::{Buffer, Render, Wrapper, Markdown};
+    use hoedown::renderer;
     use regex::Regex;
     use zmq;
 

@@ -13,22 +13,14 @@
 
 .archive {
   li:last-child {
-    margin-bottom: 15px;
+    border-bottom: 0;
   }
 
   > li {
-    margin-bottom: 2px;
-    margin-left: 20px;
     list-style-type: none;
-
-    &:before {
-      content: '\00bb';
-      cursor: default;
-      position: absolute;
-      margin-left: -0.9375em;
-      font-family: $font-sans;
-      line-height: 1.3;
-    }
+    font-size: 16px;
+    padding: 5px 0;
+    border-bottom: 1px solid #efefef;
   }
 }
 
@@ -41,6 +33,7 @@
 
     transition: color 0.3s;
     font-weight: normal;
+    padding-top: 4px;
 
     @media not screen and (max-width: 600px), not screen and (max-width: 766px) {
       &:hover {

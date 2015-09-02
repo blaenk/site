@@ -314,9 +314,11 @@ fn main() {
                 handlebars::render(&templates, "layout", view::note_template),
                 item::write]),
             bind::sort_by(|a, b| {
-                let a = a.extensions.get::<PublishDate>().unwrap();
-                let b = b.extensions.get::<PublishDate>().unwrap();
-                b.cmp(a)
+                let a = a.extensions.get::<metadata::toml::Metadata>().unwrap();
+                let b = b.extensions.get::<metadata::toml::Metadata>().unwrap();
+                let a_title = a.lookup("title").unwrap().as_str().unwrap();
+                let b_title = b.lookup("title").unwrap().as_str().unwrap();
+                a_title.cmp(b_title)
             })])
         .build();
 

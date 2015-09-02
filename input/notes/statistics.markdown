@@ -58,13 +58,13 @@ This is simply read as the probability of $A$ occurring followed by $B$ is the s
 
 Count the number of **trials**. For example, when drawing cards from a box, every draw is a trial. Given a list of all possible outcomes, count how many outcomes satisfy the conditions of the event.
 
-Example 1
-  ~ A random number generator picks at random from the ten digits 0, 1, 2, 3, 4, 5, 6, 7, 8, and 9. Find the chance that the digit it picks is prime and greater than 5.
+Example 1  
+A random number generator picks at random from the ten digits 0, 1, 2, 3, 4, 5, 6, 7, 8, and 9. Find the chance that the digit it picks is prime and greater than 5.
 
 There is only one **trial** consisting of picking a single digit. The **conditions** of the event are that it is prime and it is greater than 5. Therefore, only one digit satisfies the conditions, 7, so the answer is $1/10$.
 
-Example 2
-  ~ In a class, 15% of the students have read _Hamlet_ and 40% have read _The Merchant of Venice_; 5% of the students have read both. What is the chance that a student picked at random has read one of the plays but not the other?
+Example 2  
+In a class, 15% of the students have read _Hamlet_ and 40% have read _The Merchant of Venice_; 5% of the students have read both. What is the chance that a student picked at random has read one of the plays but not the other?
 
 There is only one **trial** consisting of picking a single student at random. The **condition** is simply that the student has read one of the plays but not the other. This can be visualized by drawing a Venn Diagram, with one circle being 15% in size and the other being 40% in size, with an overlap of 5%. Then the areas of interest are either those that don't include the overlap. This can be described as:
 
@@ -82,8 +82,8 @@ P(A \cup B)\ & = 10\% && {} + 35\%\ && = 45\%
 \end{alignat*}
 $$
 
-Example 3
-  ~ In my pocket I have a quarter, two dimes, and a nickel. If I pull out two coins at random (without replacement), what is the chance that I pull out more than 15 cents?
+Example 3  
+In my pocket I have a quarter, two dimes, and a nickel. If I pull out two coins at random (without replacement), what is the chance that I pull out more than 15 cents?
 
 # Inference
 

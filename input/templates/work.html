@@ -7,4 +7,7 @@
     <div class="meta-component"><i class="fa fa-wrench fa-fw"></i> <a href="..">Work</a></div>
   </div>
 </article>
-{{> comments}}
+
+{{#if comments}}
+    {{> comments}}
+{{/if}}

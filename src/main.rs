@@ -311,7 +311,7 @@ fn main() {
                 route::pretty]),
             git::git,
             pool.each(chain![
-                handlebars::render(&templates, "layout", view::post_template),
+                handlebars::render(&templates, "layout", view::note_template),
                 item::write]),
             bind::sort_by(|a, b| {
                 let a = a.extensions.get::<PublishDate>().unwrap();
@@ -339,7 +339,7 @@ fn main() {
                 route::pretty]),
             git::git,
             pool.each(chain![
-                handlebars::render(&templates, "layout", view::post_template),
+                handlebars::render(&templates, "layout", view::work_template),
                 item::write]),
             bind::sort_by(|a, b| {
                 let a = a.extensions.get::<metadata::toml::Metadata>().unwrap();

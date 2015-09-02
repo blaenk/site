@@ -129,6 +129,23 @@ pub fn post_template(item: &Item) -> Json {
     Json::Object(bt)
 }
 
+pub fn note_template(item: &Item) -> Json {
+    let mut bt = BTreeMap::new();
+
+    bt.insert(String::from("partial"), String::from("note").to_json());
+
+    bt.insert(String::from("title"), item_title(&item).to_json());
+    bt.insert(String::from("page_title"), append_site(item_title(&item)).to_json());
+    bt.insert(String::from("url"),   item_url(&item).to_json());
+    bt.insert(String::from("comments"),   item_comments(&item).to_json());
+    bt.insert(String::from("path"), item_path(&item).to_json());
+    bt.insert(String::from("body"),  item.body.to_json());
+    bt.insert(String::from("date"),  item_date(&item).to_json());
+    bt.insert(String::from("git"),   item_git(&item).to_json());
+
+    Json::Object(bt)
+}
+
 pub fn page_template(item: &Item) -> Json {
     let mut bt = BTreeMap::new();
 
@@ -140,6 +157,23 @@ pub fn page_template(item: &Item) -> Json {
     bt.insert(String::from("comments"),   item_comments(&item).to_json());
     bt.insert(String::from("path"), item_path(&item).to_json());
     bt.insert(String::from("body"),  item.body.to_json());
+
+    Json::Object(bt)
+}
+
+pub fn work_template(item: &Item) -> Json {
+    let mut bt = BTreeMap::new();
+
+    bt.insert(String::from("partial"), String::from("work").to_json());
+
+    bt.insert(String::from("title"), item_title(&item).to_json());
+    bt.insert(String::from("page_title"), append_site(item_title(&item)).to_json());
+    bt.insert(String::from("url"),   item_url(&item).to_json());
+    bt.insert(String::from("comments"),   item_comments(&item).to_json());
+    bt.insert(String::from("path"), item_path(&item).to_json());
+    bt.insert(String::from("body"),  item.body.to_json());
+    bt.insert(String::from("date"), item_date(&item).to_json());
+    bt.insert(String::from("git"), item_git(&item).to_json());
 
     Json::Object(bt)
 }

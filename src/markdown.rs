@@ -194,6 +194,19 @@ mod renderer {
             &mut self.html
         }
 
+        fn math(&mut self, output: &mut Buffer, text: &Buffer, displaymode: i32) -> bool {
+            if displaymode != 0 {
+                output.write(b"<script type=\"math/tex; mode=display\">").unwrap();
+            } else {
+                output.write(b"<script type=\"math/tex\">").unwrap();
+            }
+
+            output.write(&text).unwrap();
+            output.write(b"</script>").unwrap();
+
+            true
+        }
+
         fn html_span(&mut self, output: &mut Buffer, text: &Buffer) -> bool {
             let s = text.to_str().unwrap();
 
@@ -283,14 +296,9 @@ r#"<figure class="codeblock">
 
         fn normal_text(&mut self, output: &mut Buffer, text: &Buffer) {
             use regex::Captures;
-            use hoedown::renderer::html;
 
             if self.abbreviations.is_empty() {
-                let mut smartypants = Buffer::new(64);
-                html::smartypants(&text, &mut smartypants);
-
-                output.pipe(&smartypants);
-
+                output.pipe(&text);
                 return;
             }
 
@@ -303,11 +311,7 @@ r#"<figure class="codeblock">
             });
 
             let input = Buffer::from(&replaced[..]);
-            let mut smartypants = Buffer::new(64);
-
-            html::smartypants(&input, &mut smartypants);
-
-            output.pipe(&smartypants);
+            output.pipe(&input);
         }
 
         fn after_render(&mut self, output: &mut Buffer, inline_render: bool) {

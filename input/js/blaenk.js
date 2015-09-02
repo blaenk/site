@@ -79,6 +79,12 @@ $(function() {
         $footnotes.stop(true, true);
       });
 
+    $("article").html(typogr.smartypants($("article").html()));
+
+    if (!window.mathjax_initialized) {
+      MathJax.Hub.Configured();
+      window.mathjax_initialized = true;
+    }
   };
 
   window.refresh();

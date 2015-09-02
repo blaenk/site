@@ -367,30 +367,7 @@ r#"<figure class="codeblock">
                 self.toc.push_str(r##"<a href="#"##);
                 self.toc.push_str(&sanitized);
                 self.toc.push_str(r#"">"#);
-            }
-
-            let bytes: &[u8] = content.as_ref();
-
-            let doc =
-                Markdown::from(bytes)
-                .extensions({
-                    use hoedown::*;
-
-                    AUTOLINK |
-                    FENCED_CODE |
-                    FOOTNOTES |
-                    MATH |
-                    MATH_EXPLICIT |
-                    SPACE_HEADERS |
-                    STRIKETHROUGH |
-                    SUPERSCRIPT |
-                    TABLES
-                });
-
-            let rendered = self.html.render_inline(&doc);
-
-            if self.is_toc_enabled {
-                self.toc.push_str(rendered.to_str().unwrap());
+                self.toc.push_str(content.to_str().unwrap());
                 self.toc.push_str("</a>\n");
             }
 

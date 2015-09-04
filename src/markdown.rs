@@ -22,8 +22,12 @@ impl Handle<Item> for Markdown {
         let mut hash = sha1::Sha1::new();
         hash.update(item.body.as_bytes());
 
+        let pattern = Regex::new(r"(?m)^\*\[(?P<abbr>[^]]+)\]: (?P<full>.+)$").unwrap();
+
+        let clean = pattern.replace_all(&item.body, "");
+
         let document =
-            hoedown::Markdown::new(&item.body)
+            hoedown::Markdown::new(&clean)
             .extensions({
                 use hoedown::*;
 
@@ -38,10 +42,12 @@ impl Handle<Item> for Markdown {
                 TABLES
             });
 
-        let enabled = item.body.contains("<toc");
+        let enabled = clean.contains("<toc");
 
         let mut renderer =
             self::renderer::Renderer::new(enabled, self.context.clone());
+
+        trace!("constructed renderer");
 
         let buf = renderer.render(&document);
 

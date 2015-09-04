@@ -15,35 +15,15 @@ pub struct Markdown {
 
 impl Handle<Item> for Markdown {
     fn handle(&self, item: &mut Item) -> diecast::Result<()> {
-        use std::collections::HashMap;
-        use std::io::Read;
-        use regex::{Regex, Captures};
+        use regex::Regex;
         use hoedown::Render;
         use sha1;
 
         let mut hash = sha1::Sha1::new();
         hash.update(item.body.as_bytes());
 
-        let pattern = Regex::new(r"(?m)^\*\[(?P<abbr>[^]]+)\]: (?P<full>.+)$").unwrap();
-        let mut abbrs = HashMap::new();
-
-        let clean = pattern.replace_all(&item.body, |caps: &Captures| -> String {
-            let abbr = String::from(caps.name("abbr").unwrap());
-            let full = String::from(caps.name("full").unwrap());
-
-            assert!(!abbr.chars().any(|c| c == '|'),
-                "abbreviations shouldn't contain the '|' character!");
-
-            abbrs.insert(abbr, full);
-            String::new()
-        });
-
-        trace!("collected abbreviations");
-
-        trace!("got toc alignment");
-
         let document =
-            hoedown::Markdown::new(&clean)
+            hoedown::Markdown::new(&item.body)
             .extensions({
                 use hoedown::*;
 
@@ -58,12 +38,10 @@ impl Handle<Item> for Markdown {
                 TABLES
             });
 
-        let enabled = clean.contains("<toc");
+        let enabled = item.body.contains("<toc");
 
         let mut renderer =
-            self::renderer::Renderer::new(abbrs, enabled, self.context.clone());
-
-        trace!("constructed renderer");
+            self::renderer::Renderer::new(enabled, self.context.clone());
 
         let buf = renderer.render(&document);
 
@@ -79,12 +57,10 @@ impl Handle<Item> for Markdown {
 }
 
 mod renderer {
-    use std::collections::HashMap;
     use std::sync::{Arc, Mutex};
     use std::io::Write;
     use hoedown::{Buffer, Render, Wrapper, Markdown};
     use hoedown::renderer;
-    use regex::Regex;
     use zmq;
 
     pub enum Align {
@@ -136,8 +112,6 @@ mod renderer {
 
     pub struct Renderer {
         pub html: renderer::html::Html,
-        abbreviations: HashMap<String, String>,
-        matcher: Regex,
 
         is_toc_enabled: bool,
 
@@ -155,13 +129,7 @@ mod renderer {
     }
 
     impl Renderer {
-        pub fn new(abbrs: HashMap<String, String>, enabled: bool, context: Arc<Mutex<zmq::Context>>) -> Renderer {
-            let joined: String =
-                abbrs.keys().cloned().collect::<Vec<String>>().connect("|");
-
-            // TODO: shouldn't have | in abbr
-            let matcher = Regex::new(&joined).unwrap();
-
+        pub fn new(enabled: bool, context: Arc<Mutex<zmq::Context>>) -> Renderer {
             let socket = {
                 let mut s = context.lock().unwrap().socket(zmq::REQ).unwrap();
                 s.connect("tcp://127.0.0.1:5555").unwrap();
@@ -170,8 +138,6 @@ mod renderer {
 
             Renderer {
                 html: renderer::html::Html::new(renderer::html::Flags::empty(), 0),
-                abbreviations: abbrs,
-                matcher: matcher,
 
                 is_toc_enabled: enabled,
                 toc: String::new(),
@@ -292,26 +258,6 @@ r#"<figure class="codeblock">
             }
 
             output.write(b"</code></pre></figure>").unwrap();
-        }
-
-        fn normal_text(&mut self, output: &mut Buffer, text: &Buffer) {
-            use regex::Captures;
-
-            if self.abbreviations.is_empty() {
-                output.pipe(&text);
-                return;
-            }
-
-            // replace abbreviations with their full form
-            let replaced = self.matcher.replace_all(text.to_str().unwrap(), |caps: &Captures| -> String {
-                let abbr = caps.at(0).unwrap();
-                let full = self.abbreviations.get(abbr).unwrap().clone();
-
-                format!(r#"<abbr title="{}">{}</abbr>"#, full, abbr)
-            });
-
-            let input = Buffer::from(&replaced[..]);
-            output.pipe(&input);
         }
 
         fn after_render(&mut self, output: &mut Buffer, inline_render: bool) {

@@ -47,8 +47,6 @@ impl Handle<Item> for Markdown {
         let mut renderer =
             self::renderer::Renderer::new(enabled, self.context.clone());
 
-        trace!("constructed renderer");
-
         let buf = renderer.render(&document);
 
         let pattern = Regex::new(r"<p><toc[^>]*/></p>").unwrap();

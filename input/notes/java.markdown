@@ -69,6 +69,8 @@ int[] a = new int[3];
 int[] nums, nums2, nums3;
 ```
 
+## Primitive Wrappers
+
 Type wrappers are classes that wrap primitive types, such as `Character` which wraps `char`. All numeric type wrappers such as `Integer` and `Float` inherit from abstract class `Number` [^NSNumber] which provides conversion methods for all numeric types.
 
 [^NSNumber]: Reminds me of Objective-C's `NSNumber`.
@@ -82,6 +84,29 @@ Integer ib = 1;
 ++ib; // auto-unboxed, incremented, re-boxed
 ```
 
+There is no way to refer to the same instance of a primitive value. Primitive values can be wrapped into objects using the primitive wrappers---for use in collection classes which only work with objects, for example.
+
+`Number` is an abstract class that is derived by specific numeric type wrappers like `Integer` and `Double`. It provides methods for retrieving a given value in any other type format, e.g. `doubleValue`.
+
+Wrappers can be constructed given the actual primitive value or a string representation of it.
+
+Specific wrapper types also include static methods for parsing strings into primitive types, such as `Float.parseFloat("3.14")`.
+
+Each of these wrapper types include certain constants such as `MIN_VALUE` and `MAX_VALUE`.
+
+The `Double` and `Float` methods `isInfinite` and `isNaN` can be used to test if the values are either of those special values.
+
+The `Char` methods `forDigit` and `digit` can convert a number to a character and vice versa, respectively.
+
+## Supplemental Characters
+
+Java `char`s can only hold 16 bits, which means that a single `char` is unable to represent supplemental characters, those characters which are larger than `0xFFFF` and thus would require 32 bits to represent. Java resolves this issue by using two `char`s to represent a supplemental character: a _high surrogate_ and a _low surrogate_.
+
+Various `Character` methods provide overloads that accept an `int`, which is 32 bits and therefore large enough to hold even a supplemental character.
+
+The method `codePointAt` returns an `int` containing a particular code point of the provided character sequence location. The method `toCodePoint` is similar except that it returns the code point of the provided surrogate pair provided a high and low surrogate character argument.
+
+The `toChars` method performs the reverse operation, taking a code point and returning an array of characters, which may be two elements in length if it's a supplemental character.
 # Control Structures
 
 Switch statements in Java can operate on expressions of type `byte`, `short`, `int`, `char`, enumerations, or `String`. Case statements don't break automatically, and so the `break` keyword must be used.
@@ -326,7 +351,7 @@ Wildcards can also be bounded with an upper or lower bound with the `extends` an
 // upper bound
 <? extends SuperClass>
 
-// lower bound: type must be subclass of SubClass
+// lower bound: type must be superclass of SubClass
 //   or SubClass itself
 <? super SubClass>
 ```
@@ -910,17 +935,54 @@ Java automatically converts data to strings using the `String`'s static method `
 
 The `equals` and `equalsIgnoreCase` methods can be used to determine if a string is equal to another. The `regionMatches` method can be used to determine if separate regions of two different strings match. The `startsWith` and `endsWith` methods can be used to determine if a string ends or begins with another string. The `Comparable` interface's `compareTo` and `compareToIgnoreCase` methods can be used to get a less, equal, or greater than result with respect to another string.
 
-The `indexOf` and `lastIndexOf` methods can be used to obtain the index where the first occurrence of a substring begins. There are overloads which take a starting point as well, which can simplify getting all the positions of all of the occurrences.
+The `indexOf` and `lastIndexOf` methods can be used to obtain the index where the first occurrence of a character or string begins. There are overloads which take a starting point as well, which can simplify getting all the positions of all of the occurrences.
 
 Strings are immutable, so operations that appear to modify them simply return new copies of the resulting strings. The `substring` method can be used to extract a copy of a region of a string given a starting index and optionally en ending index. The `replace` method can replace all occurrences of a character with another. An overload exists which replaces character sequences. The `replaceAll` method can replace any substring that matches the given regex with the specified string.
 
-JDK 8 adds a static `join` method that can join a number of strings with a given delimiter. Conversely, the `split` method can split a string based on a regex.
+JDK 8 adds a static `join` method that can join a number of strings with a given string. Conversely, the `split` method can split a string based on a regex string.
+
+The `toLowerCase` and `toUpperCase` methods can be used to convert an entire string to upper or lower case characters.
 
 ## StringBuffer
 
-The `StringBuffer` class can represent a growable, mutable string. JDK 5 added `StringBuilder` which is similar but not thread-safe, making it inadvertently faster.
+The `StringBuffer` class represents a growable, thread-safe mutable string. JDK 5 added `StringBuilder` which is similar but not thread-safe, making it inadvertently faster.
+
+Constructors exist for creating one with a given capacity size or to build one from an existing from an existing string plus an additional 16 characters in capacity. The default constructor only reserves 16 characters for its capacity.
 
 It's possible to ensure a certain capacity is available with the `ensureCapacity` method which is given the minimum size that the buffer should have. The `setLength` method can be used to either extend the string by adding null characters or to truncate the string.
 
-`StringBuffer` provides a `setCharAt` method that can modify a character at the provided position. The `append` method can concatenate strings to the buffer while returning the updated buffer, allowing calls to this method to be chained. The `insert` method can insert a given string at the specified index. The `reverse` method can reverse the string. The `delete` and `deleteCharAt` methods can remove a region of the string or a single character, respectively. The `replace` method is similar to `String`'s except it's in-place.
+`StringBuffer` provides a `setCharAt` method that can modify a character at the provided position. The `append` method can concatenate strings to the buffer while returning the updated buffer, allowing calls to this method to be chained. The `insert` method can insert a given string at the specified index. The `reverse` method can reverse the string. The `delete` and `deleteCharAt` methods can remove a region of the string or a single character, respectively. The `replace` method can replace a region of the string with another string, even if it differs in length.
 
+# Runtime
+
+The abstract class `Process` represents an executing program and is derived by objects created by `exec` in `Runtime` or `start` in `ProcessBuilder`.
+
+The `Runtime` class represents the Java Virtual Machine's run-time environment. A reference to the current run-time's `Runtime` instance can be retrieved using `Runtime.getRuntime()`. `Runtime` defines methods such as `exec` for executing processes, in which case it returns an object of type `Process` that describes the process.
+
+`Runtime` provides methods such as `gc` to manually initiate garbage collection, or `runFinalization` to initiate the `finalize` methods of unused but not yet garbage collected objects.
+
+There is also `exit` for halting execution of the program.
+
+# Process
+
+The `Process` class can be used to control a running process. The `destroy` method can be used to kill the process. The `waitFor` method waits until the process finishes, whereas `exitValue` does the same but yields the process' exit value. Access to the input and output streams are available via the `getOutputStream` and `getInputStream` methods.
+
+The `ProcessBuilder` class provides even more control over a process, allowing for example to set the working directory. The constructors accept either a variable argument list of strings or a `List<String>`. The `start` method is used to actually start execution of the process.
+
+There is also a static class `ProcessBuilder.Redirect` which has methods `to`, `from`, and `appendTo` which can be used to redirect the input or output streams to or from a given file. The `type` method returns a value of the enumeration type `ProcessBuilder.Redirect.Type` describing the type of redirection, which can be `APPEND`, `INHERIT`, `PIPE`, and `WRITE`.
+
+# System
+
+The `System` class provides a variety of static methods and variables, such as the input, output, and error streams in `System.{in,out,err}`.
+
+There is also---for some reason---a method for copying arrays, `arrayCopy`, which takes a reference to the array, its starting index, the same for the other array, and a size.
+
+# Object
+
+The `Object` class defines a method `clone` which generates a duplicate copy of the object, but only if the class implements the `Cloneable` interface. The `Cloneable` interface defines no members and is instead used to signal to the system that it is safe to create a bitwise copy of a particular type of object.
+
+Since it may sometimes be dangerous to perform bitwise copies of certain classes, it may be useful to override `clone`.
+
+# Class
+
+The `Class` class represents the run-time state of a class or interface, and objects of this type are created automatically when classes are loaded. A reference to an object's `Class` instance can be retrieved using the `getClass` method defined on `Object`. A `Class` instance can also be retrieved using `forName` static method.

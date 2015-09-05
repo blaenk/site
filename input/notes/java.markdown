@@ -670,9 +670,17 @@ The functionality for suspending, resuming, and stopping threads must be impleme
 
 Normally in multithreaded programs when two or more threads share the same variable they store thread-local copies and update the "master copy" at certain points in execution, such as when `synchronized` methods are entered. Specifying the variable as `volatile` tells the compiler that it must always use the master copy of the varaible, or to always keep the local copies synchronized with the master copy.
 
+The `ThreadGroup` class can be used to create a group of threads, which is useful when wanting to manage a group of threads as a single unit. Threads are added to the thread group by providing a reference to it as an argument in the `Thread` constructor. Operations can be performed on each of the threads in a group by enumerating them using the `enumerate` method on `ThreadGroup`.
+
+The `ThreadLocal` class can be used to create thread-local data, and an `InheritableThreadLocal` can be used to allow them to be inherited.
+
 # Enumerations
 
-In Java, enumerations define class types that implicitly inherit from the `Enum` class, meaning that they may define constructors, methods, and instance variables. Despite this, they may not explicitly inherit or be inherited from.
+In Java, enumerations define class types that implicitly inherit from the `Enum` class, meaning that they may define constructors, methods, and instance variables. Despite this, they may not explicitly inherit or be inherited from. The `Enum` class is defined as:
+
+``` java
+class Enum<E extends Enum<E>>
+```
 
 Enumeration constants are implicitly `static` and `final`. Each enumeration constant is an object of its enumeration type, and each enumeration constant has its own copy of instance variables.
 
@@ -951,9 +959,11 @@ Constructors exist for creating one with a given capacity size or to build one f
 
 It's possible to ensure a certain capacity is available with the `ensureCapacity` method which is given the minimum size that the buffer should have. The `setLength` method can be used to either extend the string by adding null characters or to truncate the string.
 
-`StringBuffer` provides a `setCharAt` method that can modify a character at the provided position. The `append` method can concatenate strings to the buffer while returning the updated buffer, allowing calls to this method to be chained. The `insert` method can insert a given string at the specified index. The `reverse` method can reverse the string. The `delete` and `deleteCharAt` methods can remove a region of the string or a single character, respectively. The `replace` method can replace a region of the string with another string, even if it differs in length.
+`StringBuffer` provides a `setCharAt` method that can modify a character at the provided position. The `append` method can concatenate strings to the buffer while returning the updated buffer, allowing calls to this method to be chained. The `insert` method can insert a given string at the specified index. The `reverse` method can reverse the string. The `delete` and `deleteCharAt` methods can remove a region of the string or a single character respectively. The `replace` method can replace a region of the string with another string, even if it differs in length.
 
-# Runtime
+# java.lang
+
+## Runtime
 
 The abstract class `Process` represents an executing program and is derived by objects created by `exec` in `Runtime` or `start` in `ProcessBuilder`.
 
@@ -963,7 +973,7 @@ The `Runtime` class represents the Java Virtual Machine's run-time environment. 
 
 There is also `exit` for halting execution of the program.
 
-# Process
+## Process
 
 The `Process` class can be used to control a running process. The `destroy` method can be used to kill the process. The `waitFor` method waits until the process finishes, whereas `exitValue` does the same but yields the process' exit value. Access to the input and output streams are available via the `getOutputStream` and `getInputStream` methods.
 
@@ -971,18 +981,382 @@ The `ProcessBuilder` class provides even more control over a process, allowing f
 
 There is also a static class `ProcessBuilder.Redirect` which has methods `to`, `from`, and `appendTo` which can be used to redirect the input or output streams to or from a given file. The `type` method returns a value of the enumeration type `ProcessBuilder.Redirect.Type` describing the type of redirection, which can be `APPEND`, `INHERIT`, `PIPE`, and `WRITE`.
 
-# System
+## System
 
 The `System` class provides a variety of static methods and variables, such as the input, output, and error streams in `System.{in,out,err}`.
 
 There is also---for some reason---a method for copying arrays, `arrayCopy`, which takes a reference to the array, its starting index, the same for the other array, and a size.
 
-# Object
+## Object
 
 The `Object` class defines a method `clone` which generates a duplicate copy of the object, but only if the class implements the `Cloneable` interface. The `Cloneable` interface defines no members and is instead used to signal to the system that it is safe to create a bitwise copy of a particular type of object.
 
 Since it may sometimes be dangerous to perform bitwise copies of certain classes, it may be useful to override `clone`.
 
-# Class
+## Class
 
-The `Class` class represents the run-time state of a class or interface, and objects of this type are created automatically when classes are loaded. A reference to an object's `Class` instance can be retrieved using the `getClass` method defined on `Object`. A `Class` instance can also be retrieved using `forName` static method.
+The `Class` class represents the run-time state of a class or interface, and objects of this type are created automatically when classes are loaded. A reference to an object's `Class` instance can be retrieved using the `getClass` method defined on `Object`. A `Class` instance can also be retrieved using `forName` static method. The `Class` method provides a variety of Run-time Type Information methods such as `getName`, `getSuperClass`, and so on.
+
+This class is a good real-world example of the use of wildcards as well as lower and upper bounds.
+
+``` java
+Class<?> forName(String name)
+Class<? super T> getSuperClass()
+<A extends Annotation> A getAnnotation(Class<A> annoType)
+```
+
+The `ClassLoader` abstract class defines how classes are loaded, enabling one to alter the way classes are loaded by the JVM by simply deriving from it.
+
+## Package
+
+The `Package` class provides information associated with a package.
+
+## Comparable
+
+The `Comparable` interface represents objects that can be compared, and provides a single method `compareTo` which should return 0 if the values are equal, a negative number if the invoking object is lower, or a positive number if the invoking object is greater.
+
+## Appendable
+
+The `Appendable` interface signifies that a character or character sequences can be appended to an object by means of its `append` method.
+
+## Iterable
+
+The `Iterable` interface signifies that an object can be used in a for-each loop. It provides an `iterator` method yielding an `Iterator` of the object. JDK 8 also provides two default methods `forEach` and `splititerator`. The `forEach` method takes functional interface `Consumer` and applies it to each element yielded by the iterator.
+
+## AutoCloseable
+
+The `AutoCloseable` interface signifies that the object can be used with the try-with-resources statement which provides automatic resource management by means of its `close` method.
+
+# Collections
+
+The Java Collections Framework provides a variety of collections and interfaces for working with them.
+
+## Collection Interfaces
+
+|Collection     | Purpose                                                          |
+|:--------------|:-----------------------------------------------------------------|
+|`Collection`   | work with groups of objects                                      |
+|`List`         | extends `Collection` to handle sequences of objects              |
+|`Queue`        | extends `Collection` to handle lists with removal only from head |
+|`Deque`        | extends `Queue` to handle double-ended queue                     |
+|`Set`          | extends `Collection` to handle sets                              |
+|`SortedSet`    | extends `Set` to handle sorted sets                              |
+|`NavigableSet` | extends `SortedSet` to add closest-match retrieval               |
+
+### Collection
+
+The `Collection<E>` interface represents a generic collection of elements, and it extends the `Iterable` interface so that all collections are inherently compatible with for-each loops. The methods of `Collection` may throw a variety of exceptions:
+
+| Exception                       | Cause                                           |
+| :----------                     | :------                                         |
+| `UnsupportedOperationException` | attempting to mutate immutable collection       |
+| `ClassCastException`            | adding incompatible object                      |
+| `NullPointerException`          | storing a `null` when `null`s aren't allowed    |
+| `IllegalStateException`         | adding element to fixed-length, full collection |
+
+The `add` method adds an object to a collection, returning a boolean indicating whether the object was added or if it already existed and duplicates are not allowed. The `addAll` method adds all of the objects from another collection.
+
+The `remove` and `removeAll` methods are analogous to the `add` methods. `clear` removes all elements. The JDK 8 `removeIf` method removes all elements that satisfy the provided predicate. The `retainAll` method removes all elements except those in the provided collection.
+
+The `size` method provides the number of elements in the collection.
+
+The `contains` method returns `true` is the object is present in the collection. There is also a `containsAll` method similar to `addAll`.
+
+The `equals` method provides equality checking, whether it's value or reference equality is up to the implementer. The `isEmpty` method checks if the collection is empty.
+
+The `toArray` methods can return an array of the elements in the collection. The first overload returns an array of `Object` whereas the second takes an array parameter into which the elements are written if they fit, otherwise an array is returned. If they did fit and the array was larger than the amount of elements, the element after the last collection element is set to `null`.
+
+### List
+
+The `List` interface extends `Collection` to provide behavior for a sequence of elements, which can be inserted or accessed by their zero-based index position. The methods here may throw `IndexOutOfBoundsException` if an invalid index is used. Overloads are provided for the `add` methods that take an index argument to specify where to insert the element. The overloads without the index parameter are changed in `List` to insert the elements at the end of the sequence.
+
+The `get` method takes an index argument and retrieves the element at that index. Conversely, the `set` method takes an index parameter and an element with which to replace the element at that index.
+
+The `indexOf` and `lastIndexOf` methods can be used to find an element in the sequence and retrieve its index.
+
+A sub-list of the sequence can be obtained using the `subList` method and specifying beginning and end indices.
+
+The `sort` method can sort a `List` using a provided `Comparator`.
+
+### Set
+
+The `Set` interface extends `Collection` and adds behavior that doesn't allow duplicate elements. It doesn't actually provide any additional methods aside from providing this behavior. The `add` method returns `false` if the element already existed within the collection.
+
+### SortedSet
+
+The `SortedSet` interface extends `Set` to add the behavior of a set sorted in ascending order. It provides methods such as `first` and `last` for getting the first and last elements. A sorted subset can be obtained using `subSet` and specifying start and end indices, or there are the `headSet` and `tailSet` methods that obtain a subset starting with the first element or a subset that ends the set---respectively---up to a certain end index..
+
+### NavigableSet
+
+The `NavigableSet` interface extends `SortedSet` and provides closest match element retrieval. For example, the `lower` method will find the largest element that is smaller than the provided object, whereas the `floor` method will find the smallest element that is smaller than or equal to the provided object. There are also `higher` and `ceil` analogs to those methods.
+
+There are also methods that behave like priority queues, such as `pollFirst` which returns the first element---which will be the smallest element since the set is sorted in ascending order---and removes it from the set. There is also a `pollLast` analog.
+
+### Queue
+
+The `Queue` interface extends `Collection` and adds behavior for a FIFO structure. Elements can only be removed from the head of the queue via the methods `poll` and `remove`, where the first returns `null` if the queue is empty and `remove` throws an exception. The methods `peek` and `element` are analogous to `poll` and `remove` respectively, but _don't_ remove the element from the queue. An addition to the queue can be attempted via the `offer` method, which may fail if the queue is of fixed-size and is full, in which case it returns `false`.
+
+### Deque
+
+The `Deque` interface extends `Queue` to add behavior for a double-ended queue so that a queue can function as a FIFO (queue) as well as a LIFO (stack) thanks to methods `push` and `pop`. The `descendingIterator` returns an iterator that iterates over the elements in reverse. There are also `addFirst` and `addLast` methods that are similar to `offer` except they throw `IllegalStateException` if the queue is of fixed-size and full.
+
+### RandomAccess
+
+The `RandomAccess` interface has no members and simply signifies that that the collection supports efficient random access.
+
+## Collection Classes
+
+### ArrayList
+
+The `ArrayList` class is similar to `vector` in C++ in that it represents an array that will grow as required. It can be constructed either as an empty array list, from an arbitrary collection, or an empty array list with a reserved capacity. Capacity can be reserved after construction using the `ensureCapacity` method. The `trimToSize` method can be used to shrink the array to the minimum size required to store all of the elements.
+
+The `toArray` method from `Collection` can be used to yield an array from an `ArrayList`:
+
+``` java
+ArrayList<Integer> arrayList = new ArrayList<Integer>();
+Integer array[] = new Integer[arrayList.size()];
+
+// fills array with elements if it's large enough,
+// otherwise it returns a new array that is large enough
+array = arrayList.toArray(array);
+```
+
+### LinkedList
+
+The `LinkedList` class extends `AbstractSequentialList` and implements `List`, `Deque`, and `Queue`, and provides linked-list behavior. The `add` method would be used to insert elements at a particular location with minimal performance cost.
+
+### HashSet
+
+The `HashSet` class extends `AbstractSet` and implements `Set`, and provides hash table behavior. Two of the constructors accept a capacity argument (default 16), with one of them accepting a load capacity argument (default 0.75) known as _fill ratio_, which determines how full the hash set can be before it is grown, and as such it must be a value between 0.0 and 1.0. In other words, the hash set is grown when:
+
+$$ \text{# of elements} \gt \text{capacity} \cdot \text{fill ratio} $$
+
+### LinkedHashSet
+
+The `LinkedHashSet` class extends `HashSet` and adds no members of its own aside from adding the behavior that it maintains a linked list of elements in order of insertion.
+
+### TreeSet
+
+The `TreeSet` class extends `AbstractSet` and implements `NavigableSet` and represents a tree-backed ascending-order sorted set. This class is great when storing many sorted elements that must be accessed quickly. One of the constructors accepts a `Comparator` to use for sorting the elements. Another constructor can build the `TreeSet` from another `SortedSet`.
+
+### PriorityQueue
+
+The `PriorityQueue` class extends `AbstractQueue` and implements `Queue` and provides priority queue behavior. One of the JDK 8 constructors accepts a `Comparator` used to order the elements, which is also possible via another non-JDK 8 constructor that takes a capacity and `Comparator`. A reference to the `Comparator` can be obtained using the `comparator` method, which returns `null` if the default ascending order is used.
+
+Note that manually iterating over a `PriorityQueue` yields an undefined order, so `offer` and `poll` should be used instead.
+
+### ArrayDeque
+
+The `ArrayDeque` class extends `AbstractCollection` and implements `Deque` and can be used as a growable stack.
+
+### EnumSet
+
+The `EnumSet` class extends `AbstractSet` and implements `Set` and is used for enumerations, as enforced by its signature which forces all elements to be of the same enumeration type:
+
+``` java
+class EnumSet<E extends Enum<E>>
+```
+
+It provides no constructors and instead has static factory methods. The `allOf` method creates an `EnumSet` of all possible enumerations of a given type represented by a `Class` object. The `complementOf` method creates a set of all enumerations not present in the given set. More generally, the `of` method accepts an arbitrary amount of enumerations and constructs an `EnumSet` from it, providing overloads for efficiency. The `range` method creates a set from the given range of enumerations.
+
+## Iterator
+
+The `Iterator` interface encapsulates the act of iterating over a collection. It provides methods `hasNext` and `next` to both test if a value remains and to obtain that value. The `remove` method can be used to remove the current element from the collection being iterated over, but may throw `IllegalStateException` if the call was not preceded by `next` or if the collection is read-only. The JDK 8 method `forEachRemaining` takes a `Consumer` and applies it to each remaining element in the iterator.
+
+The `ListIterator` interface extends `Iterator` and adds bidirectional iteration as well as modification of elements. It's accessible from collections that implement `List`. The `add` method inserts an element before the element that will be returned by the next call to `next`. It also provides bidirectional equivalents to the methods in `Iterator` such as `hasPrevious` and `previous`.
+
+The `nextIndex` and `previousIndex` methods return the index of the next or previous element respectively. If there is no such element, it returns the size of the list in the case of `nextIndex` or -1 in the case of `previousIndex`, i.e. one past the last element or one before the first element.
+
+The `set` method can be used to replace the current element, which is the element last returned by `next` or `previous`.
+
+## Spliterator
+
+JDK 8 introduces a new kind of iterator known as a _spliterator_, represented with the `Spliterator` interface. Spliterators provide support for parallel iteration, but also provide many more facilities than regular iterators making them useful in non-parallel contexts.
+
+Iterating with a `Spliterator` is done using the `tryAdvance` which applies a `Consumer` to the next element, returning `false` if there is no element remaining. The `forEachRemaining` method does the same thing but for every element remaining.
+
+The fact that `tryAdvance` returns `false` when no elements remain means that it can be used in a while loop very easily, though the same can be done using `forEachRemaining`:
+
+``` java
+while (spliterator.tryAdvance((e) -> System.out.println(e)));
+
+// order
+spliterator.forEachRemaining((e) -> System.out.println(e));
+```
+
+The spliterator can be split further using the `trySplit` method which yields a new spliterator that iterates over a portion of the sequence and the invoking spliterator iterates over the other portion.
+
+Spliterators can contain characteristics which are retrieved using the `characteristics` method to retrieve them all or the `hasCharacteristics` method to test for an individual characteristic. Characteristics are defined as static integer fields on `Spliterator`, such as `SORTED` and `IMMUTABLE`.
+
+## Maps
+
+Maps represents associations between keys and values. They **do not** implement `Iterable` and so the pairs cannot be iterated over.
+
+### Map Interfaces
+
+| Collection      | Purpose                                          |
+| :-------------- | :----------------------------------------------- |
+| `Map`           | maps keys to values                              |
+| `Map.Entry`     | describes a key-value pair                       |
+| `SortedMap`     | extends `Map` to put keys in ascending order     |
+| `NavigableMap`  | extends `SortedMap` for closest-match retrieval  |
+
+#### Map
+
+The `Map` interface embodies behavior for key-value stores. The two fundamental methods provided are `get` and `put` which are used to retrieve and insert into the map. The `remove` method takes a key and removes the entry associated with it, returning it.
+
+Though maps aren't collections since they don't implement `Collection`, they do provide collection views for their keys and values via the `keySet` and `values` methods respectively, or over the key-value pairs using the `entrySet` method. Each of the collection views is backed by the map, so changing values through the view changes the values in the map as well.
+
+There are some `compute` variant methods that facilitate the use of a map as a cache, such as `computeIfAbsent`, which takes a function and returns the value associated with the key, and if it doesn't exist, computes the value using the function, stores it in the map, and then returns the computed value [^rust_entry].
+
+[^rust_entry]: This is very much like the Rust [Entry API](http://doc.rust-lang.org/std/collections/hash_map/enum.Entry.html).
+
+The `containsKey` and `containsValue` methods can be used to test the presence of a key or value respectively. The `equals` method can be used to check if another map contains the same entries.
+
+The JDK 8 method `forEach` can be used to apply an action on each entry in the map.
+
+The JDK 8 method `merge` takes a key and value and inserts it into the map if the key didn't already exist, otherwise it computes a new value given the old value.
+
+The `putAll` method puts all the entries from another map into the invoking map.
+
+#### SortedMap
+
+The `SortedMap` interface extends `Map` and ensures that entries are stored in ascending order. It provides very efficient sub-map manipulations via the `headMap`, `tailMap`, and `subMap` methods. The first and last key can be obtained using `firstKey` and `lastKey` respectively.
+
+#### NavigableMap
+
+The `NavigableMap` interface extends `SortedMap` and provides closest-match retrieval of key(s).
+
+#### Map.Entry
+
+The `Map.Entry` interface represents a map entry, i.e. a key-value pair. It provides methods for getting the key and value via `getKey` and `getValue` respectively as well as setting the value using `setValue`.
+
+``` java
+Set<Map.Entry<String, String>> set = map.entrySet();
+
+for (Map.Entry<String, String> entry : set) {
+  System.out.println(entry.getKey() + ": " + entry.getValue());
+}
+```
+
+### Map Classes
+
+The `WeakHashMap` class uses weak keys so that the entry can be garbage collected when the key is otherwise unused.
+
+#### HashMap
+
+The `HashMap` class extends `AbstractMap` and implements the `Map` interface and represents a map backed by a hash table. It provides constructors similar to `HashSet`'s, such as those that allow to set the capacity and load capacity (fill ratio).
+
+#### TreeMap
+
+The `TreeMap` class extends `AbstractMap` and implements `NavigableMap`. It's like `TreeSet` in that it can store entries in sorted order allowing for efficient retrieval. It has similar methods to `TreeSort` such as one that takes a `Comparator`.
+
+#### LinkedHashMap
+
+The `LinkedHashMap` class extends `HashMap` and is the map analog to `LinkedHashSet` in that it maintains a linked list of entries in the order in which they were inserted. This means that iterating over a collection view of the map yields elements in insertion order.
+
+One of the constructors takes an `order` parameter after the capacity and load capacity which specifies whether the linked list should store elements in insertion order or by last access order.
+
+It also provides a single additional method aside from those defined by `HashMap` and that is `removeEldestEntry`. This function is called internally after calling `put` or `putAll` and is used to determine whether or not to remove the oldest entry in the map. For that purpose, it returns `false` by default but can be overridden to provide different behavior, such as a fixed-size LRU cache:
+
+``` java
+protected boolean removeEldestEntry(Map.Entry<K, V> entry) {
+    return this.size() > self.MAX_SIZE;
+}
+```
+
+#### EnumMap
+
+The `EnumMap` extends `AbstractMap` and implements `Map`. It specifically takes enumerations for keys.
+
+``` java
+class EnumMap<K extends Enum<K>, V>
+```
+
+## Comparators
+
+The `Comparator` interface represents an arbitrary comparison between two values. Prior to JDK 8 it defined two methods `compare` and `equals`. JDK 8 adds many more methods as default and static interface methods.
+
+The default method `reverse` returns a comparator that is the reverse of the invoking comparator.
+
+The static methods `naturalOrder` and `reverseOrder` provide comparators for the natural ordering and the reverse of it respectively.
+
+The static methods `nullsFirst` and `nullsLast` adapts an existing comparator so that can handle null values and considers them to be first or last in the order respectively. If the comparator passed is `null`, then all non-`null` values are considered equivalent.
+
+The default method `thenComparing` returns a comparator that chains a comparator in the event that the invoking comparator considers two values to be equivalent. Two additional overloads accept a function for selecting the next comparison key to compare as well as the comparator to use. There are also specialized versions for primitives such as `thenComparingInt`.
+
+The static method `comparing` takes a function to select a comparison key and returns a comparator that compares based on that key. The second overload accepts an arbitrary comparator and adapts it accordingly. As with `thenComparing`, there are specialized versions of `comparing` for primitives, such as `comparingInt`.
+
+Since `Comparator` only requires one method to be implemented---the reset being default or static methods---it is possible to use a lambda to instantiate a comparator.
+
+## Collection Algorithms
+
+The `Collections` class provides a variety of algorithms as static methods.
+
+The `checkedCollection` family of methods returns a run-time type-safe collection view which provides run-time checks to ensure that compatible objects are inserted into the collection, throwing `ClassCastException` if the check fails. There are `checkedSet`, `checkedList`, `checkedMap`, etc.
+
+Thread-safe (synchronized) copies of collections can be obtained using the `synchronized` family of methods such as `synchronizedList`. Iteration over synchronized collections must be performed within `synchronized` blocks.
+
+The `unmodifiable` family of methods such as `unmodifiableSet` provides an immutable view over a collection. `Collections` provides three static methods that yield immutable collections: `EMPTY_SET`, `EMPTY_LIST`, and `EMPTY_MAP`.
+
+The `asLifoQueue` provides a LIFO (stack) view of a `Deque` as a `Queue`.
+
+The `binarySearch` method takes a list and a search value and performs a binary search on the list, returning the index of the match or a negative value if none was found.
+
+The `disjoint` method checks if the two collections have no elements in common.
+
+The `emptyIterator` method yields an empty iterator.
+
+The `fill` method takes a list and an object and replaces each element in the list with that object.
+
+The `frequency` method takes a collection and an object and counts the number of occurrences in it.
+
+The `indexOfSublist` method takes two lists and returns the index of the beginning of the first match or -1 if none was found. There is also `lastIndexOfSubList`.
+
+The `max` and `min` methods return the maximum and minimum element in the collection based on natural order, respectively. Overloads exist that accept a custom comparator.
+
+The `replaceAll` method replaces all occurrences of one value with another in a given list.
+
+The `reverse` method reverses a list.
+
+The `reverseOrder` method returns a comparator that is the reverse of the one that is passed, or the reverse of the natural order if none is given.
+
+The `rotate` method reverse a list by a given number of places to the right, where a negative number rotates to the left.
+
+The `shuffle` method shuffles the elements in a list given a `Random` seed, or an arbitrary seed if none is given.
+
+The `sort` method sorts a list given a comparator, or uses natural order if none is given.
+
+The `swap` method swaps two elements of a list at the given indices.
+
+## Arrays
+
+The `asList` method returns a `List` backed by the invoking array, so that modifying one modifies the other.
+
+The `binarySearch` method performs binary search on a sorted array for a given value, returning the index if found or a negative value if not found. One overload accepts a custom comparator, while others allow specifying a sub-range.
+
+The `copyOf` method returns a copy of the array up to a certain size. If the size is shorter then the copy is truncated, and if it's larger it is padded with zeros for numeric arrays, `null`s for object arrays, and `false` for boolean arrays. The `copyOfRange` method is similar except it allows specifying a sub-range to copy by providing a start and end index.
+
+The `equals` method tests if two arrays are equivalent. The `deepEquals` array does the same for arrays that may contain other arrays.
+
+The `fill` method assigns a value to all elements in the array, with an overload accepting a sub-range to fill.
+
+The `sort` method sorts an array into ascending order, or one of the overloads accepts a custom comparator. Other overloads allow specifying a sub-range.
+
+### JDK 8
+
+JDK 8 adds a variety of new methods.
+
+The `parallelSort` method which performs a sort in parallel and then merges the results, which provides similar overloads to `sort`.
+
+The `spliterator` method returns a spliterator of an entire array, with an overload accepting a sub-range to iterate over.
+
+The `stream` method yields a `Stream` for use with the JDK 8 `Stream` interface.
+
+The `setAll` and `parallelSetAll` methods assign values to all elements based on the result of applying a provided generator function on a given element.
+
+The `parallelPrefix` method performs an operation on all previous elements for each element [^haskell_scan]. So that if the operation is addition, each element will be the sum of all elements prior to it.
+
+[^haskell_scan]: This sounds a lot like Haskell's [`scan`](https://hackage.haskell.org/package/base-4.8.1.0/docs/Prelude.html#g:16) family of functions.
+
+The `toString` and `hashCode` methods work on arrays as well as `deepToString` and `deepHashCode` variants.

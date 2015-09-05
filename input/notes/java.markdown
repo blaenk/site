@@ -1360,3 +1360,18 @@ The `parallelPrefix` method performs an operation on all previous elements for e
 [^haskell_scan]: This sounds a lot like Haskell's [`scan`](https://hackage.haskell.org/package/base-4.8.1.0/docs/Prelude.html#g:16) family of functions.
 
 The `toString` and `hashCode` methods work on arrays as well as `deepToString` and `deepHashCode` variants.
+
+## Legacy Collections
+
+The `Enumeration` interface is a legacy version of `Iterator`.
+
+The `Vector` class is a legacy version of `ArrayList`.
+
+The `Stack` class is a LIFO subclass of `Vector`.
+
+The `Dictionary` abstract class is a legacy version of `Map`.
+
+The `Hashtable` class is a legacy version of `HashMap`.
+
+The `Properties` class is a subclass of `Hashtable` and is still used for Java system related functionality, such as `System.getProperties`. It can retrieve values using `getProperty` and set properties with `setProperty`. It's possible to specify a default value to return if no value is associated with a given key by giving the `getProperty` a second argument. Alternatively, a constructor can take another `Properties` object to use as default properties. The `store` and `load` methods can be used to serialize and deserialize the properties to to a stream.
+

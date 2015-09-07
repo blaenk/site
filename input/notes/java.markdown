@@ -610,6 +610,8 @@ try {
 }
 ```
 
+Note that it's important to check that the stream isn't `null` before attempting to invoke the `close` method---in case the exception was thrown before the object was instantiated---in order to avoid a null pointer exception.
+
 JDK 7 introduced _try-with-resources_ which allows initializing a resource within a `try` statement that should be automatically closed if the body ends, whether it threw or not. This can only be used on those resources that implement the `AutoCloseable` interface which defines a `close` method. This allows `catch` clauses to be used for more meaningful reasons.
 
 Multiple resources can be defined within the same `try` statement by separating their declarations with semicolons.
@@ -914,26 +916,6 @@ super::methodName;
 ```
 
 JDK 8 contains predefined functional interfaces in <span class="path">java.util.function</span>.
-
-# IO
-
-IO is performed in Java through the stream abstraction which is split into two types: byte streams reserved for binary data and character streams reserved for internationalizable Unicode text (and are sometimes more efficient than byte streams).
-
-Byte streams consist of two hierarchies with the following abstract classes at the top: `InputStream` and `OutputStream`. Character streams are similar, with `Reader` and `Writer` being at the top. Each of these sets of classes define `read` and `write` methods respectively.
-
-The `System` class defines three static, predefined stream variables `in`, `out`, and `err` where `in` is an `InputStream` while `out` and `err` are `PrintStream` types.
-
-For example, to read input from the keyboard, the `InputStream` can be wrapped by `InputStreamReader` to convert bytes to characters, then wrapped in `BufferedReader` to support a buffered input stream.
-
-``` java
-BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-```
-
-Likewise, to print characters to the terminal it's preferred to use a `PrintWriter` which can be created by wrapping the `PrintStream`.
-
-``` java
-PrintWriter pw = new PrintWriter(System.out, true);
-```
 
 # Strings
 
@@ -1365,7 +1347,7 @@ The `toString` and `hashCode` methods work on arrays as well as `deepToString` a
 
 ## Legacy Collections
 
-The `Enumeration` interface is a legacy version of `Iterator`.
+The `Enumeration` interface is a legacy version of `Iterator` and some classes still use it, such as `SequenceInputStream`. It defines two methods: `hasMoreElements` and `nextElement`, where the former must return `true` so long as there are still more elements to process and `nextElement` must return the next element if there is one, or throw `NoSuchElementException` when enumeration is complete.
 
 The `Vector` class is a legacy version of `ArrayList`.
 
@@ -1471,4 +1453,180 @@ The `java.util.function` package contains various functional interfaces which ca
 `Consumer` variants refer to functions that accept arguments of different types, whereas `Function` variants also produce a result. `Operator` variants are like a `Function` except the parameters and result are all the same type. `Predicate`s accept potentially different types of parameters and returns a `boolean` result. `Supplier` variants take no parameters and provide a result value. `Bi`-prefix variants take two parameters. `To`-prefix variants represent a function that returns a value of the type following the `To` prefix, e.g. `ToDoubleBiFunction`.
 
 There are also specialized primitive prefix variants, such as `DoubleConsumer`.
+
+# java.io
+
+## File
+
+A `File` represents a file system file and can be constructed using a `String` path to a directory, with another overload taking a second `String` path to a file within the directory, while another overload takes a `URI`.
+
+There are `getParent` and `getName` for retrieving the directory and file name components of the path represented by a `File`. The `exists` method yields a `boolean` indicating whether a file at that location exists. The `isFile` method can be used to detect if it's a regular file or a directory.
+
+There is a `renameTo` utility method that takes another `File` instance representing the target to rename the invoking `File` to. There is also a `delete` method to remove a regular file or empty directory from the file system, as well as a `deleteOnExit` method.
+
+The `toPath` method returns a `Path` object of the path to the invoking `File`'s path.
+
+If the `File` is a directory, the `list` method will return a `String` array of file names of the contents of the directory. An overload of the `list` method takes a `FilenameFilter` object which filters the returned list of files to ones that match a particular file name pattern. The `FilenameFilter` interface contains a single method taking a reference to the directory's `File` and the file in question's file name as a string, and must return a `boolean` indicating whether or not the file satisfies the filter.
+
+Alternatively, there is a `listFiles` method that yields `File` instances instead which is otherwise identical to the `list` method, except one of the overloads can take a `FileFilter` which is identical to `FilenameFilter` aside from the fact that it operates on `File` objects instead of `String` file names.
+
+Creating directories is possible with the `mkdir` and `mkdirs` method, where the second one creates all necessary directories in the path, like the `mkdir -p` command.
+
+## I/O Streams
+
+I/O is performed in Java through the stream abstraction which is split into two types: byte streams reserved for binary data and character streams reserved for internationalizable Unicode text (and are sometimes more efficient than byte streams).
+
+Byte streams consist of two hierarchies with the following abstract classes at the top: `InputStream` and `OutputStream`. Character streams are similar, with `Reader` and `Writer` being at the top. Each of these sets of classes define `read` and `write` methods respectively.
+
+The `System` class defines three static, predefined stream variables `in`, `out`, and `err` where `in` is an `InputStream` while `out` and `err` are `PrintStream` types.
+
+For example, to read input from the keyboard, the `InputStream` can be wrapped by `InputStreamReader` to convert bytes to characters, then wrapped in `BufferedReader` to support a buffered input stream.
+
+``` java
+BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+```
+
+Likewise, to print characters to the terminal it's preferred to use a `PrintWriter` which can be created by wrapping the `PrintStream`.
+
+``` java
+PrintWriter pw = new PrintWriter(System.out, true);
+```
+
+## Byte Streams
+
+### InputStream
+
+The `InputStream` abstract class represents streaming byte input.
+
+The `read` method reads the next byte or -1 if it's there's no more input, with a variant that takes a byte array to write the contents into, returning the number of bytes read or -1 if there's no more input. The final overload of `read` takes a byte array, an offset into it, and the maximum number of bytes to read, returning the same thing as the second overload.
+
+The `mark` method places a "bookmark" at the current position in the input stream which will remain valid until the provided number of bytes have been read. The `reset` method then resets the input pointer to the set mark. The `markSupported` method must be consulted before attempting to use these methods, as some streams don't support them. The `skip` method skips the provided number of bytes of input, returning the number of bytes that were actually skipped. The `
+
+The `FileInputStream` class is an `InputStream` for reading bytes from a file. It can be created from a `String` file path or an existing `File` object.
+
+The `ByteArrayInputStream` class is more general in that it uses a byte array as the input source, with one of the constructors taking an offset into the array and a number of bytes to use as input.
+
+### OutputStream
+
+The `OutputStream` abstract class represents streaming byte output. The `available` method returns the number of bytes available for reading.
+
+The `write` method writes a single byte to the output stream, with an overload taking a byte array to write to the output stream. The final overload takes a byte array, an offset into it, and the number of bytes to write.
+
+The `FileOutputStream` class is an `OutputStream` for writing bytes to a file. It can be constructed the same way that a `FileInputStream` can be, with overloads taking an additional parameter indicating whether to append to the file. The file backing the `FileOutputStream` doesn't have to already exist, in which case it's created automatically.
+
+The `ByteArrayOutputStream` class is analogous to the `ByteArrayInputStream` class, except that it uses a byte array as the destination, with one of the constructors specifying the size of the output buffer, which is dynamically grown otherwise.
+
+### Filtered Byte Streams
+
+Filtered streams are adapters around other streams that provide additional behavior. For example, `FilterInputStream` simply extends `InputStream` and overrides all methods of `InputStream` to versions that pass the requests to the wrapped input stream. Arbitrary stream adapters can be created by deriving from `FilterInputStream`, for example, and constructing the adapter from an existing `InputStream`.
+
+Concretely, a `LoggingStream` can be created that derives from `FilterInputStream` and overrides the `read` methods with logging messages. A `LoggingStream` would then be constructed from an existing `InputStream` like `FileInputStream`, so that the `FileInputStream` can continue to be used as expected while triggering the logging messages from the `LoggingStream` adapter.
+
+### Buffered Byte Streams
+
+Buffered streams extend a filtered stream and attach a memory buffer to back the I/O stream, allowing operations on more than one byte at a time, which improves performance and facilitates skipping, marking, and resetting the stream.
+
+The `BufferedInputStream` class for example wraps any `InputStream` into a buffered stream, with one of the overloads taking a buffer size parameter, which should generally be the the size of a memory page or disk block. There is also a `BufferedOutputStream`.
+
+### PushbackInputStream
+
+The `PushbackInputStream` allows peeking at the next byte on the input stream without consuming it [^rust_peekable]. In fact, the amount of peekable data can be specified in one of the constructors by passing the size of the peekable buffer.
+
+Peeking is performed by reading data from the input normally with the `read` method and then *explicitly* "pushing back" the data that should be pushed back using the `unread` method, which takes an integer whose lower byte is sent back to the input stream. There are also overloads that mirror the overloads available for `read`, in particular one that takes an array of bytes and another that takes an array of bytes, an offset into it, and a number of bytes to send back.
+
+[^rust_peekable]: Much like Rust's [`Peekable`](http://doc.rust-lang.org/std/iter/struct.Peekable.html) iterator adapter.
+
+Note that `PushbackInputStream` invalidates the `mark` and `reset` methods.
+
+### SequenceInputStream
+
+The `SequenceInputStream` concatenates multiple `InputStream`s into one and is constructed from either two `InputStream` objects or from an `Enumeration` of `InputStream`s. Closing a `SequenceInputStream` closes all unclosed streams that constitute it.
+
+### PrintStream
+
+The `PrintStream` class is a stream that facilitates printing data, and is what's used when accessing `System.out`. It's constructed from an existing `OutputStream` and can take a parameter determining whether to turn on auto flushing of the stream. Auto flushing is performed whenever a newline is printed, when a byte array is written, or when `println` is called. There is also an overload that accepts a string representing the character set to use for the stream. A `PrintStream` can also be created from a `File` and a `String` path.
+
+The `PrintStream` class also defines the `printf` method which leverages the `Formatter` for outputting formatted strings.
+
+### DataStream
+
+The `DataOutputStream` and `DataInputStream` which are specifically for writing and reading primitive data to or from a stream. They define multiple methods for writing and reading specific types of primitive data, such as `writeDouble`.
+
+### RandomAccessFile
+
+The `RandomAccessFile` class represents a file that can be accessed randomly, which means that the position in the file can be moved around. It's constructed from a `File` or `String` file path and takes a `String` parameter specifying the access policy to use with the file, such as `"r"` or `"rw"`. The `"s"` specifier means that all changes to the file or its metadata are made immediately, whereas `"d"` does the same but only when the file's data is changed.
+
+The `seek` method can be used to move the current position of the file pointer given a byte position.
+
+The `setLength` method can be used to truncate or lengthen a file, where the added portion is undefined.
+
+## Character Streams
+
+The `Reader` and `Writer` abstract classes are analogs to the `InputStream` and `OutputStream` byte stream abstract classes, except that they are instead used for handling Unicode characters.
+
+### Reader
+
+The `Reader` abstract class represents streaming character input. The `read` method returns an integer representation of the next available character. There are also overloads for reading into a `char[]`, as well as writing into a provided `CharBuffer`. There is also an abstract `read` method that takes a `char[], an offset into it, and a number of characters to read into it. The `ready` method returns true if the next read would not block.
+
+### Writer
+
+The `Writer` abstract class represents streaming character output. The `append` method appends a single `char` to the output stream, with overloads accepting a `CharSequence` along or with a range. The `write` method writes a single character to the output stream, with overloads for writing a `char[]` and another for specifying an offset into it and a number of characters to write. There are also simpler overloads for writing a `String`, as well as a substring of a `String`.
+
+### FileReader
+
+The `FileReader` class extends `Reader` and can be constructed from a `String` file path or a `File` object.
+
+### FileWriter
+
+The `FileWriter` class extends `Writer` and can be constructed from a `String` file path or `File object along with a parameter specifying whether it should be open in append mode.
+
+### CharArrayReader
+
+The `CharArrayReader` class represents an input stream that is backed by a character array, like the character equivalent of `ByteArrayInputStream`. It can be constructed from a `char[]`, with one of the overloads accepting an offset into it and a number of characters to use.
+
+### CharArrayWriter
+
+The `CharArrayWriter` class represents an output stream that is backed by a character array. One of the constructors has a parameter specifying the size of the backing buffer.
+
+### BufferedReader
+
+The `BufferedReader` class is an analog to the `BufferedInputStream` class for character streams: it backs an existing stream with a buffer. JDK 8 adds the method `lines` for accessing individual lines in the stream.
+
+### BufferedWriter
+
+The `BufferedWriter` class is an analog to the `BufferedOutputStream` class for character streams.
+
+### PushbackReader
+
+The `PushbackReader` class is an analog of the `PushbackInputStream` class for character streams.
+
+### PrintWriter
+
+The `PrintWriter` class is an analog of the `PrintStream` class for character streams.
+
+## Console
+
+The `Console` class added in JDK 6 is for reading from and writing to a console. Most of its functionality is available through `System.in` and `System.out`. It has no constructors and instead a reference to the associated `Console` can be obtained using the `System.console()` static method, which returns `null` if no console is associated.
+
+The `readPassword` method is useful for reading input without echoing it to the console.
+
+## Serialization
+
+Serialization is writing an object to a byte stream. Serialization in Java correctly handles references and cyclic references. All objects referenced in an object being serialized are automatically serialized as well, and this is correctly handled at the point of deserialization.
+
+Objects can be serializable by implementing the `Serializable` interface, which contains no members and is only used to signify that the class and its subclasses may be serialized.
+
+Member variables declared as `transient` are not serialized.
+
+The `Externalizable` interface can be used for customizing parts of the serialization process to enable for example compression and/or encryption of the serialized data. It defines methods for reading and writing the data: `readExternal` and `writeExternal`, which take an input byte stream and output byte stream respectively.
+
+The `ObjectOutput` interface extends `DataOutput` and represents object serialization. It contains a `writeObject` method which is used for serializing an object to the stream. There are also general `write` methods found in output streams.
+
+The `ObjectOutputStream` class extends `OutputStream` and implements `ObjectOutput` and is actually responsible for writing objects to a stream. It can be constructed from a general `OutputStream` which is the stream to which the object is written. It contains a variety of `write` methods such as one that takes a `byte[]`, one that takes a `byte[]` and offset and length, as well as variants for all of the primitive data types as well as a regular `Object`.
+
+The `ObjectInput` interface extends `DataInput` and represents object deserialization. The `readObject` method is used for deserializing an object.
+
+The `ObjectInputStream` class extends `InputStream` and implements `ObjectInput` and is responsible for reading objects from a stream. It can be constructed from the stream from which to read the object. Like `ObjectOutputStream`, it contains a variety of `read` methods.
+
+The general process of serialization is to create a backing stream such as a `FileOutputStream` and wrap it in an `ObjectOutputStream`, then invoking `writeObject` on it to serialize a particular object. Deserialization is achieved by doing the reverse: creating a `FileInputStream`, wrapping it in an `ObjectInputStream`, and invoking `readObject`.
 

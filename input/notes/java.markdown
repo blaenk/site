@@ -1848,3 +1848,19 @@ b = stream.read();
 if (b != -1) System.out.print((char)b)
 ```
 
+# Networking
+
+The `InetAddress` class represents a numerical IPv4/IPv6 address or domain name. It has no constructors, only factory methods, including `getLocalHost`, `getByName`, and `getAllByName` which resolves a host name, and `getByAddress` which takes an IPv4 or IPv6 address.
+
+The `URL` class represents a Uniform Resource Locator and provides methods for accessing information about the URL, as well as an `openConnection` method that opens a connection to the URL and returns a `URLConnection` object to represent the connection.
+
+The `URLConnection` can be used to obtain information about a resource pointed to by a `URL`, such as `getContentLength` and `getHeaderFields`. The `getInputStream` method returns an `InputStream` that can be used to obtain the resource pointed to by the URL.
+
+The `HttpURLConnection` class extends `URLConnection` and is specifically for HTTP connections and can it can be obtained by casting the result of `URL`'s `openConnection`. This class provides additional methods such as `getRequestMethod` and `setRequestMethod`.
+
+The `URI` class represents a Uniform Resource Locator which is a more general form of a URL, which also describes how to access the resource.
+
+The TCP `ServerSocket` class represents a listener socket, whereas `Socket` is a general socket that can be used by clients. The input and output streams of a `Socket` can be accessed with `getInputStream` and `getOutputStream`.
+
+There also UDP sockets available via `DatagramSocket` which creates a local UDP socket. It has methods `send` and `receive` which send and receive a `DatagramPacket`. A `DatagramPacket` is constructed from an existing `byte[]` and optionally a target `InetAddress` and port.
+

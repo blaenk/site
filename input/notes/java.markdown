@@ -2160,3 +2160,64 @@ true == matcher.find();
 There's also a `split` method that takes an input stream and splits it into a return `String[]`.
 
 There's also a convenience static method `matches` on `Pattern` that takes a a string pattern and an input string to attempt to match on, and returns whether there was a match. There's also a `matches` method on `String` which takes a string pattern.
+
+## javadoc
+
+Documentation comments are possible using the `/** */` delimiters, which are processed by the `javadoc` program to produce documentation.
+
+| Tag | Meaning |
+|:----|:--------|
+| `@author` | code author |
+| `{@code}` | codeblock |
+| `@deprecated` | deprecation marker |
+| `@{docRoot}` | specify root path of current docs |
+| `@exception` | specify exception thrown by function |
+| `{@inheritDoc}` | inherit comment from superclass |
+| `{@link}` | link to another topic |
+| `{@linkplain}` | link to another topic in plain font |
+| `{@literal}` | span code |
+| `@param` | document parameter |
+| `@return` | document return value |
+| `@see` | refer to another topic via link |
+| `@serial` | document serializable field |
+| `@serialData` | document data written by `writeObject` or `writeExternal` |
+| `@serialField` | document `ObjectStreamField` component |
+| `@since` | specify release of introduction or change |
+| `@throws` | same as `@exception` |
+| `{@value}` | display value of static field |
+| `@version` | specify version of class |
+
+The `@exception` tag takes two parameters: the exception name and the reason for why it is thrown.
+
+The `@link` tag takes two parameters: the link and the text to use for the link. The `@linkPlain` and `@see` tags are the same.
+
+``` java
+{@link pkg.class#member text}
+```
+
+The `@param` tag is like `@exception`.
+
+The `@return` tag only requires an explanation, which should include the return type.
+
+Files generally begin with a header documentation comment, and documentation markers follow throughout.
+
+``` java
+/**
+ * This class is for things.
+ * @author Jorge Israel Peña
+ * @version 1.0
+*/
+
+public class Thing {
+  /**
+  * This does a thing.
+  * @param num The value passed to the method.
+  * @exception IOException Just because.
+  * @return num The same num.
+  * @see AbstractSingletonProxyFactoryBean
+  */
+  public double method(double num) throws IOException {
+    return num;
+  }
+}
+```

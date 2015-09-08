@@ -1168,7 +1168,7 @@ while (spliterator.tryAdvance((e) -> System.out.println(e)));
 spliterator.forEachRemaining((e) -> System.out.println(e));
 ```
 
-The spliterator can be split further using the `trySplit` method which yields a new spliterator that iterates over a portion of the sequence and the invoking spliterator iterates over the other portion.
+The spliterator can be split further using the `trySplit` method which yields a new spliterator that iterates over a portion of the sequence and the invoking spliterator iterates over the other portion, or it returns `null` if it's not possible to split further.
 
 Spliterators can contain characteristics which are retrieved using the `characteristics` method to retrieve them all or the `hasCharacteristics` method to test for an individual characteristic. Characteristics are defined as static integer fields on `Spliterator`, such as `SORTED` and `IMMUTABLE`.
 
@@ -2065,3 +2065,77 @@ A `Runnable` or `Callable` can be converted into a `ForkJoinTask` by calling the
 
 `ForkJoinTask` objects should generally not use synchronized methods, blocks, or other primitives, though `Phaser` is compatible. It's also preferable to avoid blocking or I/O in general.
 
+# Stream API
+
+Streams are essentially conduits for data, sourced for example by arrays or collections. The `BaseStream` interface provides the basic functionality available in all streams. It is generic on the type `T` of elements in the stream as well as the type of the stream `S` that implements `BaseStream`.
+
+``` java
+interface BaseStream<T, S extends BaseStream<T, S>>
+```
+
+An `onClose` method returns a stream that runs the provided `Runnable` when the stream is closed. The `parallel` method returns a parallel stream based on the invoking stream, whereas the `sequential` method returns a sequential stream based on the invoking stream. The `spliterator` method returns a spliterator to the stream, while `iterator` returns a regular iterator.
+
+The `Stream` interface derives from `BaseStream`. The `count` method returns the number of elements in the stream.
+
+The `filter` method takes a `Predicate` and returns a stream that only produces the elements that satisfy the predicate. The `forEach` method takes a `Consumer` which it applies to each element in the stream. The `map` function takes a `Function` and transforms each element in the stream with it.
+
+``` java
+stream.filter((n) -> (n % 2) == 0)
+      .forEach((n) -> System.out.printf("%d is an even number", n));
+```
+
+Streams are lazy until a terminal operation is performed, such as `collect`.
+
+Streams can be obtained through a variety of ways, such as from a collection by using the `stream` method or a parallel stream with `parallelStream`. A stream can be obtained from an array by using the `Arrays.stream` method.
+
+The `reduce` method takes a `BinaryOperator` to reduce a stream into a single value.
+
+``` java
+int sum = numbers.stream().reduce(0, Integer::sum);
+```
+
+The `collect` method accepts a `Collector` which collects elements into a collection which the `collect` method then returns. The `Collector` interface is parameterized by the type `T` of the element in the stream, the internal accumulated type `A`, and the result type `R`.
+
+The `Collectors` class provides static methods for obtaining `Collector` objects for lists and sets via `Collectors.toList` and `Collectors.toSet`.
+
+Another overload of `collect` takes a `Supplier` for constructing the target collection type, a `BiConsumer` for adding an element to the collection, and a `BiConsumer` for combining two partial results.
+
+``` java
+LinkedList<Integer> list =
+  numbers.collect(
+    () -> new LinkedList<>(),
+    (list, element) -> list.add(element),
+    (listA, listB) -> listA.addAll(listB))
+```
+
+Note that the above could be simplified by passing method or constructor references:
+
+``` java
+LinkedList<Integer> list =
+  numbers.collect(
+    LinkedList::new,
+    LinkedList::add,
+    LinkedList::addAll)
+```
+
+## Parallel Streams
+
+A parallel stream can be obtained using the `parallelStream` method on supported types such as those that implement `Collection`, and one can also be created from a regular sequential stream by using the `parallel` method on a stream type.
+
+Operations on parallel streams must be stateless, non-interfering (not modify the data source), and associative.
+
+Parallel streams can leverage an overload of `reduce` that accepts a combiner `BinaryOperator` that specifies how partial results from parallel computations are to be combined.
+
+In the example below, partial results would be the weights, in which case they are combined by simply adding them. However, if no separate combining function was provided, the accumulator function would be used, which would in effect add one weight to a weight of another weight.
+
+```java
+int weightsSum =
+  numbers.stream()
+         .reduce(0, (sum, b) -> sum + b.getWeight(), Integer::sum);
+```
+
+A parallel stream can be switched back to a sequential stream with the `sequential` method.
+
+It's possible to optimize a parallel stream by allowing it to be unordered by using the `unordered` method to yield an unordered stream, instead of forcing it to preserve the original order.
+
+The `forEach` method may not preserve order on a parallel stream even if the stream is not unordered, for that there is `forEachOrdered`.

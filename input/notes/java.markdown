@@ -1864,3 +1864,204 @@ The TCP `ServerSocket` class represents a listener socket, whereas `Socket` is a
 
 There also UDP sockets available via `DatagramSocket` which creates a local UDP socket. It has methods `send` and `receive` which send and receive a `DatagramPacket`. A `DatagramPacket` is constructed from an existing `byte[]` and optionally a target `InetAddress` and port.
 
+# Concurrency
+
+## Synchronization
+
+Synchronizers are used for synchronizing interactions between threads.
+
+### Semaphore
+
+Semaphores control a shared resource using a counter, so that access is allowed if the counter is greater than zero, but disallowed if it's zero, in which case it blocks until it's no longer zero. It's useful to think of a semaphore as representing a fixed number of permits for accessing the resource.
+
+A `Semaphore` can be constructed by specifying the resource count to give it. An optional `boolean` parameter may be specified to indicate that threads should be given access to the resource in the order that they requested it.
+
+The `acquire` method is used for actually attempting to acquire the resource, with an optional count argument specifying how many resources to request. Conversely, the `release` method does the same in reverse, relinquishing the resource.
+
+### CountDownLatch
+
+The `CountDownLatch` class can be used for waiting until a number of events have occurred. It's constructed by specifying the number of events that should be waited on.
+
+The `await` method is called to wait on the latch until all events have occurred, with an overload accepting a time out and returning `false` if the time out was triggered.
+
+The `countDown` method actually decrements the count associated with the latch.
+
+### CyclicBarrier
+
+The `CyclicBarrier` class represents a traditional barrier which enforces that all participating threads must reach the barrier before they're allowed to continue execution past it. It's constructed by specifying the number of participating threads, with an overload accepting an arbitrary `Runnable` to execute after the last thread reaches the barrier but before they all resume execution.
+
+Threads signal that they have reached the barrier by calling `await` on the barrier---which blocks until all other threads reach the barrier---with an overload accepting a time out. The `await` method returns an integer count of the number of _other_ participating threads aside from the current one.
+
+### Exchanger
+
+The `Exchanger` class is used for exchanged data between two threads. It waits until both communicating threads call `exchange` with the data to be sent as an argument, and then exchanges the data by returning it from the method call on the receiving thread. An overload of `exchange` accepts a time out.
+
+``` java
+Exchanger<String> exchanger;
+
+// thread 1
+String receivedFrom2 = exchanger.exchange("send to 2");
+
+// thread 2
+String receivedFrom1 = exchanger.exchange("send to 1");
+
+receivedFrom2 == "send to 1"
+receivedFrom1 == "send to 2"
+```
+
+### Phaser
+
+The `Phaser` class can be used for synchronizing threads that represent various phases of a process. It's similar to `CyclicBarrier` except that it supports multiple phases. It's constructed by optionally providing the number of participating parties. Parties can register themselves for the next phase by calling the `register` method. A party signals that it has completed a phase by calling `arrive` or `arriveAndAwaitAdvance`.
+
+The `arrive` method returns the current phase number or a negative number if the phaser was terminated, but **does not** block execution, whereas `arriveAndAwaitAdvance` does and returns the _next_ phase number.
+
+The `arriveAndDeregister` method signals arrival and deregisters itself without waiting for the phase to complete.
+
+The current phase number can also be retrieved using `getPhase`.
+
+The `Phaser` class can be extended and the `onAdvance` method overridden to hook into the point between phases. It takes the current phase number and the number of parties and returns whether the phaser should be terminated as a `boolean`. This is useful for capping the number of phases that should be allowed.
+
+It's also possible to construct trees of phasers using a constructor overload that takes a parent phaser.
+
+## Executors
+
+An executor initiates and controls the execution of threads. The `Executor` interface defines an `execute` method that takes a `Runnable` which it then executes. The `ExecutorService` interface extends `Executor` and adds methods to control the execution of threads, such as `shutdown`, as well as methods that run threads which return results. The `ScheduledExecutorService` further extends `ExecutorService` to add scheduling capabilities.
+
+The `ThreadPoolExecutor` class implements `ExecutorService` and provides a pool of threads for running `Runnable`s.
+
+The `ScheduledThreadPoolExecutor` class implements `ScheduledExecutorService` and provides a scheduled thread pool.
+
+The `ForkJoinPool` class implements `ExecutorService` and is used by the Fork/Join Framework.
+
+Thread pools are typically created via static methods on the `Executors` utility class. The `newCachedThreadPool` method returns a thread pool that adds threads if needed but reuses threads when possible. The `newFixedThreadPool` method creates a fixed-size thread pool, where `newScheduledThreadPool` does the same but supports scheduling.
+
+## Callable
+
+The `Callable` interface represents a thread that returns a value to the invoking thread. It's a generic interface parameterized on the return value type and defines a single method `call` which returns the value.
+
+A `Callable` is executed by an `ExecutorService`'s `submit` method, which returns an object of type `Future`.
+
+## Future
+
+The `Future` interface represents a value returned by a `Callable` at some future time. It is also a generic interface parameterized on the return value type. The `get` method is used for actually accessing the value, blocking until it becomes available if it isn't already, with one of the overloads accepting a time out.
+
+``` java
+class ProvideFive implements Callable<Integer> {
+  public Integer call() {
+    return 5;
+  }
+}
+
+ExecutorService executor = Executors.newFixedThreadPool(2);
+Future<Integer> five = executor.submit(new ProvideFive());
+
+int fiveInteger = five.get();
+```
+
+## TimeUnit
+
+Various methods in the concurrency API accept optional time outs which are generally provided in the form of a `long` parameter specifying _how many_ and a `TimeUnit` enumeration value specifying the time unit. However, there is **no guarantee** that the system is capable of any of these granularity levels. The possible time units are:
+
+* `DAYS`
+* `HOURS`
+* `MINUTES`
+* `SECONDS`
+* `MICROSECONDS`
+* `MILLISECONDS`
+* `NANOSECONDS`
+
+The `TimeUnit` enumeration also provides methods for converting between units, such as the `convert` method that takes a source quantity and `TimeUnit` and converts it to the invoking enumeration, for example:
+
+``` java
+1 == TimeUnit.HOURS.convert(60, TimeUnit.MINUTES)
+```
+
+There are also specific methods for converting the invoking enumeration into a specific `TimeUnit`, such as `toDays`.
+
+The `sleep` method pauses execution for a given delay in the `TimeUnit` of the invoking enumeration.
+
+The `timedJoin` method paused the given thread for the given delay in the `TimeUnit` of the invoking enumeration, whereas `timedWait` waits for the given thread up to a given time out in the `TimeUnit` of the invoking enumeration.
+
+## Concurrent Collections
+
+There are a variety of concurrent collections. Most are equivalent to the regular collections framework classes aside from the fact that they provide concurrency support.
+
+```
+ArrayBlockingQueue
+Concurrent{
+  HashMap,
+  Linked{Deque, Queue},
+  SkipList{Map, Set},
+}
+CopyOnWriteArray{List, Set}
+DelayQueue
+LinkedBlocking{Deque, Queue}
+PriorityBlockingQueue
+SynchronousQueue
+```
+
+## Locks
+
+The `java.util.concurrent.locks` package provides actual locks via the `Lock` interface which represents acquiring and releasing a resource via methods `lock`, `tryLock`, and `unlock`. The `lock` method waits until the lock is released by other threads, whereas the `tryLock` method tries to acquire the lock without waiting, returning a boolean indicating whether or not the lock was acquired, with an overload accepting a time out.
+
+The `ReentrantLock` class implements a reentrant, or recursive, lock which can be acquired by the same thread more than once and which must be released the same number of times in order to fully release the lock.
+
+There is also a `ReadWriteLock` class that keeps separate locks for read and write access, enabling multiple readers to exist whenever there aren't any writers.
+
+### Condition Variables
+
+The `newCondition` method on `Lock` returns a `Condition` object representing a condition variable which can be waited on using `await` and signaled using `signal` or `signalAll`.
+
+Condition variables are useful for representing a lock that waits for a condition to change. Acquiring the lock and then using a busy loop to check if the condition is true wouldn't work since the lock couldn't be acquired by another thread to make the condition true. Alternatively, looping and acquiring the lock, checking if it's true, and if not sleeping for some time before repeating would work but it would be difficult to determine the best amount of time to sleep.
+
+A condition variable supports a wait and notify operation. Waiting entails the following operations:
+
+1. atomically:
+    1. release associated lock
+    2. move thread to condition variable's wait queue
+    3. sleep thread
+2. when notified: re-acquire lock
+3. return
+
+In the aforementioned scenario, the lock is acquired to check if the condition is now true, and if not, a condition variable associated with the lock is waited on using `await`, which releases the lock and puts the thread to sleep until the condition variable is signaled. Another thread might then acquire the lock in order to change the condition to true, then it signals all waiting threads using `signal` or `signalAll` and releases the lock.
+
+A call to a condition variable's `await` is generally placed inside a loop that checks the actual condition, so that upon wake up the thread first checks to ensure that the condition didn't change since the point at which it was notified/woken up and when it actually resumed execution, which is known as a _spurious wakeup_.
+
+## Atomic Operations
+
+The `java.util.concurrent.atomic` package provides atomic primitive data types such as `AtomicInteger` which have methods such as `compareAndSet`.
+
+JDK 8 also introduces four classes for lock-free cumulative operations: `DoubleAccumulator`, `DoubleAdder`, `LongAccumulator`, and `LongAdder`.
+
+## Fork/Join Framework
+
+The Fork/Join framework simplifies the creation and use of threads while automatically utilizing multiple processors.
+
+The `ForkJoinTask<V>` abstract class represents a task managed by a `ForkJoinPool`. Whereas `Thread` represents a thread of execution, `ForkJoinTask` is a lightweight abstraction of a task which is executed by threads managed by a thread pool in `ForkJoinPool`.
+
+The two primary methods provided by `ForkJoinTask` are `fork` and `join`. The `fork` method submits the invoking task for asynchronous execution. The `join` method waits until the invoking task finishes and returns its value. The `invoke` method combines `fork` and `join` into a single call. The `invokeAll` method can take an arbitrary amount of `ForkJoinTask`s.
+
+The `RecursiveAction` abstract class represents a task that doesn't return a result. It can be extended and the `compute` method overridden to define the task's _computational_ portion.
+
+The `RecursiveTask<V>` abstract class represents a task that returns a result. It also defines an abstract `compute` method that should be overridden to define the task's computational portion.
+
+The `ForkJoinPool` class manages the execution of `ForkJoinTask`s. JDK 8 provides two ways to acquire a pool: creating one using the `ForkJoinPool` constructor or use what the common pool, which is a static `ForkJoinPool` that is globally available. The default constructor automatically scales to the number of processors in the system, whereas another one allows explicitly setting the size.
+
+A reference to the common pool can be obtained with the `commonPool` static method on `ForkJoinPool`. It has the default level of parallelism which scales to the amount of execution units on the system.
+
+The `invoke` method is used to execute a task on the pool, returning the value that it returns. The `execute` method is used for asynchronously submitting a task for execution.
+
+When the `invoke` or `fork` methods are called on a task from outside its computational portion, the common pool is automatically used to perform the operation.
+
+`ForkJoinPool` uses a work-stealing queue to manage execution of its threads. Each thread maintains a queue of tasks, and if a thread's queue is empty, it steals a task from another thread's queue.
+
+`ForkJoinPool` uses daemon threads, which automatically terminate when all user threads are terminated, so there is no need to explicitly shut down the pool, though it can be done explicitly with the `shutdown` method.
+
+The `cancel` method on `ForkJoinTask` can be used to cancel a running task, and returns whether or not the task was successfully canceled.
+
+The `reinitialize` method on `ForkJoinTask` reinitializes the state of the task so taht it can be re-run.
+
+A `Runnable` or `Callable` can be converted into a `ForkJoinTask` by calling the `adapt` method on `ForkJoinTask`.
+
+`ForkJoinTask` objects should generally not use synchronized methods, blocks, or other primitives, though `Phaser` is compatible. It's also preferable to avoid blocking or I/O in general.
+

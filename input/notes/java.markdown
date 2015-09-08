@@ -2161,7 +2161,7 @@ There's also a `split` method that takes an input stream and splits it into a re
 
 There's also a convenience static method `matches` on `Pattern` that takes a a string pattern and an input string to attempt to match on, and returns whether there was a match. There's also a `matches` method on `String` which takes a string pattern.
 
-## javadoc
+# javadoc
 
 Documentation comments are possible using the `/** */` delimiters, which are processed by the `javadoc` program to produce documentation.
 

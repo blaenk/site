@@ -1630,3 +1630,221 @@ The `ObjectInputStream` class extends `InputStream` and implements `ObjectInput`
 
 The general process of serialization is to create a backing stream such as a `FileOutputStream` and wrap it in an `ObjectOutputStream`, then invoking `writeObject` on it to serialize a particular object. Deserialization is achieved by doing the reverse: creating a `FileInputStream`, wrapping it in an `ObjectInputStream`, and invoking `readObject`.
 
+# NIO
+
+NIO (new I/O) is built on buffers and channels. Buffers hold data while channels represent open connections to an I/O device such as a file. Channels read to and from buffers.
+
+## Buffers
+
+NIO buffers are subclasses of the `Buffer` class which represents buffers with a current position, limit, and capacity. The limit is the index past the last valid location of data in the buffer. Subclasses of `Buffer` include `ByteBuffer` and buffers specialized for primitive data, as well as `MappedByteBuffer` which extends `ByteBuffer` and maps a file to a buffer [^mmap_file].
+
+[^mmap_file]: Is this like [`mmap`](http://man7.org/linux/man-pages/man2/mmap.2.html)?
+
+Buffers provide `put` and `get` methods for reading and writing to a buffer. The `allocate` method can be used to allocate a buffer manually, or an existing array can be used to back a Buffer using the `wrap` method. A sequence of a buffer can be created with `slice`.
+
+There is a `mark` method and as well as a `reset` method that resets the position to the last set `mark`.
+
+A `rewind` method sets the position to the beginning of the buffer, which is necessary when writing to a buffer and then wanting to read from it from the beginning.
+
+Alternatively, the `flip` method sets the position to the beginning of the buffer and sets the limit to the previous position, which is convenient for writing to the buffer, flipping, then reading from it so that only the written portion is read.
+
+## Channels
+
+NIO channels represent an open connection to an I/O device. All channels implement the `Channel` interface. A channel can be obtained from an object that supports channels by calling `getChannel` on it. The actual type of channel returned differs based on the source object. This is supported by:
+
+* `DatagramSocket`
+* `FileInputStream`
+* `FileOutputStream`
+* `RandomAccessFile`
+* `ServerSocket`
+* `Socket`
+
+Alternatively, they can be created manually by calling static methods on the source objects, such as `Files.newByteChannel`, and providing it the `Path` to the file.
+
+## Charsets
+
+A _charset_ defines how bytes are mapped to characters. A sequence of characters are encoded into bytes using an _encoder_. A sequence of bytes is decoded into characters using a _decoder_. Charsets, encoders, and decoders are available in the `java.nio.charset` package.
+
+## Selectors
+
+A _selector_ provides key-based, non-blocking, multiplexed I/O. Selectors are used for performing I/O through multiple channels. Selectors are available in `java.nio.channels`.
+
+## Path
+
+The `Path` interface encapsulates a path to a file and it implements `Watchable`, `Iterable<Path>`, and `Comparable<Path>`. The `Watchable` interface represents an object that can be monitored for changes.
+
+The `getName` method can access a specific component of a path given an index. The number of components in the path can be obtained using `getNameCount`. A `String` representation of the path can be obtained with `toString`.
+
+The `Paths` class provides methods for retrieving a concrete class that implements the `Path` interface. The `get` method that takes a `String` path to a file, optionally followed by individual variable-argument list components. Another overload of `get` accepts a URI.
+
+### File System Traversal
+
+NIO provides better facilities for performing information about a file and its path. It's possible to read a directory's contents using a directory stream which can be obtained with `newDirectoryStream` on `Files` with the `Path` to the directory. This returns a `DirectoryStream<Path>` which implements `Iterable<Path>`, allowing a regular for-each loop to iterate over the directory contents, however, the iterator can only be obtained once over the lifetime of the directory stream.
+
+``` java
+DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get("/home"));
+
+for (Path entry : stream) {
+  System.out.printf("> %s\n", entry);
+}
+```
+
+An overload of `newDirectoryStream` takes a `String` parameter representing a wildcard pattern with which to filter entries. Another overload takes a `DirectoryStream.Filter` instead of a wildcard, which has an `accept` method which specifies whether the file is accepted based on the `Path`, allowing filtering based on the file's attributes, for example.
+
+The `walkFileTree` static method on `Paths` enables the recursive enumeration of a directory's contents. It takes a `Path` to the root to begin enumerating at and a `FileVisitor` object.
+
+The `FileVisitor` interface represents how files are visited in a directory tree. It provides a series of pre and post-visiting hooks for directories, a visit hook for files, and finally a `visitFileFailed` hook. For the file and directory visiting hooks, a `Path` of the file or directory is passed as well as the file attributes. The `visitFileFailed` method is passed the `Path` to the file that failed to be visited as well as the `IOException` that was thrown.
+
+Each of the `FileVisitor` methods returns a `FileVisitResult` enumeration which can be any of the following values. Note that `SKIP_SIBLINGS` and `SKIP_SUBTREE` must only be returned from `preVisitDirectory` and have the effect of preventing the call to `postVisitDirectory`.
+
+| Value | Meaning |
+|:------|:--------|
+| `CONTINUE` | continue visiting |
+| `SKIP_SIBLINGS` | skip directory and siblings |
+| `SKIP_SUBTREE` | skip directory and children |
+| `TERMINATE` | stop visiting |
+
+It's much more common and convenient to extend the `SimpleFileVisitor` class which implements `FileVisitor` so that only select behavior needs to be overridden.
+
+``` java
+class TestVisitor extends SimpleFileVisitor<Path> {
+  public FileVisitResult visitFile(Path path, BasicFileAttributes attrs)
+    throws IOException {
+    System.out.println(path);
+    return FileVisitResult.CONTINUE;
+  }
+}
+
+Files.walkFileTree(Paths.get("/home"), new TestVisitor());
+```
+
+## Files
+
+The `Files` class provides a variety of static methods for performing actions on a file specified as a `Path`. JDK 8 adds methods `list`, `walk`, `lines`, and `find` which each return a `Stream` object.
+
+The `delete` method on `Files` for example takes a `Path` to a file to be deleted. There are also many other utility methods such as `copy`.
+
+## OpenOption
+
+The `OpenOption` interface is used for specifying how a file should be opened [^rust_openoptions] and is implemented by the `StandardOpenOption` class which defines an enumeration containing for example `CREATE_NEW` for creating a file only if it doesn't already exist.
+
+[^rust_openoptions]: Probably the inspiration for Rust's [`OpenOptions`](http://doc.rust-lang.org/std/fs/struct.OpenOptions.html).
+
+## File Attributes
+
+Attributes such as wetter a file is a directory, a file's size, and so on are represented by a variety of interfaces in `java.nio.file.attribute` with the top interface being `BasicFileAttributes` which encapsulates common file attributes via methods such as `creationTime`, `isDirectory`, `lastModifiedTime`, and so on.
+
+Platform specific file attributes are represented by interfaces that derive from `BasicFileAttributes` such as `DosFileAttributes` for FAT file systems, such as `isSystem`, and `PosixFileAttributes` for POSIX file attributes, such as `permissions`.
+
+File attributes for a particular file can be obtained using the `readAttributes` static method on `Files` which takes a `Path`, a `Class` representing the attribute type e.g. `BasicFileAttributes.class`, and optional `LinkOption` which specify whether to follow symbolic links.
+
+Another way to obtain file attributes is by calling the `getFileAttributeView` static method on `Files`.
+
+However, there are already some dedicated static methods on `Files` for accessing specific file attributes, such as `isWritable` and `exists`.
+
+## Channel-based I/O
+
+### Reading from a Channel
+
+Reading a file using a channel can be done in various ways. One way is to obtain a channel via `Files.newByteChannel` which returns a `SeekableByteChannel` object such as `FileChannel`. Then a buffer must be created for use by the channel either by wrapping an existing array or allocating one with `ByteBuffer.allocate`, passing it the size of the buffer.
+
+Once there is a channel to the file and a buffer for use by the channel, the `read` method can be called on the channel with a reference to the buffer, which returns the number of bytes actually read or -1 on EOF.
+
+``` java
+Path file = Paths.get("file.txt");
+SeekableByteChannel channel = Files.newByteChannel(file);
+ByteBuffer buffer = ByteBuffer.allocate(128);
+
+int count = channel.read(buffer);
+
+if (count != -1) {
+  // reset position of buffer for reading
+  buffer.rewind();
+
+  System.out.print((char)buffer.get());
+}
+```
+
+### Reading from a Memory Map
+
+Another way to read a file is to map it to a buffer directly, so that the entire contents of the file are in the buffer. This is done by calling `map` on the channel. The `map` method takes a map mode argument which can be `MapMode.READ_ONLY`, `mapmode.READ_WRITE`, and `mapmode.PRIVATE`, where `PRIVATE` causes a copy of the file to be made so that changes don't affect the backing file. The second and third parameters are the offset into the file to begin mapping and the length to map.
+
+``` java
+Path file = Paths.get("file.txt");
+SeekableByteChannel channel = Files.newByteChannel(file);
+
+// file size
+int size = channel.size();
+
+MappedByteBuffer fileMap = channel.map(FileChannel.MapMode.READ_ONLY, 0, size);
+
+// print first byte
+System.out.println((char)fileMap.get())
+```
+
+### Writing to a Channel
+
+There are also many ways to write to a file using channels. The first way is the reverse of reading from a channel. Data is written to a buffer and then the buffer is passed to the channel's `write` method.
+
+One difference is that an `OpenOption` must be provided to the `newByteChannel` method, specifically `StandardOpenOption.WRITE` as well as `StandardOpenOption.CREATE` in order to create the file if it didn't already exist.
+
+As before, the buffer should be `rewind` after writing to it so that the position is at the beginning when writing it to the channel. Alternatively, the `flip` method could also be called in this case.
+
+Also note that the writing data to the file in this way overwrites existing data, and doesn't outright replace the entire file, since the `StandardOpenOption.TRUNCATE_EXISTING` option is not being used.
+
+``` java
+Path file = Paths.get("file.txt");
+SeekableByteChannel channel =
+    Files.newByteChannel(file,
+                         StandardOpenOption.WRITE,
+                         StandardOpenOption.CREATE);
+
+ByteBuffer buffer = ByteBuffer.allocate(128);
+
+// write a 'C' to the buffer
+buffer.put((byte)'C');
+
+// reset position of buffer for writing
+buffer.rewind();
+
+channel.write(buffer);
+```
+
+### Writing to a Memory Map
+
+It's also possible to memory map a file for writing purposes in the same way as was [previously covered](#reading-from-a-memory-map), except that the `MapMode.READ_WRITE` option needs to be used.
+
+``` java
+Path file = Paths.get("file.txt");
+SeekableByteChannel channel =
+    Files.newByteChannel(file,
+                         StandardOpenOption.READ,
+                         StandardOpenOption.WRITE,
+                         StandardOpenOption.CREATE);
+
+String contents = "this is a test";
+byte[] data = contents.getBytes();
+
+MappedByteBuffer fileMap = channel.map(FileChannel.MapMode.READ_WRITE, 0, data.length);
+
+fileMap.put(data);
+```
+
+## Stream-based I/O
+
+`Files` provides static methods `newInputStream` and `newOutputStream` for obtaining streams connected to a file specified by a `Path`. Since it's a regular stream, it can be wrapped in other streams such as the `BufferedInputStream`.
+
+``` java
+// writing
+OutputStream stream = Files.newOutputStream(Paths.get("file.txt"));
+
+stream.write((byte)'C');
+
+// reading
+InputStream stream = Files.newInputStream(Paths.get("file.txt"));
+int b;
+
+b = stream.read();
+if (b != -1) System.out.print((char)b)
+```
+

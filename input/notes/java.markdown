@@ -167,6 +167,17 @@ static {
 }
 ```
 
+It's also possible to create initializer blocks. Code in initializer blocks is automatically copied into the beginning of every constructor, which makes this a good way for sharing code between constructors.
+
+Initializer blocks paired with anonymous classes allows succinct creation of `HashMap`s. The first level of braces is the anonymous class and the second is the initializer block, which is one way to circumvent the restriction that anonymous classes may not define constructors:
+
+```java
+Map map = new HashMap() {{
+  put("a", "1");
+  put("one", "two");
+}};
+```
+
 Fields can be `final`, which makes them immutable. Final fields can be initialized via a value given at declaration or within a constructor.
 
 Fields can be `transient`, which means that they should not be persisted when the object is stored.
@@ -185,38 +196,23 @@ printArgs(1, 2, 3);
 
 The `instanceof` operator can test to see if an instance is of a given type or _can be_ cast into a given type, yielding a boolean value.
 
-the `native` keyword can be used to mark a method as native via the Java Native Interface (JNI), in which case a method shoudldn't be provided. The library that contains the definition of the function should be linked using the `System.loadLibrary` method, particularly within a `static` block to ensure that this only occurs once.
+## Anonymous Classes
 
-*[JNI]: Java Native Interface
+It's possible to instantiate an _anonymous class_ that defines an instantiates an object that extends a given class or implements a given interface.
 
-``` java
-class Test {
-  public native void test();
-
-  static {
-    System.loadLibrary("NativeDemo");
+```java
+public static SomeInterface method() {
+  return new SomeInterface() {
+    public theMethod() {
+      System.out.println("test");
+    }
   }
 }
 ```
 
-The code should be compiled normally, then the `javah` program should be run on the result to produce a header file that must be included in the implementation of the native method.
+Anonymous classes can capture variables, specifically the members of an enclosing class and `final` or effectively final local variables in the enclosing scope. Declarations in the anonymous class shadow those in the enclosing scope.
 
-``` bash
-# produces Test.h
-$ javah -jni Test
-```
-
-This generated header specifies the expected prototype of the native method which should be used for its implementation.
-
-``` c
-#include <jni.h>
-#include "Test.h"
-#include <stdio.h>
-
-JNIEXPORT void JNICALL Java_Test_test(JNIEnv *env, jobject obj) {
-  printf("successfully called\n");
-}
-```
+Anonymous classes can't define constructors.
 
 # Inheritance
 
@@ -2219,5 +2215,40 @@ public class Thing {
   public double method(double num) throws IOException {
     return num;
   }
+}
+```
+
+# Native Interface
+
+The `native` keyword can be used to mark a method as native via the Java Native Interface (JNI), in which case a method shoudldn't be provided. The library that contains the definition of the function should be linked using the `System.loadLibrary` method, particularly within a `static` block to ensure that this only occurs once.
+
+*[JNI]: Java Native Interface
+
+``` java
+class Test {
+  public native void test();
+
+  static {
+    System.loadLibrary("NativeDemo");
+  }
+}
+```
+
+The code should be compiled normally, then the `javah` program should be run on the result to produce a header file that must be included in the implementation of the native method.
+
+``` bash
+# produces Test.h
+$ javah -jni Test
+```
+
+This generated header specifies the expected prototype of the native method which should be used for its implementation.
+
+``` c
+#include <jni.h>
+#include "Test.h"
+#include <stdio.h>
+
+JNIEXPORT void JNICALL Java_Test_test(JNIEnv *env, jobject obj) {
+  printf("successfully called\n");
 }
 ```

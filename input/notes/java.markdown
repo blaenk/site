@@ -2128,7 +2128,7 @@ Parallel streams can leverage an overload of `reduce` that accepts a combiner `B
 
 In the example below, partial results would be the weights, in which case they are combined by simply adding them. However, if no separate combining function was provided, the accumulator function would be used, which would in effect add one weight to a weight of another weight.
 
-```java
+``` java
 int weightsSum =
   numbers.stream()
          .reduce(0, (sum, b) -> sum + b.getWeight(), Integer::sum);
@@ -2139,3 +2139,24 @@ A parallel stream can be switched back to a sequential stream with the `sequenti
 It's possible to optimize a parallel stream by allowing it to be unordered by using the `unordered` method to yield an unordered stream, instead of forcing it to preserve the original order.
 
 The `forEach` method may not preserve order on a parallel stream even if the stream is not unordered, for that there is `forEachOrdered`.
+
+# Regular Expressions
+
+A `Pattern` is constructed using the `compile` static method. The `Pattern` can then be used to match against a sequence by obtaining a `Matcher` built from the `Pattern` via the `matcher` method on `Pattern` which takes a `CharSequence` of the string to match on.
+
+The `matches` method on `Matcher` returns a boolean indicating whether the input matches the pattern, whereas `find` checks if any subsequence of the input matches the pattern.
+
+A string containing the last matching sequence can be obtained using `group`, and the index within the input of the beginning and end of the match can be obtained using `start` and `end`. This means that `find` can be used to find the next match, then calling these methods will yield the information about them.
+
+The `replaceAll` method takes a `String` to replace all matches with in the input string, then returns the replaced string.
+
+``` java
+Pattern pattern = Pattern.compile("java");
+Matcher matcher = pattern.matcher("cpp java go");
+
+true == matcher.find();
+```
+
+There's also a `split` method that takes an input stream and splits it into a return `String[]`.
+
+There's also a convenience static method `matches` on `Pattern` that takes a a string pattern and an input string to attempt to match on, and returns whether there was a match. There's also a `matches` method on `String` which takes a string pattern.

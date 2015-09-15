@@ -36,7 +36,22 @@ $ javac -profile compact1 Program
 
 # Primitives
 
-Java doesn't support unsigned integers. The `double` floating-point type is more commonly used than `float` because all of the standard library's math functions use doubles. The `char` can hold unsigned 16-bit values and uses UTF-16.
+The `double` floating-point type is more commonly used than `float` because all of the standard library's math functions use doubles. The `char` can hold unsigned 16-bit values and uses UTF-16.
+
+Java doesn't support unsigned integers. A `byte` is a signed 8-bit value. The compiler statically enforces that a `byte` is not given a value larger than +127, but this can be worked-around by casting an `int` to a `byte`.
+
+```java
+byte b = (byte)200;
+```
+
+A `byte` that is intended to be treated as unsigned may end up being interpreted by Java as a negative number, in which case the value can be upcast to a `int` with the `java.lang.Byte.toUnsignedInt` method, which casts the byte to an `int` and then only keeps the byte bits, turning off the sign bit if it was turned on.
+
+```java
+int i = java.lang.Byte.toUnsignedInt(b);
+
+// or
+int i = ((int) b) & 0xFF;
+```
 
 Underscores can be written within integer or floating-point literals to make them more readable.
 

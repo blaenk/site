@@ -164,6 +164,13 @@ mod renderer {
             &mut self.html
         }
 
+        fn footnote_definition(&mut self, output: &mut Buffer, content: &Buffer, num: u32) {
+            output.write(format!("\n<li id=\"fn{}\">\n", num).as_bytes()).unwrap();
+            let end = content.len() - 5;
+            output.write(&content[.. end as usize]).unwrap();
+            output.write(format!("&nbsp;<a href=\"#fnref{}\" title=\"continue reading\" rev=\"footnote\"><i class=\"fa fa-level-up\"></i></a></p></li>\n", num).as_bytes()).unwrap();
+        }
+
         fn math(&mut self, output: &mut Buffer, text: &Buffer, displaymode: i32) -> bool {
             if displaymode != 0 {
                 output.write(b"<script type=\"math/tex; mode=display\">").unwrap();

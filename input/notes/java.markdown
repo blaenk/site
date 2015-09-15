@@ -113,6 +113,14 @@ The `Double` and `Float` methods `isInfinite` and `isNaN` can be used to test if
 
 The `Char` methods `forDigit` and `digit` can convert a number to a character and vice versa, respectively.
 
+## Big Numbers
+
+The `BigInteger` and `BigDecimal` classes can represent arbitrarily large numbers. It can be constructed from a string representation of the number or using the `valueOf` static method.
+
+``` java
+BigInteger biggie = new BigInteger("234234234234");
+```
+
 ## Supplemental Characters
 
 Java `char`s can only hold 16 bits, which means that a single `char` is unable to represent supplemental characters, those characters which are larger than `0xFFFF` and thus would require 32 bits to represent. Java resolves this issue by using two `char`s to represent a supplemental character: a _high surrogate_ and a _low surrogate_.

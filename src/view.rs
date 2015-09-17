@@ -55,7 +55,7 @@ fn item_tags(item: &Item) -> Option<String> {
                     }
                 )
                 .collect::<Vec<String>>()
-                .connect(", ")))
+                .join(", ")))
 }
 
 #[inline]

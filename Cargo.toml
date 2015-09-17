@@ -23,37 +23,14 @@ zmq = "*"
 sha1 = "*"
 syncbox = "*"
 
-[dependencies.diecast]
-path = "../diecast"
-
-[dependencies.diecast-metadata]
-path = "../metadata"
-features = ["toml"]
-
-[dependencies.diecast-tags]
-path = "../tags"
-
-[dependencies.diecast-date]
-path = "../date"
-
-[dependencies.diecast-live]
-path = "../live"
-
-[dependencies.diecast-versions]
-path = "../versions"
-
-[dependencies.diecast-websocket]
-path = "../websocket"
-
-[dependencies.diecast-git]
-path = "../git"
-
-[dependencies.diecast-feed]
-path = "../feed"
-features = ["rss"]
-
-[dependencies.diecast-scss]
-path = "../scss"
-
-[dependencies.diecast-handlebars]
-path = "../handlebars"
+diecast = { path = "../diecast" }
+diecast-tags = { path = "../tags" }
+diecast-date = { path = "../date" }
+diecast-live = { path = "../live" }
+diecast-versions = { path = "../versions" }
+diecast-websocket = { path = "../websocket" }
+diecast-git = { path = "../git" }
+diecast-scss = { path = "../scss" }
+diecast-handlebars = { path = "../handlebars" }
+diecast-metadata = { path = "../metadata", features = ["toml"] }
+diecast-feed = { path = "../feed", features = ["rss"] }

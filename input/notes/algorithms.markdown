@@ -9,6 +9,14 @@ What follows are some notes on algorithms I've been reviewing from [Algorithms](
 
 <toc/>
 
+# Analysis
+
+Oftentimes it's useful to use approximations instead of exact values.
+
+Stirling's approximation:
+
+$$ \ln N! \approx N \ln N - N + \ln \sqrt {2 \pi N} $$
+
 # Sorting
 
 Many problems can be reduced to sorting.
@@ -165,7 +173,7 @@ public void sort(Comparable[] seq) {
 private void sort(Comparable[] seq, int lo, int hi) {
   if (hi <= lo) return;
 
-  int mid = lo + (hi - lo)/2;
+  int mid = lo + (hi - lo) / 2;
 
   sort(seq, lo, mid);
   sort(seq, mid + 1, hi);
@@ -238,16 +246,16 @@ The partition algorithm is similar to merge in merge sort in that it is what act
 3. repeat step 2 until the iterators $i$ and $j$ cross
 4. swap the partition element $v$ with the final position of the right-side iterator $j$
 
-The sorting algorithm then recurses on the two partitions.
+The sorting algorithm then recurses on the two partitions. Note that `i` is set to `lo` and not `lo + 1` to ensure that the pivot at `lo` is skipped, since the first operation is `++i`. However, `j` is set to `hi + 1` to ensure that `hi` is _not_ skipped, since it's not the pivot.
 
 ``` java
 private int partition(Comparable[] seq, int lo, int hi) {
+  Comparable v = seq[lo];
   int i = lo, j = hi + 1;
-  Comparable v = a[lo];
 
   while (true) {
-    while (seq[++i] < v       ) if (i == hi) break;
-    while (v        < seq[--j]) if (j == lo) break;
+    while (seq[++i] < v) if (i == hi) break;
+    while (v < seq[--j]) if (j == lo) break;
 
     if (i >= j) break;
 
@@ -287,7 +295,7 @@ private int partition(Comparable[] seq, int lo, int hi) {
 |Worst  |$O(n\lg{n})$|
 |Space  |$O(\lg{n})$|
 
-One problem with quick sort as it is implemented above is that items with keys equal to that of the partition item are nonetheless swapped, unnecessarily. Three-way partitioning aims to resolve this by partitioning into three separate sub-arrays, the middle of which corresponds to those items with keys equal to the partition point. E. W. Dijkstra popularized this as the _Dutch National Flag_ problem.
+One problem with quick sort as it is implemented above is that items with keys equal to that of the partition item are swapped anyways, unnecessarily. Three-way partitioning aims to resolve this by partitioning into three separate sub-arrays, the middle of which corresponds to those items with keys equal to the partition point. E. W. Dijkstra popularized this as the _Dutch National Flag_ problem.
 
 **Performance Factors**: distribution of the keys
 
@@ -331,11 +339,13 @@ The data structure commonly used to back a priority queue is an array, with the 
 1. the parent of $k$ is $k / 2$
 2. the children of $k$ are at $2k$ and $2k + 1$
 
-### Priority Queue Insertion
+### Heap Insertion
 
 |Case    |Growth|
 |:-----  |:--------|
 |Worst   |$O(\lg{n})$|
+
+Swimming in a heap is when a node is checked to ensure the invariant that every node is smaller than its parent. If a node's value becomes larger than its parent, the node is swapped with its parent and the process is repeated at the new parent until the tree root is reached. This can be characterized as a new, larger node having to swim up the tree to its proper place.
 
 To insert into the heap:
 
@@ -345,18 +355,25 @@ To insert into the heap:
 
 ``` java
 private void swim(Comparable[] seq, int k) {
+  // go up tree as long as the parent k / 2 is
+  // smaller than the child
   while (k > 1 && seq[k / 2] < seq[k]) {
+    // swap parent and child
     swap(seq[k / 2], seq[k]);
+
+    // position is now that of previous parent
     k = k / 2;
   }
 }
 ```
 
-### Priority Queue Removal
+### Heap Removal
 
 |Case   |Growth|
 |:----- |:--------|
 |Worst  |$O(\lg{n})$|
+
+From a different perspective, if a node's key becomes smaller than one or both of its children, the heap-order invariant will also be violated, because it conversely means that one or more of its children are larger than the parent. In this case, the node is simply swapped with the larger of its two children, a process known as sinking. This process is repeated for the new child all the way down the tree until the invariant holds.
 
 To remove the maximum from the heap:
 
@@ -368,12 +385,19 @@ To remove the maximum from the heap:
 ``` java
 private void sink(Comparable[] seq, int k) {
   while (2 * k <= N) {
+    // identify child of k
     int j = 2 * k;
 
+    // choose right child if left child is smaller than right
     if (j < N && seq[j] < seq[j + 1]) j++;
-    if (k >= j) break;
 
+    // if the invariant holds, break
+    if (seq[k] >= seq[j]) break;
+
+    // otherwise swap with the larger child
     swap(seq[k], seq[j]);
+
+    // position is now that of previously-larger child's
     k = j
   }
 }
@@ -392,14 +416,16 @@ Heap sort is a sorting algorithm facilitated by a priority queue which performs 
 
 However, there are certain details involved to make it operate faster. Usually these operations are performed in place to avoid using extra space.
 
-First, the sequence has to be put into heap order, which is accomplished by walking up the tree (bottom-up) and sinking every root node with more than one child. The starting point for this is always $N / 2$.
+First, the sequence has to be put into heap order, which is accomplished by walking up the tree (bottom-up) and sinking every root node with more than one child. The starting point for this is always $N / 2$, which is the last node with two children. It's important to note that "sinking a node" doesn't mean that the node will definitively be swapped.
 
 Assuming a maximum-oriented priority queue, the sorting is then accomplished by:
 
-1. remove the maximum, thus decrementing the heap size
-2. swap the maximum with the last item in the heap
-3. sink the new root
+1. swap the maximum with the last item in the heap
+2. decrease logical heap size
+3. sink the new root to ensure or repair heap order
 4. repeat 1-3 until the priority queue becomes empty
+
+Note that the notion of a logical heap size is important, as the sorted sequence is increasingly added to the end of the same array that backs the heap, so it's necessary to make a distinction between the two regions of the array, to prevent the heap sink or swim operations from corrupting the sorted region. This is accomplished in this code by using a hypothetical `sink` method that takes an upper bound parameter, which corresponds to the end of the heap region, i.e. the logical heap size.
 
 ``` java
 public void sort(Comparable[] seq) {
@@ -464,6 +490,65 @@ There are three main forms of traversing a BST. The _order_ refers to the order 
 |pre-order   |$C \to L \to R$|
 |in-order    |$L \to C \to R$|
 |post-order  |$L \to R \to C$|
+
+#### Morris Traversal
+
+It's possible to perform an in-order traversal of a BST without using a stack or recursion by performing a Morris traversal. In essence, this traversal transforms the tree during the traversal so that the entire right branch of the BST forms the in-order traversal. The BST is returned to its original structure as the traversal takes place.
+
+<img src="/images/notes/algorithms/morris-traversal.png" class="center" width="75%">
+
+1. if left is `null`
+
+  1. visit `current`
+  2. go right
+
+2. else:
+
+    1. set `temp` to `current`'s left
+    2. go right of `temp` until its right is `null` or `current`
+
+        This finds the maximum of `current`'s left, i.e. the in-order predecessor of `current`, or it finds the node whose right is `current`.
+
+    3. if `temp`'s right is `null`:
+
+        This is the in-order predecessor of `current`. Transform the tree so that `temp` leads to `current` and is therefore in-order.
+
+        1. set `temp`'s right to `current`
+        2. go left of `current`
+
+          This "rewinds" back to the last known minimum.
+
+    4. if `temp`'s right is `current`
+
+        This is a node that was previously transformed to be in-order by making its right be `current`. Repair transformation.
+
+        1. visit `current`
+        2. unset `temp`'s right (previously `current`)
+        3. go right of `current`
+
+``` java
+while (current != null) {
+    if (current.left == null) {
+        visit(current);
+        current = current.right;
+    } else {
+        temp = current.left;
+
+        while (temp.right != null && temp.right != current) {
+            temp = temp.right;
+        }
+
+        if (temp.right == null) {
+            temp.right = current;
+            current = current.left;
+        } else {
+            temp.right = null;
+            visit(current);
+            current = current.right;
+        }
+    }
+}
+```
 
 ### BST Deletion
 
@@ -838,22 +923,6 @@ void delete_case4(node *n) {
   }
 }
 ```
-
-## Interval Trees
-
-Interval trees are useful for efficiently finding all intervals that overlap with any given interval or point.
-
-To construct the tree, the median of the entire range of all of the set of ranges is found. Those ranges in the set that are intersected by the median are stored in the current node. Ranges that fall completely to the left of the median are stored in the left child node, and vice versa with the right node.
-
-At any given node representing the set of ranges intersected by the median at that node, two sorted lists are maintained: one containing all beginning points and the other containing all end points.
-
-### Intersection Queries
-
-The general operation for queries is to test the set of ranges in a node and then test those in the appropriate child node if the query isn't equal to the median.
-
-Given a _point_ query, the current node is compared with the median. If it's equal, then every range in that node matches and the search is complete. If the query is less than the median, then the list of beginning points is searched for those beginning points that start before the query point, all of which are matches. Then the search continues into the left child.
-
-Given an _interval query_, the set of beginning and end points are searched to see if they fall within the query interval. These ranges are matches, and they have potential for duplicates if the matched interval begins and ends within the query interval. Finally, to match for ranges which possibly contain the query interval, a point is chosen in the query interval, perhaps the begin or end point, and that point is used as a point query as in the aforementioned point query algorithm.
 
 ## Hash Tables
 
@@ -2689,6 +2758,157 @@ The _shortest-augmenting-path_ method finds the maxflow by finding an augmenting
 * **travelling salesman problem**: find the shortest possible path cycle that visits every vertex in a graph
 * **graph coloring**: color every vertex--edge in a graph such that no two adjacent vertices--edges have the same color
 * **knapsack**: given a set of items with different values and a container of a maximum capacity, find the combination of items that fits in the container and has the largest total value.
+
+# Bitwise Operations
+
+A very important property of XOR is that it a number XORed with itself is 0.
+
+$$ N \oplus N = 0 $$
+
+For example, given a list of numbers where each number appears exactly twice _except_ for one number, the number that appears only once can be obtained by XORing each element with the next one, since duplicate elements would cancel themselves out.
+
+More generally, bytes can be treated as a set, where bitwise operations correspond to set operations.
+
+A set can be tested for the presence of a value by using the AND operator. More generally, this can be seen as a set intersection operation, in which the operands may, after all, be singleton sets.
+
+$$ S_a \mathrel{\&} S_b $$
+
+A value can be _unconditionally_ added to set $S$ using the OR operator:
+
+$$ S \mathrel{|} N $$
+
+A value can be _unconditionally_ removed from set $S$ using the AND operator with the complement of the value to be removed:
+
+$$ S \mathrel{\&} \mathord{\sim} N $$
+
+A value can be _conditionally_ added or removed from the set $S$ using the XOR operator. The value will be removed if it is already contained and added if it isn't.
+
+$$ S \oplus N $$
+
+For example, given an array of numbers, each of which appears exactly three times _except_ for one number, the number that appears only once can be obtained using a combination of the above operations.
+
+There will be two sets. The `ones` set will contain those numbers that have been observed to appear once so far. The `twos` set will contain those numbers that have been observed to appear twice so far. It's not necessary to track those numbers that appear three times, as that is implicit.
+
+For each number in the array, it will be added to the `ones` set if it has been seen exactly once. If a number is already in the `ones` set and is seen again, it's removed from the `ones` set and added to the `twos` set. If a number is already in the `twos` set and is seen again, it's removed from the `twos` set. Ultimately this will leave the `ones` set as a singleton set containing the number that appears only once.
+
+First, the number being considered is checked to see if it has already been seen once so far:
+
+``` java
+ones & num
+```
+
+This would mean that this is the second time that this number has been seen. If the number is indeed in the `ones` set, the above expression evaluates to the number itself by nature of the AND operation, otherwise it evaluates to 0.
+
+The result of the above expression can directly be used to add the number to the `twos` set using the OR operation, which adds the number to the set, or does nothing if the number is 0.
+
+``` java
+twos |= ones & num
+```
+
+The number is then _conditionally_ added to or removed from the `ones` set using the XOR operation. If the `ones` set already contained the number, then the previous operation will have added the number to the `twos` set, in which case it's no longer needed inside the `ones` set, since the `ones` set only contains those numbers that have appeared _exactly_ once. If the `ones` set didn't already contain the number, then the above presence check results in 0 which does nothing when added to the `twos` set.
+
+Therefore, we can add the number to the `ones` set if it wasn't already contained, or remove it if it was contained.
+
+``` java
+ones ^= num
+```
+
+However, if this has been the _third_ time that this number has been seen, then the number will have been in the `twos` set already but _not_ in the `ones` set. The above expression would therefore _also_ add it to the `ones` set. Therefore we can be sure that if the number was present in both the `ones` and `twos` sets after the above operation, then this is the _third_ time that this number has been observed.
+
+In this case, the number should be removed from both sets. This would ensure that the `ones` set really does only contain those numbers that have appeared _exactly_ once, which is what we're interested in.
+
+However, the `ones` set and the `twos` set may contain various numbers. We know that the one that appears in both is the one that has appeared three times, and hence the one we want to remove, so we can obtain this number by intersecting both sets.
+
+``` java
+int threes = twos & ones;
+```
+
+We then want to remove this number from both sets:
+
+``` java
+twos &= ~threes;
+ones &= ~threes;
+```
+
+Here is the full algorithm.
+
+``` java
+public int singleNumber(int[] nums) {
+  int ones, twos;
+  ones = twos = 0;
+
+  for (int num : nums) {
+    twos |= ones & num;
+    ones ^= num;
+
+    int threes = twos & ones;
+    twos &= ~threes;
+    ones &= ~threes;
+  }
+
+  return ones;
+}
+```
+
+# Geometric Algorithms
+
+## Augmented BST as Interval Tree
+
+An interval search tree stores ranges and provides operations for searching for overlaps of a given range within the tree. A binary search tree can be augmented into an interval search tree. The lower bound of a range is used as the node key. Each node also stores the maximum upper bound of its children, similar to the rank.
+
+For searching, the input interval is checked to see if it overlaps with the current node. If not, and the left node is null, search proceeds on the right child. If the left node's max upper bound is less than the input interval's lower bound, search proceeds on the right node. Otherwise search proceeds on the left node.
+
+1. if input interval $[l, r]$ overlaps current node, return
+2. if left node is `null` or left's max upper < $l$: go right  
+    else: go left
+
+```java
+Node current = root;
+
+while (current != null) {
+  if (current.interval.overlaps(lo, hi)) return current.interval;
+  else if (current.left == null)         current = current.right;
+  else if (current.left.max < lo)        current = current.right;
+  else                                   current = current.left;
+}
+
+return null;
+```
+
+## Interval Trees
+
+Interval trees are useful for efficiently finding all intervals that overlap with any given interval or point.
+
+To construct the tree, the median of the entire range of all of the set of ranges is found. Those ranges in the set that are intersected by the median are stored in the current node. Ranges that fall completely to the left of the median are stored in the left child node, and vice versa with the right node.
+
+At any given node representing the set of ranges intersected by the median at that node, two sorted lists are maintained: one containing all beginning points and the other containing all end points.
+
+## Intersection Queries
+
+The general operation for queries is to test the set of ranges in a node and then test those in the appropriate child node if the query isn't equal to the median.
+
+Given a _point_ query, the current node is compared with the median. If it's equal, then every range in that node matches and the search is complete. If the query is less than the median, then the list of beginning points is searched for those beginning points that start before the query point, all of which are matches. Then the search continues into the left child.
+
+Given an _interval query_, the set of beginning and end points are searched to see if they fall within the query interval. These ranges are matches, and they have potential for duplicates if the matched interval begins and ends within the query interval. Finally, to match for ranges which possibly contain the query interval, a point is chosen in the query interval, perhaps the begin or end point, and that point is used as a point query as in the aforementioned point query algorithm.
+
+## One-Dimensional Range Count
+
+This can be modeled as a BST where each node maintains a _rank_: the count of children that are strictly less than the node. It's possible to determine how many keys fall within a given range by subtracting the rank of the node containing the lower bound from the rank of the node containing the higher bound, adding one if the current node is the higher bound.
+
+``` java
+public int size(Key lo, Key hi) {
+  if (contains(hi)) return rank(hi) - rank(lo) + 1;
+  else              return rank(hi) - rank(lo);
+}
+```
+
+## Line Segment Intersection
+
+Given a collection of line segments, it's possible to determine which pairs of line segments intersect by using a _sweep-line_ algorithm. The coordinates could be sorted by x-coordinate or added to a priority queue. For each distinct x-coordinate encountered, its accompanying y-coordinate is added to a BST. If the same x-coordinate is encountered again, its accompanying y-coordinate is removed from the BST. If a vertical segment is encountered, a range search is performed on the BST to see if any y-coordinates fall within the vertical segment's y-coordinate endpoints.
+
+## Rectangle Intersection
+
+Checking for rectangle intersection is similar to line segment intersection. The left edge of a rectangle prompts the vertical range of the rectangle is checked for overlaps in an interval search tree, and added if none are detected. The rectangle's vertical range is removed from the interval search tree when the right edge of the rectangle is encountered.
 
 *[BFS]: Breadth-First Search
 *[BST]: Binary Search Trees

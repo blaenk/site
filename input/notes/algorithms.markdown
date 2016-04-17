@@ -645,7 +645,7 @@ The inserted node is attached in the same manner as for BSTs, except that every 
 
 There are three main scenarios that may arise from adding a node:
 
-1. first node added creates a **red** root, violating property **2** (root is **black**) 
+1. first node added creates a **red** root, violating property **2** (root is **black**)
 2. node is added as child of **black** node, operation completes successfully
 3. consecutive **red** nodes, violating properties **4** (both children of **red** nodes are **black**) and **5** (equal number of **black** nodes per path)
 
@@ -675,9 +675,9 @@ void insert_case2(node *n) {
 
 **Third**, it is possible that the inserted node creates two consecutive **red** nodes, violating property **3** (both children of **red** nodes are **black**). For this, there are three different scenarios:
 
-A.  parent and uncle are both red
-B.  direction in which new node and parent lean differ
-C.  new node and parent lean in the same direction
+1. parent and uncle are both red
+2. direction in which new node and parent lean differ
+3. new node and parent lean in the same direction
 
 **First**, if the parent and its uncle are **red**, flip their colors and make the grandparent **red** instead. This allows the newly added **red** node to satisfy all properties, since its parent is **black**. However, making the grandparent **red** may possibly violate properties **2** (root is **black**) and **4** (both children of **red** nodes are **black**), so recurse the enforcement algorithm on the grandparent starting from case 1:
 

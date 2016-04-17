@@ -26,7 +26,7 @@ extern crate time;
 extern crate typemap;
 extern crate chrono;
 extern crate rss;
-extern crate zmq;
+extern crate zmq_rs as zmq;
 extern crate sha1;
 extern crate syncbox;
 
@@ -184,7 +184,7 @@ fn main() {
 
     // initialize_pool!(4).unwrap();
 
-    let context = Arc::new(Mutex::new(zmq::Context::new()));
+    let context = Arc::new(Mutex::new(zmq::Context::new().unwrap()));
 
     // TODO
     // run/store this in websocket handler?

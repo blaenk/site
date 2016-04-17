@@ -19,7 +19,7 @@ hoedown = "*"
 regex = "*"
 chrono = "*"
 rss = "*"
-zmq = {git = "https://github.com/erickt/rust-zmq"}
+zmq-rs = "*"
 sha1 = "*"
 syncbox = "*"
 

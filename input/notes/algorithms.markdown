@@ -334,10 +334,10 @@ private void sort(Comparable[] seq, int lo, int hi) {
 
 A priority queue is an abstract data type that allows adding elements and retrieving the smallest or largest element. Priority queues are useful for an unbounded sequence for which we want to retrieve the $M$ smallest elements at any given moment.
 
-The data structure commonly used to back a priority queue is an array, with the first element `seq[0]` unused, embedding the contents of a **complete binary tree** in level-order that maintains two invariants:
+The data structure commonly used to back a priority queue is an array embedding the contents of a **complete binary tree** in level-order that maintains two invariants:
 
-1. the parent of $k$ is $k / 2$
-2. the children of $k$ are at $2k$ and $2k + 1$
+1. the parent of $k$ is $\left\lfloor (k - 1)/2 \right\rfloor$
+2. the children of $k$ are at $2k + 1$ and $2k + 2$
 
 ### Heap Insertion
 
@@ -354,15 +354,15 @@ To insert into the heap:
 3. swim up the heap to restore heap order
 
 ``` java
-private void swim(Comparable[] seq, int k) {
-  // go up tree as long as the parent k / 2 is
+private void swim(Comparable[] seq, int target) {
+  // go up tree as long as the parent `target / 2` is
   // smaller than the child
-  while (k > 1 && seq[k / 2] < seq[k]) {
+  while (target >= 1 && seq[(target - 1) / 2] < seq[target]) {
     // swap parent and child
-    swap(seq[k / 2], seq[k]);
+    swap(seq[(target - 1) / 2], seq[target]);
 
     // position is now that of previous parent
-    k = k / 2;
+    target = (target - 1) / 2;
   }
 }
 ```
@@ -382,23 +382,26 @@ To remove the maximum from the heap:
 3. decrement heap size
 4. sink down the heap to restore heap order
 
-``` java
-private void sink(Comparable[] seq, int k) {
-  while (2 * k <= N) {
-    // identify child of k
-    int j = 2 * k;
+``` cpp
+template <typename T>
+void Sink(std::vector<T> &vec, int target) {
+  using std::swap;
+
+  while ((2 * target) + 1 < N) {
+    // identify child of target
+    int child = (2 * target) + 1;
 
     // choose right child if left child is smaller than right
-    if (j < N && seq[j] < seq[j + 1]) j++;
+    if (child < (N - 1) && vec[child] < vec[child + 1]) child++;
 
     // if the invariant holds, break
-    if (seq[k] >= seq[j]) break;
+    if (vec[target] >= vec[child]) break;
 
     // otherwise swap with the larger child
-    swap(seq[k], seq[j]);
+    swap(vec[target], vec[child]);
 
     // position is now that of previously-larger child's
-    k = j
+    target = child
   }
 }
 ```
@@ -416,7 +419,7 @@ Heap sort is a sorting algorithm facilitated by a priority queue which performs 
 
 However, there are certain details involved to make it operate faster. Usually these operations are performed in place to avoid using extra space.
 
-First, the sequence has to be put into heap order, which is accomplished by walking up the tree (bottom-up) and sinking every root node with more than one child. The starting point for this is always $N / 2$, which is the last node with two children. It's important to note that "sinking a node" doesn't mean that the node will definitively be swapped.
+First, the sequence has to be put into heap order, which is accomplished by walking up the tree (bottom-up) and sinking every root node with more than one child. The starting point for this is always $(N - 1) / 2$, which is the last node with two children. It's important to note that "sinking a node" doesn't mean that the node will definitively be swapped.
 
 Assuming a maximum-oriented priority queue, the sorting is then accomplished by:
 
@@ -427,16 +430,28 @@ Assuming a maximum-oriented priority queue, the sorting is then accomplished by:
 
 Note that the notion of a logical heap size is important, as the sorted sequence is increasingly added to the end of the same array that backs the heap, so it's necessary to make a distinction between the two regions of the array, to prevent the heap sink or swim operations from corrupting the sorted region. This is accomplished in this code by using a hypothetical `sink` method that takes an upper bound parameter, which corresponds to the end of the heap region, i.e. the logical heap size.
 
-``` java
-public void sort(Comparable[] seq) {
-  int N = seq.length;
+``` cpp
+template <typename T>
+void Sort(std::vector<T> &vec) {
+  using std::swap;
 
-  for (int k = N / 2; k >= 1; k--)
-    sink(seq, k, N);
+  const int N = vec.size();
 
-  while (N > 1) {
-    swap(seq[1], seq[N--]);
-    sink(seq, 1, N);
+  const int kLastElement = N - 1;
+  const int kParentOfLastElement = (kLastElement - 1) / 2;
+
+  // Arrange array into heap-order, starting from the last
+  // node with two children and climbing up from there.
+  for (int k = kParentOfLastElement; k >= 0; k--)
+    sink(vec, k, N);
+
+  // Move max to end of sorted region, which is to the right of
+  // the unsorted region. Then sink the root node to ensure
+  // heap order is preserved, but don't sink past the end of the
+  // unsorted region, as that would corrupt the sorted region.
+  while (N > 0) {
+    swap(vec[0], vec[N--]);
+    sink(vec, 0, N);
   }
 }
 ```

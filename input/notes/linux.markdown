@@ -120,3 +120,44 @@ Journaling file systems are ones keep a write-ahead-log (WAL) for metadata updat
 File systems are all mounted under a single directory tree represented by the root <span class="path">/</span> at specific locations known as _mount points_. The _virtual file system_ (VFS) is an abstraction, a unified representation of a single file system, even if there are multiple different file systems mounted at different points.
 
 A _bind mount_ allows a file or directory to be mounted at multiple locations in the file system. Unlike hard links, bind mounts can cross file-systems and chroot jails, and it's possible to create a bind mount for a directory.
+
+# Signals
+
+Signals can be sent to a process via `kill()`. A normal process can only send a signal to another process if the real or effective user ID of the sending process matches the real user ID or saved-set-user-ID of the receiving process. The effective user ID of the receiving process is not consulted to prevent one user from sending signals to another user's process that is running a set-user-ID program belonging to the user trying to send the signal.
+
+A _signal mask_ is the set of signals whose delivery to the process is currently blocked. Signals are added and removed from the mask via `sigprocmask()`. If a signal is received while blocked, it remains pending, but is not queued, so that another signal of the same kind may "overwrite" it. The `sigpending()` call can retrieve the signal set identifying signals that it has pending.
+
+The `sigsuspend()` call can atomically modify the process signal mask and suspend execution until a signal arrives, which is essential to avoid race conditions when unblocking a signal and then suspending execution until that signal arrives, since it may have arrived in-between.
+
+Re-entrancy affects how one can update global variables and limits the set of functions that can safely be called from a signal handler.
+
+If a signal handler interrupts a blocked system call, the call returns `EINTR`. The call can be manually restarted or the signal handler can be established with `SA_RESTART` to cause many, but not all, system calls to automatically restart.
+
+# Process Creation
+
+The `fork()` call creates a new process (child) by making an almost exact copy-on-write duplicate. A new process can be executed via `exec()`, which modifies the process' virtual memory with that new process' data.
+
+There is no guarantee about whether the parent or child continues first after a call to `fork()`, so it should generally be called as a condition to a `switch` statement for example:
+
+``` c
+pid_t childPid;
+
+switch (childPid = fork()) {
+case -1:
+  // error
+case 0:
+  // child
+default:
+  // parent
+}
+```
+
+After the fork, the child receives duplicates of all of the parent's file descriptors, made in the same manner as `dup()`, referring to the same file, file offset, and open file status flags. Further, if one updates any of these, the changes are visible to the other.
+
+# Process Termination
+
+Orphaned children are adopted by init. When a child terminates before a parent has a chance to call `wait()`, the kernel turns the child into a _zombie_, which means that most of the resources held by the child are released back to the system: only the child's process Id, termination status, and resource usage statistics are preserved. Zombies can't be killed by signals in order to ensure that a parent can _always_ eventually perform a `wait()`. When the process finally performs the `wait()`, the kernel removes the zombie since that information is no longer required. If instead the parent terminates before it ever performs a `wait()`, then init adopts the child and performs a `wait()` so that the zombie can be removed. If the parent doesn't terminate but also never performs a `wait()`, then the zombie entry will remain, taking up resources.
+
+# Process Execution
+
+The `exec()` family of functions can be used to replace the currently-running program with a new program. All file descriptors open by the previous program remain open. This is something used by the shell for example for I/O redirection. Signal dispositions are reset because the signal handlers reside in the `text` region of the previous process, which is now gone and replaced with the new process.

@@ -11,6 +11,46 @@ What follows are some notes on algorithms I've been reviewing from [Algorithms](
 
 # Analysis
 
+## Master Theorem
+
+The master theorem provides a straightforward, "black-box" way of determining the running time of a recursive, divide-and-conquer algorithm. It's stated as:
+
+$$ T(n) = a T \left(\frac n b\right) + f\left(n^d\right) $$
+
+where:
+
+* $n$ is the size of the problem
+* $a$ is the number of recursive calls per level
+* $\frac n b$ is the size of each subproblem
+* $f\left(n^d\right)$ is the work done outside of the recursive calls, e.g. the merge in mergesort
+
+Then the run-time complexity of an algorithm can be determined based on the values of $a$, $b$, and $d$.
+
+* when $a = b^d$, the complexity is $O\left(n^d \log n\right)$
+
+    The same amount of work $n^d$ is being done at each level, of which there are $\log n$.
+
+    <img src="https://i.imgur.com/MPsr8vI.png" />
+
+* when $a < b^d$, the complexity is $O\left(n^d\right)$
+
+    Most of the work is done at the root, as if only at a single level.
+
+    <img src="https://i.imgur.com/01nnPMf.png" />
+
+* when $a > b^d$, the complexity is $O\left(n^{\log_b a}\right)$
+
+    It's equivalent to the number of leaves in the recursion tree, since most of the work is done at the bottom of the tree.
+
+    <img src="https://i.imgur.com/R2poF7S.png" />
+
+Essentially, the master theorem is a tug-of-war between:
+
+* $a$: the rate of subproblem proliferation
+* $b^d$: the rate of work shrinkage per subproblem
+
+## Approximations
+
 Oftentimes it's useful to use approximations instead of exact values.
 
 Stirling's approximation:
@@ -330,7 +370,7 @@ private void sort(Comparable[] seq, int lo, int hi) {
 }
 ```
 
-## Priority Queues
+## Heaps
 
 A priority queue is an abstract data type that allows adding elements and retrieving the smallest or largest element. Priority queues are useful for an unbounded sequence for which we want to retrieve the $M$ smallest elements at any given moment.
 
@@ -456,6 +496,14 @@ void Sort(std::vector<T> &vec) {
 }
 ```
 
+### Median Maintenance
+
+The median of a streaming sequence of numbers can be computed in constant time by maintaining two heaps: a max-heap for the lower/left half and a min-heap for the upper/right half. This has the effect of keeping the elements sorted, and the top of the max-heap yields one of the overall middle elements, whereas the top of the min-heap yields the other middle element.
+
+The elements must be kept equal in size, or the min-heap may be larger by one element, in which case there are an odd number of numbers, so the top of the min-heap is the middle element alone.
+
+If one of the heaps grows larger, its top element should be popped and pushed onto the other heap to balance them.
+
 ## Selection
 
 |Case    |Growth|
@@ -495,6 +543,10 @@ public Comparable select(Comparable[] seq, int k) {
 This is the classical data structure consisting of a binary tree where each node has two children. The sub-tree to the left of each node consists of elements smaller than the node and the sub-tree to the right of each node consists of elements greater than the node.
 
 The performance of BSTs greatly depends on the shape of the tree, which is a result of the distribution and order of the elements that are input.
+
+The rank operation counts how many keys are less than or equal to the given value.
+
+The predecessor of any node can be obtained easily if it has a left child, in which case the predecessor of the node is the maximum of the subtree rooted at the left child. If there is no left child, the predecessor is the first ancestor larger than the node (in other words, the first parent found for which the child is the right child). The successor can be found similarly, flipping left⟷right and maximum⟷minimum.
 
 ### BST Traversal
 
@@ -569,13 +621,15 @@ while (current != null) {
 
 Most operations such as insertion and lookup are very straightforward. Deletion is somewhat more involved.
 
-To delete node $z$:
+To delete node $k$:
 
-1. $z$ **has no children**: transplant it with a child, which is $nil$
-2. $z$ **has just one child**: transplant it with the child
-3. $z$ **has two children**: find successor $y$, which must be in $z$'s right subtree
-    1. if $y$ is $z$'s right child then transplant $z$ by $y$, leaving $y$'s right child alone
-    2. else transplant $y$ by its own right child, then transplant $z$ by $y$
+1. $k$ **has no children**: remove it
+2. $k$ **has just one child**: swap it with child and delete it
+3. $k$ **has two children**:
+    1. compute $k$'s predecessor $l$, i.e. maximum of left subtree
+    2. swap $k$ and $l$
+    3. delete $k$
+    4. now $k$ has no right child, recurse starting at 1
 
 The transplant operation can be handled by simply associating the parent with the new child and vice versa:
 
@@ -591,6 +645,45 @@ void replace_node(tree *t, node *u, node *v) {
   // ignore this check in red-black trees
   if (v != NULL)
     v->p = u->p;
+}
+```
+
+### BST Select
+
+The BST can be augmented so that each node contains the count of notes rooted at it, including itself. Then the count can be computed for node $x$ base by adding the count of left child $y$ and right child $z$ plus one for $x$:
+
+$$size(x) = size(y) + size(z) + 1$$
+
+It's important to keep this augmented information up-to-date with the operations on the tree, such as insertion or deletion, by traversing up the parents from the affected node to increment or decrement their counts.
+
+Selection of the $i^\text{th}$ order statistic can be found easily by guiding the traversal of the tree with the augmented size information.
+
+* the node in question is itself the ith order statistic, because $a = i - 1$
+* the $i^\text{th}$ order is somewhere in the left subtree, recurse
+* the $i^\text{th}$ order is somewhere in the right subtree, recurse. Since the right
+  subtree only knows about itself, shift $i$ to discard the left subtree and the
+  root node.
+
+``` cpp
+T Select(node, int i) {
+  int left_size = node->left ? size(node->left) : 0;
+
+  // The current node is itself the ith order statistic
+  if (left_size == i - 1) {
+    return node->value;
+  }
+
+  // The ith order statistic is in the left subtree
+  if (left_size >= i) {
+    return Select(node->left, i);
+  }
+
+  // The ith order statistic is in the right subtree.
+  // The right subtree only knows about itself, so shift the ith order
+  // appropriately.
+  if (left_size < i - 1) {
+    return Select(node->right, i - left_size - 1);
+  }
 }
 ```
 
@@ -649,7 +742,7 @@ The **problem** with implementing a direct representation of 2-3 trees is that t
 1. a node is either **red** or **black**
 2. root is **black**
 3. all leaves---represented as nil---are **black**
-4. both children of every red node are **black**
+4. both children of every **red** node are **black**, i.e. there must not be more than one **red** node in a row in any vertical path
 5. every path from a given node to any of its descendant leaves contains the same number of **black** nodes
 
 These properties allow red-black trees to be nearly balanced in even the worst case, allowing them more performance than regular BSTs. A very neat implementation is [available here](https://github.com/prasanthmadhavan/Red-Black-Tree/blob/master/rbtree.c).
@@ -688,11 +781,13 @@ void insert_case2(node *n) {
 }
 ```
 
-**Third**, it is possible that the inserted node creates two consecutive **red** nodes, violating property **3** (both children of **red** nodes are **black**). For this, there are three different scenarios:
+**Third**, it is possible that the inserted node creates two consecutive **red** nodes, violating property **5** (equal number of **black** nodes per path). For this, there are three different scenarios:
 
-1. parent and uncle are both red
-2. direction in which new node and parent lean differ
-3. new node and parent lean in the same direction
+<ol type="a">
+ <li>parent and uncle are both red</li>
+ <li>direction in which new node and parent lean differ</li>
+ <li>new node and parent lean in the same direction</li>
+</ol>
 
 **First**, if the parent and its uncle are **red**, flip their colors and make the grandparent **red** instead. This allows the newly added **red** node to satisfy all properties, since its parent is **black**. However, making the grandparent **red** may possibly violate properties **2** (root is **black**) and **4** (both children of **red** nodes are **black**), so recurse the enforcement algorithm on the grandparent starting from case 1:
 
@@ -830,7 +925,7 @@ void delete_one_child(node *n) {
       child->color = BLACK;
 ```
 
-**Third**, the most complex case is when both $M$ and $C$ are **black**. Replacing one with the other effectively removes one black node along that path, unbalancing the tree. Begin by replacing $M$ with its child $C$, then proceed to the first re-balancing case:
+**Third**, the most complex case is when both $M$ and $C$ are **black**. Replacing one with the other effectively removes one **black** node along that path, unbalancing the tree. Begin by replacing $M$ with its child $C$, then proceed to the first re-balancing case:
 
 ``` c
     else
@@ -943,6 +1038,16 @@ void delete_case4(node *n) {
 
 Hash tables consist of an array coupled with a _hash function_---such as [MurmurHash](http://en.wikipedia.org/wiki/MurmurHash) or [CityHash](http://en.wikipedia.org/wiki/CityHash)---and a _collision resolution_ scheme, both of which help map the key to an index within the array.
 
+Hash Tables can be used for de-duplication, as well as keeping track of what states have already been seen in search algorithms, especially for those applications where it's not feasible to store all of the nodes.
+
+In the 2-SUM problem, given an unsorted array of $n$ integers and a target sum $t$, we need to find if there is a pair of integers that sum to $t$.
+
+The brute-force approach is to check all possible pairs in $O(n^2)$ to see if they add up to the target $t$.
+
+Alternatively, we can sort the array in $O(n \log n)$ and scan through the array, for each element $x$ determine the required summand $r = t - x$, then look for $r$ in the array using binary search $O(n \log n)$. If $r$ is found, then there's a match, i.e. $x + r = t$.
+
+This can be improved further by using a hash table. Put each element of the array into a hash table, then for each element $x$ in the array compute the required summand $r = t - x$ and check if $r$ is present in the hash table. If so, then there's a match.
+
 ### Hash Functions
 
 Hash functions need to be consistent, efficient, and should uniformly distribute the set of keys.
@@ -992,6 +1097,37 @@ int hash = hash * R + year;
 int hash = ((R + day) * R + month) * R + year;
 ```
 
+### Pathological Data Sets
+
+It's possible to craft a pathological data set that can cause a denial of service attack on a hash table.
+
+One way to mitigate this is to use a cryptographic hash function, which also has pathological data sets but it's less feasible to discover them.
+
+Alternatively, design a family of hash functions and choose one randomly.
+
+### Load Factor
+
+The _load factor_ is defined by $\alpha = N/M$ where $\alpha$ is the percentage of table entries that are occupied, $N$ is the number of objects in the hash table, and $M$ is the number of buckets in the hash table.
+
+$$
+\text {load factor}\ \alpha =
+  \frac {\text {# of objects in hash table}}
+        {\text {# of buckets in hash table}}
+$$
+
+Note that a load factor is still relevant in an open addressing scheme, in which case each bucket can only hold one value.
+
+In linear probing, $\alpha$ can never be 1 because if the table becomes full, a search miss would go into an infinite loop. Instead, array resizing is performed to ensure that the load factor is between $\frac {1} {8}$ and $\frac {1} {2}$.
+
+The average number of compares, or _probes_, in a linear-probing hash table of size $M$ and $N = \alpha M$ keys is:
+
+$$
+\text {hits: ~} \frac {1} {2} \left( 1 + \frac {1} {1 - \alpha} \right) \\
+\text {misses: ~} \frac {1} {2} \left( 1 + \frac {1} {\left( 1 - \alpha \right)^2} \right)
+$$
+
+Based on this, when $\alpha$ is about 0.5 there will be 1.5 compares for a search hit and 2.5 compares for a search miss on average. For this reason, $\alpha$ should be kept under 0.5 through the use of array resizing.
+
 ### Separate Chaining
 
 |Case    |Growth|
@@ -1007,6 +1143,10 @@ Separate chaining consists of a two-step process:
 
 A property of separate chaining is that the average length of the lists is always $N/M$ in a hash table with $M$ lists and $N$ keys.
 
+### Double Hashing
+
+Double hashing is a form of open addressing in which two hash functions are used. If the first hash function incurs a collision, then the result of the second hash function serves as an offset at which to try insertion. For example, if $h_1(x) = 17$ caused a collision, and $h_2(x) = 23$, then it will try inserting at position $17 + 23 = 40$, then $40 + 23 = 63$, and so on.
+
 ### Linear Probing
 
 |Case    |Growth|
@@ -1021,30 +1161,51 @@ Linear probing is a form of open addressing that relies on empty entries in the 
     2. if the position is not empty and the key is equal, replace the value
     3. if the key is not equal, try the next entry and repeat until it can be inserted
 
-#### Hash Table Deletion
+#### Linear Probing Deletion
 
 The insert and retrieval operations retrieve the index and perform the same operation until the entry is null. This has the consequence that deleting a node cannot _simply_ entail setting the entry to null, or it would prematurely stop the lookup of other keys.
 
 As a result, after setting the entry to null, every key to the right of the removed key also has to be removed, i.e. set to null, and then re-inserted into the hash table using the regular insertion operation.
-
-#### Hash Table Load Factor
-
-The _load factor_ is defined by $\alpha = N/M$ where $\alpha$ is the percentage of table entries that are occupied, which can never be 1 since, if the table becomes full, a search miss would go into an infinite loop. Instead, array resizing is performed to ensure that the load factor is between $\frac {1} {8}$ and $\frac {1} {2}$.
-
-The average number of compares, or _probes_, in a linear-probing hash table of size $M$ and $N = \alpha M$ keys is:
-
-$$
-\text {hits: ~} \frac {1} {2} \left( 1 + \frac {1} {1 - \alpha} \right) \\
-\text {misses: ~} \frac {1} {2} \left( 1 + \frac {1} {\left( 1 - \alpha \right)^2} \right)
-$$
-
-Based on this, when $\alpha$ is about 0.5 there will be 1.5 compares for a search hit and 2.5 compares for a search miss on average. For this reason, $\alpha$ should be kept under 0.5 through the use of array resizing.
 
 ### Sparse Vectors
 
 An application of hash tables can be to implement sparse vectors for the purpose of performing matrix-vector multiplications. In certain situations, the row-vector from a matrix can have a very small amount of non-zero elements. If the matrix was stored in a naive array format it would amount to an immense waste of space and computation.
 
 Instead, sparse vectors are vectors backed by hash tables where the keys correspond to the index of a given element and the value corresponds to that element's value. This solution is used in Google's PageRank algorithm.
+
+# Bloom Filters
+
+Bloom filters are useful for remembering which values have been seen; they don't store the actual values or keys, so they use very little space. There are no deletions.
+
+Membership lookups can yield false-positives, but _not_ false-negatives. So a bloom filter can answer if an element is **possibly in the set** or **definitely not in the set**.
+
+For example, a bloom filter could be used to back a spell-checker. All correctly spelled words are inserted into the bloom filter, then a word can be checked for correct spelling by checking if it's in the bloom filter. However, since there is a small possibility of a false-positive, it may incorrectly determine that the word is correctly spelled even if it's not.
+
+Bloom filters are often used in network routers for tasks such as keeping track of blocked IP addresses, the contents of a cache to avoid spurious lookups, and maintaining statistics to prevent denial of service attacks.
+
+Bloom filters consist of a bitset, where each entry uses $\frac n {|S|}$ bits. The bloom filter has $k$ hash functions.
+
+Insertion is accomplished by hashing the input with each of the $k$ hash functions and turning on the bit at that position, regardless of whether that bit was already on.
+
+``` cpp
+for (const auto &hash_function : hash_functions) {
+  bits |= (1 << hash_function(x));
+}
+```
+
+Lookup is accomplished by hashing the input with each hash function and checking if _all_ of those positions is on.
+
+``` cpp
+for (const auto &hash_function : hash_functions) {
+  if (!(bits & (1 << hash_function(x)))) {
+    return false;
+  }
+}
+
+return true;
+```
+
+Therefore the false-positives come about if other insertions set the same bits as those used by other elements.
 
 # Graphs
 
@@ -1095,15 +1256,40 @@ Adjacency lists have the best balance between space and time performance. They h
 Depth-First Search (DFS) is a graph traversal algorithm that visits a vertex, marks that vertex as visited, then visits all unmarked adjacent vertices.
 
 ``` cpp
-void dfs(const Graph &G, int v) {
-  marked[v] = true;
-  count++;
+template <typename Pre, typename Post>
+void DFS(Pre pre, Post post) {
+  std::set<T> explored;
 
-  for (int w : G.adj(v))
-    if (!marked[w]) {
-      edgeTo[w] = v; // v connects to w, i.e. v-w
-      dfs(G, w);
+  for (auto it = this->edges_.begin(); it != this->edges_.end(); ++it) {
+    const T &node = it->first;
+
+    if (explored.find(node) == explored.end()) {
+      this->DFS(&explored, node, pre, post);
     }
+  }
+}
+
+template <typename Pre, typename Post>
+void DFS(std::set<T> *explored, T node, Pre pre, Post post) {
+  explored->insert(node);
+
+  auto it = this->edges_.find(node);
+
+  if (it == this->edges_.end()) {
+    return;
+  }
+
+  const auto &neighbors = it->second;
+
+  pre(node);
+
+  for (const Edge &neighbor : neighbors) {
+    if (explored->find(neighbor.to) == explored->end()) {
+      this->DFS(explored, neighbor.to, pre, post);
+    }
+  }
+
+  post(node);
 }
 ```
 
@@ -1144,25 +1330,29 @@ Depth-First Search can also be used to find connected components of a graph. Thi
 A run of DFS finds, and thus marks, every vertex in a connected component. Upon completing such a run, a counter variable signifying the connected componenet identifier is incremented and then it is called on the next unmarked vertex in the graph, i.e. a vertex not in a connected component found so far.
 
 ``` cpp
-void findConnectedComponents(const Graph &G) {
-  vector<int> id(G.V());
-  vector<bool> marked(G.V());
+void FindConnectedComponents(const Graph &G) {
+  vector<int> components;
+  vector<bool> explored;
+
+  components.reserve(G.V());
+  explored.reserve(G.V());
+
   int count = 0;
 
   for (int s = 0; s < G.V(); s++)
-    if (!marked[s]) {
-      dfs(G, s);
+    if (!explored[s]) {
+      explored[s] = true;
+      DFS(G, s, &explored, &components);
       count++;
     }
 }
 
-void dfs(const Graph &G, int v) {
-  marked[v] = true;
-  id[v] = count; // set connected component identifier
+void DFS(const Graph &G, int v, vector<bool> *explored, vector<int> *components) {
+  (*components)[v] = count; // set connected component identifier
 
   for (int w : G.adj(v))
-    if (!marked[w])
-      dfs(G, w);
+    if (!(*explored)[w])
+      DFS(G, w, explored, components);
 }
 ```
 
@@ -1269,11 +1459,27 @@ Topological sort puts the vertices of a digraph in order such that all of its di
 
 This ability of DFS follows from the fact that DFS covers each vertex exactly once when run on digraphs.
 
+``` cpp
+std::vector<T> TopologicalOrder() {
+  std::vector<T> reverse_post_order;
+  reverse_post_order.reserve(this->edges_.size());
+
+  this->DFS([](const auto &) {},
+            [&reverse_post_order](const auto &node) {
+              reverse_post_order.push_back(node);
+            });
+
+  std::reverse(reverse_post_order.begin(), reverse_post_order.end());
+
+  return reverse_post_order;
+}
+```
+
 ### Strong Connectivity
 
 Two vertices $v$ and $w$ are _strongly connected_ if they are mutually reachable, i.e. $v \leftrightarrow w$. Consequently, an entire digraph is _strongly connected_ if _all_ of its vertices are strongly connected to one another. Further, _strong components_ are connected components of a graph that are strongly connected.
 
-The [Kosaraju-Sharir](http://en.wikipedia.org/wiki/Kosaraju%27s_algorithm) algorithm is able to find strongly connected components in digraphs. The algorithm operates as follows:
+The [Kosaraju-Sharir](http://en.wikipedia.org/wiki/Kosaraju%27s_algorithm) algorithm is able to find strongly connected components in digraphs in $O(m + n)$. The algorithm operates as follows:
 
 1. given digraph $G$ and its reverse digraph $G^R$, compute the reverse postorder of $G^R$
 2. run standard DFS on $G$ on the vertices in the order generated by step 1
@@ -1467,30 +1673,72 @@ The vertices in the tree being built are represented using a vertex-indexed bool
 
 The act of adding an edge to the tree corresponds to adding a vertex to the tree. When this occurs, all edges from the newly added vertex to all vertices not in the tree must be added to the crossing edges priority queue. Furthermore, any edges previously in the priority queue that connected the newly added vertex to a vertex already in the tree become _ineligible_---otherwise they would create a cycle---and should be ignored or removed.
 
-``` java
-void prim(EdgeWeightedGraph G) {
-  visit(G, 0); // start at arbitrary vertex
+``` cpp
+std::set<Edge> prim(EdgeWeightedGraph &G) {
+  std::set<Node> explored;
+  std::set<Edge> mst;
+  std::priority_queue<Edge, std::greater<Edge>> frontier;
 
-  while (!pq.empty()) {
-    Edge e = pq.delMin(); // fetch lowest weight edge from frontier
-    int v = e.either(), w = e.other(v);
+  visit(G, &explored, &frontier, 0);
 
-    if (marked[v] && marked[w]) continue; // skip ineligible edges
+  while (!frontier.empty()) {
+    Edge e = frontier.top();
+    frontier.pop();
 
-    mst.enqueue(e); // add edge to result
+    if (explored.find(e.to) != explored.end()) {
+      continue;
+    }
 
-    // visit either v or w
-    if (!marked[v]) visit(G, v);
-    if (!marked[w]) visit(G, w);
+    mst.insert(e);
+    visit(G, &explored, &frontier, e.to);
   }
+
+  return mst;
 }
 
-void visit(EdgeWeightedGraph G, int v) {
-  marked[v] = true;
+void visit(EdgeWeightedGraph &G,
+           std::set<Node> *explored,
+           std::priority_queue<Edge, std::greater<Edge>> *frontier,
+           Node v) {
+  explored->insert(v);
 
-  for (Edge e : G.adj(v))
-    if (!marked[e.other(v)]) pq.insert(e);
+  for (Edge e : G.adjacent(v))
+    if (explored->find(e.to) == explored->end())
+      frontier->insert(e.to);
 }
+```
+
+Instead of storing edges in the priority queue, it's faster to store vertices that have not been explored/spanned yet which are on the other end of edges crossing the cut. If a new vertex is visited which has incident edges which are shorter to reach a vertex $w$ for which an edge-to already existed in the heap, that edge must be replaced with the new shorter edge. This way, the shortest edge is always at the top of the heap.
+
+This is very similar to what is done in Dijkstra's algorithm.
+
+``` cpp
+void visit(EdgeWeightedGraph &G,
+           std::set<Node> *explored,
+           std::priority_queue<Edge, std::greater<Edge>> *frontier,
+           Node v) {
+  explored->insert(v);
+
+  for (Edge e : G.adjacent(v))
+    if (explored->find(e.to) == explored->end()) {
+      // check if an edge to this adjacent node already exists
+      int found = frontier->find([&e](const auto &edge) {
+        return edge.to == e.to;
+      });
+
+      if (found == -1) {
+        continue;
+      }
+
+      Edge old = frontier->delete(found);
+
+      // if so, we must ensure that shortest of the two edges is kept
+      const Edge &shortest = std::min(e, old);
+
+      frontier->insert(old);
+    }
+}
+
 ```
 
 #### Eager Prim's Algorithm
@@ -1616,6 +1864,66 @@ Dijkstra's alrogithm is similar to Prim's algorithm for finding the MST. Dijkstr
 
 Dijkstra's algorithm _requires_ that edges be non-negative.
 
+``` cpp
+std::map<T, int> Dijkstra(T start) {
+  std::map<T, int> distances{{start, 0}};
+  std::set<T> explored{start};
+  Heap<Edge> edges;
+
+  for (const auto &edge : *this->Incident(start)) {
+    edges.Insert(edge);
+    log->trace("added incident edge to frontier: {}", edge);
+  }
+
+  while (!edges.empty()) {
+    Edge edge = edges.Top();
+    edges.Pop();
+
+    explored.insert(edge.to);
+
+    // Record the distance to the target from this shortest edge.
+    distances[edge.to] = distances[edge.from] + edge.weight;
+
+    // After absorbing the new node, there may now be more more suitable edges
+    // that can be used to reach other nodes.
+    for (const auto &neighbor : *this->Incident(edge.to)) {
+      // See if there's an edge already in the heap which also goes to
+      // neighbor.to
+      int found = edges.Find(
+          [&neighbor](const auto &e) { return e.to == neighbor.to; });
+
+      // There wasn't any such edge, so this one simply goes into the heap.
+      if (found == -1) {
+        edges.Insert(neighbor);
+      }
+
+      // There was an edge in the heap already which also goes to neighbor.to
+      // This means that we must compare them to determine which is the
+      // shortest one, so that the one in the heap is the shortest one.
+      else {
+        // Obtain the edge from the heap that also goes to neighbor.to
+        Edge old = edges.Get(found);
+
+        // Remove it from the heap for now.
+        edges.Remove(found);
+
+        // Determine if the pre-existing edge is shorter than the new edge
+        // `neighbor` which is incident to the edge we just explored.
+        const Edge &shortest = std::min(
+            neighbor, old, [&distances, &edge](const auto &n, const auto &o) {
+              return distances[edge.to] + n.weight < o.weight;
+            });
+
+        // Insert the shorter of the two edges back into the heap.
+        edges.Insert(shortest);
+      }
+    }
+  }
+
+  return distances;
+}
+```
+
 ``` java
 void dijkstra(EdgeWeightedDigraph G, int s) {
   for (int v = 0; v < G.V(); v++)
@@ -1656,7 +1964,7 @@ Shortest paths can be found much more efficiently in acyclic graphs, specificall
 
 ``` java
 void shortestPathAcyclic(EdgeWeightedDigraph G, int s) {
-  for (int v = 0; v < G.V(); v++) 
+  for (int v = 0; v < G.V(); v++)
     distTo[v] = Double.POSITIVE_INFINITY;
   distTo[s] = 0.0;
 
@@ -2570,9 +2878,11 @@ Node buildTrie(int[] freq) {
 }
 ```
 
+Then label left branches with a 0 and right edges with a 1. The path of this bitstring to a leaf represents that leaf's Huffman code.
+
 The way in which the trie is constructed ensures that the more frequent characters (nodes) are closer to the root, and as a result are encoded with fewer bits.
 
-One thing to recognize is that the trie has to somehow be encoded in the compressed data so that it can then be decompressed. The trie can be encoded in a bitstream by performing pre-order traversal (root - left - right), and at each node:
+One thing to recognize is that the trie has to somehow be encoded in the compressed data so that it can then be decompressed. The trie can be encoded in a bitstream by performing pre-order traversal (root → left → right), and at each node:
 
 * if the node is a leaf, output a `1` and then the binary representation of the character
 * otherwise, write a `0` then recurse on the left node then the right (i.e. pre-order)
@@ -2582,6 +2892,8 @@ Reading the trie into an actual trie structure is just as straightforward, where
 _Decompression_ consists of simply traversing the trie as each bit is read. If a leaf is encountered, output the character and restart traversal from the root.
 
 _Compression_ requires the existence of a code table mapping each character to the appropriate code. This table is derived from the trie by traversing the trie, keeping track of the bitstring along its path, and when a leaf node is encountered, the bitstring is associated with that character in the code table. Compression then simply requires looking up each character from the data in the code table and outputting the appropriate code.
+
+Alternatively, left child edges are 0 and right child edges are 1.
 
 ### LZW Compression
 
@@ -2656,6 +2968,12 @@ void decompress() {
   BinaryStdOut.close();
 }
 ```
+
+# Greedy Algorithms
+
+Greedy algorithms are ones which make "myopic" decisions, i.e. they seemed like good decisions at the time and there's a hope that everything works out in the end.
+
+Dijkstra's shortest-path algorithm is greedy for example because it processes each destination once, it doesn't backtrack to find a different path.
 
 # Context
 
@@ -2774,6 +3092,66 @@ The _shortest-augmenting-path_ method finds the maxflow by finding an augmenting
 * **graph coloring**: color every vertex--edge in a graph such that no two adjacent vertices--edges have the same color
 * **knapsack**: given a set of items with different values and a container of a maximum capacity, find the combination of items that fits in the container and has the largest total value.
 
+# Geometric Algorithms
+
+## Augmented BST as Interval Tree
+
+An interval search tree stores ranges and provides operations for searching for overlaps of a given range within the tree. A binary search tree can be augmented into an interval search tree. The lower bound of a range is used as the node key. Each node also stores the maximum upper bound of its children, similar to the rank.
+
+For searching, the input interval is checked to see if it overlaps with the current node. If not, and the left node is null, search proceeds on the right child. If the left node's max upper bound is less than the input interval's lower bound, search proceeds on the right node. Otherwise search proceeds on the left node.
+
+1. if input interval $[l, r]$ overlaps current node, return
+2. if left node is `null` or left's max upper < $l$: go right  
+    else: go left
+
+```java
+Node current = root;
+
+while (current != null) {
+  if (current.interval.overlaps(lo, hi)) return current.interval;
+  else if (current.left == null)         current = current.right;
+  else if (current.left.max < lo)        current = current.right;
+  else                                   current = current.left;
+}
+
+return null;
+```
+
+## Interval Trees
+
+Interval trees are useful for efficiently finding all intervals that overlap with any given interval or point.
+
+To construct the tree, the median of the entire range of all of the set of ranges is found. Those ranges in the set that are intersected by the median are stored in the current node. Ranges that fall completely to the left of the median are stored in the left child node, and vice versa with the right node.
+
+At any given node representing the set of ranges intersected by the median at that node, two sorted lists are maintained: one containing all beginning points and the other containing all end points.
+
+## Intersection Queries
+
+The general operation for queries is to test the set of ranges in a node and then test those in the appropriate child node if the query isn't equal to the median.
+
+Given a _point_ query, the current node is compared with the median. If it's equal, then every range in that node matches and the search is complete. If the query is less than the median, then the list of beginning points is searched for those beginning points that start before the query point, all of which are matches. Then the search continues into the left child.
+
+Given an _interval query_, the set of beginning and end points are searched to see if they fall within the query interval. These ranges are matches, and they have potential for duplicates if the matched interval begins and ends within the query interval. Finally, to match for ranges which possibly contain the query interval, a point is chosen in the query interval, perhaps the begin or end point, and that point is used as a point query as in the aforementioned point query algorithm.
+
+## One-Dimensional Range Count
+
+This can be modeled as a BST where each node maintains a _rank_: the count of children that are strictly less than the node. It's possible to determine how many keys fall within a given range by subtracting the rank of the node containing the lower bound from the rank of the node containing the higher bound, adding one if the current node is the higher bound.
+
+``` java
+public int size(Key lo, Key hi) {
+  if (contains(hi)) return rank(hi) - rank(lo) + 1;
+  else              return rank(hi) - rank(lo);
+}
+```
+
+## Line Segment Intersection
+
+Given a collection of line segments, it's possible to determine which pairs of line segments intersect by using a _sweep-line_ algorithm. The coordinates could be sorted by x-coordinate or added to a priority queue. For each distinct x-coordinate encountered, its accompanying y-coordinate is added to a BST. If the same x-coordinate is encountered again, its accompanying y-coordinate is removed from the BST. If a vertical segment is encountered, a range search is performed on the BST to see if any y-coordinates fall within the vertical segment's y-coordinate endpoints.
+
+## Rectangle Intersection
+
+Checking for rectangle intersection is similar to line segment intersection. The left edge of a rectangle prompts the vertical range of the rectangle is checked for overlaps in an interval search tree, and added if none are detected. The rectangle's vertical range is removed from the interval search tree when the right edge of the rectangle is encountered.
+
 # Bitwise Operations
 
 A very important property of XOR is that it a number XORed with itself is 0.
@@ -2865,65 +3243,144 @@ public int singleNumber(int[] nums) {
 }
 ```
 
-# Geometric Algorithms
+# Integers
 
-## Augmented BST as Interval Tree
+It's possible to "shift" a number to the left by $n$ digits by multiplying it with $\text {base}^\text {digits}$. For example, the number $321$ can be shifted to the left by 2 digits to $32100$ by multiplying it by $10^2$.
 
-An interval search tree stores ranges and provides operations for searching for overlaps of a given range within the tree. A binary search tree can be augmented into an interval search tree. The lower bound of a range is used as the node key. Each node also stores the maximum upper bound of its children, similar to the rank.
+$$\text {shifted left by n} = x * \text {base}^\text {digits}$$
 
-For searching, the input interval is checked to see if it overlaps with the current node. If not, and the left node is null, search proceeds on the right child. If the left node's max upper bound is less than the input interval's lower bound, search proceeds on the right node. Otherwise search proceeds on the left node.
+Similarly, it's possible to get the last $n$ digits of a number by getting the remainder of dividing it by $\text {base}^\text {digits}$. For example, the last 2 digits of $321$ can be obtained by getting the remainder of dividing it (i.e. the modulo) by $10^2$.
 
-1. if input interval $[l, r]$ overlaps current node, return
-2. if left node is `null` or left's max upper < $l$: go right  
-    else: go left
+$$\text {right-most n digits} = x \bmod \text {base}^\text {digits}$$
 
-```java
-Node current = root;
+# Dynamic Programming
 
-while (current != null) {
-  if (current.interval.overlaps(lo, hi)) return current.interval;
-  else if (current.left == null)         current = current.right;
-  else if (current.left.max < lo)        current = current.right;
-  else                                   current = current.left;
-}
+It's important to reason about the structure of an optimal solution, in terms of optimal solutions of smaller subproblems. In other words, imagine that optimal solutions to two subproblems were already provided.
 
-return null;
+First it's important to identify a suitable _small_ collection of subproblems.
+
+Second it's important to quickly and correctly solve "larger" subproblems given solutions to "smaller" subproblems.
+
+Third it's important to compute the final solution after solving all subproblems.
+
+## Maximum-Weight Independent Set
+
+Example problem: given a path graph $G = (V, E)$ with non-negative weights on the vertices, produce a subset of the graph's vertices so that **no two vertices are adjacent** and that the subset has the **maximum total weight** of every such subset.
+
+<img src="http://i.imgur.com/kQkyCTD.png" class="center" />
+
+A brute-force search would be exponential in the number of vertices.
+
+A greedy approach would be to iteratively choose the maximum-weight vertex that is not adjacent to any previously chosen vertex. However, this wouldn't give the correct answer (consider above it would choose the first and third vertices, although the second and fourth is the answer).
+
+A divide-and-conquer approach would be problematic when attempting to combine the results of subproblems.
+
+Let $S \subseteq V$ be a max-weight independent set (IS). Let $v_n$ be the last/right-most/final vertex of the path. Either $v_n$ is in $S$ or it isn't.
+
+Suppose $v_n \not\in S$ and let $G'$ be the graph with $v_n$ deleted off of the end (since $v_n$ is the last vertex on the path). Then $S$ is also an independent set of $G'$, specifically a max-weight independent set.
+
+Suppose $v_n \in S$, then the penultimate vertex $v_{n - 1} \not\in S$, since it is adjacent to $v_n$. Then let $G''$ be the graph with $v_{n - 1}$ and $v_n$ deleted.
+
+<img src="http://i.imgur.com/J0oxqD1.png" class="center" />
+
+Unlike the earlier claim that if $v_n \not\in S$ then $S$ is also an independent set of $G'$, it's not true that if $v_{n - 1} \not\in S$ then $S$ is also an independent set of $G''$, because the $v_n \in S$ but $v_n \not\in G''$.
+
+However $S - \{v_n\}$ is an independent set of $G''$, specifically a max-weight independent set.
+
+This means that if we knew whether or not $v_n$ was in the max-weight independent set, we could recursively compute the max-weight independent set of $G'$ or $G''$. We can try both possibilities and return the better solution.
+
+Essentially, recursively compute $S_1$ as the max-weight independent set of $G'$ as well as $S_2$ as the max-weight independent set of $G''$. Then return max of $S_1$ or $S_2 \cup v_n$.
+
+However, this would take exponential time because very little work is done before recursing.
+
+A realization is that there is only a linear number of distinct subproblems, one for each prefix of the graph since the recursion only plucks vertices off from the right. This causes repeated work for the same prefixes.
+
+This can be mitigated by caching the solution to the subproblem in a global table for subsequent $O(1)$-time lookup, i.e. _memoization_, where there is an array of solutions to subproblems where index $i$ holds the solution to the $i^\text{th}$ subproblem.
+
+This is more straightforward if it's reformulated as a bottom-up iterative algorithm.
+
+Let $G_i$ be the first $i$ vertices of $G$. Then populate an array `A` from left-to-right with `A[i]` set to the value of the max-weight independent set of $G_i$. Naturally `A[0]` is an empty set so it's set to weight 0, and `A[1]` is a single-vertex graph so it's set to the weight of the first vertex.
+
+After adding another vertex, determine the max-weight independent set for this new $G$. This will be the maximum of either $A[i - 1]$ or $A[i - 1] + w_i$. If it's $A[i - 1]$ then it means that the max-weight independent set is of $G_{i - 1}$. If it's $A[i - 2] + w_i$ then it means that the max-weight independent set is of $G_{i - 2}$.
+
+``` cpp
+for i from 2 to and including n:
+  A[i] = max(A[i - 1], A[i - 2] + w_i)
 ```
 
-## Interval Trees
+One problem is that this only produces a total weight, but not the actual set of vertices. This can be reconstructed from the completed array by walking backwards from right-to-left starting at the last element, since that was the answer/result.
 
-Interval trees are useful for efficiently finding all intervals that overlap with any given interval or point.
+``` cpp
+let S = ∅
 
-To construct the tree, the median of the entire range of all of the set of ranges is found. Those ranges in the set that are intersected by the median are stored in the current node. Ranges that fall completely to the left of the median are stored in the left child node, and vice versa with the right node.
+while i >= 1:
+  // case 1 wins: skip v_i and go back to the chosen vertex v_{i - 1}
+  if A[i - 1] >= A[i - 2] + w_i:
+    --i
 
-At any given node representing the set of ranges intersected by the median at that node, two sorted lists are maintained: one containing all beginning points and the other containing all end points.
+  // case 2 wins: v_i was indeed used, add it to S and go back to v_{i - 2}
+  else:
+    S.insert(v_i)
+    i -= 2
 
-## Intersection Queries
-
-The general operation for queries is to test the set of ranges in a node and then test those in the appropriate child node if the query isn't equal to the median.
-
-Given a _point_ query, the current node is compared with the median. If it's equal, then every range in that node matches and the search is complete. If the query is less than the median, then the list of beginning points is searched for those beginning points that start before the query point, all of which are matches. Then the search continues into the left child.
-
-Given an _interval query_, the set of beginning and end points are searched to see if they fall within the query interval. These ranges are matches, and they have potential for duplicates if the matched interval begins and ends within the query interval. Finally, to match for ranges which possibly contain the query interval, a point is chosen in the query interval, perhaps the begin or end point, and that point is used as a point query as in the aforementioned point query algorithm.
-
-## One-Dimensional Range Count
-
-This can be modeled as a BST where each node maintains a _rank_: the count of children that are strictly less than the node. It's possible to determine how many keys fall within a given range by subtracting the rank of the node containing the lower bound from the rank of the node containing the higher bound, adding one if the current node is the higher bound.
-
-``` java
-public int size(Key lo, Key hi) {
-  if (contains(hi)) return rank(hi) - rank(lo) + 1;
-  else              return rank(hi) - rank(lo);
-}
+return S
 ```
 
-## Line Segment Intersection
+## Knapsack Problem
 
-Given a collection of line segments, it's possible to determine which pairs of line segments intersect by using a _sweep-line_ algorithm. The coordinates could be sorted by x-coordinate or added to a priority queue. For each distinct x-coordinate encountered, its accompanying y-coordinate is added to a BST. If the same x-coordinate is encountered again, its accompanying y-coordinate is removed from the BST. If a vertical segment is encountered, a range search is performed on the BST to see if any y-coordinates fall within the vertical segment's y-coordinate endpoints.
+There are $n$ items and each has a value:
 
-## Rectangle Intersection
+* value $v_i$ (non-negative)
+* size $w_i$ (non-negative and integral)
+* capacity $W$ (non-negative and integral)
 
-Checking for rectangle intersection is similar to line segment intersection. The left edge of a rectangle prompts the vertical range of the rectangle is checked for overlaps in an interval search tree, and added if none are detected. The rectangle's vertical range is removed from the interval search tree when the right edge of the rectangle is encountered.
+The output should be a subset $S \subset \{1, 2, 3, \ldots, n\}$ that maximizes the sum of the values that are selected $\sum_{i \in S} v_i$ while preventing the sum of the weights from exceeding the capacity $\sum_{i \in S} w_i \le W$.
+
+This is useful for whenever we have a budget of a resource that we can use and we want to use it in the smartest way possible.
+
+First we'll formulate a recurrence---an optimal solution as a function of solutions to smaller subproblems---based on the structure of an optimal solution.
+
+Let $S$ be the max-value solution to an instance of knapsack, and let $n$ be the final selected item.
+
+Suppose $n \not\in S$, then $S$ must be optimal with the first $(n - 1)$ items.
+
+Suppose $n \in S$, then $S - \{n\}$ must be an optimal solution with respect to the first $(n - 1)$ items with capacity $W - w_n$.
+
+The solution $V_{i,x}$ is the value of the best solution that:
+
+1. uses only the first $i$ items
+2. has total capacity $\le x$
+
+Therefore:
+
+$$
+V_{i,x} = \max
+\begin{cases}
+V_{(i - 1), x} & \text {case 1, item i excluded} \\
+v_i + V_{(i - 1), x - w_i} & \text {case 2, item i included}
+\end{cases}
+$$
+
+However, an edge case exists in that if $w_i > x$, then we must use case 1.
+
+Now given the above recurrence, the $O(nW)$ algorithm can be implemented.
+
+``` cpp
+A = 2D-array. first dimension is item count, second is capacity
+
+// if no items are used selected, the weight is 0 regardless
+// of total capacity
+Set A[0, x] = 0 for x = 0, 1, ..., W
+
+for i = 1, 2, ..., n:
+  for x = 0, 1, 2, ..., w:
+    if (w_i > x):
+      A[i, x] = A[i - 1, x]
+    else:
+      A[i, x] = max(A[i - 1, x], A[i - 1, x - w_i] + v_i)
+
+return A[n, W]
+```
 
 *[BFS]: Breadth-First Search
 *[BST]: Binary Search Trees

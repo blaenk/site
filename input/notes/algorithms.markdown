@@ -9,7 +9,120 @@ What follows are some notes on algorithms I've been reviewing from [Algorithms](
 
 <toc/>
 
+# Approaches
+
+## Strategies
+
+Some general strategies to approaching a given problem:
+
+* **concrete examples**: manually solve concrete instances and build a general solution
+* **case analysis**: split the input/execution into a number of cases and solve each in isolation
+* **iterative refinement**: brute-force and improve upon it
+* **reduction**: use well-known solution to another problem as subroutine
+* **graph modeling**: model the problem as a graph
+
+## Modeling
+
+* **permutations**: arrangements, tours, orderings, or sequences
+* **subsets**: clusters, collections, committees, groups, packagings, or selections
+* **trees**: hierarchies, dominance relationships, ancestor/descendant relationships, or taxonomies
+* **graphs**: networks, circuits, webs, relationships
+* **points**: sites, positions, data records, locations
+* **polygons**: shapes, regions, configurations, boundaries
+* **strings**: text, characters, patterns, labels
+
+## Techniques
+
+* **divide-and-conquer**: decompose the problem into two or more sub-problems until they are simple enough to solve directly, **then combine the results**
+* **greedy algorithms**: make locally optimum, seemed-like-a-good-idea-at-the-time decisions in stages and never change them (don't backtrack). This won't always yield the optimum solution.
+
+In divide-and-conquer, the problem is often solved in the combination phase. For example, merge sort divides the problem and actually solves (i.e. sorts) it during the merge phase.
+
+## Intractability
+
+An intractable problem is one that has no efficient solution. It can be proved that a problem is intractable if a known intractable problem can be reduced to the given problem.
+
+* change the problem formulation such that it still achieves the higher goal
+* brute-force or dynamic programming: acceptable if instances or exponential parameter is small
+* search: prune search-space via backtracking, branch-and-bound, hill-climbing
+* heuristics: insight, common case analysis
+* parallelization: solve subparts in parallel
+* approximation: solution that is provably close to optimum
+
 # Analysis
+
+The goal of asymptotic analysis is to suppress the constant factors and lower-order terms. This is because the constant factors are very system-dependent, such as how many cycles a certain operation may take between different pieces of hardware. The lower-order terms are also not as important because they are rendered irrelevant for very large inputs, where the higher-order terms dominate.
+
+## Summations
+
+The summation of a constant is simply the product of the constant and the range:
+
+$$ \sum_{i = 1}^n 1 = n $$
+
+The sum of the first $n$ integers can be visualized as folding the range of values at the middle so that the first integer is paired with the last, or more generally: the $i^\text{th}$ paired with the $(n - i + 1)\text{th}$. Below, the bound of $n/2$ refers to the "folding at the middle," then each pair is added. **Note** that the sum is quadratic!
+
+$$ \sum_{i = 1}^n i = \sum_{i = 1}^{n/2} (i + (n - i + 1)) = \frac {n (n + 1)} 2 $$
+
+The sum of a _harmonic series_ is approximately equal to the logarithm of the bound.
+
+$$ H(n) = \sum_{i = 1}^n \frac 1 i \approx \log n $$
+
+## Logarithms
+
+The exponent of a logarithm operand can be extracted:
+
+$$ \log_a n^b = b \cdot \log_a n $$
+
+## Bounds
+
+<img src="http://i.imgur.com/fMlyzap.png" class="center" />
+
+The upper-bound $f(n) = O(g(n))$ means that there exists some constant $c$ such that $f(n)$ is _always_ $\le c \cdot g(n)$ for a large enough $n$, that is, for some offset $n_0$ such that $n \ge n_0$.
+
+<img src="https://i.imgur.com/L5oa2vN.png" class="center" />
+
+The lower-bound $f(n) = \Omega(g(n))$ is similar except that it is a lower-bound, so that there exists some constant $c$ such that $f(n)$ is _always_ $\ge c \cdot g(n)$ for $n \ge n_0$.
+
+<img src="https://i.imgur.com/GzSDZW7.png" class="center" />
+
+There is also $f(n) = \Theta(g(n))$ which means that $c_1 \cdot g(n)$ is an upper-bound and $c_2 \cdot g(n)$ is a lower-bound on $f(n)$ for $n \ge n_0$. This is a tighter bound on $f(n)$ than simply a lower or upper-bound alone would provide.
+
+<img src="https://i.imgur.com/mdfglLj.png" class="center" />
+
+Constant factors are ignored since they can easily be beaten out by a different chosen value of $c$.
+
+## Dominance Relations
+
+A faster-growing function $f(n)$ _dominates_ a slower-growing one $g(n)$, i.e. $ f \gg g$. In order of increasing dominance:
+
+| Name         | Complexity | Examples |
+| :-------     | :--------- | :----------------- |
+| Constant     | $1$        | adding two numbers |
+| Logarithmic  | $\log n$   | binary search |
+| Linear       | $n$        | incrementing each element in an array |
+| Linearithmic | $n \log n$ | QuickSort and MergeSort |
+| Quadratic    | $n^2$      | looking at all/most pairs of an array |
+| Cubic        | $c^n$      | looking at all/most triples of an array |
+| Exponential  | $c^n$      | looking at all subsets of an array |
+| Factorial    | $n!$       | looking at all permutations or orderings of n items |
+
+When analyzing an algorithm it is common to produce an expression of bounds which can easily be simplified by keeping in mind the principle of dominance relations.
+
+### Sum of Bounds
+
+For example, is an algorithm first sorts its input and then prints each element, then that's a sorting operation of $O(n \log n)$ followed by a linear printing operation of $O(n)$, essentially becoming $O(n \log n + n)$. However, the linearithmic term clearly dominates the linear term, so simplifying it to $O(n \log n)$ still leaves an accurate bound.
+
+$$ O(f(n)) + O(g(n)) → O(\max (f(n), g(n))) $$
+
+### Product of Bounds
+
+Constant factors are ignored since a different value of the constant $c$ can be chosen to compensate for any arbitrary constant factor.
+
+$$ O(c \cdot f(n)) → O(f(n)) $$
+
+However, the product of functions is important. For example, a linear scan of an array in $O(n)$ where for each element another linear scan of the array is made in $O(n)$ produces a product of $O(n \cdot n) = O(n^2)$.
+
+$$ O(f(n)) \cdot O(g(n)) → O(f(n) \cdot g(n)) $$
 
 ## Master Theorem
 
@@ -57,6 +170,206 @@ Stirling's approximation:
 
 $$ \ln N! \approx N \ln N - N + \ln \sqrt {2 \pi N} $$
 
+# Bitwise Operations
+
+Bits can be unconditionally turned on by ORing with 1:
+
+``` cpp
+// set third bit
+bits |= (1 << 3)
+```
+
+Bits can be unconditionally turned off by ANDing with 0:
+
+``` cpp
+// unset third bit
+bits &= ~(1 << 3)
+```
+
+Bits can be toggled by XORing with 1:
+
+``` cpp
+// toggle third bit
+bits ^= (1 << 3)
+```
+
+XOR can be replicated without actually using XOR by simply writing out what XOR means, i.e. exclusive OR: (a AND NOT b) OR (NOT a AND b)
+
+``` cpp
+// emulate XOR
+x ^ y == (x & ~y) | (~x & y)
+```
+
+The least significant set bit can be obtained with:
+
+``` cpp
+x = 0101 0100
+least_significant_set_bit = x & ~(x - 1)
+```
+
+The way this works is:
+
+1. all bits up-to-and-including the least significant set bit are flipped
+
+    ``` cpp
+    (x - 1)  = 0101 0011
+                     →
+    ```
+
+2. flip _all_ bits so that only the previously-least significant set bit will pass when ANDed with the original value
+
+    ``` cpp
+    ~(x - 1) = 1010 1100
+    ```
+
+3. AND with the original value so that only the least significant set bit passes
+
+    ``` cpp
+    x & ~(x - 1) = 0000 0100
+    ```
+
+Likewise, the least significant set bit can be unset with:
+
+``` cpp
+x = 0101 0100
+least_significant_set_bit_unset = x & (x - 1)
+```
+
+This works because all bits up-to-and-including the least significant set bit are flipped, such that the least significant set bit is now unset (0) and all prior bits are set (1). All other more significant bits remain unchanged. This way, ANDing both causes the previously least significant set bit to fail.
+
+## Parity
+
+The parity can be computed by continuously right-shifting and ANDing the shifted bit with 1 and adding the result to the running parity. However, only the 1 bits will have an effect on the parity, so a quicker way is to continuously be accessing and turning off the next lowest set bit. Finally, lookup tables of e.g. 16-bit chunks can be precomputed so that on a given input, the parity for each 16-bit chunk of the input is looked up and added together.
+
+## Bitwise Set Operations
+
+A very important property of XOR is that it a number XORed with itself is 0.
+
+$$ N \oplus N = 0 $$
+
+For example, given a list of numbers where each number appears exactly twice _except_ for one number, the number that appears only once can be obtained by XORing each element with the next one, since duplicate elements would cancel themselves out.
+
+More generally, bytes can be treated as a set, where bitwise operations correspond to set operations.
+
+A set can be tested for the presence of a value by using the AND operator. More generally, this can be seen as a set intersection operation, in which the operands may, after all, be singleton sets.
+
+$$ S_a \mathrel{\&} S_b $$
+
+A value can be _unconditionally_ added to set $S$ using the OR operator:
+
+$$ S \mathrel{|} N $$
+
+A value can be _unconditionally_ removed from set $S$ using the AND operator with the complement of the value to be removed:
+
+$$ S \mathrel{\&} \mathord{\sim} N $$
+
+A value can be _conditionally_ added or removed from the set $S$ using the XOR operator. The value will be removed if it is already contained and added if it isn't.
+
+$$ S \oplus N $$
+
+For example, given an array of numbers, each of which appears exactly three times _except_ for one number, the number that appears only once can be obtained using a combination of the above operations.
+
+There will be two sets. The `ones` set will contain those numbers that have been observed to appear once so far. The `twos` set will contain those numbers that have been observed to appear twice so far. It's not necessary to track those numbers that appear three times, as that is implicit.
+
+For each number in the array, it will be added to the `ones` set if it has been seen exactly once. If a number is already in the `ones` set and is seen again, it's removed from the `ones` set and added to the `twos` set. If a number is already in the `twos` set and is seen again, it's removed from the `twos` set. Ultimately this will leave the `ones` set as a singleton set containing the number that appears only once.
+
+First, the number being considered is checked to see if it has already been seen once so far:
+
+``` java
+ones & num
+```
+
+This would mean that this is the second time that this number has been seen. If the number is indeed in the `ones` set, the above expression evaluates to the number itself by nature of the AND operation, otherwise it evaluates to 0.
+
+The result of the above expression can directly be used to add the number to the `twos` set using the OR operation, which adds the number to the set, or does nothing if the number is 0.
+
+``` java
+twos |= ones & num
+```
+
+The number is then _conditionally_ added to or removed from the `ones` set using the XOR operation. If the `ones` set already contained the number, then the previous operation will have added the number to the `twos` set, in which case it's no longer needed inside the `ones` set, since the `ones` set only contains those numbers that have appeared _exactly_ once. If the `ones` set didn't already contain the number, then the above presence check results in 0 which does nothing when added to the `twos` set.
+
+Therefore, we can add the number to the `ones` set if it wasn't already contained, or remove it if it was contained.
+
+``` java
+ones ^= num
+```
+
+However, if this has been the _third_ time that this number has been seen, then the number will have been in the `twos` set already but _not_ in the `ones` set. The above expression would therefore _also_ add it to the `ones` set. Therefore we can be sure that if the number was present in both the `ones` and `twos` sets after the above operation, then this is the _third_ time that this number has been observed.
+
+In this case, the number should be removed from both sets. This would ensure that the `ones` set really does only contain those numbers that have appeared _exactly_ once, which is what we're interested in.
+
+However, the `ones` set and the `twos` set may contain various numbers. We know that the one that appears in both is the one that has appeared three times, and hence the one we want to remove, so we can obtain this number by intersecting both sets.
+
+``` java
+int threes = twos & ones;
+```
+
+We then want to remove this number from both sets:
+
+``` java
+twos &= ~threes;
+ones &= ~threes;
+```
+
+Here is the full algorithm.
+
+``` java
+public int singleNumber(int[] nums) {
+  int ones, twos;
+  ones = twos = 0;
+
+  for (int num : nums) {
+    twos |= ones & num;
+    ones ^= num;
+
+    int threes = twos & ones;
+    twos &= ~threes;
+    ones &= ~threes;
+  }
+
+  return ones;
+}
+```
+
+# Integers
+
+It's possible to "shift" a number to the left by $n$ digits by multiplying it with $\text {base}^\text {digits}$. For example, the number $321$ can be shifted to the left by 2 digits to $32100$ by multiplying it by $10^2$.
+
+$$\text {shifted left by n} = x * \text {base}^\text {digits}$$
+
+Similarly, it's possible to get the last $n$ digits of a number by getting the remainder of dividing it by $\text {base}^\text {digits}$. For example, the last 2 digits of $321$ can be obtained by getting the remainder of dividing it (i.e. the modulo) by $10^2$.
+
+$$\text {right-most n digits} = x \bmod \text {base}^\text {digits}$$
+
+The square root of a number can be found via binary search by searching from $[1.0, n]$ for a number which, squared, is equal to the input (given some tolerance or until convergence). If the input is real and less than 1, the bounds change to $[n, 1.0]$.
+
+The logarithm of a number can naively be computed by counting how many times the operand can be divided by the base without going below 1. For example, $\log_2 64$ can divide $64 / 2$ a total of six times until it reaches 1, doing it a seventh time causes the value to go below 1.
+
+# Arrays
+
+The 2-SUM problem is one where the input is a sorted array of integers and a target value $k$ and the objective is to determine if there is a pair of entries $i$ and $j$ such that:
+
+$$A[i] + A[j] = k$$
+
+The brute-force approach would be to check if this is true for all possible pairs of values in the array, of which there are $n^2$. Alternatively, a [hash table](#hash-tables) can be used.
+
+Another approach is to iterate from both ends of the array. For example, at first, the first and last elements will be used. If their sum is greater than the target, the right end will be iterated leftward so as to attempt to obtain a smaller element. If instead their sum is less than the target, the left end will be iterated rightward in hopes of increasing their sum.
+
+``` cpp
+while (left < right) {
+  sum = A[i] + A[j]
+
+  if (sum > k) {
+    right--
+  } else if (sum < K) {
+    left++
+  } else {
+    return true
+  }
+}
+```
+
 # Sorting
 
 Many problems can be reduced to sorting.
@@ -70,6 +383,8 @@ The following algorithms are described with the assumption that the sequence is 
 For example, selection sort backed by a priority queue or balanced binary tree can help to speed up the operation of finding the smallest element in the unsorted region. Instead of being linear, the operation would be $\lg(n)$. Given that this is done at every element in the sequence, of which there are $N$, this means that selection sort backed by such a structure can be improved from $O(n^2)$ to $O(n\lg(n))$ [^sorting_improvements].
 
 A sorting algorithm is known as _stable_ if it maintains the same relative order of equal keys as it was before the sorting operation.
+
+The best case complexity of comparison-based sorting is $O(n \log n)$. If the distribution of the data is known, sorting can be done much faster using counting or bucket sort, for example.
 
 ## Selection Sort
 
@@ -200,6 +515,43 @@ public void merge(Comparable[] seq, int lo, int mid, int hi) {
 }
 ```
 
+The complexity is $O(n \log n)$ because the number of subproblems is doubling at each level (i.e. the two recursive calls), but the work to be done by those subproblems is halving. That is, for a given level $j$, the amount of work done is:
+
+$$ 2^j \left( \frac n 2^j \right) = n $$
+
+Given an input size of $n$, the number of levels in the recursion tree is $\log_2 n$, which means that at each of the $\log_2 n$ levels in the tree there is $n$ work being done, hence $n \log n$.
+
+The number of _inversions_ in an array can be counted in $O(n \log n)$ by reducing the problem to merge sort. Specifically, during a merge, each time an element from the right half is merged and there are elements remaining in the left half, then the chosen element from the right half represents an inversion between each of the elements remaining on the left half.
+
+``` cpp
+left: [1, 2, 12, 13] right: [6, 8, 9, 10]
+
+// after merging two from the left
+merged: [1, 2, _, _, _, _, _, _]
+
+left: [12, 13] right: [6, 8, 9, 10]
+
+// the ones on the right are lesser, e.g. merge 6
+merged: [1, 2, 6, _, _, _, _, _]
+
+left: [12, 13] right: [8, 9, 10]
+
+// the act of having merged 6 instead of [12, 13] means that
+// the original array had two inversions concerning 6: 12⟷6 and 13⟷6
+```
+
+A possible implementation would have merge return the inversions it encountered, which has to be passed up the recursion tree by having the sort functions return the sum of the recursive sorts and merges.
+
+``` cpp
+SortAndCount(array A, length n)
+  if n = 1 return 0
+  else
+    (B, x) = SortAndCount(1st half of A, n/2)
+    (C, y) = SortAndCount(2nd half of A, n/2)
+    (D, z) = MergeAndCountSplitInv(B, C, n)
+  return x + y + z
+```
+
 ### Top-Down
 
 This is a recursive approach that works by splitting the array into two pieces until the pieces consist of pairs of elements. On each recurrence, the two pieces that were split for that recurrence are merged back.
@@ -253,10 +605,12 @@ public void sort(Comparable[] seq) {
 
 |Case   |Growth|
 |:----- |:--------|
-|Worst  |$O(n\lg{n})$|
-|Space  |$O(\lg{n})$|
+|Worst  |$O(n \log n)$|
+|Space  |$O(\log n)$|
 
-This is a divide-and-conquer algorithm that works by essentially partitioning the array into two sub-arrays and sorting them independently. It is typically faster than merge sort because it does less data movement.
+QuickSort works by choosing an element in the array---the pivot---and partitioning the array such that all elements _less than_ the pivot are moved to its left and all elements _greater than_ the pivot are moved to its right. This has the effect that, at the end of this operation, the chosen element will be at its "sorted order position," i.e. the position in which it would be if the entire array were already sorted.
+
+Note that the elements are simply moved to the correct side of the pivot, but the order of neither side is defined, i.e. neither the left nor the right side are necessarily sorted after partitioning.
 
 ``` java
 public void sort(Comparable[] seq) {
@@ -370,7 +724,7 @@ private void sort(Comparable[] seq, int lo, int hi) {
 }
 ```
 
-## Heaps
+# Heaps
 
 A priority queue is an abstract data type that allows adding elements and retrieving the smallest or largest element. Priority queues are useful for an unbounded sequence for which we want to retrieve the $M$ smallest elements at any given moment.
 
@@ -379,7 +733,7 @@ The data structure commonly used to back a priority queue is an array embedding 
 1. the parent of $k$ is $\left\lfloor (k - 1)/2 \right\rfloor$
 2. the children of $k$ are at $2k + 1$ and $2k + 2$
 
-### Heap Insertion
+## Heap Insertion
 
 |Case    |Growth|
 |:-----  |:--------|
@@ -407,7 +761,7 @@ private void swim(Comparable[] seq, int target) {
 }
 ```
 
-### Heap Removal
+## Heap Removal
 
 |Case   |Growth|
 |:----- |:--------|
@@ -446,7 +800,7 @@ void Sink(std::vector<T> &vec, int target) {
 }
 ```
 
-### Heap Sort
+## Heap Sort
 
 |Case   |Growth|
 |:----- |:--------|
@@ -496,7 +850,7 @@ void Sort(std::vector<T> &vec) {
 }
 ```
 
-### Median Maintenance
+## Median Maintenance
 
 The median of a streaming sequence of numbers can be computed in constant time by maintaining two heaps: a max-heap for the lower/left half and a min-heap for the upper/right half. This has the effect of keeping the elements sorted, and the top of the max-heap yields one of the overall middle elements, whereas the top of the min-heap yields the other middle element.
 
@@ -504,37 +858,41 @@ The elements must be kept equal in size, or the min-heap may be larger by one el
 
 If one of the heaps grows larger, its top element should be popped and pushed onto the other heap to balance them.
 
-## Selection
+# Selection
 
 |Case    |Growth|
 |:-----  |:--------|
 |Average |$\Theta(n)$|
 
-Selecting the $k$ smallest items in a sequence can be accomplished by using the quick sort algorithm's partition algorithm. This is guaranteed by the invariant held by quick sort's partition algorithm which states that given the partition index $j$, all elements to the left are less than or equal to $j$ and all elements to the right are greater than or equal to $j$, effectively making the sub-sequence up to $j$ consist of the smallest $j$ elements in the sequence.
+Selecting the $k^\text{th}$ smallest item in a sequence can be accomplished by using QuickSort's partition algorithm. This is guaranteed by the invariant held by QuickSort's partition algorithm which states that given the partition index $j$, all elements to the left are less than or equal to $j$ and all elements to the right are greater than or equal to $j$, effectively making the sub-sequence up to $j$ consist of the smallest $j$ elements in the sequence.
 
-``` java
-public Comparable select(Comparable[] seq, int k) {
-  shuffle(seq);
+With that in mind, the desired index $k$ is input to QuickSelect. After partitioning in $O(n)$, the resulting position $j$ of the $k^\text{th}$ element is compared to the input $k$. If the resulting position $j$ is less than the desired $k$ then QuickSelect is repeated on the right region $A[j ..]$ with a compensated $k$, i.e. $k - j$. If the resulting position $j$ is greater than the desired $k$ then QuickSelect is repeated on the left region $A[.. j]$ with the same $k$.
 
-  int lo = 0, hi = seq.length - 1;
+``` cpp
+template <typename Iter>
+auto QuickSelect(Iter begin, Iter end, std::size_t i) -> decltype(*begin) {
+  std::size_t length = std::distance(begin, end);
 
-  while (hi > lo) {
-    int j = partition(seq, lo, hi);
-
-    if      (j == k) return seq[k];
-    else if  (j > k) hi = j - 1;
-    else if  (j < k) lo = j + 1;
+  if (length == 1) {
+    return *begin;
   }
 
-  return seq[k];
+  Iter pivot = Partition(begin, end);
+
+  std::size_t distance = std::distance(begin, pivot);
+
+  if (distance == i) {
+    return *pivot;
+  } else if (i > distance) {
+    // -1 to shift past pivot
+    return QuickSelect(std::next(pivot), end, i - distance - 1);
+  } else {
+    return QuickSelect(begin, pivot, i);
+  }
 }
 ```
 
-# Searching
-
-**Answers**: Finding a certain element in a collection.
-
-## Binary Search Trees
+# Binary Search Trees
 
 |Case    |Growth|
 |:-----  |:--------|
@@ -548,7 +906,21 @@ The rank operation counts how many keys are less than or equal to the given valu
 
 The predecessor of any node can be obtained easily if it has a left child, in which case the predecessor of the node is the maximum of the subtree rooted at the left child. If there is no left child, the predecessor is the first ancestor larger than the node (in other words, the first parent found for which the child is the right child). The successor can be found similarly, flipping left⟷right and maximum⟷minimum.
 
-### BST Traversal
+## BST Structure
+
+A perfect binary tree is one where every level has the maximum number of nodes.
+
+The depth of a tree node is the number of edges from the root to the node, i.e. the level - 1, so the depth of the root node is 0. The level of a node in a tree is its depth + 1. The difference between levels and depth is that levels are the visual levels whereas depth is the number of edges from the root to the node.
+
+The height of a tree node is the number of edges on the longest path from the node to a leaf. The height of an entire tree is the height of its root, i.e. the depth of the deepest node.
+
+The number of levels in a binary tree with $n$ nodes is $\log_2 n$.
+
+In a perfect binary tree, the number of nodes at depth $d$ is $2^d$.
+
+In a perfect binary tree with $L$ levels, the total number of nodes is $2^L - 1$. So if there are 3 levels, $2^3 - 1 = 7$ total nodes.
+
+## BST Traversal
 
 There are three main forms of traversing a BST. The _order_ refers to the order in which the current node $C$ is visited, that is, the time at which $C$ is visited is the only thing that varies, so $L$ is always visited before $R$.
 
@@ -558,7 +930,7 @@ There are three main forms of traversing a BST. The _order_ refers to the order 
 |in-order    |$L \to C \to R$|
 |post-order  |$L \to R \to C$|
 
-#### Morris Traversal
+### Morris Traversal
 
 It's possible to perform an in-order traversal of a BST without using a stack or recursion by performing a Morris traversal. In essence, this traversal transforms the tree during the traversal so that the entire right branch of the BST forms the in-order traversal. The BST is returned to its original structure as the traversal takes place.
 
@@ -617,7 +989,7 @@ while (current != null) {
 }
 ```
 
-### BST Deletion
+## BST Deletion
 
 Most operations such as insertion and lookup are very straightforward. Deletion is somewhat more involved.
 
@@ -648,7 +1020,7 @@ void replace_node(tree *t, node *u, node *v) {
 }
 ```
 
-### BST Select
+## BST Select
 
 The BST can be augmented so that each node contains the count of notes rooted at it, including itself. Then the count can be computed for node $x$ base by adding the count of left child $y$ and right child $z$ plus one for $x$:
 
@@ -687,7 +1059,7 @@ T Select(node, int i) {
 }
 ```
 
-## 2-3 Search Trees
+# 2-3 Search Trees
 
 While **2-3 search tree** can be implemented, they're mainly used to help understand the implementation of [Red-Black Trees](#red-black-trees), which have better performance.
 
@@ -701,7 +1073,7 @@ A **2-3 tree** is either empty or:
     * middle for keys between the node's keys
     * right for keys larger than the right key
 
-### 2-3 Tree Searching
+## 2-3 Tree Searching
 
 Searching follows simply from the structure of the tree.
 
@@ -709,7 +1081,7 @@ Searching follows simply from the structure of the tree.
 2. if not, recurse into the appropriate link
 3. **search miss** if a null link is reached
 
-### 2-3 Tree Insertion
+## 2-3 Tree Insertion
 
 Insertion needs to take into consideration the fact that the tree must remain balanced after the operation. The general procedure is that the key is searched for until a node with a null link is reached at the bottom of the tree.
 
@@ -731,7 +1103,7 @@ Perfect balance is preserved because tree height increase occurs at the root, an
 
 The **problem** with implementing a direct representation of 2-3 trees is that there are many cases to handle and nodes have to be converted between various types. These operations can incur overhead that nullifies or even makes worse the performance of 2-3 trees compared to regular BSTs.
 
-## Red-Black Trees
+# Red-Black Trees
 
 |Case    |Growth|
 |:-----  |:--------|
@@ -745,9 +1117,11 @@ The **problem** with implementing a direct representation of 2-3 trees is that t
 4. both children of every **red** node are **black**, i.e. there must not be more than one **red** node in a row in any vertical path
 5. every path from a given node to any of its descendant leaves contains the same number of **black** nodes
 
+<img src="/images/notes/algorithms/red-black-trees/red-black-tree.png" class="center" />
+
 These properties allow red-black trees to be nearly balanced in even the worst case, allowing them more performance than regular BSTs. A very neat implementation is [available here](https://github.com/prasanthmadhavan/Red-Black-Tree/blob/master/rbtree.c).
 
-### Red-Black Tree Insertion
+## Red-Black Tree Insertion
 
 The inserted node is attached in the same manner as for BSTs, except that every node is painted **red** on insertion. However, the inserted node has the possibility of violating any one of the 5 invariants, in which case the situation must be remedied. The following code representing the different cases that must be remedied are split into corresponding individual functions for didactic purposes.
 
@@ -856,7 +1230,7 @@ void insert_case3c(node *n) {
 }
 ```
 
-### Red-Black Tree Deletion
+## Red-Black Tree Deletion
 
 Deletion is handled similar to deletion in BSTs, but is a _lot_ more complicated because the tree has to be re-balanced if removing a node from the tree causes it to become unbalanced.
 
@@ -897,7 +1271,7 @@ void delete(node *m, void *key) {
 }
 ```
 
-#### Red-Black Tree Balance
+### Red-Black Tree Balance
 
 If the node is replaced with a successor, that successor is essentially removed from its original location, thereby possibly causing tree unbalanced. For this reason, the original successor node is removed using `delete_one_child` which re-balances the tree if necessary.
 
@@ -1034,7 +1408,7 @@ void delete_case4(node *n) {
 }
 ```
 
-## Hash Tables
+# Hash Tables
 
 Hash tables consist of an array coupled with a _hash function_---such as [MurmurHash](http://en.wikipedia.org/wiki/MurmurHash) or [CityHash](http://en.wikipedia.org/wiki/CityHash)---and a _collision resolution_ scheme, both of which help map the key to an index within the array.
 
@@ -1048,7 +1422,7 @@ Alternatively, we can sort the array in $O(n \log n)$ and scan through the array
 
 This can be improved further by using a hash table. Put each element of the array into a hash table, then for each element $x$ in the array compute the required summand $r = t - x$ and check if $r$ is present in the hash table. If so, then there's a match.
 
-### Hash Functions
+## Hash Functions
 
 Hash functions need to be consistent, efficient, and should uniformly distribute the set of keys.
 
@@ -1097,7 +1471,7 @@ int hash = hash * R + year;
 int hash = ((R + day) * R + month) * R + year;
 ```
 
-### Pathological Data Sets
+## Pathological Data Sets
 
 It's possible to craft a pathological data set that can cause a denial of service attack on a hash table.
 
@@ -1105,7 +1479,7 @@ One way to mitigate this is to use a cryptographic hash function, which also has
 
 Alternatively, design a family of hash functions and choose one randomly.
 
-### Load Factor
+## Load Factor
 
 The _load factor_ is defined by $\alpha = N/M$ where $\alpha$ is the percentage of table entries that are occupied, $N$ is the number of objects in the hash table, and $M$ is the number of buckets in the hash table.
 
@@ -1128,7 +1502,7 @@ $$
 
 Based on this, when $\alpha$ is about 0.5 there will be 1.5 compares for a search hit and 2.5 compares for a search miss on average. For this reason, $\alpha$ should be kept under 0.5 through the use of array resizing.
 
-### Separate Chaining
+## Separate Chaining
 
 |Case    |Growth|
 |:-----  |:--------|
@@ -1143,11 +1517,11 @@ Separate chaining consists of a two-step process:
 
 A property of separate chaining is that the average length of the lists is always $N/M$ in a hash table with $M$ lists and $N$ keys.
 
-### Double Hashing
+## Double Hashing
 
 Double hashing is a form of open addressing in which two hash functions are used. If the first hash function incurs a collision, then the result of the second hash function serves as an offset at which to try insertion. For example, if $h_1(x) = 17$ caused a collision, and $h_2(x) = 23$, then it will try inserting at position $17 + 23 = 40$, then $40 + 23 = 63$, and so on.
 
-### Linear Probing
+## Linear Probing
 
 |Case    |Growth|
 |:-----  |:--------|
@@ -1161,13 +1535,13 @@ Linear probing is a form of open addressing that relies on empty entries in the 
     2. if the position is not empty and the key is equal, replace the value
     3. if the key is not equal, try the next entry and repeat until it can be inserted
 
-#### Linear Probing Deletion
+### Linear Probing Deletion
 
 The insert and retrieval operations retrieve the index and perform the same operation until the entry is null. This has the consequence that deleting a node cannot _simply_ entail setting the entry to null, or it would prematurely stop the lookup of other keys.
 
 As a result, after setting the entry to null, every key to the right of the removed key also has to be removed, i.e. set to null, and then re-inserted into the hash table using the regular insertion operation.
 
-### Sparse Vectors
+## Sparse Vectors
 
 An application of hash tables can be to implement sparse vectors for the purpose of performing matrix-vector multiplications. In certain situations, the row-vector from a matrix can have a very small amount of non-zero elements. If the matrix was stored in a naive array format it would amount to an immense waste of space and computation.
 
@@ -1231,9 +1605,13 @@ A graph $G$ with $V$ vertices is a tree if any of the following are satisfied:
 
 A _spanning tree_ of a connected graph is a subgraph that contains all of the vertices as a single tree. A _spanning forest_ of a graph is the union of all spanning trees of its connected components.
 
-A graph's _density_ is its proportion of possible paris of vertices that are connected. A _sparse_ graph has relatively few of the possible edges present, compared to a _dense_ one.
+A graph's _density_ is its proportion of possible paris of vertices that are connected. A _sparse_ graph has relatively few of the possible edges present compared to a _dense_ one.
+
+As a rule of thumb, a graph is considered sparse if it has an edge count closer to the number of its vertices $O(N)$ and it's considered dense if it has an edge count closer to the number of vertices squared $O(N^2)$.
 
 A _bipartite graph_ is one whose vertices can be divided into two sets such that all edges connect a vertex in one set with a vertex in the other.
+
+Oftentimes, the number of nodes/vertices is represented by $N$ and the number of edges is represented by $M$.
 
 **Answers**:
 
@@ -1250,6 +1628,8 @@ An _undirected graph_ is one in which the connections don't have an associated d
 * **array of edges**: a collection of Edge objects each containing two instance variables for each of the connected vertices
 
 Adjacency lists have the best balance between space and time performance. They have space usage proportional to $V + E$, constant time to add an edge, and time proportional to the degree of $v$ to iterate through adjacent vertices.
+
+An undirected graph can have a minimum of $n - 1$ edges and a maximum of $\binom N 2 = \frac {n (n - 1)} 2$ edges.
 
 ### Depth-First Search
 
@@ -1449,6 +1829,8 @@ void dfs(const Graph &G, int v) {
 }
 ```
 
+Currency arbitrage can be discovered if the problem is modeled as a graph where the nodes are the different kinds of currency and the edge weights are the logarithm of the exchange rate. In this case, an instance of arbitrage is one where there is a cycle with positive weight.
+
 ### Topological Order
 
 Topological sort puts the vertices of a digraph in order such that all of its directed edges point from a vertex earlier in the order to a vertex later in the order. Three different orders are possible, which are accomplished by saving each vertex covered by the DFS in a queue or stack, depending on the desired order:
@@ -1474,6 +1856,14 @@ std::vector<T> TopologicalOrder() {
   return reverse_post_order;
 }
 ```
+
+For example, consider an alien or unknown alphabet and we're given an array of words which are _sorted_ according to the lexigraphical order of the alphabet. In order to to reconstruct, or extract, the lexicographical order of this unknown alphabet, first treat the lexicographical order simply as a "relationship". Graphs can model relationships, so start by creating a node for each character.
+
+Information about the lexicographical order of the alphabet can be inferred from the sorted order of the input. Word $A$ comes before $B$ because $A$ mismatches with $B$ at some character position $i$ such that $A[i] < B[i]$, by definition of a lexicographical sorted order.
+
+What's necessary then is to determine the mismatching characters $A[i]$ and $B[i]$ for each pair of adjacent words in the input and to establish a relationship between those two characters which denotes precedence, i.e. a directed edge $A[i] \to B[i]$ to mean that $A[i]$ comes before $B[i]$ in the alphabet.
+
+Once this is all done, the topological order of the graph can be obtained to determine the full order of the alphabet.
 
 ### Strong Connectivity
 
@@ -1652,13 +2042,30 @@ public int find(int p) {
 }
 ```
 
+## Minimum Cut
+
+Adding an edge to a tree creates a cycle and removing an edge from a tree breaks it into two separate subtrees. Knowing this, a _cut_ of a graph is a partition of its vertices into two nonempty disjoint sets, connected by a _crossing edge_. A graph with $n$ vertices has $2^n$ cuts because each vertex $n$ has two choices as to which set it's placed in, left or right, i.e. $n$ blanks to be filled with one of two values.
+
+A minimum cut (min-cut) is the cut with the fewest number of crossing edges, with parallel edges allowed, i.e. edges which connect the same vertices. Min-cuts are useful for identifying weaknesses in networks (i.e. hotspots), identifying tightly-knit communities in social networks, and image segmentation.
+
+The minimum cut can (potentially) be obtained through a randomized algorithm known as random contraction. It works by, as long as more than 2 vertices remain in the graph, picking a random remaining edge and merging or "contracting" them into a single vertex, removing any self-loops. When only 2 vertices remain, the cut represented by them is returned.
+
+``` cpp
+while N > 2:
+  edge = random_edge()
+  node = merge_vertices(edge.from, edge.to)
+  remove_self_loops(node)
+
+return cut
+```
+
+It's possible that random contraction will not find the minimum cut. This is mitigated by running it a large number of times, since it is very fast, and returning the smallest cut found. The largest number of min-cuts that a graph with $n$ vertices can have is $\binom n 2 = \frac {n (n - 1)} 2$.
+
 ## Minimum Spanning Trees
 
 An _edge-weighted graph_ is a graph where the edges have associated weights or costs. Edge-weighted graphs can be represented with adjacency lists containing edge objects which contain the two vertices, one of which is the index of the adjacency list, as well as the weight for that edge.
 
 A _spanning tree_ is a connected subgraph with no cycles that includes all of the vertices in the graph. A _minimum spanning tree_ (MST) is a spanning tree whose weight---the sum of all of its edges' weights---is no larger than the weight of any other spanning tree for that graph.
-
-Adding an edge to a tree creates a cycle and removing an edge from a tree breaks it into two separate subtrees. Knowing this, a _cut_ of a graph is a partition of its vertices into two nonempty disjoint sets, connected by a _crossing edge_.
 
 ### Prim's Algorithm
 
@@ -2163,6 +2570,10 @@ $$ R = \frac {\text {# of constraints}} {\text {# of variables}} $$
 # Strings
 
 Strings have special properties which necessitate more efficient algorithms for sorting and searching. Other subjects concerning strings include tries, regular expressions, and data compression.
+
+## String Rotation
+
+A string such as `"house"` can be rotated as `"sehou"`. An quick way to determine if a string is a rotation of another is by concatenating the original string to itself and then looking for the rotated string within it. For example, the concatenation would be `"househouse"`, which clearly contains `"sehou"` as a substring.
 
 ## String Sorting
 
@@ -2975,15 +3386,11 @@ Greedy algorithms are ones which make "myopic" decisions, i.e. they seemed like 
 
 Dijkstra's shortest-path algorithm is greedy for example because it processes each destination once, it doesn't backtrack to find a different path.
 
-# Context
-
-Miscellaneous algorithms follow.
-
-## B-Trees
+# B-Trees
 
 A B-Trees of order $M$ is a tree consisting of internal and external $k$-nodes each consisting of $k$ keys where $2 \leq k \leq M - 1$ at the root and $M/2 \leq k \leq M - 1$ at every other node. _Internal nodes_ contain copies of keys, where every key is greater than or equal to its parent node's associated key, but not greater than the parent node's next largest key. _External nodes_ are the leaves of the tree that associate keys with data. A _sentinel key_ is created to be less than all other keys and is the first key in the root node.
 
-### B-Tree Insertion
+## B-Tree Insertion
 
 To insert a key, the tree is recursively descended by following the link pertaining to the interval upon which the inserted key falls until an external node is reached. The tree is balanced on the way up the tree after the recursive call. If a node is full it is split into two $M/2$-nodes and attached to a parent 2-node (if at the root) or a $(k + 1)$-node where $k$ was the original size of the full node's parent. Whenever a node is split, the smallest key in the new node (or both smallest keys from both nodes if at the root) is inserted into the parent node.
 
@@ -3014,7 +3421,7 @@ void add(Page h, Key key) {
 }
 ```
 
-## Suffix Arrays
+# Suffix Arrays
 
 Suffix arrays are arrays of suffixes of a given text which help with procedures such as finding the longest repeated substring in some text.
 
@@ -3062,13 +3469,13 @@ void main(String[] args) {
 }
 ```
 
-## Network-Flow
+# Network-Flow
 
 The Network-Flow problem concerns itself with finding the settings in a network that maximize the flow from source to sink. At each junction in the network there are switches that control the flow's distribution between it's outgoing edges. The problem can be modeled as an edge-weighted digraph with a single source and sink pair, where the weights correspond to the capacity of the edge.
 
 An _st-flow_ is a set of edge flows for the network that represent the distribution of flow values for each edge. An _st-flow value_ is the sink's inflow. The network-flow problem can be described as finding an st-flow such that no other st-flow has a larger st-flow value. Such an st-flow can be referred to as a _maxflow_.
 
-### Ford-Fulkerson
+## Ford-Fulkerson
 
 The Ford-Fulkerson algorithm, also known as the _augmenting-path algorithm_, works by increasing flows incrementally along paths from the source to the sink. It works by considering that each edge consists of a _forward edge_ and a _backward edge_.
 
@@ -3083,14 +3490,6 @@ This means that if, in the original, an edge's flow is zero then there'll only b
 The residual network is useful because any path in it from source to sink corresponds directly to an augmenting path in the original network. As an augmenting path's flow is incremented, when an edge in the path becomes full or empty, it corresponds to changing direction or disappearing in the residual network.
 
 The _shortest-augmenting-path_ method finds the maxflow by finding an augmenting path using BFS and incrementing it.
-
-## NP-Complete Problems
-
-* **clique problem**: find complete subgraphs, or _cliques_, in a graph
-* **vertex cover**: find a set of vertices in a graph such that each edge in the graph is incident to at least one vertex in the set
-* **travelling salesman problem**: find the shortest possible path cycle that visits every vertex in a graph
-* **graph coloring**: color every vertex--edge in a graph such that no two adjacent vertices--edges have the same color
-* **knapsack**: given a set of items with different values and a container of a maximum capacity, find the combination of items that fits in the container and has the largest total value.
 
 # Geometric Algorithms
 
@@ -3151,107 +3550,6 @@ Given a collection of line segments, it's possible to determine which pairs of l
 ## Rectangle Intersection
 
 Checking for rectangle intersection is similar to line segment intersection. The left edge of a rectangle prompts the vertical range of the rectangle is checked for overlaps in an interval search tree, and added if none are detected. The rectangle's vertical range is removed from the interval search tree when the right edge of the rectangle is encountered.
-
-# Bitwise Operations
-
-A very important property of XOR is that it a number XORed with itself is 0.
-
-$$ N \oplus N = 0 $$
-
-For example, given a list of numbers where each number appears exactly twice _except_ for one number, the number that appears only once can be obtained by XORing each element with the next one, since duplicate elements would cancel themselves out.
-
-More generally, bytes can be treated as a set, where bitwise operations correspond to set operations.
-
-A set can be tested for the presence of a value by using the AND operator. More generally, this can be seen as a set intersection operation, in which the operands may, after all, be singleton sets.
-
-$$ S_a \mathrel{\&} S_b $$
-
-A value can be _unconditionally_ added to set $S$ using the OR operator:
-
-$$ S \mathrel{|} N $$
-
-A value can be _unconditionally_ removed from set $S$ using the AND operator with the complement of the value to be removed:
-
-$$ S \mathrel{\&} \mathord{\sim} N $$
-
-A value can be _conditionally_ added or removed from the set $S$ using the XOR operator. The value will be removed if it is already contained and added if it isn't.
-
-$$ S \oplus N $$
-
-For example, given an array of numbers, each of which appears exactly three times _except_ for one number, the number that appears only once can be obtained using a combination of the above operations.
-
-There will be two sets. The `ones` set will contain those numbers that have been observed to appear once so far. The `twos` set will contain those numbers that have been observed to appear twice so far. It's not necessary to track those numbers that appear three times, as that is implicit.
-
-For each number in the array, it will be added to the `ones` set if it has been seen exactly once. If a number is already in the `ones` set and is seen again, it's removed from the `ones` set and added to the `twos` set. If a number is already in the `twos` set and is seen again, it's removed from the `twos` set. Ultimately this will leave the `ones` set as a singleton set containing the number that appears only once.
-
-First, the number being considered is checked to see if it has already been seen once so far:
-
-``` java
-ones & num
-```
-
-This would mean that this is the second time that this number has been seen. If the number is indeed in the `ones` set, the above expression evaluates to the number itself by nature of the AND operation, otherwise it evaluates to 0.
-
-The result of the above expression can directly be used to add the number to the `twos` set using the OR operation, which adds the number to the set, or does nothing if the number is 0.
-
-``` java
-twos |= ones & num
-```
-
-The number is then _conditionally_ added to or removed from the `ones` set using the XOR operation. If the `ones` set already contained the number, then the previous operation will have added the number to the `twos` set, in which case it's no longer needed inside the `ones` set, since the `ones` set only contains those numbers that have appeared _exactly_ once. If the `ones` set didn't already contain the number, then the above presence check results in 0 which does nothing when added to the `twos` set.
-
-Therefore, we can add the number to the `ones` set if it wasn't already contained, or remove it if it was contained.
-
-``` java
-ones ^= num
-```
-
-However, if this has been the _third_ time that this number has been seen, then the number will have been in the `twos` set already but _not_ in the `ones` set. The above expression would therefore _also_ add it to the `ones` set. Therefore we can be sure that if the number was present in both the `ones` and `twos` sets after the above operation, then this is the _third_ time that this number has been observed.
-
-In this case, the number should be removed from both sets. This would ensure that the `ones` set really does only contain those numbers that have appeared _exactly_ once, which is what we're interested in.
-
-However, the `ones` set and the `twos` set may contain various numbers. We know that the one that appears in both is the one that has appeared three times, and hence the one we want to remove, so we can obtain this number by intersecting both sets.
-
-``` java
-int threes = twos & ones;
-```
-
-We then want to remove this number from both sets:
-
-``` java
-twos &= ~threes;
-ones &= ~threes;
-```
-
-Here is the full algorithm.
-
-``` java
-public int singleNumber(int[] nums) {
-  int ones, twos;
-  ones = twos = 0;
-
-  for (int num : nums) {
-    twos |= ones & num;
-    ones ^= num;
-
-    int threes = twos & ones;
-    twos &= ~threes;
-    ones &= ~threes;
-  }
-
-  return ones;
-}
-```
-
-# Integers
-
-It's possible to "shift" a number to the left by $n$ digits by multiplying it with $\text {base}^\text {digits}$. For example, the number $321$ can be shifted to the left by 2 digits to $32100$ by multiplying it by $10^2$.
-
-$$\text {shifted left by n} = x * \text {base}^\text {digits}$$
-
-Similarly, it's possible to get the last $n$ digits of a number by getting the remainder of dividing it by $\text {base}^\text {digits}$. For example, the last 2 digits of $321$ can be obtained by getting the remainder of dividing it (i.e. the modulo) by $10^2$.
-
-$$\text {right-most n digits} = x \bmod \text {base}^\text {digits}$$
 
 # Dynamic Programming
 
@@ -3381,6 +3679,14 @@ for i = 1, 2, ..., n:
 
 return A[n, W]
 ```
+
+# NP-Complete Problems
+
+* **clique problem**: find complete subgraphs, or _cliques_, in a graph
+* **vertex cover**: find a set of vertices in a graph such that each edge in the graph is incident to at least one vertex in the set
+* **travelling salesman problem**: find the shortest possible path cycle that visits every vertex in a graph
+* **graph coloring**: color every vertex--edge in a graph such that no two adjacent vertices--edges have the same color
+* **knapsack**: given a set of items with different values and a container of a maximum capacity, find the combination of items that fits in the container and has the largest total value.
 
 *[BFS]: Breadth-First Search
 *[BST]: Binary Search Trees

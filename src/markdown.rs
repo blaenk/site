@@ -74,8 +74,8 @@ mod renderer {
 
     pub struct Pass;
     impl Render for Pass {
-        fn link(&mut self, output: &mut Buffer, content: &Buffer, _link: &Buffer, _title: &Buffer) -> bool {
-            output.pipe(content);
+        fn link(&mut self, output: &mut Buffer, content: Option<&Buffer>, _link: Option<&Buffer>, _title: Option<&Buffer>) -> bool {
+            content.map(|c| output.pipe(c));
             true
         }
     }
@@ -164,14 +164,22 @@ mod renderer {
             &mut self.html
         }
 
-        fn footnote_definition(&mut self, output: &mut Buffer, content: &Buffer, num: u32) {
+        fn footnote_definition(&mut self, output: &mut Buffer, content: Option<&Buffer>, num: u32) {
+            if content.is_none() { return; }
+
+            let content = content.unwrap();
+
             output.write(format!("\n<li id=\"fn{}\">\n", num).as_bytes()).unwrap();
             let end = content.len() - 5;
             output.write(&content[.. end as usize]).unwrap();
             output.write(format!("&nbsp;<a href=\"#fnref{}\" title=\"continue reading\" rev=\"footnote\"><i class=\"fa fa-level-up\"></i></a></p></li>\n", num).as_bytes()).unwrap();
         }
 
-        fn math(&mut self, output: &mut Buffer, text: &Buffer, displaymode: i32) -> bool {
+        fn math(&mut self, output: &mut Buffer, text: Option<&Buffer>, displaymode: i32) -> bool {
+            if text.is_none() { return true; }
+
+            let text = text.unwrap();
+
             if displaymode != 0 {
                 output.write(b"<script type=\"math/tex; mode=display\">").unwrap();
             } else {
@@ -184,7 +192,11 @@ mod renderer {
             true
         }
 
-        fn html_span(&mut self, output: &mut Buffer, text: &Buffer) -> bool {
+        fn html_span(&mut self, output: &mut Buffer, text: Option<&Buffer>) -> bool {
+            if text.is_none() { return true; }
+
+            let text = text.unwrap();
+
             let s = text.to_str().unwrap();
 
             // this is deliberately very naive to avoid the
@@ -203,7 +215,15 @@ mod renderer {
             true
         }
 
-        fn code_block(&mut self, output: &mut Buffer, code: &Buffer, lang: &Buffer) {
+        fn code_block(&mut self, output: &mut Buffer, code: Option<&Buffer>, lang: Option<&Buffer>) {
+            if code.is_none() { return; }
+
+            let code = code.unwrap();
+
+            if lang.is_none() { return; }
+
+            let lang = lang.unwrap();
+
             use std::io::Write;
 
             let lang = if lang.is_empty() {
@@ -284,7 +304,11 @@ r#"<figure class="codeblock">
             self.toc.push_str("</nav>");
         }
 
-        fn header(&mut self, output: &mut Buffer, content: &Buffer, level: i32) {
+        fn header(&mut self, output: &mut Buffer, content: Option<&Buffer>, level: i32) {
+            if content.is_none() { return; }
+
+            let content = content.unwrap();
+
             use std::io::Write;
 
             if self.is_toc_enabled {

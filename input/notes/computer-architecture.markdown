@@ -600,7 +600,7 @@ A _stream buffer prefetcher_ is a hardware prefetcher that is sequential in natu
 
 A _stride prefetcher_ is a hardware prefetcher that tries to determine if memory accesses are at a fixed distance from each other, in which case it prefetches data at subsequent fixed distances [^stride_prefetcher].
 
-[^stride_prefetcher]: I wonder if this kind of prefetcher is meant for, for example, if someone iterates through a 2D array the "wrong" way, in column-major order, so first the first column of the first row, then the first column of the second row, and so on. Then a good stride prefetcher might recognize this access pattern and prefetch the appropriate column stripes. Though hopefully this would be resolved much sooner by [loop interchange](#loop-interchange).
+[^stride_prefetcher]: I wonder if this kind of prefetcher is meant for, for example, if someone iterates through a 2D array the "wrong" way, in column-major order, so first the first column of the first row, then the first column of the second row, and so on. Then a good stride prefetcher might recognize this access pattern and prefetch the appropriate column stripes. Though hopefully this would be recognized much sooner by the compiler and resolved with [loop interchange](#loop-interchange).
 
 A _correlating prefetcher_ is a hardware prefetcher that tries to detect patterns of memory access sequences, so that when it detects a repeat of a pattern, it prefetches the remaining sequence up to some number. This is good for linked lists which aren't sequential in memory nor at fixed strides. Traversing the linked list in the same manner another time would yield a prefetch.
 
@@ -719,3 +719,144 @@ for (j = 0; j < 5; j++)
 ```
 
 # Memory
+
+_Static Random Access Memory_ (SRAM) is memory that retains its data (hence _static_) while power is supplied. On the other hand, _Dynamic Random Access Memory_ (DRAM) is memory that will lose the data (hence _dynamic_) if it's not refreshed.
+
+SRAM is more expensive than DRAM because it requires several transistors per bit, meaning a lot less data per unit area than DRAM. SRAM is also typically faster than DRAM.
+
+DRAM is cheaper than SRAM because it only requires one transistor per bit, meaning a lot more data per unit area than SRAM. DRAM is also typically slower than SRAM.
+
+Since a DRAM bit's capacitor slowly leaks through the transistor, it's necessary to periodically read out the bit and write it back at full voltage.
+
+A _destructive read_ refers to the fact that reading the value drains the capacitor, so the bit loses its value, which means it needs to be written back.
+
+# Hard Disks
+
+In a hard disk, all platters rotate at the same speed because they're attached to the same spindle, which moves them all at the same time.
+
+There are surfaces on both sides of each hard disk platter. Data is read from the magnetic surfaces by a magnetic head attached to an arm. Each surface's head is attached to the head assembly. The head assembly moves the heads in unison, i.e. they're all in the same position, reading the same track.
+
+A _cylinder_ is the collection of tracks accessible from the current position of each of the heads, as determined by the head assembly.
+
+A _track_ is the circle of data accessible from the current head position. There are many concentric tracks on each platter surface.
+
+Data is stored on a track in individual chunks (or _frames_) called _sectors_. At the beginning of the sector is a recognizable bit pattern called a _preamble_ which marks the beginning of the sector, followed by the actual data, and ending with checksums and other metadata. Sectors are the smallest unit of data that can be accessed.
+
+A hard disk finds a particular sector on a track by first moving the head to the track, then reading the track until it finds a sector, which includes the sector's position and number, so that the head knows how far to skip to get to the target.
+
+Hard disk capacity can be computed as:
+
+$$ \text {disk capacity} = \text {# of surfaces } * \text { tracks per surface } * \text { bytes per sector} $$
+
+_Seek time_ is the amount of time it takes to move the head assembly to the correct cylinder so that one of the heads is above the track that contains the data.
+
+_Rotational latency_ is the amount of time it takes for the start of the target sector to be under the head.
+
+A _data read_ refers to reading until the end of the sector seen by the head. It depends on how fast the disk is spinning, and how many sectors there are per track. For example, if there are 10 sectors on a track, a data read of one sector will be a tenth of the rotation.
+
+The _controller time_ is the time it takes for the disk to complete its overhead, for example verifying the checksum.
+
+The _I/O bus time_ is the time it takes for the data to arrive at memory once it has been read by the disk.
+
+## Fault Tolerance
+
+A _fault_ is when something inside the system deviates from specified behavior.
+
+An _error_ is when the actual behavior in the system deviates from the specific behavior.
+
+A _failure_ is when the system deviates from specified behavior.
+
+A _latent error_ is an error that is eventually activated.
+
+An _activated fault_ becomes an _effective error_.
+
+For example, a function that works fine except for a specific input is an example of a _fault_, or _latent error_.
+
+When a function yields an incorrect result for some input and it's called with that input, that is an example of an error, specifically an _effective error_, due to an _activated fault_.
+
+If a scheduling system calls a function that returns an incorrect input for some input, which leads to a scheduling mistake, that is an example of a _failure_, because the system (the scheduling system) deviated from the system behavior.
+
+_Dual-mode redundancy_ is a way to detect errors by comparing the results of 2 modules.
+
+_Triple-mode redundancy_ is a way of detecting _and recovering_ from errors by having modules vote on the correct result.
+
+_Parity_ is an error detection method which stores an extra bit, where the bit is the XOR of all of the data bits. If one bit flip or an odd number of bit flips occurs, the parity bit will be incorrect and an error would be detected.
+
+Fault tolerance for memory and storage can be accomplished by error detection and correction codes, such as parity.
+
+An _Error Correction Code_ (ECC) is a way of both detecting and correcting data.
+
+_Single Error Correction, Double Error Correction_ (SECDED) is an ECC method which can detect and fix one bit flip, or detect (but not fix) two bit flips.
+
+## Redundant Array of Independent Disks
+
+_Redundant Array of Independent Disks_ (RAID) are a variety of methods of having several disks act as one disk. Each disk still detects errors using error codes.
+
+The goals of RAID are better performance and normal read/write accomplishment despite bad sectors and entire disk failures.
+
+### RAID 0
+
+Since each individual disk can only access one track at a time before going to the next one, accessing a sequence of tracks is slowed by having to do them one after another.
+
+RAID 0 "stripes" the data so that track 0 is on one disk, track 1 is on another, track 2 is on another, and so on, so that they could each be accessed simultaneously compared to if they were each on the same disk.
+
+A _stripe_ is a collection of tracks that can be accessed simultaneously across the disk array.
+
+RAID 0 multiplies the data throughput by the number of disks in the array. For example, a three-disk array multiplies throughput by 3.
+
+RAID 0 improves performance but reduces reliability.
+
+RAID 0 degrades reliability since the failure of any one of the disks in the array causes the data to be lost. It has the effect of dividing the _Mean Time to Failure_ (MTTF) by the number of disks in the array.
+
+The storage capacity of a RAID 0 array is the total storage of all disks in the array.
+
+### RAID 1
+
+RAID 1 works by mirroring the data so that the same data is written to all disks in the array. Data can then be read from any of the disks in the array.
+
+The write time is essentially the same as having just one disk, since all disks perform the write at the same time.
+
+RAID 1 multiplies the data throughput by the number of disks in the array, since the data to read can be split among all of the disks since they each contain copies.
+
+RAID 1 increases reliability since copies of the data exists on each disk in the array. Error correction also increases because the error can be detected by the disk as usual and fixed by reading from another disk.
+
+The storage capacity of a RAID 1 array is the minimum storage capacity of the disks. For example if they're all 200 GB but one is 100 GB, then the capacity of the RAID 1 array is 100 GB.
+
+### RAID 4
+
+RAID 4 works via _block-interleaved parity_. Of the $N$ disks, $N - 1$ contain striped data as in RAID 0, while the last disk has parity blocks. The tracks of each stripe are XORed to compute the corresponding parity block. If one disk fails, the remaining disks and the parity block can be XORed to reconstruct the data of the failed disk.
+
+RAID 4 multiplies the data read throughput by $N - 1$, i.e. ignoring the parity disk.
+
+The data write throughput of RAID 4 is half the throughput of one disk, because it requires two accesses for every write. This is because the parity disk has to be accessed to read the old value and the new value has to be written back.
+
+### RAID 5
+
+RAID 5 works by _distributed block-interleaved parity_. Unlike RAID 4, the parity blocks are spread among all disks. For each stripe, the disk that stores that stripe's parity is the next disk from the one that did so previously, and all other disks store the stripe of the data.
+
+RAID 5 multiplies data read throughput by the number of disks in the array.
+
+Four accesses are necessary per write, specifically:
+
+1. read data block
+2. read parity
+3. write data block
+4. write parity
+
+However, each of those accesses is distributed among all of the disks, so that the write throughput is:
+
+$$ \text {write throughput} = \frac N 4 * \text { throughput of 1 disk} $$
+
+RAID 5 has the same reliability as RAID 4: it fails if more than one disk fails, but if only one disk fails, it can be reconstructed from the remaining data.
+
+The storage capacity of a RAID 5 array is:
+
+$$ \text {total storage} = \text {total sum } - \text { total parity data} $$
+
+Essentially one disk's worth of storage is spent on parity.
+
+## RAID 6
+
+RAID 6 works similar to RAID 5 but stores two parity blocks per stripe: one parity block and another check-block, so that it can tolerate 2 failed disks. If one disk fails, parity is used to reconstruct it. If two disks fail, equations are solved to reconstruct them.
+
+The advantage of RAID 6 over RAID 5 is that it can handle two disk failures, for when it's likely that the second disk fails _before_ the first disk is replaced. However, RAID 6 has twice the overhead, and more write overhead, since there are two parity blocks that have to be updated each time, meaning 6 accesses per write versus the 4 of RAID 5.

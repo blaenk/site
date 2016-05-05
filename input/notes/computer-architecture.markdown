@@ -7,6 +7,8 @@ comments = false
 
 <toc/>
 
+# Metrics
+
 Moore's Law states that every 18-24 months we get twice the number of transistors onto the same chip area. Essentially, processor speed doubles, energy/operation halves, and memory capacity doubles. The _memory wall_ thus refers to the fact that latency only improves by 1.1x every 2 years, whereas CPU performance and memory capacity double every two years.
 
 Dynamic power is consumed when there is activity on the circuit, whereas static power is consumed when the system is powered on but idle. The active power is:
@@ -150,6 +152,8 @@ Whereas in a Tournament Predictor both branches are updated on each branch outco
 A real-world Hierarchical Predictor in the Pentium M processors works by maintaining a hierarchy of predictors: 2-Bit Counters, Local, and Global predictors. If the 2-Bit Counter mispredicts, that entry is added to the Local predictor, and likewise Local to Global. The Local and Global predictors maintain a tag array indicating whether or not that PC is covered by that predictor.
 
 A _Return Address Stack_ (RAS) predictor is for predicting the target of a function return. A BTB alone would always remember the previous call's return, which may not be the same call and so would be incorrect. An RAS predictor works by maintaining a stack. On each function call, the return address is pushed. On each function return, the stack is popped. An RAS predictor is necessary aside/separate from the regular program call stack because it's necessary for fast predictions. When the RAS predictor stack is full, pushes wrap around. Like branch prediction, a RAS predictor needs to be usable even before the instruction is determined to be a return instruction (`RET`), which is accomplished by using a simple predictor or pre-decoding the instruction.
+
+# Predication
 
 _Branch Predication_ refers to executing the instructions on both directions/sides of a branch, so that only half of the work is wasted and discarded. This is primarily useful when it ends up being much faster than the branch misprediction overhead.
 
@@ -466,24 +470,6 @@ If cache inclusion nor cache exclusion is enforced, then if a block is in the L1
 
 The benefits of enforcing the inclusion property are that it ensures that an L1 write-back is an L2 hit, or that an L1 write-through actually happens in L2 and not in memory, and it also speeds up coherence since only the L2 needs to be probed: if it's not in L2, it won't be in L1, so the L1 doesn't need to be probed.
 
-## Non-Blocking Caches
-
-A _non-blocking cache_ is one that doesn't block until each operation is finished, unlike a _blocking cache_.
-
-In a non-blocking cache, a _hit-under-miss_ is when the cache can continue to serve the cache hits while the cache is waiting on a miss.
-
-In a non-blocking cache, a _miss-under-miss_ is when multiple requests to memory can be made even while a cache miss is already underway. This is an example of _memory-level parallelism_ and requires memory hardware support.
-
-For a cache to support miss-under-miss functionality, it requires _Miss Status Handling Registers_ (MSHRs), which remember what was requested from memory (i.e. information about ongoing misses).
-
-On a miss, the MSHRs are checked for a match to determine if it's a new or existing miss. If it's a new miss, an MSHR is allocated and it remembers which instruction in the processor to wake up. This is called a _miss_.
-
-If it's an existing miss which is under way, and the data hasn't come back yet, the instruction is added to the existing MSHR for that miss. This is called a _half-miss_.
-
-When the data finally comes back from memory, all instructions in the MSHR are woken up, then the MSHR is released.
-
-The more MSHRs there are, the more memory-level parallelism that can be leveraged because multiple misses can be serviced at the same time.
-
 ## Direct-Mapped Cache
 
 A _direct-mapped cache_ is one where, for a given cache block, there is exactly one cache line where it may go.
@@ -603,6 +589,24 @@ A _stride prefetcher_ is a hardware prefetcher that tries to determine if memory
 [^stride_prefetcher]: I wonder if this kind of prefetcher is meant for, for example, if someone iterates through a 2D array the "wrong" way, in column-major order, so first the first column of the first row, then the first column of the second row, and so on. Then a good stride prefetcher might recognize this access pattern and prefetch the appropriate column stripes. Though hopefully this would be recognized much sooner by the compiler and resolved with [loop interchange](#loop-interchange).
 
 A _correlating prefetcher_ is a hardware prefetcher that tries to detect patterns of memory access sequences, so that when it detects a repeat of a pattern, it prefetches the remaining sequence up to some number. This is good for linked lists which aren't sequential in memory nor at fixed strides. Traversing the linked list in the same manner another time would yield a prefetch.
+
+## Non-Blocking Caches
+
+A _non-blocking cache_ is one that doesn't block until each operation is finished, unlike a _blocking cache_.
+
+In a non-blocking cache, a _hit-under-miss_ is when the cache can continue to serve the cache hits while the cache is waiting on a miss.
+
+In a non-blocking cache, a _miss-under-miss_ is when multiple requests to memory can be made even while a cache miss is already underway. This is an example of _memory-level parallelism_ and requires memory hardware support.
+
+For a cache to support miss-under-miss functionality, it requires _Miss Status Handling Registers_ (MSHRs), which remember what was requested from memory (i.e. information about ongoing misses).
+
+On a miss, the MSHRs are checked for a match to determine if it's a new or existing miss. If it's a new miss, an MSHR is allocated and it remembers which instruction in the processor to wake up. This is called a _miss_.
+
+If it's an existing miss which is under way, and the data hasn't come back yet, the instruction is added to the existing MSHR for that miss. This is called a _half-miss_.
+
+When the data finally comes back from memory, all instructions in the MSHR are woken up, then the MSHR is released.
+
+The more MSHRs there are, the more memory-level parallelism that can be leveraged because multiple misses can be serviced at the same time.
 
 # Virtual Memory
 
@@ -855,8 +859,264 @@ $$ \text {total storage} = \text {total sum } - \text { total parity data} $$
 
 Essentially one disk's worth of storage is spent on parity.
 
-## RAID 6
+### RAID 6
 
 RAID 6 works similar to RAID 5 but stores two parity blocks per stripe: one parity block and another check-block, so that it can tolerate 2 failed disks. If one disk fails, parity is used to reconstruct it. If two disks fail, equations are solved to reconstruct them.
 
 The advantage of RAID 6 over RAID 5 is that it can handle two disk failures, for when it's likely that the second disk fails _before_ the first disk is replaced. However, RAID 6 has twice the overhead, and more write overhead, since there are two parity blocks that have to be updated each time, meaning 6 accesses per write versus the 4 of RAID 5.
+
+# Cache Coherence
+
+_Flynn's Taxonomy on Parallel Machines_ is a taxonomy based on the number of instruction streams and the number of data streams.
+
+| &nbsp;                                     | Instruction Streams | Data Streams |
+| :----------------------------------------- | :------------------ | :----------- |
+| Single Instruction, Single Data (SISD)     | 1                   | 1            |
+| Single Instruction, Multiple data (SIMD)   | 1                   | > 1          |
+| Multiple Instruction, Single Data (MISD)   | > 1                 | 1            |
+| Multiple Instruction, Multiple Data (MIMD) | > 1                 | > 1          |
+
+A uniform access, aka symmetric multiprocessor, aka centralized shared memory multiprocessor, is one where all cores can access the same main memory with uniform memory access (UMA) time, because the main memory is at the same distance from each core.
+
+The problem with centralized main memory is that there is higher memory bandwidth contention due to misses from all cores, which creates a bottleneck on the cores doing their work.
+
+Distributed memory is when only one core can access a memory slice and the others can't, so that each core's access time to each memory slice is non-uniform.
+
+With simultaneous multi-threading (SMT), the processor is able to mix instructions from different threads in the same cycle.
+
+In SMT, if the cached data of two threads don't have much in common and don't both fit in the cache at the same time, _code thrashing_ may occur because each thread will keep cache missing and bringing in data, potentially kicking out the other thread's data, and the other thread may do the same. In this scenario, the performance of SMT can be---and usually is---significantly worse than processing the threads one at a time.
+
+A _private cache_ is a cache that is specific to a core, i.e. a per-core cache.
+
+A shared memory system is _incoherent_ when the same memory location has different values from the perspectives of different cores.
+
+Caches are _coherent_ if:
+
+1. read $R$ from address $X$ on core $C_1$ returns the value written by the most recent write $W$ to $X$ on $C_1$ if no other core has written to $X$ between $W$ and $R$.
+2. if $C_1$ writes to $X$ and $C_2$ reads after some time, and there are no other writes in-between, $C_2$'s read returns the value from $C_1$'s write
+3. writes to the same location are serialized: they must be seen to occur in the same order on all cores
+
+_Write-update coherence_ is when writes are broadcast to update other caches.
+
+_Write-invalidate coherence_ is when writes invalidate other copies.
+
+_Snooping coherence_ is when writes are broadcast on a shared bus, so that caches "snoops" on the writes.
+
+_Directory coherence_ is when each block is assigned an ordering point in order to maintain a consistent write order.
+
+Write-update coherence can be optimized with respect to the number of memory writes by giving a dirty bit an additional meaning. Caches snoop on the bus for reads as well, and when a read is detected for data that it has modified (i.e. is dirty), it serves that data over the bus, avoiding a slower memory access.
+
+If a previously served dirty block in cache $A$ is modified/dirtied by another cache $B$, cache $B$'s write is broadcast over the bus and is picked up by $A$, but now $A$ unsets the dirty bit, essentially relinquishing ownership of the block to cache $B$.
+
+Write-update coherence can be optimized with respect to the number of bus writes by adding a share bit to each block, denoting whether the block is shared with other caches (i.e. other caches contain copies of that block).
+
+If cache $A$ has a block and it snoops that another cache $B$ reads or writes to that block, cache $A$ sets the block's shared bit to 1 and alters the bus so that when $B$ receives the data, it knows that the block is shared and sets its shared bit to 1 as well.
+
+When a write hit occurs, the write is only broadcast over the bus if the shared bit is 1, since that would mean that other caches would need to be aware of that write in order to remain coherent.
+
+Write-invalidate snooping coherence works such that, when cache $A$ reads a block and cache $B$ writes to that block, cache $A$ snoops the read on the bus and invalidates the block by setting its valid bit to 0.
+
+Most modern processors use write-invalidate coherence because it better handles situations where a thread moves to another core. With write-update, the thread's cache data in the previous core's cache will continue to be updated even though it's no longer needed there.
+
+Given a memory access pattern of a burst of writes to one address, write-invalidate is the better cache coherence policy because the first write will invalidate the other copies only once, whereas write-update would send the update over the bus on each write.
+
+Given a memory access pattern of writes to different words in the same block, write-invalidate is the better cache coherence policy because it invalidates all other copies only once on the first write, whereas write-update will send the update over the bus for each word write.
+
+Given a memory access pattern of producer-consumer on separate cores, write-update is the better cache coherence policy because the producer sends updates which enables consumer reads to be cache hits. On the other hand, write-invalidate will cause the producer to invalidate the consumer's copy each time it writes.
+
+Given the situation of a thread moving from one core to another, write-invalidate is the better cache coherence policy because the old core's cache blocks will be invalidated only once the first time they're updated. On the other hand, write-update will continue to update the old core's cache on each write to the blocks even though they're no longer being used, until those blocks are replaced.
+
+A _coherence miss_ is a cache miss caused by cache coherence. For example:
+
+1. core 1 reads a block
+2. core 2 writes to the same block
+3. core 1 attempts to read the block again, but it has been invalidated, so it has a cache miss
+
+A _true sharing coherence miss_ is when different cores access the same data.
+
+A _false sharing coherence miss_ is when different cores access different data, but within the same block. It occurs because cache coherence operates at the cache block level.
+
+As the number of cores increases, coherence traffic also increases because each core will have invalidations and misses.
+
+## MSI Coherence
+
+_MSI Coherence_ is named after the 3 states that it allows a cache block to be in: Modified, Shared, and Invalid.
+
+If a block in _shared state_ is read, it remains in _shared state_. This is considered a local read.
+
+If a block in _modified state_ is written or read, it remains in _modified state_, because we can be sure that any other copies have been invalidated. This is considered a local read/write.
+
+A block in _modified state_ has its valid and dirty bits on.
+
+A block in _invalid state_ has a valid bit of 0, so that the value of the dirty bit doesn't matter.
+
+If a block in _invalid state_ is written to, it transitions to the _modified state_ while putting the write on the bus in order to invalidate all other copies.
+
+If a block is in _modified state_ and it snoops on the bus that another cache wrote to that block, it transitions to the _invalid state_ (i.e. it becomes invalidated). This modified block is also write-back'ed so that the other cache that wrote to the block and thus invalidated this block gets this modified/dirty data.
+
+If a block is in _modified state_ and it snoops on the bus that another cache read that block, it transitions to the _shared state_, because the block copy is not the only one anymore. This modified block is also write-back'ed so that the other cache that read the block gets this modified/dirty data.
+
+A block in _shared state_ has a valid bit of 1 and dirty bit of 0.
+
+If a processor places a read request of a block that is in the _invalid state_, the block transitions to the _shared state_. It also places the read request on the bus so that the data may be served by a block transitioning from the _modified state_ to the _shared state_ if there is any such block, or from memory if not.
+
+If a block is in the _shared state_ and snoops on the bus that another cache wrote to that block, it transitions to the _invalid state_.
+
+If a block is in the _shared state_ and is written to (local write), then the block transitions to the _modified state_. It also puts an invalidation on the bus.
+
+<img src="https://i.imgur.com/iRjEHE2.png" class="center" />
+
+A _cache-to-cache transfer_ works as follows:
+
+1. core 1 has block $B$ in _modified state_
+2. core 2 puts a read request for $B$ on the bus
+3. core 1 has to provide the data since it contains local modifications not yet available in memory
+
+An _abort-and-retry cache-to-cache transfer_ works as follows:
+
+1. core 1 cancels core 2's request (abort bus signal)
+2. core 1 can do a normal write-back to memory
+3. core 2 retries, getting the data from memory
+
+The disadvantage of an abort-and-retry cache-to-cache transfer is that it incurs _twice_ the memory latency: once for the write-back from core 1 and again for the read from core 2.
+
+An _intervention cache-to-cache transfer_ works as follows:
+
+1. core 1 snoops on the bus for the read request
+2. core 1 tells main memory that it will supply that data instead (known as an _intervention signal_) so that the memory shouldn't respond
+3. core 1 responds with its local copy of the data
+4. main memory must pick up the data in order to update memory, since otherwise both blocks will be in the shared state (with dirty bit unset)
+
+The disadvantage of an intervention cache-to-cache transfer is that it requires more complex hardware.
+
+## MOSI Coherence
+
+Memory writes can be avoided on cache-to-cache transfers by introducing an _owned state_ to the MSI coherence state machine, hence _MOSI coherence_.
+
+Among all shared blocks in the _shared state_, one of the caches will be the owner, so that for that particular cache, the block is in the _owned stated_.
+
+When another cache requests/reads the block, the owner can respond in order to avoid a memory read.
+
+When the owner replaces the block, it's in charge of write-back.
+
+If a block is in the _modified state_ and snoops a read, the data is provided and it transitions to the _owned state_, instead of transitioning to the _shared state_ as in MSI coherence. The other read blocks do transition to the _shared state_. Unlike MSI, the data is not write-back'ed.
+
+If a block is in the _owned state_ and snoops a read, it provides the data.
+
+If a block is in the _owned state_ and it's replaced by the cache, it must be write-back'ed.
+
+With respect to thread-private data, even though the data is thread-private and so will never be shared with another core, it has to go through a sequence of transitions before it converges/arrives at the _modified state_, specifically:
+
+1. invalid state
+2. cache miss
+3. shared state
+4. invalidated
+5. modified state
+
+## MESI/MOESI Coherence
+
+MSI and MOSI coherence can be optimized for thread-private data by introducing an _exclusive state_, hence _MESI/MOESI Coherence_.
+
+When a block is read and the cache detects that it's the only copy of that block in all of the caches, it transitions from the _invalid state_ to the _exclusive state_. It can then transition straight to the modified state on a write.
+
+<img src="https://i.imgur.com/vahUw1S.png" class="center" />
+
+If a block is in the _exclusive state_ and it's written to, it transitions to the _modified state_.
+
+If a block is in the _exclusive state_ and it snoops a read, then it's no longer the only copy of that block in all of the caches, so it transitions to the _shared state_.
+
+## Directory-based Coherence
+
+_Directory-based coherence_ is a coherence policy that recognizes that the bus can be a bottleneck when there is a large number of cores (e.g. 8-16 cores). A _directory_ is a structure that is distributed across all cores so that each core gets a _slice_ of the directory which serves a set of blocks [^directory_partition].
+
+[^directory_partition]: This is one of the many areas of computer architecture that reminds me of distributed systems. This is like partitioning data.
+
+The directory has one entry for each block it serves which tracks which caches have that block. Specifically it contains a dirty bit specifying whether the block is dirty in some cache and 1 bit for each cache denoting that the block is in that cache, i.e. a [bitmap index](https://en.wikipedia.org/wiki/Bitmap_index).
+
+Directory-based coherence essentially works by having an index (the directory) that is address-range-based partitioned among each core. All requests go to the partition (a _home slice_) that manages a block address. The index entry is itself another index (a bitmap) specifying which caches contain the block (if any) and if the block may be dirty. The entry is updated to reflect any MESI/MOESI state transitions.
+
+# Synchronization
+
+An _atomic exchange instruction_ is an instruction that atomically swaps the data in the operands.
+
+_Load Linked/Store Conditional_ (LL/SC) instructions are a pair of instructions that work together. The _Load Linked_ (LL) instruction is like any other instruction but it saves the address it loaded into a _link register_. The _Store Conditional_ (SC) instruction checks if the address of its destination is the same as the one in the link register. If so, it does a normal _store_ and returns 1, otherwise if returns 0. This ensures atomicity by relying on coherence to zero out the link register based on the operand to link load.
+
+``` nasm
+LL r1, lockvar
+SC r2, lockvar
+```
+
+Atomic reads/writes in the same instruction are bad for pipelining because it requires multiple memory stages in the pipelining in order to perform both the read and the write instead of just one of those.
+
+Single-variable atomic operations can be implemented in terms of load linked/store conditional (LL/SC) by surrounding the operation with LL/SC, then checking the return value of SC to determine if the operation was not interrupted. If it was, the operation is retried until success. For example, atomic increment:
+
+``` nasm
+try:
+ LL r1, var
+ r1++
+ sc r1, var
+ if (r1 == 0) goto try
+```
+
+Implementing a spinlock with an unconditional atomic exchange is bad because the cores that are spinning on the lock continuously perform unconditional yet inconsequential writes. The writes generate a lot of coherence traffic on the bus, using up a lot of power and closing down cache misses further on the processor doing the actual work.
+
+A way of improving an atomic exchange implementation of a spinlock is to preced the atomic exchange with another busy loop on the lock variable, so that the exchange is only attempted once the lock variable is observed to be free. This leverages cache hits and cache coherence:
+
+``` cpp
+res = 1;
+
+while (res == 1) {
+  while (lockvar == 1) {}
+
+  EXCH r1, lockvar
+}
+```
+
+A barrier can be implemented with a counter variable that counts arriving threads and ready flag that is set when all threads have arrived. The ready flag is set to a thread-local value which starts the same and alternates independently each time it enters a new barrier, in order to ensure that the barrier is reusable.
+
+<img src="http://i.imgur.com/u1VW97a.png" class="center" />
+
+# Memory Consistency
+
+The order of accesses to the _same address_ is defined by _coherence_.
+
+The order of accesses to _different addresses_ is defined by _memory consistency_.
+
+_Sequential memory consistency_ means that the accesses from one core are not reordered, but there could be many possible interleavings of accesses from different cores.
+
+A possible implementation of sequential consistency would have to ensure that a core performs the next access only when all previous accesses are complete, which would mean poor performance.
+
+It would be better if it re-orders a sequence of loads. So for example, load $A$ and load $B$ gets re-ordered to load $B$ and load $A$, then the coherence traffic must be monitored to see if a write to $B$ occurs before load $A$ is executed, in which case the previous load $B$ must be replayed.
+
+The four kinds of memory access orderings are:
+
+* write A, write B
+* write A, read B
+* read A, write B
+* read A, read B
+
+Unlike sequential consistency where all orderings must be enforced, a _relaxed consistency model_ allows certain kinds of memory accesses to not be enforced. For example, "read A, read B" accesses can be made out-of-order.
+
+In a system with a relaxed consistency model, ordering constraints are enforced on memory accesses via special instructions, memory barriers, which ensure that previous memory accesses are complete before proceeding.
+
+A memory barrier/fence is an instruction in a system with a relaxed consistency model that ensures that all memory access instructions (of a certain kind) prior to the barrier (in program order) are complete before proceeding. For example, `msync` on x86.
+
+The `volatile` keyword in C/C++ ensures that reads and writes are not reordered by the compiler via instruction scheduling. It has no effect on memory consistency. Reads and writes to `volatile` variables do not guarantee a memory barrier. This means that `volatile` alone is not sufficient to use a variable for inter-thread communication.
+
+A data race can occur when:
+
+1. one core reads and another writes to the same variable
+2. one core writes and another reads to the same variable
+3. one core writes and another writes to the same variable
+
+A _data-race-free program_ is one that runs the same as it would with sequential consistency in any other consistency model.
+
+To facilitate debugging data-races in programs, some processors allow enabling sequential consistency on demand, such as while debugging.
+
+_Weak memory consistency_ distinguishes between synchronization and non-synchronization accesses. Synchronization accesses aren't reordered among themselves or with other accesses (i.e. they're sequentially-consistent). Non-synchronization accesses made between synchronization accesses can be reordered.
+
+_Release consistency_ distinguishes between acquires and releases, and they're not reordered among themselves. Non-synchronization accesses can be reordered except that writes must complete before the next release synchronization (i.e. writes cannot be reordered/moved to after the next release) and reads cannot execute before the preceding acquire event (i.e. reads cannot be reordered/moved to before the previous acquire).
+
+Sequential consistency can be achieved with weak consistency by treating every regular access as a synchronization access.
+
+Release consistency can be achieved with weak consistency by treating every synchronization event as both an acquire and a release.

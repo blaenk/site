@@ -78,7 +78,7 @@ To test this theory, Paul had me run [`ltrace`](http://en.wikipedia.org/wiki/Ltr
 
 Now that we were pretty sure of the cause of this, the workaround was to remove the other keycodes (for keys I didn't even have on my keyboard). At this time I decided I might as well switch over to XKB. The first order of business was to [dump my XKB map](http://unix.stackexchange.com/a/65600/10163):
 
-``` bash
+``` console
 $ setxkbmap -print > ~/.xkb/keymap/mymap
 ```
 
@@ -108,7 +108,7 @@ xkb_symbols "volume_keys" {
 
 Now I loaded my XKB map in `~/.xinitrc`:
 
-``` bash
+``` console
 $ xkbcomp -I$HOME/.xkb ~/.xkb/keymap/mymap $DISPLAY
 ```
 

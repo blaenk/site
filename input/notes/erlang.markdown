@@ -27,7 +27,7 @@ start() ->
 
 This can be compiled from the shell with the `c(modulename)` command. However, it's more likely to be compiled with the Erlang compiler `erlc`, which produces a `beam` file. It's possible to then run the program can then be run on the Erlang virtual machine with the `erl` command, which uses `-s` to specify the functions to evaluate, in order.
 
-``` bash
+``` console
 $ erlc hello.erl
 $ erl -noshell -s hello start -s init stop
 ```

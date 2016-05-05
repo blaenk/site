@@ -249,7 +249,7 @@ fn main() {
 }
 ```
 
-``` bash
+``` console
 $ rustc world.rs     # compiles libworld-<HASH>-0.42.so
 $ rustc main.rs -L . # include local dir in library search path
 $ ./main
@@ -2325,7 +2325,7 @@ fn return_two_test() {
 
 For tests to be run, the crate has to be compiled with the `--test` flag. The resulting executable will then run all tests.
 
-``` bash
+``` console
 $ rustc --test foo.rs
 $ ./foo
 running 1 test
@@ -2336,7 +2336,7 @@ test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured
 
 The `--nocapture` flag can be provided to the test harness to prevent it from stealing standard output, so that tests can print messages to the terminal.
 
-``` bash
+``` console
 $ ./foo --nocapture
 $ cargo test -- --nocapture
 ```
@@ -2353,7 +2353,7 @@ Tests that are intended to fail can be annotated with the `should_fail` attribut
 
 The test runner can take as argument a regular expression used to run the matching tests, and the `--ignored` flag can tell the runner to only run the ignored tests.
 
-``` bash
+``` console
 $ ./foo sometest
 $ cargo test -- sometest
 ```
@@ -2380,7 +2380,7 @@ fn initialize_vector(b: &mut Bencher) {
 
 The `--bench` flag must be passed to the compiled test-runner to run the benchmarks.
 
-``` bash
+``` console
 $ rustc mytests.rs -O --test
 $ mytests --bench
 
@@ -2418,7 +2418,7 @@ name = "hello_world"
 
 The project can then be built using the `build` command.
 
-``` bash
+``` console
 $ cargo build
    Compiling hello_world v0.1.0 (file:/home/yourname/projects/hello_world)
 $ ./target/hello_world

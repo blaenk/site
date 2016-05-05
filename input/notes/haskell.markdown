@@ -25,21 +25,21 @@ It's possible to build an EPUB eBook of the [GHC User Guide]. You'll need to hav
 [build the documentation]: https://ghc.haskell.org/trac/ghc/wiki/Building/Docs
 [IBM article]: https://www.ibm.com/developerworks/xml/tutorials/x-epubtut/
 
-``` bash
+``` console
 $ ./configure
 $ cd docs/users_guide
 $ make html stage=0 FAST=YES
 $ cd ..
 $ /usr/bin/xsltproc \
-    --stringparam base.dir docs/users_guide/users_guide/ \
-    --stringparam use.id.as.filename 1 \
-    --stringparam html.stylesheet fptools.css \
-    --nonet \
-    --stringparam toc.section.depth 3 \
-    --stringparam section.autolabel 1 \
-    --stringparam section.label.includes.component.label 1 \
-    http://docbook.sourceforge.net/release/xsl/current/epub3/chunk.xsl \
-    docs/users_guide/users_guide.xml
+>   --stringparam base.dir docs/users_guide/users_guide/ \
+>   --stringparam use.id.as.filename 1 \
+>   --stringparam html.stylesheet fptools.css \
+>   --nonet \
+>   --stringparam toc.section.depth 3 \
+>   --stringparam section.autolabel 1 \
+>   --stringparam section.label.includes.component.label 1 \
+>   http://docbook.sourceforge.net/release/xsl/current/epub3/chunk.xsl \
+>   docs/users_guide/users_guide.xml
 $ cd docs/users_guide
 $ rm *.html
 $ echo "application/epub+zip" > mimetype
@@ -156,7 +156,7 @@ The [ThreadScope] tool helps visualize parallel execution, particularly for prof
 
 [ThreadScope]: http://hackage.haskell.org/package/threadscope
 
-``` bash
+``` console
 $ ghc -O2 program.hs -threaded -rtsopts -eventlog
 $ ./program +RTS -N2 -l
 $ threadscope program.eventlog

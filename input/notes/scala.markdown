@@ -1963,11 +1963,10 @@ def java2scala[T](jset: Collection[T]): SetAndType = {
 
 Usually one would compile the Java code and add the output to the classpath when building the Scala code. However, this wouldn't work if the Java code references the Scala code, or vice versa. For this reason, Scala allows processing of Java source files as if they were Scala files. They won't be compiled, but they'll be scanned to determine what they contain. This is done with this sequence of commands:
 
-``` bash
+``` console
 $ scalac -d bin FileAnalysis.scala FileItem.java File.java
 $ javac -cp bin -d bin File.java FileItem.java FileManagement.java
 $ scala -cp bin FileManagement
-# program output
 ```
 
 # Actors and Concurrency

@@ -696,12 +696,10 @@ When configured this way, the profile can be specified as the final argument to 
 
 With this configuration, it's possible to compile the specified ClojureScript files either one time, or automatically whenever the files are changed. Such commands are "namespaced" by the `cljsbuild` command. The `clean` command can clear previously generated files.
 
-``` bash
-# one-off
-$ lein cljsbuild once
+``` console
+$ lein cljsbuild once # one-off
 
-# automatically
-$ lein cljsbuild auto
+$ lein cljsbuild auto # automatically
 ```
 
 # Om
@@ -859,7 +857,7 @@ Leiningen can build war files---as well as accompanying <span class="path">web.x
 
 With this configuration, the war file could be created using the following command:
 
-``` bash
+``` console
 $ lein ring uberwar
 ```
 
@@ -867,7 +865,7 @@ Applications can be run locally for development and testing using Jetty with the
 
 [^play_reload]: This is similar to Play's development server.
 
-``` bash
+``` console
 $ lein ring server
 ```
 
@@ -891,8 +889,7 @@ $ lein ring server
 
 Finally, an uberjar can be generated and the jar can be run like any other.
 
-``` bash
+``` console
 $ lein uberjar
 $ java -jar target/app-0.1.0-SNAPSHOT-standalone.jar
 ```
-

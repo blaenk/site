@@ -142,7 +142,7 @@ The solution gnome went with was to link with the shared object that's loaded af
 
 It's simple to verify that the produced binary contains the attributes by running:
 
-``` bash
+``` console
 $ readelf -d thebinary
 ```
 

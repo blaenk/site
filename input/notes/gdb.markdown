@@ -39,16 +39,16 @@ The GDB session samples provided in this page are highlighted with a basic GDB [
 
 GDB is usually started by passing it the name of the program we want to debug:
 
-``` bash
+``` console
 $ gdb program_to_debug
 ```
 
 Processes with curses-like interfaces can be debugged by running them in a separate terminal and then attaching to them with the `-p` switch (or using the `attach` command):
 
-``` bash
+``` console
 $ gdb -p PID
-# or
-$ gdb programname PID
+
+$ gdb programname PID # other way
 ```
 
 Another thing that can be done is to run GDB and tell it that the program should be run on a different terminal. This is accomplished with the `tty` command. For example, assuming the program should be on `/dev/pts/8`---perhaps because we have another window paired with that pseudoterminal---we would run the following:
@@ -59,7 +59,7 @@ Another thing that can be done is to run GDB and tell it that the program should
 
 Then the following should be entered so that the keyboard input to the window will go to the program rather than to the shell, by making the shell go to sleep:
 
-``` bash
+``` console
 $ sleep 100000
 ```
 
@@ -86,7 +86,7 @@ It's normal to keep a GDB session to open during the debugging session. As bugs 
 
 However, if exiting is necessary, the commands entered can be saved to a GDB startup file of name `.gdbinit`. This can then be loaded when GDB loads with:
 
-``` bash
+``` console
 $ gdb -command=.gdbinit program
 ```
 
@@ -481,7 +481,7 @@ A core file contains a detailed description of the program's state when it crash
 
 Usually when a core dump file is generated, it's placed in the current directory named `core` or some variation of it. It may be necessary to increase the shell's core dump resource limit with the command:
 
-``` bash
+``` console
 $ ulimit -c unlimited
 ```
 
@@ -491,19 +491,17 @@ On systems that use [systemd], such as mine, these files are instead managed by 
 
 **June 23rd, 2014**: It seems this may no longer be the case as of arch package [systemd-214-2](https://projects.archlinux.org/svntogit/packages.git/commit/trunk?h=packages/systemd&id=20f65088398622522bb33e6f53dfde83d31a2208).
 
-``` bash
-# based on PID
-$ systemd-coredumpctl dump PID -o outname
+``` console
+$ systemd-coredumpctl dump PID -o outname # based on PID
 
-# based on binary name
-$ systemd-coredumpctl dump urxvt -o outname
+$ systemd-coredumpctl dump urxvt -o outname # based on binary name
 ```
 
 Core files are useful from a debugging perspective because they provide a starting point for dissecting the program to determine the cause of the crash. They are more useful than simply re-running the program within GDB because it would be that the bug that caused the crash occurs rarely and randomly.
 
 Core files can be loaded into GDB by supplying them as a second argument, after the name of the program that generated the core file:
 
-``` bash
+``` console
 $ gdb crasher corefile
 ```
 
@@ -580,7 +578,7 @@ It's [possible] to load a GDB session inside of a valgrind session.
 
 [possible]: http://billiob.net/blog/20140330_vgdb.html
 
-``` bash
+``` console
 $ valgrind --vgdb=yes --vgdb-error=0 ./prog
 $ gdb ./prog
 (gdb) target remote | vgdb

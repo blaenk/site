@@ -130,9 +130,9 @@ function cd() {
 
 Example usage:
 
-``` bash
-some/dir/here $ cd b..
-some/ $ # went up two directories
+``` shell-session
+user@host some/dir/here $ cd b..
+user@host some/ $ # went up two directories
 ```
 
 I also have a function for listing the pacman orphan packages on my system, i.e. those that aren't required by any other package. I found a command for doing this but it just dumped a list of every package, so I modified it to also list the description of the package. This requires the `expac` package, a utility to query the pacman database:
@@ -185,9 +185,8 @@ function ip() {
 
 Example output:
 
-``` bash
-λ ~/some/place
-» ip get
+``` console
+$ ip get
 copied 123.45.678.90 to clipboard
 ```
 
@@ -239,9 +238,8 @@ When one runs a command that doesn't exist, it generally gives an error pointing
 
 Example output:
 
-``` bash
-λ ~/some/place
-» clojure
+``` console
+$ clojure
 clojure may be found in the following packages:
   community/clojure 1.5.1-2     /usr/bin/clojure
 ```

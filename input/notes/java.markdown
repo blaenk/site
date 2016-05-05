@@ -29,8 +29,9 @@ Java is an interpreted language. Java code is compiled to highly optimized bytec
 
 JDK 8 adds the concept of compact profiles which contain a subset of the Java API. Profiles go from 1 to 3, where `compact1` is the smallest profile. When compiling a program, the profile can be specified to determine if the program conforms to the subset specified by the profile.
 
-``` bash
-# ensure Program only uses compact1 subset
+The following command ensures that `Program` only uses the `compact` subset:
+
+``` console
 $ javac -profile compact1 Program
 ```
 
@@ -905,11 +906,15 @@ assert divisor != 0: "attempted to divide by zero";
 
 Assertions aren't run by default due to the performance impact, but can be enabled by supplying the `-ea` option to the `java` interpreter, or disabled with the `-da` option. Assertions can be enabled or disabled at the package level by specifying the package and following it by three periods. The program doesn't have to be recompiled to make this change. When assertions are disabled, the class loader strips out assertion code to avoid a performance hit.
 
-``` bash
-# enable all assertions
-$ java -ea Program
+The following enables all assertions:
 
-# only enable assertions from Core package
+``` console
+$ java -ea Program
+```
+
+The following only enables assertions from the Core package.
+
+``` console
 $ java -ea:Core... Program
 ```
 
@@ -3038,9 +3043,8 @@ class Test {
 
 The code should be compiled normally, then the `javah` program should be run on the result to produce a header file that must be included in the implementation of the native method.
 
-``` bash
-# produces Test.h
-$ javah -jni Test
+``` console
+$ javah -jni Test # produces Test.h
 ```
 
 This generated header specifies the expected prototype of the native method which should be used for its implementation.

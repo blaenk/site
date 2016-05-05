@@ -40,6 +40,19 @@ $solar-green:   #718C00 !default; //
   font-family: $font-mono;
 }
 
+.language-console, .language-shell-session {
+  /* regular command lines, lighter output */
+  /* .gp { color: $solar-cyan; } */
+  /* .go { color: rgba(85, 85, 85, 0.8); } */
+
+  /* bold command lines, regular output */
+  font-weight: bold;
+
+  .gp { color: $solar-cyan }
+  .go { color: inherit; font-weight: normal; }
+  .c1 { font-weight: normal; }
+}
+
 .language-javascript {
   .kd { color: $solar-cyan; }
   .nx { color: inherit; }
@@ -85,9 +98,6 @@ $solar-green:   #718C00 !default; //
 .language-html {
   .nt { color: $solar-cyan; }
   .na { color: $solar-violet; }
-}
-
-.language-bash {
 }
 
 .language-python {

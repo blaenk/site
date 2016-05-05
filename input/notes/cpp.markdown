@@ -1156,7 +1156,7 @@ Most functions and collections which are able to perform moves only do so if the
 
 ## Algorithms
 
-There are a couple of conventions that algorithms follow:
+There are a couple of conventions that STL algorithms follow:
 
 * most algorithms take at least one iterator range specifying the range of operation, where the range is exclusive on its end-point, i.e. [begin, end).
 

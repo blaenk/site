@@ -1168,7 +1168,7 @@ There are a couple of conventions that STL algorithms follow:
 
 * algorithms whose names end in `_until` return an iterator to one-past the last "qualifying" element. For example, `is_sorted_until` returns one-past the last sorted element.
 
-* algorithms whose names end in `_backward` perform their operation from right-to-left. For example,  `copy_backward` copies to to the last source element to the last destination iterator position, then the penultimate, etc. **Don't** confuse this with the operation being performed in reverse. The elements are still in the same order; they were simply copied from right-to-left.
+* algorithms whose names end in `_backward` perform their operation from right-to-left. For example,  `copy_backward` copies the last source element to the last destination iterator position, then the penultimate, etc. _Don't_ confuse this with the operation being performed in reverse. The elements are still in the same order; they were simply copied from right-to-left.
 
 * algorithms whose names contain `_copy` perform their operation to elements as they are being copied into another range. Conversely, their counterparts which _don't_ have `_copy` in their name operate in-place, modifying the elements of the range.
 

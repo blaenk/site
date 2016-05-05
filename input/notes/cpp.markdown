@@ -1182,6 +1182,20 @@ There are a couple of conventions that STL algorithms follow:
 
 The `exchange` function replaces the value of an object with that of another and returns the old value.
 
+The `swap` function swaps two parameters with each other. It's also overloaded for arrays. It's important to note that it should usually be called in an unqualified manner. That is, use a using-declaration to bring the `std::swap` definitions into scope, but call it as `swap` and not `std::swap`. This enables additional, perhaps more specialized overloads of `swap` to be used when appropriate.
+
+``` cpp
+void Function() {
+  using std::swap;
+
+  int a = 1, b = 2;
+
+  swap(a, b);
+}
+```
+
+### Testing
+
 The `all_of`, `any_of`, and `none_of` functions specify whether the elements of a given iterator range satisfy the given predicate for all, any, or none of the elements respectively.
 
 ``` cpp
@@ -1194,28 +1208,42 @@ bool all_even = std::all_of(vec.begin(), vec.end(), [](auto i) {
 EXPECT_TRUE(all_even);
 ```
 
-The `for_each` function applies a function to each element in the range, potentially mutating the element. It returns the provided function object, allowing for the accumulation of a result.
+The `equal` function checks if two iterator ranges are equivalent by equality or predicate.
 
 ``` cpp
-vector<int> vec{1, 2, 3}, expect{2, 3, 4};
+std::string s = "radar";
 
-std::for_each(vec.begin(), vec.end(), [](int &n) { ++n; });
+// Compare forward range to backward range
+bool is_palindrome = std::equal(s.begin(), (s.begin() + s.size() / 2),
+                                s.rbegin());
 
-EXPECT_EQ(expect, vec);
+EXPECT_TRUE(is_palindrome);
 ```
 
-The `count` function counts all elements in the range which equals a given value, whereas `count_if` counts those which satisfy a given predicate.
+The `lexicographical_compare` function checks to see if the first range is lexicographically less than the second range.
 
 ``` cpp
-vector<int> vec{1, 2, 3};
+vector<int> a{1, 2, 2}, b{1, 2, 3};
 
-int twos = count(vec.begin(), vec.end(), 2);
-int odds = count_if(vec.begin(), vec.end(),
-                    [](int i) { return i % 2 == 0; });
-
-EXPECT_EQ(1, twos);
-EXPECT_EQ(2, odds);
+std::lexicographical_compare(a.begin(), a.end(),
+                             b.begin(), b.end());
+// a < b = true
 ```
+
+The `includes` function checks if every element of the second sorted range is found within the first sorted range, reads as "first range includes second."
+
+``` cpp
+vector<int> v{1, 2, 3, 4, 5, 6};
+vector<int> a{3, 4, 5}, b{1, 6};
+
+// true
+std::includes(v.begin(), v.end(), a.begin(), a.end());
+
+// true
+std::includes(v.begin(), v.end(), b.begin(), b.end());
+```
+
+### Searching
 
 The `mismatch` function takes two iterator ranges and finds and returns the first mismatching positions as determined by equality or a given predicate.
 
@@ -1228,18 +1256,6 @@ auto pos = std::mismatch(a.begin(), a.end(), b.begin(), b.end());
 EXPECT_EQ(&a[3], &*pos.first);
 EXPECT_EQ(a[3], *(pos.first));
 EXPECT_EQ(b[3], *(pos.second));
-```
-
-The `equal` function checks if two iterator ranges are equivalent by equality or predicate.
-
-``` cpp
-std::string s = "radar";
-
-// Compare forward range to backward range
-bool is_palindrome = std::equal(s.begin(), (s.begin() + s.size() / 2),
-                                s.rbegin());
-
-EXPECT_TRUE(is_palindrome);
 ```
 
 The `find` function gets the iterator position of the first element equal to the given value, whereas the `find_if` and `find_if_not` functions find the first element that does or does not satisfy the given predicate, respectively.
@@ -1315,29 +1331,6 @@ auto pos = std::search_n(v.begin(), v.end(), 4, 3);
 EXPECT_EQ(&v[2], &*pos);
 ```
 
-The `copy` function copies elements from the given range into the range beginning at a given iterator position. The `copy_if` does the same only if the element satisfies a given predicate.
-
-``` cpp
-vector<int> v{1, 2, 3};
-vector<int> odds, odds_expect{1, 3};
-
-std::copy_if(v.begin(), v.end(), std::back_inserter(odds),
-             [](auto i) { return i % 2 != 0; });
-
-EXPECT_EQ(odds_expect, odds);
-```
-
-The `copy_n` function copies `n` elements from the range starting at the first parameter to the range starting at the third parameter.
-
-``` cpp
-vector<int> a{1, 2, 3, 4};
-vector<int> b{5};
-
-std::copy_n(a.begin(), 3, std::back_inserter(b));
-
-EXPECT_EQ({5, 1, 2, 3}, b);
-```
-
 The `max_element` and `min_element` find the position of the largest or smallest element in the range, respectively. A comparison function can be passed.
 
 ``` cpp
@@ -1367,266 +1360,6 @@ std::srand(std::time(0));
 
 std::pair<int, int> bounds = std::minmax(std::rand() % v.size(),
                                          std::rand() % v.size());
-```
-
-The `swap_ranges` function swaps elements from the first range with the corresponding elements of the second range, and returns one-past the last swapped element of the _second_ range.
-
-``` cpp
-vector<int> v{1, 2, 3};
-list<int> l{4, 5, 6};
-
-// Swap the first two elements of v with first two elements of l
-std::swap_ranges(v.begin(), v.begin() + 2, l.begin());
-
-EXPECT_EQ({4, 5, 3}, v);
-EXPECT_EQ({1, 2, 6}, l);
-```
-
-The `swap` function swaps two parameters with each other. It's also overloaded for arrays. It's important to note that it should usually be called in an unqualified manner. That is, use a using-declaration to bring the `std::swap` definitions into scope, but call it as `swap` and not `std::swap`. This enables additional, perhaps more specialized overloads of `swap` to be used when appropriate.
-
-``` cpp
-void Function() {
-  using std::swap;
-
-  int a = 1, b = 2;
-
-  swap(a, b);
-}
-```
-
-The `iota` function can be used to fill a range with sequentially incremented values, starting with the given value.
-
-``` cpp
-vector<int> v(3);
-std::iota(v.begin(), v.end(), 1);
-
-EXPECT_EQ({1, 2, 3}, v);
-```
-
-The `copy_backward` function copies elements right-to-left from the given range into the range ending with the third parameter. Note that the elements are _not_ copied in reverse, that is, the order of the elements is preserved. Instead, this function copies starting from the right end, which is why the end iterator is provided.
-
-``` cpp
-vector<int> source{1, 2, 3};
-vector<int> destination(4);
-
-std::copy_backward(source.begin(), source.end(), destination.end());
-
-EXPECT_EQ({0, 1, 2, 3}, destination);
-```
-
-The `fill` function sets every element in the range to a given value. There is also `fill_n`.
-
-``` cpp
-vector<int> v(3);
-
-std::fill(v.begin(), v.end(), 7);
-
-EXPECT_E1({7, 7, 7}, v);
-```
-
-The `generate` function assigns each element in the range the value generated by the provided function, which takes no arguments. There is also `generate_n`.
-
-``` cpp
-vector<int> v(3);
-int n = 1;
-
-std::generate(v.begin(), v.end(), [&n]() { return n++; });
-
-EXPECT_EQ({1, 2, 3}, v);
-```
-
-The `move` function moves elements from the range into the range beginning with the third parameter.
-
-``` cpp
-vector<thread> ths;
-ths.emplace_back(func, arg);
-ths.emplace_back(func, arg);
-
-vector<thread> dest(2);
-
-// Could just dest = move(ths) in this case, but w/e
-std::move(ths.begin(), ths.end(), dest.begin());
-```
-
-The `move_backward` function is equivalent to `copy_backward` but moves its elements instead of copying them. That is, it moves elements from the range into the range ending with the third parameter, moving the last element first, then the penultimate one, and so on.
-
-``` cpp
-vector<string> src{"one", "two", "three"};
-vector<string> dest(4, "");
-
-std::move_backward(src.begin(), src.end(), dest.end());
-
-EXPECT_EQ({"", "one", "two", "three"}, dest);
-```
-
-The `remove_copy` function copies elements from the range into the beginning of the range denoted by the third parameter, skipping any elements equal to the provided value or satisfying a given predicate (with `remove_copy_if`). In other words, this is the opposite of `copy` and `copy_if`.
-
-``` cpp
-vector<int> a{1, 1, 2, 3};
-vector<int> not_one(2, 0), odds(2, 0);
-
-std::remove_copy(a.begin(), a.end(), not_one.begin(), 1);
-
-EXPECT_EQ({2, 3}, not_one);
-
-std::remove_copy(a.begin(), a.end(), odds.begin(),
-                 [](int i) { return i % 2 == 0 });
-
-EXPECT_EQ({1, 3}, odds);
-```
-
-The `replace` function replaces the elements in the range that match the given value or satisfy the predicate (with `replace_if`) with another value.
-
-``` cpp
-vector<int> v{1, 1, 2, 2, 3};
-
-// Replace even numbers with 0.
-std::replace_if(v.begin(), v.end(),
-                [](int i) { return i % 2 == 0; },
-                0);
-
-EXPECT_EQ({1, 1, 0, 0, 3}, v);
-```
-
-The `replace_copy` function copies elements from the range into the range beginning at the third parameter, mapping those that match the given value or satisfy a predicate (with `replace_copy_if`) to another value.
-
-``` cpp
-vector<int> v{1, 1, 3, 4, 5};
-vector<int> b(5);
-
-// Copy v into b, mapping values of 1 → 0
-std::replace_copy(v.begin(), v.end(), b.begin(), 1, 0);
-
-EXPECT_EQ({0, 0, 3, 4, 5}, b);
-```
-
-The `iter_swap` function simply swaps the elements pointed to by the iterators.
-
-``` cpp
-vector<int> v{1, 2, 3};
-
-// Swap the 1 and the 3
-std::iter_swap(v.begin(), v.end() - 1);
-
-EXPECT_EQ({3, 2, 1}, v);
-
-// Can also explicitly just dereference iterators and call std::swap
-swap(*v.begin(), *(v.end() - 1));
-```
-
-The `reverse` function reverses the order of the elements in the range.
-
-``` cpp
-vector<int> v{1, 2, 3};
-
-std::reverse(v.begin(), v.end());
-
-EXPECT_EQ({3, 2, 1}, v);
-```
-
-The `reverse_copy` function copies elements from the range into another range beginning with the third parameter in reverse order.
-
-``` cpp
-vector<int> v{1, 2, 3};
-vector<int> d(3);
-
-std::reverse_copy(v.begin(), v.end(), d.begin());
-
-EXPECT_EQ({3, 2, 1}, v);
-```
-
-The `rotate` function rotates all elements in the range to the left such that the middle parameter becomes the first element in the range. Note that this function breaks convention in that there is a parameter (the "new-left") in between the [begin, end) iterator pair parameters. As per convention, `rotate_copy` does the same but copies the result into another range.
-
-``` cpp
-vector<int> v{1, 2, 3, 4};
-
-// Rotate v to the left so that the 3 (v[2]) become the first element.
-std::rotate(v.begin(), v.begin() + 2, v.end());
-
-EXPECT_EQ({3, 4, 1, 2}, v);
-```
-
-The `random_shuffle` function shuffles all elements in the range given a random number generator.
-
-``` cpp
-vector<int> v{1, 2, 3};
-random_device rd;
-mt19937 g(rd());
-
-std::shuffle(v.begin(), v.end(), g);
-
-// e.g. v = {3, 1, 2}
-```
-
-The `unique` function removes all _consecutive duplicates_ (and thus expects a sorted input) from the range, returning one-past the new logical end of the range. Consecutive duplicates are checked by equality or a given predicate. There is also `unique_copy`.
-
-Note that the elements are _not_ physically removed from the container, so this call is usually followed by a call to the `erase` method of the collection with the iterator returned by `unique`.
-
-``` cpp
-vector<int> v{1, 1, 1, 2, 2, 3, 4};
-
-auto last = std::unique(v.begin(), v.end());
-
-// v = {1, 2, 3, 4, x, x, x} where x = indeterminate
-
-v.erase(last, v.end());
-
-EXPECT_EQ({1, 2, 3, 4}, v);
-```
-
-The `is_partitioned` function checks if all elements in the range are partitioned based on the given predicate, so that all elements that satisfy the predicate come before all of those that don't.
-
-``` cpp
-vector<int> v{1, 1, 0, 0};
-
-bool is_parted = std::is_partitioned(v.begin(), v.end(),
-                                     [](int i) { return i == 1; });
-```
-
-The `partition` function partitions the elements of a range so that all elements that satisfy the predicate come before all of those that don't. There is also `partition_copy`.
-
-``` cpp
-vector<int> v{1, 2, 3, 4, 5, 6};
-auto partition_func = [](int i) { return i % 2 == 0; };
-
-auto it = std::partition(v.begin(), v.end(), partition_func);
-
-bool is_parted = std::is_partitioned(v.begin(), v.end(),
-                                     partition_func;
-```
-
-The `stable_partition` function is a stable version of the `partition` function, so that the relative order of equal elements is preserved.
-
-The `partition_point` function returns one-past the end of the first partition, i.e. the first element that doesn't satisfy the predicate.
-
-``` cpp
-vector<int> v{2, 4, 1, 3};
-auto pos = std::partition_point(v.begin(), v.end(),
-                                [](int i) { return i % 2 == 0; });
-```
-
-The `is_sorted` function checks if the range is sorted in ascending order or given a comparison function.
-
-``` cpp
-vector<int> v{1, 2, 3};
-
-bool sorted = std::is_sorted(v.begin(), v.end()));
-```
-
-The `is_sorted_until` function returns one-past the last sorted element, i.e. the first element that is not sorted.
-
-The `sort` function sorts the range in ascending order or based on a given comparison function. The `stable_sort` variant preserves the relative order of equal elements.
-
-The `partial_sort` function rearranges the elements of the range so that the [begin, middle) contains the elements of the sorted order of the entire array, i.e. the first (middle - begin) smallest elements. There is also `partial_sort_copy` which only copies enough elements that fit in the destination.
-
-``` cpp
-vector<int> v{5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
-
-std::partial_sort(v.begin(), v.begin() + 3, v.end());
-
-// v = {0, 1, 2, 7, 8, 6, 5, 9, 4, 3}
-//      |-----|
-//      sorted
 ```
 
 The `nth_element` function selects the $n^\text {th}$ element from the sorted order of the range, i.e. the $n^\text {th}$-order statistic. A comparison function can be specified.
@@ -1675,6 +1408,263 @@ vector<int> v{1, 3, 4, 5, 9};
 bool found_four = std::binary_search(v.begin(), v.end(), 4);
 ```
 
+### Reducing
+
+The `count` function counts all elements in the range which equals a given value, whereas `count_if` counts those which satisfy a given predicate.
+
+``` cpp
+vector<int> vec{1, 2, 3};
+
+int twos = count(vec.begin(), vec.end(), 2);
+int odds = count_if(vec.begin(), vec.end(),
+                    [](int i) { return i % 2 == 0; });
+
+EXPECT_EQ(1, twos);
+EXPECT_EQ(2, odds);
+```
+
+The `accumulate` function reduces the elements in the range given an initial value and an optional binary function which produces the reduction of two elements. By default, the binary function is addition, so `accumulate` produces the sum of the elements.
+
+``` cpp
+vector<int> v{1, 2, 3, 4, 5};
+
+int sum = std::accumulate(v.begin(), v.end(), 0);
+// sum = 15
+
+int product = std::accumulate(v.begin(), v.end(), 1,
+                              [](int prod, int next) {
+                                return prod * next;
+                              });
+// product = 120
+
+// can also be
+int product = std::accumulate(v.begin(), v.end(), 1, std::multiplies<int>());
+```
+
+The `inner_product` function computes the sum of the pair-wise products of the elements of the two ranges, which is the _dot product_. Custom sum and product functions can be provided, in which case the "product" function is applied in a pair-wise manner to the elements of the two ranges, and the "sum" function is applied to those results.
+
+This is like an `transform`/`for_each` of pair-wise elements with the "product" function and an `accumulate` of those results with the "sum" function.
+
+``` cpp
+vector<int> a{0, 1, 2, 3, 4};
+vector<int> b{5, 4, 2, 3, 1};
+
+int dot_product = std::inner_product(a.begin, a.end(), b.begin(), 0);
+// dot_product = 21
+```
+
+The `adjacent_difference` function computes the difference of each element in the range and its predecessor, writing each element into the output iterator. Since the first element doesn't have a predecessor, the predecessor is treated as 0.
+
+``` cpp
+vector<int> v{2, 4, 6, 8};
+
+// v = {2, 2, 2, 2};
+std::adjacent_difference(v.begin(), v.end(), v.begin());
+
+v = {1, 1, 1, 1};
+
+// v = {1, 1, 2, 3}
+.adjacent_difference(v.begin(), v.end() - 1,
+                     v.begin() + 1,
+                     [](int a, int b) { return a + b });
+```
+
+The `partial_sum` function successively computes the sums of increasing sub-ranges of the input range and copies each sum into the output iterator. A custom sum function can be provided. Specifically, the result is such that:
+
+$$ \text {dest}[i] = \sum_0^i \text {src}[i] $$
+
+This can be useful for example to compute the [maximal sub-array](https://en.wikipedia.org/wiki/Maximum_subarray_problem).
+
+``` cpp
+vector<int> v{2, 2, 2, 2};
+vector<int> dest(4);
+
+std::partial_sum(v.begin(), v.end(), dest.begin());
+
+for (std::size_t i = 0; i < dest.size(); ++i) {
+  std::cout << "sum of sub-range [0, " << i << "] = " << dest[i] << '\n';
+}
+
+// dest = {2, 4, 6, 8}
+```
+
+The `transform` function applies a given unary function to each element in the array, or a given binary function to each pair of elements in two ranges, and writes each result to the output iterator. The given function must not modify the elements or invalidate iterators.
+
+``` cpp
+string s("hello");
+
+std::transform(s.begin(), s.end(), s.begin(), ::toupper);
+
+// s = "HELLO"
+```
+
+### Mutating
+
+The `for_each` function applies a function to each element in the range, potentially mutating the element. It returns the provided function object, allowing for the accumulation of a result.
+
+``` cpp
+vector<int> vec{1, 2, 3}, expect{2, 3, 4};
+
+std::for_each(vec.begin(), vec.end(), [](int &n) { ++n; });
+
+EXPECT_EQ(expect, vec);
+```
+
+The `iota` function can be used to fill a range with sequentially incremented values, starting with the given value.
+
+``` cpp
+vector<int> v(3);
+std::iota(v.begin(), v.end(), 1);
+
+EXPECT_EQ({1, 2, 3}, v);
+```
+
+The `swap_ranges` function swaps elements from the first range with the corresponding elements of the second range, and returns one-past the last swapped element of the _second_ range.
+
+``` cpp
+vector<int> v{1, 2, 3};
+list<int> l{4, 5, 6};
+
+// Swap the first two elements of v with first two elements of l
+std::swap_ranges(v.begin(), v.begin() + 2, l.begin());
+
+EXPECT_EQ({4, 5, 3}, v);
+EXPECT_EQ({1, 2, 6}, l);
+```
+
+The `fill` function sets every element in the range to a given value. There is also `fill_n`.
+
+``` cpp
+vector<int> v(3);
+
+std::fill(v.begin(), v.end(), 7);
+
+EXPECT_E1({7, 7, 7}, v);
+```
+
+The `generate` function assigns each element in the range the value generated by the provided function, which takes no arguments. There is also `generate_n`.
+
+``` cpp
+vector<int> v(3);
+int n = 1;
+
+std::generate(v.begin(), v.end(), [&n]() { return n++; });
+
+EXPECT_EQ({1, 2, 3}, v);
+```
+
+The `replace` function replaces the elements in the range that match the given value or satisfy the predicate (with `replace_if`) with another value. There's also `replace_copy`.
+
+``` cpp
+vector<int> v{1, 1, 2, 2, 3};
+
+// Replace even numbers with 0.
+std::replace_if(v.begin(), v.end(),
+                [](int i) { return i % 2 == 0; },
+                0);
+
+EXPECT_EQ({1, 1, 0, 0, 3}, v);
+```
+
+The `reverse` function reverses the order of the elements in the range. There's also `reverse_copy`.
+
+``` cpp
+vector<int> v{1, 2, 3};
+
+std::reverse(v.begin(), v.end());
+
+EXPECT_EQ({3, 2, 1}, v);
+```
+
+The `rotate` function rotates all elements in the range to the left such that the middle parameter becomes the first element in the range. Note that this function breaks convention in that there is a parameter (the "new-left") in between the [begin, end) iterator pair parameters. As per convention, `rotate_copy` does the same but copies the result into another range.
+
+``` cpp
+vector<int> v{1, 2, 3, 4};
+
+// Rotate v to the left so that the 3 (v[2]) become the first element.
+std::rotate(v.begin(), v.begin() + 2, v.end());
+
+EXPECT_EQ({3, 4, 1, 2}, v);
+```
+
+The `random_shuffle` function shuffles all elements in the range given a random number generator.
+
+``` cpp
+vector<int> v{1, 2, 3};
+random_device rd;
+mt19937 g(rd());
+
+std::shuffle(v.begin(), v.end(), g);
+
+// e.g. v = {3, 1, 2}
+```
+
+The `unique` function removes all _consecutive duplicates_ (and thus expects a sorted input) from the range, returning one-past the new logical end of the range. Consecutive duplicates are checked by equality or a given predicate. There is also `unique_copy`.
+
+Note that the elements are _not_ physically removed from the container, so this call is usually followed by a call to the `erase` method of the collection with the iterator returned by `unique`.
+
+``` cpp
+vector<int> v{1, 1, 1, 2, 2, 3, 4};
+
+auto last = std::unique(v.begin(), v.end());
+
+// v = {1, 2, 3, 4, x, x, x} where x = indeterminate
+
+v.erase(last, v.end());
+
+EXPECT_EQ({1, 2, 3, 4}, v);
+```
+
+The `remove` function rearranges the elements of the range so that those equal to a given value or satisfying a given predicate are moved to the end of the range, allowing them to easily be erased from their container. There's also `remove_copy`.
+
+``` cpp
+vector<int> v{1, 2, 1, 3, 1, 4};
+
+auto new_end = std::remove(v.begin(), v.end(), 1);
+
+v.erase(new_end, v.end());
+```
+
+The `iter_swap` function simply swaps the elements pointed to by the iterators.
+
+``` cpp
+vector<int> v{1, 2, 3};
+
+// Swap the 1 and the 3
+std::iter_swap(v.begin(), v.end() - 1);
+
+EXPECT_EQ({3, 2, 1}, v);
+
+// Can also explicitly just dereference iterators and call std::swap
+swap(*v.begin(), *(v.end() - 1));
+```
+
+### Sorting
+
+The `is_sorted` function checks if the range is sorted in ascending order or given a comparison function.
+
+``` cpp
+vector<int> v{1, 2, 3};
+
+bool sorted = std::is_sorted(v.begin(), v.end()));
+```
+
+The `is_sorted_until` function returns one-past the last sorted element, i.e. the first element that is not sorted.
+
+The `sort` function sorts the range in ascending order or based on a given comparison function. The `stable_sort` variant preserves the relative order of equal elements.
+
+The `partial_sort` function rearranges the elements of the range so that the [begin, middle) contains the elements of the sorted order of the entire array, i.e. the first (middle - begin) smallest elements. There is also `partial_sort_copy` which only copies enough elements that fit in the destination.
+
+``` cpp
+vector<int> v{5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
+
+std::partial_sort(v.begin(), v.begin() + 3, v.end());
+
+// v = {0, 1, 2, 7, 8, 6, 5, 9, 4, 3}
+//      |-----|
+//      sorted
+```
+
 The `merge` function merges two sorted ranges together into a destination.
 
 ``` cpp
@@ -1698,18 +1688,78 @@ std::inplace_merge(v.begin(), v.begin() + 3, v.end());
 // v = {1, 2, 3, 4, 5, 6}
 ```
 
-The `includes` function checks if every element of the second sorted range is found within the first sorted range, reads as "first range includes second."
+### Partitioning
+
+The `is_partitioned` function checks if all elements in the range are partitioned based on the given predicate, so that all elements that satisfy the predicate come before all of those that don't.
+
+``` cpp
+vector<int> v{1, 1, 0, 0};
+
+bool is_parted = std::is_partitioned(v.begin(), v.end(),
+                                     [](int i) { return i == 1; });
+```
+
+The `partition` function partitions the elements of a range so that all elements that satisfy the predicate come before all of those that don't. There is also `partition_copy`.
 
 ``` cpp
 vector<int> v{1, 2, 3, 4, 5, 6};
-vector<int> a{3, 4, 5}, b{1, 6};
+auto partition_func = [](int i) { return i % 2 == 0; };
 
-// true
-std::includes(v.begin(), v.end(), a.begin(), a.end());
+auto it = std::partition(v.begin(), v.end(), partition_func);
 
-// true
-std::includes(v.begin(), v.end(), b.begin(), b.end());
+bool is_parted = std::is_partitioned(v.begin(), v.end(),
+                                     partition_func;
 ```
+
+The `stable_partition` function is a stable version of the `partition` function, so that the relative order of equal elements is preserved.
+
+The `partition_point` function returns one-past the end of the first partition, i.e. the first element that doesn't satisfy the predicate.
+
+``` cpp
+vector<int> v{2, 4, 1, 3};
+auto pos = std::partition_point(v.begin(), v.end(),
+                                [](int i) { return i % 2 == 0; });
+```
+
+### Transferring
+
+The `copy` function copies elements from the given range into the range beginning at a given iterator position. The `copy_if` does the same only if the element satisfies a given predicate. There's also `copy_n` and `copy_backward`.
+
+``` cpp
+vector<int> v{1, 2, 3};
+vector<int> odds, odds_expect{1, 3};
+
+std::copy_if(v.begin(), v.end(), std::back_inserter(odds),
+             [](auto i) { return i % 2 != 0; });
+
+EXPECT_EQ(odds_expect, odds);
+```
+
+Note that with `copy_backward` the elements are _not_ copied in reverse, that is, the order of the elements is preserved. Instead, this function copies starting from the right end, which is why the end iterator is provided.
+
+``` cpp
+vector<int> source{1, 2, 3};
+vector<int> destination(4);
+
+std::copy_backward(source.begin(), source.end(), destination.end());
+
+EXPECT_EQ({0, 1, 2, 3}, destination);
+```
+
+The `move` function moves elements from the range into the range beginning with the third parameter. There's also `move_backward`.
+
+``` cpp
+vector<thread> ths;
+ths.emplace_back(func, arg);
+ths.emplace_back(func, arg);
+
+vector<thread> dest(2);
+
+// Could just dest = move(ths) in this case, but w/e
+std::move(ths.begin(), ths.end(), dest.begin());
+```
+
+### Sets
 
 The `set_difference` function performs a set difference operation on the two ranges and outputs the result into the destination iterator.
 
@@ -1768,6 +1818,8 @@ std::set_union(a.begin(), a.end(),
 // not 3 because it's in both
 ```
 
+### Heaps
+
 The `make_heap` function constructs a max-heap from the elements in the range, i.e. it's a "heapify" operation. A heap with a different order can be created using an optional comparison function, for example with `std::greater<in>()` a min-heap can be created.
 
 ``` cpp
@@ -1814,15 +1866,7 @@ The `sort_heap` function essentially performs a heap sort, that is, it sorts the
 
 The `is_heap` function checks to see if the range is in heap-order given some optional comparison function. There is an `is_heap_until` function which returns one-past the last heap-ordered element.
 
-The `lexicographical_compare` function checks to see if the first range is lexicographically less than the second range.
-
-``` cpp
-vector<int> a{1, 2, 2}, b{1, 2, 3};
-
-std::lexicographical_compare(a.begin(), a.end(),
-                             b.begin(), b.end());
-// a < b = true
-```
+### Permutations
 
 The `is_permutation` function checks to see if the first range is a permutation of the second range.
 
@@ -1846,91 +1890,6 @@ do { cout << s << endl; }
 while (next_permutation(s.begin(), s.end()));
 
 // aab, aba, baa
-```
-
-The `accumulate` function reduces the elements in the range given an initial value and an optional binary function which produces the reduction of two elements. By default, the binary function is addition, so `accumulate` produces the sum of the elements.
-
-``` cpp
-vector<int> v{1, 2, 3, 4, 5};
-
-int sum = std::accumulate(v.begin(), v.end(), 0);
-// sum = 15
-
-int product = std::accumulate(v.begin(), v.end(), 1,
-                              [](int prod, int next) {
-                                return prod * next;
-                              });
-// product = 120
-
-// can also be
-int product = std::accumulate(v.begin(), v.end(), 1, std::multiplies<int>());
-```
-
-The `inner_product` function computes the sum of the pair-wise products of the elements of the two ranges, which is the _dot product_. Custom sum and product functions can be provided, in which case the "product" function is applied in a pair-wise manner to the elements of the two ranges, and the "sum" function is applied to those results.
-
-This is like an `transform`/`for_each` of pair-wise elements with the "product" function and an `accumulate` of those results with the "sum" function.
-
-``` cpp
-vector<int> a{0, 1, 2, 3, 4};
-vector<int> b{5, 4, 2, 3, 1};
-
-int dot_product = std::inner_product(a.begin, a.end(), b.begin(), 0);
-// dot_product = 21
-```
-
-The `adjacent_difference` function computes the difference of each element in the range and its predecessor, writing each element into the output iterator. Since the first element doesn't have a predecessor, the predecessor is treated as 0.
-
-``` cpp
-vector<int> v{2, 4, 6, 8};
-
-// v = {2, 2, 2, 2};
-std::adjacent_difference(v.begin(), v.end(), v.begin());
-
-v = {1, 1, 1, 1};
-
-// v = {1, 1, 2, 3}
-.adjacent_difference(v.begin(), v.end() - 1,
-                     v.begin() + 1,
-                     [](int a, int b) { return a + b });
-```
-
-The `partial_sum` function successively computes the sums of increasing sub-ranges of the input range and copies each sum into the output iterator. A custom sum function can be provided. Specifically, the result is such that:
-
-$$ \text {dest}[i] = \sum_0^i src[i] $$
-
-This can be useful for example to compute the [maximal sub-array](https://en.wikipedia.org/wiki/Maximum_subarray_problem).
-
-``` cpp
-vector<int> v{2, 2, 2, 2};
-vector<int> dest(4);
-
-std::partial_sum(v.begin(), v.end(), dest.begin());
-
-for (std::size_t i = 0; i < dest.size(); ++i) {
-  std::cout << "sum of sub-range [0, " << i << "] = " << dest[i] << '\n';
-}
-
-// dest = {2, 4, 6, 8}
-```
-
-The `transform` function applies a given unary function to each element in the array, or a given binary function to each pair of elements in two ranges, and writes each result to the output iterator.
-
-``` cpp
-string s("hello");
-
-std::transform(s.begin(), s.end(), s.begin(), ::toupper);
-
-// s = "HELLO"
-```
-
-The `remove` function rearranges the elements of the range so that those equal to a given value or satisfying a given predicate are moved to the end of the range, allowing them to easily be erased from their container.
-
-``` cpp
-vector<int> v{1, 2, 1, 3, 1, 4};
-
-auto new_end = std::remove(v.begin(), v.end(), 1);
-
-v.erase(new_end, v.end());
 ```
 
 ## Random

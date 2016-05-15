@@ -356,8 +356,7 @@ fn main() {
         // if config.output dir doesn't exist, site.build()?
         .command("deploy",
                  GitHubPages::new("git@github.com:blaenk/blaenk.github.io.git",
-                                  "master")
-                 .git(".testing.git"))
+                                  "master"))
         .build();
 
     match command {

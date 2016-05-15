@@ -1,16 +1,47 @@
 use std::sync::{Arc, Mutex};
+use std::process::{Command, Child};
 
 use hoedown;
 use zmq;
 
 use diecast::{self, Handle, Item};
 
-pub fn markdown(context: Arc<Mutex<zmq::Context>>) -> Markdown {
-    Markdown { context: context }
+pub struct ChildGuard {
+    child: Child
 }
 
+impl ChildGuard {
+    fn new(child: Child) -> ChildGuard {
+        ChildGuard { child: child }
+    }
+}
+
+impl Drop for ChildGuard {
+    fn drop(&mut self) {
+        match self.child.kill() {
+            Err(e) => println!("Couldn't kill child process: {}", e),
+            Ok(_) => info!("Successfully killed the child process"),
+        }
+    }
+}
+
+pub fn markdown() -> Markdown {
+    let child = Command::new("python")
+        .arg("scripts/pig.py")
+        .arg("5555")
+        .spawn()
+        .unwrap();
+
+    Markdown {
+        context: Arc::new(Mutex::new(zmq::Context::new().unwrap())),
+        pig: Arc::new(Mutex::new(ChildGuard::new(child))),
+    }
+}
+
+#[derive(Clone)]
 pub struct Markdown {
     context: Arc<Mutex<zmq::Context>>,
+    pig: Arc<Mutex<ChildGuard>>,
 }
 
 impl Handle<Item> for Markdown {

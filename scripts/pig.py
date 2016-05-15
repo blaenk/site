@@ -95,28 +95,33 @@ class GDBLexer(RegexLexer):
 
 class ServerTask(threading.Thread):
     """ServerTask"""
-    def __init__(self, size):
+    def __init__(self, size, port):
         threading.Thread.__init__ (self)
         self.size = size
+        self.port = port
 
     def run(self):
-        context = zmq.Context()
-        frontend = context.socket(zmq.ROUTER)
-        frontend.bind('tcp://127.0.0.1:5555')
+        try:
+          context = zmq.Context()
+          frontend = context.socket(zmq.ROUTER)
+          frontend.bind('tcp://127.0.0.1:' + self.port)
 
-        backend = context.socket(zmq.DEALER)
-        backend.bind('inproc://backend')
+          backend = context.socket(zmq.DEALER)
+          backend.bind('inproc://backend')
 
-        for i in range(self.size + 1):
-            worker = ServerWorker(context)
-            worker.daemon = True
-            worker.start()
+          for i in range(self.size + 1):
+              worker = ServerWorker(context)
+              worker.daemon = True
+              worker.start()
 
-        zmq.proxy(frontend, backend)
+          zmq.proxy(frontend, backend)
 
-        frontend.close()
-        backend.close()
-        context.term()
+          frontend.close()
+          backend.close()
+          context.term()
+
+        except zmq.error.ZMQError:
+            pass
 
 class ServerWorker(threading.Thread):
     def __init__(self, context):
@@ -155,7 +160,7 @@ class ServerWorker(threading.Thread):
         socket.close()
 
 def main():
-    server = ServerTask(4)
+    server = ServerTask(4, sys.argv[1])
     server.daemon = True
     server.start()
     server.join()
@@ -163,5 +168,5 @@ def main():
 if __name__ == "__main__":
     try:
         main()
-    except (KeyboardInterrupt, SystemExit):
+    except:
         sys.exit()

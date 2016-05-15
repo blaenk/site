@@ -12,6 +12,10 @@ extern crate diecast_date as date;
 extern crate diecast_tags as tags;
 extern crate diecast_github_pages as github_pages;
 
+#[macro_use]
+extern crate lazy_static;
+
+extern crate libc;
 
 #[macro_use]
 extern crate hoedown;
@@ -34,6 +38,7 @@ extern crate syncbox;
 
 use std::process::{Command, Child};
 use std::sync::{Arc, Mutex};
+use std::cmp;
 
 use time::PreciseTime;
 use syncbox::ThreadPool;
@@ -184,11 +189,18 @@ fn is_pushable(item: &Item) -> bool {
 fn main() {
     env_logger::init().unwrap();
 
-    let mut pig_handle = pig();
+    // TODO
+    // these things only need to be run if the site is actually going to be run
+    // perhaps a conditional
+    //
+    // site.before_build(|| {
+    //   pig_handle = pig();
+    //   context = Arc::new(Mutex::new(zmq::Context::new().unwrap()));
+    //   ws_tx = websocket::init();
+    //   pool = bind::PooledEach::new(ThreadPool::fixed_size(2));
+    // })
 
-    // initialize_pool!(4).unwrap();
-
-    let context = Arc::new(Mutex::new(zmq::Context::new().unwrap()));
+    let md = markdown::markdown();
 
     // TODO
     // run/store this in websocket handler?
@@ -233,6 +245,20 @@ fn main() {
             scss::scss("scss/screen.scss", "css/screen.css")])
         .build();
 
+    fn publish_date_sort(a: &Item, b: &Item) -> cmp::Ordering {
+        let a = a.extensions.get::<PublishDate>().unwrap();
+        let b = b.extensions.get::<PublishDate>().unwrap();
+        b.cmp(a)
+    }
+
+    fn title_sort(a: &Item, b: &Item) -> cmp::Ordering {
+        let a = a.extensions.get::<metadata::toml::Metadata>().unwrap();
+        let b = b.extensions.get::<metadata::toml::Metadata>().unwrap();
+        let a_title = a.lookup("title").unwrap().as_str().unwrap();
+        let b_title = b.lookup("title").unwrap().as_str().unwrap();
+        a_title.cmp(b_title)
+    }
+
     let posts =
         Rule::named("posts")
         .depends_on(&templates)
@@ -242,10 +268,10 @@ fn main() {
             bind::retain(helpers::publishable),
             pool.each(chain![
                 helpers::set_date,
-                markdown::markdown(context.clone()),
+                // markdown::markdown(context.clone()),
+                md.clone(),
                 handle_if(is_pushable, websocket::pipe(ws_tx.clone())),
-                // TODO
-                // this isn't even being used
+                // this is used by feed
                 versions::save("rendered"),
                 route::pretty]),
             tags::collect(|item: &Item| -> Vec<String> {
@@ -262,11 +288,7 @@ fn main() {
             pool.each(chain![
                 handlebars::render(&templates, "layout", view::post_template),
                 item::write]),
-            bind::sort_by(|a, b| {
-                let a = a.extensions.get::<PublishDate>().unwrap();
-                let b = b.extensions.get::<PublishDate>().unwrap();
-                b.cmp(a)
-            })
+            bind::sort_by(publish_date_sort)
         ])
         .build();
 
@@ -291,7 +313,8 @@ fn main() {
                 metadata::toml::parse]),
             bind::retain(helpers::publishable),
             pool.each(chain![
-                markdown::markdown(context.clone()),
+                // markdown::markdown(context.clone()),
+                md.clone(),
                 handle_if(is_pushable, websocket::pipe(ws_tx.clone())),
                 route::pretty_page]),
             pool.each(chain![
@@ -310,20 +333,16 @@ fn main() {
             bind::retain(helpers::publishable),
             pool.each(chain![
                 helpers::set_date,
-                markdown::markdown(context.clone()),
+                // markdown::markdown(context.clone()),
+                md.clone(),
                 handle_if(is_pushable, websocket::pipe(ws_tx.clone())),
                 route::pretty]),
             git::git,
             pool.each(chain![
                 handlebars::render(&templates, "layout", view::note_template),
                 item::write]),
-            bind::sort_by(|a, b| {
-                let a = a.extensions.get::<metadata::toml::Metadata>().unwrap();
-                let b = b.extensions.get::<metadata::toml::Metadata>().unwrap();
-                let a_title = a.lookup("title").unwrap().as_str().unwrap();
-                let b_title = b.lookup("title").unwrap().as_str().unwrap();
-                a_title.cmp(b_title)
-            })])
+            bind::sort_by(title_sort)
+        ])
         .build();
 
     // TODO
@@ -340,20 +359,15 @@ fn main() {
             bind::retain(helpers::publishable),
             pool.each(chain![
                 helpers::set_date,
-                markdown::markdown(context.clone()),
+                // markdown::markdown(context.clone()),
+                md.clone(),
                 handle_if(is_pushable, websocket::pipe(ws_tx.clone())),
                 route::pretty]),
             git::git,
             pool.each(chain![
                 handlebars::render(&templates, "layout", view::work_template),
                 item::write]),
-            bind::sort_by(|a, b| {
-                let a = a.extensions.get::<metadata::toml::Metadata>().unwrap();
-                let b = b.extensions.get::<metadata::toml::Metadata>().unwrap();
-                let a_title = a.lookup("title").unwrap().as_str().unwrap();
-                let b_title = b.lookup("title").unwrap().as_str().unwrap();
-                a_title.cmp(b_title)
-            })])
+            bind::sort_by(title_sort)])
         .build();
 
     let notes_index =
@@ -374,10 +388,13 @@ fn main() {
         .handler(chain![
             bind::create("work/index.html"),
             pool.each(chain![
-                handlebars::render(&templates, "layout", view::work_index_template),
+                handlebars::render(&templates, "layout",
+                                   view::work_index_template),
                 item::write])])
         .build();
 
+    // TODO
+    // should be able to sort tags here
     let tags =
         Rule::named("tag index")
         .depends_on(&templates)
@@ -385,7 +402,8 @@ fn main() {
         .handler(chain![
             helpers::tag_index,
             pool.each(chain![
-                handlebars::render(&templates, "layout", view::tags_index_template),
+                handlebars::render(&templates, "layout",
+                                   view::tags_index_template),
                 item::write])])
         .build();
 
@@ -428,6 +446,9 @@ fn main() {
         not_found,
     ];
 
+    // TODO
+    // I think I'd prefer site.add_rule(Rule::etc)
+    // the problem (?) is that can no longer .depends_on(&rule)
     let mut site = Site::new(rules);
 
     let command =
@@ -460,5 +481,5 @@ fn main() {
         Err(e) => println!("command creation failed: {}", e),
     }
 
-    pig_handle.kill().unwrap();
+    // pig_handle.kill().unwrap();
 }

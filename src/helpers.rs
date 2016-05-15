@@ -52,17 +52,29 @@ pub fn publishable(item: &Item) -> bool {
 }
 
 pub fn tag_index(bind: &mut Bind) -> diecast::Result<()> {
+    use std::sync::Arc;
+
     let mut items = vec![];
 
     if let Some(tags) = bind.dependencies["posts"].extensions.read().unwrap().get::<tags::Tags>() {
         for (tag, itms) in tags {
+            // TODO
+            // allow user sorting
+            let mut sorted: Vec<Arc<Item>> = (**itms).clone();
+
+            sorted.sort_by(|a, b| {
+                let a = a.extensions.get::<PublishDate>().unwrap();
+                let b = b.extensions.get::<PublishDate>().unwrap();
+                b.cmp(a)
+            });
+
             let url = support::slugify(&tag);
 
             let mut item = Item::writing(format!("tags/{}/index.html", url));
 
             item.extensions.insert::<tags::Tag>(tags::Tag {
                 tag: tag.clone(),
-                items: itms.clone()
+                items: Arc::new(sorted),
             });
 
             items.push(item);

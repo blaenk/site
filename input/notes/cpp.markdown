@@ -771,15 +771,15 @@ The `std::integral_constant<T, T v>` type from `type_traits` takes an integral t
 
 ``` cpp
 // integrals
-template<typename T>
+template <typename T>
 void foo_impl(T val, true_type);
 
 // floats
-template<typename T>
+template <typename T>
 void foo_impl(T val, false_type);
 
 // Use is_integral to select the appropriate overload.
-template<typename T>
+template <typename T>
 void foo(T val) {
  foo_impl(val, std::is_integral<T>());
 }
@@ -1018,7 +1018,7 @@ However, something has to have created a `shared_ptr` of the `this` pointer, i.e
 ``` cpp
 class Widget : public std::enable_shared_from_this<Widget> {
  public:
-  template<typename... Ts>
+  template <typename... Ts>
   static std::shared_ptr<Widget> create(Ts&&... params);
 };
 ```

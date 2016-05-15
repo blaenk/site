@@ -22,6 +22,8 @@ rss = "*"
 zmq-rs = "*"
 sha1 = "*"
 syncbox = "*"
+lazy_static = "*"
+libc = "*"
 
 diecast = { path = "../diecast" }
 diecast-tags = { path = "../tags" }
@@ -34,3 +36,4 @@ diecast-scss = { path = "../scss" }
 diecast-handlebars = { path = "../handlebars" }
 diecast-metadata = { path = "../metadata", features = ["toml"] }
 diecast-feed = { path = "../feed", features = ["rss"] }
+diecast-github-pages = { path = "../github-pages" }

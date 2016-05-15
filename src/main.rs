@@ -10,6 +10,8 @@ extern crate diecast_versions as versions;
 extern crate diecast_metadata as metadata;
 extern crate diecast_date as date;
 extern crate diecast_tags as tags;
+extern crate diecast_github_pages as github_pages;
+
 
 #[macro_use]
 extern crate hoedown;
@@ -35,6 +37,8 @@ use std::sync::{Arc, Mutex};
 
 use time::PreciseTime;
 use syncbox::ThreadPool;
+
+use github_pages::GitHubPages;
 
 use diecast::{Site, Rule, Item};
 use diecast::command;
@@ -432,13 +436,9 @@ fn main() {
         // TODO
         // if config.output dir doesn't exist, site.build()?
         .command("deploy",
-                 command::deploy::Deploy::new(|_: &Site| -> diecast::Result<()> {
-                     github_pages_deploy(
-                         "git@github.com:blaenk/blaenk.github.io.git", "master",
-                         ".deploy.git", "output");
-
-                     Ok(())
-                 }))
+                 GitHubPages::new("git@github.com:blaenk/blaenk.github.io.git",
+                                  "master")
+                 .git(".testing.git"))
         .build();
 
     match command {

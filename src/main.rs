@@ -36,8 +36,6 @@ extern crate zmq_rs as zmq;
 extern crate sha1;
 extern crate syncbox;
 
-use std::process::{Command, Child};
-use std::sync::{Arc, Mutex};
 use std::cmp;
 
 use time::PreciseTime;
@@ -61,106 +59,6 @@ pub struct PublishDate;
 
 impl typemap::Key for PublishDate {
     type Value = chrono::NaiveDate;
-}
-
-fn github_pages_deploy(remote: &'static str, branch: &'static str,
-                       git: &'static str, target: &'static str) {
-    use std::process::Command;
-    use std::env;
-    use diecast;
-
-    // has the repo been initialized?
-    let initialized =
-        diecast::support::file_exists(git);
-
-    if !initialized {
-        println!("  [*] initializing repository");
-        // git init --separate-git-dir .deploy.git
-        Command::new("git")
-            .arg("init").arg("--bare").arg(git)
-            .status()
-            .unwrap_or_else(|e|
-                panic!("git init failed: {}", e));
-    }
-
-    // git rev-parse --short HEAD
-    let out =
-    Command::new("git")
-        .arg("rev-parse").arg("--short").arg("HEAD")
-        .output()
-        .unwrap_or_else(|e|
-            panic!("git rev-parse failed: {}", e));
-
-    let sha = String::from_utf8_lossy(&out.stdout).into_owned();
-    let short = sha.trim_right();
-
-    env::set_var("GIT_DIR", git);
-    env::set_var("GIT_WORK_TREE", target);
-
-    if !initialized {
-        println!("  [*] setting remote");
-        // git remote add upstream <remote>
-        Command::new("git")
-            .arg("remote").arg("add").arg("upstream")
-            .arg(remote)
-            .status()
-            .unwrap_or_else(|e|
-                panic!("git init failed: {}", e));
-
-        println!("  [*] fetching remote");
-        // git fetch upstream
-        Command::new("git")
-            .arg("fetch").arg("upstream")
-            .status()
-            .unwrap_or_else(|e|
-                panic!("git init failed: {}", e));
-
-        println!("  [*] resetting to {}", branch);
-        // git reset upstream/master
-        Command::new("git")
-            .arg("reset").arg(format!("upstream/{}", branch))
-            .status()
-            .unwrap_or_else(|e|
-                panic!("git init failed: {}", e));
-    }
-
-    println!("  [*] staging all files");
-    // git add --all .
-    Command::new("git")
-        .arg("add").arg("--all").arg(".")
-        .status()
-        .unwrap_or_else(|e|
-            panic!("git init failed: {}", e));
-
-    println!("  [*] deploying site generated from {}", short);
-    // git commit -m "generated from <sha>"
-    Command::new("git")
-        .arg("commit").arg("-m").arg(format!("generated from {}", short))
-        .status()
-        .unwrap_or_else(|e|
-            panic!("git init failed: {}", e));
-
-    println!("  [*] pushing");
-    // git push upstream HEAD:master -f
-    Command::new("git")
-        .arg("push").arg("upstream").arg("master").arg("-f")
-        .status()
-        .unwrap_or_else(|e|
-            panic!("git init failed: {}", e));
-
-    env::remove_var("GIT_DIR");
-    env::remove_var("GIT_WORK_TREE");
-
-    println!("  [*] deploy complete");
-}
-
-fn pig() -> Child {
-    println!("initializing pig server...");
-
-    Command::new("python")
-        .arg("scripts/pig.py")
-        .spawn()
-        .unwrap()
 }
 
 fn is_pushable(item: &Item) -> bool {

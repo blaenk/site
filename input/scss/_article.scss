@@ -48,9 +48,15 @@ article {
     }
 
     ul, ol {
-      li p {
-        margin-top: 0;
-        margin-bottom: 10px;
+      li {
+        p {
+          margin-top: 0;
+          margin-bottom: 10px;
+        }
+
+        ul {
+          margin-bottom: 10px;
+        }
       }
     }
 

@@ -1,4 +1,4 @@
-target
-output
-cache
-.deploy.git
+/target/
+/output/
+/cache/
+/.deploy/

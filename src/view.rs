@@ -12,7 +12,7 @@ use diecast::support;
 // TODO toml re-export?
 use metadata;
 
-use super::PublishDate;
+use helpers::PublishDate;
 
 #[inline]
 fn item_meta(item: &Item) -> Option<&toml::Value> {
@@ -81,23 +81,24 @@ fn item_date(item: &Item) -> Option<String> {
 
 #[inline]
 fn item_git(item: &Item) -> Option<String> {
-    item.extensions.get::<git::Git>()
+    item.extensions.get::<git::LastCommit>()
     .and_then(|git|
         item.source()
         .and_then(|path|
             path.to_str()
             .map(|s| (git, String::from(s)))))
     .map(|(git, path)| {
-        let sha = git.sha.to_string().chars().take(7).collect::<String>();
+        let sha = git.sha.chars().take(7).collect::<String>();
+
         // TODO
         // detect user/repo by parsing remote?
         let stem = "blaenk/site";
         format!(
 "<a href=\"https://github.com/{stem}/commits/master/{path}\">History</a>\
 <span class=\"hash\">, \
-<a href=\"https://github.com/{stem}/commit/{sha}\" title=\"{message}\">{sha}</a>\
+<a href=\"https://github.com/{stem}/commit/{sha}\" title=\"{summary}\">{sha}</a>\
 </span>",
-        path=path, stem=stem, sha=sha, message=git.message)
+        path=path, stem=stem, sha=sha, summary=git.summary)
     })
 }
 

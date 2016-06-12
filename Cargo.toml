@@ -22,8 +22,6 @@ rss = "*"
 zmq-rs = "*"
 sha1 = "*"
 syncbox = "*"
-lazy_static = "*"
-libc = "*"
 
 diecast = { path = "../diecast" }
 diecast-tags = { path = "../tags" }

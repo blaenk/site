@@ -1,4 +1,5 @@
 use std::path::Path;
+use std::cmp;
 
 use diecast::{self, Bind, Item};
 use diecast::support;
@@ -6,12 +7,37 @@ use diecast::support;
 use rss;
 use toml;
 use chrono;
+use typemap;
 
 use metadata;
 use tags;
 use versions;
 
-use super::PublishDate;
+pub struct PublishDate;
+
+impl typemap::Key for PublishDate {
+    type Value = chrono::NaiveDate;
+}
+
+pub fn is_pushable(item: &Item) -> bool {
+    item.extensions.get::<metadata::toml::Metadata>()
+    .and_then(|m| m.lookup("push").and_then(toml::Value::as_bool))
+    .unwrap_or(true)
+}
+
+pub fn publish_date_sort(a: &Item, b: &Item) -> cmp::Ordering {
+    let a = a.extensions.get::<PublishDate>().unwrap();
+    let b = b.extensions.get::<PublishDate>().unwrap();
+    b.cmp(a)
+}
+
+pub fn title_sort(a: &Item, b: &Item) -> cmp::Ordering {
+    let a = a.extensions.get::<metadata::toml::Metadata>().unwrap();
+    let b = b.extensions.get::<metadata::toml::Metadata>().unwrap();
+    let a_title = a.lookup("title").unwrap().as_str().unwrap();
+    let b_title = b.lookup("title").unwrap().as_str().unwrap();
+    a_title.cmp(b_title)
+}
 
 fn date_handler(item: &Item) -> diecast::Result<chrono::NaiveDate> {
     if let Some(meta) = item.extensions.get::<metadata::toml::Metadata>() {

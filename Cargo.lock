@@ -340,7 +340,7 @@ dependencies = [
 [[package]]
 name = "git2"
 version = "0.4.3"
-source = "git+https://github.com/alexcrichton/git2-rs#47080a9d0883457ff4943187327e32852fe166f6"
+source = "git+https://github.com/alexcrichton/git2-rs#e9abeb3d713c2cc67a7caff351df868f80a55850"
 dependencies = [
  "bitflags 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "libc 0.2.7 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -483,7 +483,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 [[package]]
 name = "libgit2-sys"
 version = "0.4.3"
-source = "git+https://github.com/alexcrichton/git2-rs#47080a9d0883457ff4943187327e32852fe166f6"
+source = "git+https://github.com/alexcrichton/git2-rs#e9abeb3d713c2cc67a7caff351df868f80a55850"
 dependencies = [
  "cmake 0.1.13 (registry+https://github.com/rust-lang/crates.io-index)",
  "gcc 0.3.25 (registry+https://github.com/rust-lang/crates.io-index)",

@@ -39,7 +39,7 @@ use diecast::command;
 use diecast::util::route;
 use diecast::util::handle::{handle_if, bind, item};
 
-use github_pages::GitHubPages;
+use github_pages::{GitHubPages, BuildFrom};
 use git::GitCommit;
 
 // item: read, write, copy
@@ -324,8 +324,8 @@ fn main() {
         command::Builder::new()
         .command("live", live::Live::new("0.0.0.0:4000"))
         .command("deploy",
-                 GitHubPages::new("git@github.com:blaenk/blaenk.github.io.git",
-                                  "master"))
+                 GitHubPages::new("git@github.com:blaenk/blaenk.github.io.git", "master")
+                 .build_from(BuildFrom::Revision(String::from("origin/master"))))
         .build();
 
     match command {

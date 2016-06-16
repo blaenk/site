@@ -30,9 +30,9 @@ React.renderComponent(
 
 State can be modified using the `setState(data, callback)` function which merges the `data` into the component's `state` and re-renders the component, calling the optional `callback` when it is finished rendering.
 
-It's idiomatic to keep as many components stateless as possible. A common pattern is to create several stateless components under a stateful component which passes state to them via `props` so that the stateless sub-components can be rendered in a declarative manner.
+It's idiomatic to keep as many components as stateless as possible. A common pattern is to create several stateless components under a stateful component which passes state to them via `props` so that the stateless sub-components can be rendered in a declarative manner.
 
-State that may be contained in components should be the most primitive, absolutely required data that may be changed by event handlers to trigger a UI update. The `render` method can be used to compute more sophisticated data from this state automatically as required. State therefore shouldn't consist of computed data, other components (which should be constructed within `render`), or duplicate data from `props`.
+The state that may be contained in components should be the most primitive, absolutely required data that may be changed by event handlers to trigger a UI update. The `render` method can be used to compute more sophisticated data from this state automatically as required. State therefore shouldn't consist of computed data, other components (which should be constructed within `render`), or duplicate data from `props`.
 
 _Reconciliation_ refers to the process by which React updates the DOM with each new render pass. Children are reconciled according to the order in which they're rendered, so that if a child node is removed, its contents are replaced with its sibling's contents and the sibling is destroyed. This may cause problems with stateful components, in which case it may be preferable to hide components instead of destroying them.
 
@@ -82,7 +82,7 @@ var MyComponent = React.createClass({
 Mixins can be used to share common functionality between components. If multiple mixins define the same lifecycle method, each one is guaranteed to be called.
 
 ``` javascript
-var IntervalMixin = {
+var SetIntervalMixin = {
   componentWillMount: function() { this.intervals = []; },
   setInterval: function() {
     this.intervals.push(setInterval.apply(null, arguments));

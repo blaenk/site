@@ -138,7 +138,7 @@ Event handlers aren't attached to individual nodes. Instead, React establishes a
 
 # DOM
 
-React maintains a fast in-memory DOM representation known as the virtual DOM. The `render` method returns a description of the DOM which can then be diffed with the virtual DOM to compute the fastest way to update the browser DOM to reflect any changes.
+React maintains a fast in-memory DOM representation known as the virtual DOM. The `render` method returns a description of the DOM which can then be diff'ed with the virtual DOM to compute the fastest way to update the browser DOM to reflect any changes.
 
 Sometimes it may be necessary to interact directly with the DOM, either to interoperate with third-party libraries or to perform non-reactive changes such as setting focus, which can't easily be inferred via React's data flow (props and state).
 
@@ -189,7 +189,7 @@ Although in HTML the value of `textarea` is set via children, it should be set v
 If an `input` component has a `value` property set, then it is considered a _controlled component_, so that the rendered component _always_ reflects the `value` property; user input has no effect. In order for a controlled component to reflect user input, it should explicitly set the value in response to the change.
 
 ``` javascript
-getInitialState: function() { return {value: 'Hello1'} },
+getInitialState: function() { return {value: 'Hello!'} },
 handleChange: function(e) { this.setState({value: e.target.value}) },
 render: function() {
   var value = this.state.value;
@@ -223,7 +223,7 @@ var MyComponent = React.createClass({/* ... */});
 var app = <MyComponent someProperty={true} />;
 ```
 
-JavaScript expressions---both attribute and child---can be embedded into JSX with curly braces `{}`. Comments should also be contained within expressions.
+JavaScript expressions can be embedded into JSX with curly braces `{}` within attributes and as children. Comments should also be contained within expressions.
 
 ``` javascript
 var person = <Person name={window.isLoggedIn ? window.name : ''} />;
@@ -250,7 +250,7 @@ Raw HTML can be inserted with a specific API.
 5. **Stores**: respond to actions they're interested in, receiving data payload, and emit "change" event
 8. **Views**: listen to "change" events and re-render accordingly either implicitly or explicitly; **back to #1**
 
-All data flows through the dispatcher which acts as a central hub. Actions are calls into the dispatcher and usually originate from user interactions with views. The dispatcher then invokes callbacks that the stores registered with it, thereby dispatching the data payloads contained within the actions to all stores. Within the registered callbacks, stores respond to the actions they're interested in and then emit a "change" event to alert controller-views to the fact that the data layer has been modified. The Controller-views listen to the change events and retrieve data from stores in an event handler, then call their own `rende` method via `setState` or `forceUpdate` to update themselves and all of their children.
+All data flows through the dispatcher which acts as a central hub. Actions are calls into the dispatcher and usually originate from user interactions with views. The dispatcher then invokes callbacks that the stores registered with it, thereby dispatching the data payloads contained within the actions to all stores. Within the registered callbacks, stores respond to the actions they're interested in and then emit a "change" event to alert controller-views to the fact that the data layer has been modified. The Controller-views listen to the change events and retrieve data from stores in an event handler, then call their own `render` method via `setState` or `forceUpdate` to update themselves and all of their children.
 
 ## Dispatcher
 

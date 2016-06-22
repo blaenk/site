@@ -185,6 +185,7 @@ Rather than manually defining accessor methods, it's possible to define properti
 @property (nonatomic, copy) NSString *name;
 
 {
+  …
 }
 
 @end
@@ -203,12 +204,54 @@ Previously it was then necessary to place a corresponding `@synthesize` directiv
 @end
 ```
 
-However, as of XCode 4.4 this is no longer necessary as the compiler does this for you.
+However, as of XCode 4.4 this is no longer necessary as the compiler does this for you. It's still necessary to do if the compiler ends up not generating any of the methods, for example if a property is marked `readonly` but the getter is manually overridden, then the `_variable` won't be defined, in which case it's necessary to explicitly `@synthesize` to define it or declare it manually in the `@interface`.
 
 Properties are also usable using dot notation as in C++ and Java. However, rather than simply accessing a field in a struct as in C++, dot notation translates to a message sent to the corresponding accessor method.
 
 ``` objective-c
 NSString *theName = person.name;
+```
+
+It's possible to define a property with a different type than a manually defined member variable of the same name. For example, the class below defines and uses a mutable array internally, but publicly exposes an immutable array.
+
+``` objective-c
+@interface MYPerson : NSObject
+{
+  NSMutableArray *_names;
+}
+
+@property (nonatomic, copy) NSArray *names;
+
+- (void)addName:(NSString *)n;
+
+@end
+```
+
+Notice that the accessor methods are overridden to handle the translation between mutable and immutable arrays. Specifically, the setter sets the internal variable to a mutable copy of the passed immutable array, while the getter returns an immutable copy of the internal immutable array.
+
+``` objective-c
+@implementation MYPerson
+
+- (void)setNames:(NSArray *)n
+{
+  _names = [n mutableCopy];
+}
+
+- (NSArray *)names
+{
+  return [_names copy];
+}
+
+- (void)addName:(NSString *)n
+{
+  if (!_names) {
+    _names = [[NSMutableArray alloc] init];
+  }
+
+  [_names addObject:n];
+}
+
+@end
 ```
 
 # Inheritance
@@ -233,3 +276,12 @@ The `%@` token in format strings passed to `NSLog` for example cause a `descript
 
 @end
 ```
+
+Forward declarations are possible with the `@class` keyword.
+
+# Ownership
+
+An object that contains a pointer to another object is said to own that object. Due to reference counting, the owned object knows how many owners it has through its reference count.
+
+The `dealloc` method is run when an instance of a class is deallocated because it has no owners.
+

@@ -424,3 +424,187 @@ There are a couple of rules of thumb for manual reference counting:
 * Objects exist as long as they have an owner.
 
 This explains why the `NSString` returned by `description` is `autorelease`d: because although it created the object via `alloc`-`init` and thus gained ownership of it, it is giving it away by returning it. Sending it a `release` message would immediately decrement its refcount, thereby deallocating it, so instead it is `autorelease`d.
+
+# Collections
+
+Sets are represented by `NSSet` and `NSMutableSet`.
+
+Collection methods which test for equality contain variants containing the word `Identical` which test if the objects are the same object by testing the pointers for equality, e.g. `indexOfObject:` vs `indexOfObjectIdenticalTo:`.
+
+Dictionaries are represented by `NSDictionary` and `NSMutableDictionary`. Dictionaries can be created from literal syntax `@{…}`. A dictionary can be keyed using subscript notation, for example:
+
+``` objective-c
+NSDictionary *ages = @{
+  @"John": @20,
+  @"Jane": @21,
+};
+
+NSNumber johnAge = ages[@"John"];
+```
+
+Mutable arrays can be sorted using:
+
+``` objective-c
+- (void)sortUsingDescriptors:(NSArray *)sortDescriptors;
+```
+
+A sort descriptor is an object of type `NSSortDescriptor` which specifies a property of the sorted element---any instance variable or the result of any method of the object---and whether to sort it in ascending or descending order. `sortUsingDescriptors:` takes an array of sort descriptors so that in the event of equality, the next descriptor is used. For example, to sort by the property `lastName` in ascending order, the following descriptor may be used:
+
+``` objective-c
+NSSortDescriptor *lastAscending = [NSSortDescriptor sortDescriptorWithKey:@"lastName"
+                                                                ascending:YES];
+```
+
+Collections can be filtered given a predicate of type `NSPredicate`. The filtering is done in-place on an `NSMutableArray` via `filterUsingPredicate:` whereas a copy is created for `NSArray` via `filteredArrayUsingPredicate:`. The predicate can be constructed [from a string](https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/Predicates/AdditionalChapters/Introduction.html) representing the condition:
+
+``` objective-c
+NSPredicate *pred = [NSPredicate predicateWithFormat:@"person.age > 18"];
+NSArray *adults = [people filteredArrayUsingPredicate:pred];
+```
+
+An `NSNumber` is essentially a boxed number type which is used to wrap numbers so that they can be stored in collections such as `NSDictionary`. They can be constructed using `NSNumber` literals such as `@2`.
+
+The `NSValue` type can be used to box/wrap arbitrary types such as structs.
+
+It's not possible to insert `nil` into a collection. In order to represent a "hole" in a collection, the `NSNull` class can be used.
+
+# Enumerations
+
+The `NS_ENUM()` preprocessor macro can be used to specify the enumeration's backing data type and name.
+
+``` objective-c
+typedef NS_ENUM(int, Color) {
+  ColorRed,
+  ColorBlue,
+  ColorGreen
+};
+```
+
+# NSError
+
+Some methods may fail for any reason. By convention, the error is returned through a parameter which is a pointer to a pointer to an `NSError`. That is, the parameter type is `NSError **`, but the caller can simply create a `NSError *` and return a pointer to it via `&error`. Methods that can take an `NSError` pointer parameter always return a value indicating whether or not there was an error.
+
+``` objective-c
+NSError *error = nil;
+
+BOOL success = [obj someArgument:@"test" error:&error];
+
+if (!success) {
+  NSLog(@"failed: %@", [error localizedDescription]);
+}
+```
+
+# NSData
+
+The `NSData` class represents a buffer of bytes. The data can be written to a file using `writeToFile:options:error`. The option `NSDataWritingAtomic` ensures an atomic write operation.
+
+It's possible to obtain the standard path for a given task by using the `NSSearchPathForDirectoriesInDomains` method. For example, to get the desktop directory:
+
+``` objective-c
+NSArray *desktops =
+  NSSearchPathForDirectoriesInDomains(NSDesktopDirectory, NSUserDomainMask, YES);
+
+NSString *desktopPath = desktops[0];
+```
+
+# Callbacks
+
+Callbacks in Objective-C can take on four forms:
+
+1. _Target-action_: Specify an object (target) and a message to send it (action).
+2. _Helper objects_: Specify objects which do the required work. These objects are also known as _delegates_ or _data sources_.
+3. _Notifications_: An object subscribes to the notification center for a particular kind of notification.
+4. _Blocks_: Essentially a lambda meant to run when the event is triggered.
+
+Events happen within the context of a run loop of type `NSRunLoop`.
+
+The potential for strong reference cycles is high in most callback schemes. For example, an object may have a pointer to the object that will call it back, and that object contains a pointer to the object so that it _can_ call it back. To mitigate this:
+
+* Notifications don't own their observers. Observers remove themselves from the notification center in their `dealloc` method via `removeObserver:`.
+
+    ``` objective-c
+    - (void)dealloc {
+      [[NSNotificationCenter defaultCenter] removeObserver:self];
+    }
+    ```
+
+* Objects don't own their delegates/data sources. Delegates/data sources remove themselves in their `dealloc` method.
+
+    ``` objective-c
+    - (void)dealloc {
+      [delegator setDelegate:nil];
+    }
+    ```
+
+* Objects don't own their targets. Target objects should remove themselves in their `dealloc` method.
+
+    ``` objective-c
+    - (void)dealloc {
+      [button setTarget:nil];
+    }
+    ```
+
+## Selectors
+
+Each method name that the compiler encounters is given a unique number known as a _selector_ which is used to perform method lookup. The `@selector(…)` directive is replaced by the compiler with the selector for the given method.
+
+## Target-action
+
+Action methods are the methods invoked by a target-action combination, and they always take a single argument consisting of the object that sent the message.
+
+Timers of type `NSTimer` use the target-action pattern to specify what message to send to what object every time the timer triggers. For example, the timer below will send the message `actionMethod` to `someObject` every 2 seconds.
+
+``` objective-c
+NSTimer *timer =
+  [NSTimer scheduledTimerWithTimeInterval:2.0
+                                   target:someObject
+                                 selector:@selector(actionMethod:)
+                                 userInfo:nil
+                                  repeats:YES];
+```
+
+Unused variable warnings can be explicitly silenced by using the `__unused` keyword as a prefix to the type:
+
+``` objective-c
+__unused NSString *name = @"John";
+```
+
+When sending one callback to one object, Apple uses target-action.
+
+## Helper Objects
+
+Helper objects implement methods used to do different kinds of work. For example, asynchronous usage of `NSURLConnection` requires a helper object which defines methods to do work in response to new data, authentication, handle failure, etc.
+
+For example, in the code below, the connection is configured to use object `logger` as its delegate, which defines methods which are invoked in response to specific events, such as `connectionDidFinishLoading:`.
+
+``` objective-c
+NSURLConnection *conn =
+  [[NSURLConnection alloc] initWithRequest:request
+                                  delegate:logger
+                          startImmediately:YES];
+```
+
+The methods expected by an `NSURLConnection` are defined in a protocol---a list of method declarations. A protocol is implemented by specifying its name in angle brackets following the superclass in the `@interface` line:
+
+``` objective-c
+@interface MYLogger : NSObject <NSURLConnectionDelegate, NSURLConnectionDataDelegate>
+{
+  …
+}
+```
+
+When sending various callbacks to one object, Apple uses a helper object with a protocol.
+
+## Notifications
+
+Various objects can subscribe to certain notifications using the notification center `NSNotificationCenter`. For example, the code below subscribes the `logger` object to a notification for when the time zone is changed, and it's configured to invoke the `zoneChange:` method. It's also possible to specify that only notifications sent from a particular object are to be considered.
+
+
+``` objective-c
+[[NSNotificationCenter defaultCenter]
+  addObserver:logger
+     selector:@selector(zoneChange:)
+         name:NSSystemTimeZoneDidChangeNotification
+       object:nil];
+```
+

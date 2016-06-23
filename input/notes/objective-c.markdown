@@ -62,7 +62,7 @@ NSDate *now = [[NSDate alloc] init];
 
 Convenience methods are those which perform an allocation-initialization sequence in a conveniently expected manner. For example, since `NSDate`'s `init` method initializes the `NSDate` to the current date and time, the `date` class method is considered a convenience method since it's more convenient than an explicit `alloc`-`init` chain.
 
-Objective-C has `nil` to represent a pointer to no object. Sending a message to `nil` has no effect and it is completely legal.
+Objective-C has `nil` to represent a pointer to no object. Sending a message to `nil` has no effect and it is completely legal. However, sending a message to an object that doesn't implement that method _does_ crash the program.
 
 The `id` type is a pointer to an Objective-C object:
 
@@ -653,4 +653,52 @@ Variables captured by a block are constant within the block. In order to modify 
 __block int count = 0;
 
 void (^incrementBlock)() = ^{ count++ };
+```
+
+# Protocols
+
+A _protocol_ is a list of method declarations which may be required or optional. Any object that wants to conform to a protocol must implement the required methods.
+
+``` objective-c
+@protocol UITableViewDataSource <NSObject>
+
+@required
+
+- (NSInteger)tableView:(UITableView *)tv numberOfRowsInSection:(NSInteger)section;
+
+…
+
+@optional
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tv;
+
+…
+
+@end
+```
+
+It's then possible to specify the type of any object that conforms to a particular protocol:
+
+``` objective-c
+@property (nonatomic, assign) id<UITableViewDataSource> dataSource;
+```
+
+In order to make a class conform to a protocol, the protocol name must be mentioned in the `@interface`:
+
+``` objective-c
+@interface SomeViewController : UIViewController <UITableViewDataSource>
+
+…
+
+@end
+```
+
+To avoid crashing the program when attempting to call an optional method that an object didn't implement, it's necessary to first check if the object did implement the method by using `NSObject`'s `respondsToSelector:` which returns a `BOOL` indicating if the object does respond to that message.
+
+``` objective-c
+if ([_dataSource respondsToSelector:@selector(numberOfSectionsInTableView:)]) {
+  // call it here
+} else {
+  // don't call it; use some default value
+}
 ```

@@ -758,3 +758,61 @@ When using the Interface Builder, the `IBOutlet` keyword is actually an empty `#
 
 Interface Builder files `.xib` are XML files representing the UI.
 
+# Initializers
+
+When a class does not override the `init` method, `NSObject`'s `init` method will be called which zeroes out all of the subclass' instance variables.
+
+When overriding the `init` method, the first line should call `super`'s `init`, then the return value should be checked to determine if a valid object was returned.
+
+The return type of `init` should be `instancetype`, a keyword represents the type of an instance to which the method belongs. This is preferred over returning an explicit type such as `MYPerson *` so that subclasses can continue to use the same initializer to initialize objects of the subclass type. Previously this was done by returning `id`, but `instancetype` is preferred because it more narrowly restricts the type to the type of the receiver.
+
+It's necessary to set `self` to the value returned by `super`'s `init` because a superclass `init` may have deallocated `self` and allocated a new object. Then it's necessary to check that the returned value is not `nil`, in which case we can forego further initialization and simply return `nil`.
+
+``` objective-c
+- (instancetype)init
+{
+  // initialize superclass object, e.g. NSObject
+  self = [super init];
+
+  // above may return nil
+  if (self) {
+    _instance_variable = 3;
+  }
+
+  return self;
+}
+```
+
+It's also common to do the three things in one step: initializing the superclass object, assigning it to `self`, and checking its value:
+
+``` objective-c
+- (instancetype)init
+{
+  if (self = [super init]) {
+    _instance_variable = 3;
+  }
+
+  return self;
+}
+```
+
+It's also possible to create initializers which take arguments in the same manner.
+
+In initializers it's common to simply use instance variables directly rather than through accessors because it is more semantically correct, since accessors may assume that the object is already initialized. However, using accessors usually works fine.
+
+It's often necessary to override superclass initializers to account for the subclass' additional variables, otherwise users may initialize a subclass using a superclass initializer which will not initialize the rest of the subclass variables, leaving the object in an inconsistent state.
+
+A _designated initializer_ is a single initializer in a class that all other initializers in the class directly or indirectly call and rely upon for complete initialization of the object.
+
+If the subclass' designated initializer has a different name than the designated initializer of its superclass, the superclass' designated initializer should be overridden to call the new subclass' designated initializer.
+
+When there is no good default initialization of an object, `init` can be overridden to raise an exception that will crash the program:
+
+``` objective-c
+- (instancetype)init
+{
+  [NSException raise:@"MYNoDefaultUserPass"
+              format:@"Use initWithUser:Pass:, not init"];
+}
+```
+

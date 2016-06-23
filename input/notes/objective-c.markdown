@@ -816,3 +816,21 @@ When there is no good default initialization of an object, `init` can be overrid
 }
 ```
 
+# Properties
+
+The `@property` directive accepts a list of attributes that affects how the accessors are created.
+
+The `readwrite` and `readonly` attributes specify whether to create both setters and getters or just getters, respectively.
+
+The `assign` attribute is the default attribute for non-object types. It simply assigns the passed value to the property.
+
+The `strong` attribute is the default for object pointers. It ensures that a strong reference is kept to the passed object, releasing ownership of the old object.
+
+The `weak` attribute represents a weak reference to the passed object. IF the pointed-to object is deallocated, the property is set to `nil`.
+
+The `unsafe_unretained` attribute acts like the `weak` attribute _except_ that the property is _not_ automatically set to `nil` when the pointed-to object is deallocated.
+
+The `copy` attribute creates a copy of an object and then makes the pointer point to the copy. This is commonly used with objects that have mutable subclasses. This ensures that if an `NSMutableString` is passed, an immutable `NSString` copy will be created and pointed to, and if an immutable `NSString` is passed, no copy is actually performed because `NSString` overrides `copyWithZone:`, called by `copy`, to just return the pointer to itself.
+
+The `atomic` attribute ensures that the setters are atomic. This is the default attribute but is rarely needed, so most properties should be explicitly marked `nonatomic`.
+

@@ -608,3 +608,49 @@ Various objects can subscribe to certain notifications using the notification ce
        object:nil];
 ```
 
+# Blocks
+
+Blocks are essentially lambdas. They are prefixed by a caret `^` followed by optional parameter list and, followed by braces surrounding the body.
+
+``` objective-c
+^{
+  NSLog(@"No parameters.");
+}
+
+^(int a, int b){
+ return a + b;
+}
+```
+
+Blocks can be stored in a variable, in which case their type must be explicitly typed. Block types look like function pointer types except that they use `^` to denote a block rather than `*` to denote a pointer.
+
+``` objective-c
+void (^devowelizer)(id, NSUInteger, BOOL *);
+```
+
+Anonymous blocks are ones that are passed directly to a method without first giving them a name by storing them in a variable.
+
+_External variables_ are those that are captured by the block from the outer scopes. Primitive variables are copied as local variables within the block. Pointers are kept as strong references to ensure that they live at least as long as the block itself.
+
+Since pointers are captured as strong references, it's easy to inadvertently create a strong reference cycle. This can happen implicitly when an instance variable is used directly within a block, because directly accessing an instance variable `_var` gets translated to `self->_var` by the compiler.
+
+The cycle can be broken by first creating a `__weak` pointer to `self`, then using that within the block. However, this would mean that `self` could be deallocated while the block is executing. To prevent that, a strong reference to the `__weak` pointer can be created:
+
+``` objective-c
+__weak MYPerson *weakSelf = self;
+
+block = ^{
+  MYPerson *innerSelf = weakSelf;
+  NSLog(@"Person: %@", innerSelf);
+};
+```
+
+Instance variables should be accessed through the `innerSelf` to avoid implicitly and inadvertently capturing `self`.
+
+Variables captured by a block are constant within the block. In order to modify an external variable within a block, it must be declared as an external variable by using the `__block` keyword prefix:
+
+``` objective-c
+__block int count = 0;
+
+void (^incrementBlock)() = ^{ count++ };
+```

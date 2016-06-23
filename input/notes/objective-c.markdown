@@ -4,6 +4,8 @@ published = "June 21, 2016"
 comments = false
 ---
 
+Although [Swift](/notes/swift) has been released, there is still a considerable iOS/Cocoa ecosystem which is built on Objective-C.
+
 <toc/>
 
 # Types
@@ -279,9 +281,146 @@ The `%@` token in format strings passed to `NSLog` for example cause a `descript
 
 Forward declarations are possible with the `@class` keyword.
 
+When a `@property` is defined on a class without a corresponding manually-defined instance variable, subclasses aren't able to access the synthesized instance variable directly; they must do so via the accessors. For example, given:
+
+``` objective-c
+@interface MYPerson : NSObject
+{
+}
+
+@property (nonatomic) NSMutableArray *friends;
+@end
+
+@interface MYEmployee : MYPerson
+{
+  …
+}
+@end
+```
+
+Then a subclass `MYEmployee` cannot access `_friends` directly; it must do so via an explicit accessor or dot notation.
+
+``` objective-c
+@implementation MYEmployee
+
+…
+
+[_friends addObject:@"Bob"];     // Error
+
+[self.friends addObject:@"Bob"]; // Ok
+```
+
 # Ownership
 
 An object that contains a pointer to another object is said to own that object. Due to reference counting, the owned object knows how many owners it has through its reference count.
 
 The `dealloc` method is run when an instance of a class is deallocated because it has no owners.
 
+# Class Extensions
+
+Private internal methods, instance variables, and properties should be defined in a _class extension_, which is a set of private declarations that only the class or instances of it can use. A class interface is denoted by a typical `@interface` block with an empty parentheses pair at the end. By convention class extensions are declared in the implementation file, before the `@implementation`.
+
+``` objective-c
+#import "MYPerson.h"
+
+@interface MYPerson ()
+
+@property (nonatomic) int somePrivateVariable;
+
+@end
+
+@implementation MYPerson
+
+…
+
+@end
+```
+
+An [earlier example](#classes) demonstrated that it's possible to have a manually-defined instance variable differ in the type of a separate property of the same name. However, doing that can be confusing, and instead it's recommended to use a private class extension to define the manually-defined instance variable.
+
+Since the class extension is defined in the implementation file, and subclasses `#import` the header file, subclasses won't have access to the superclass' class extensions.
+
+# Reference Counting
+
+A Strong reference cycle represents a potential for a memory leak, because the garbage collector cannot deallocate either side of the cycle. A strong reference cycle can be weakened with a _weak reference_ which is a pointer that does not imply ownership. This is useful in a parent-child relationship, in which case the child should hold a weak reference to the parent, since the parent is what owns the child.
+
+``` objective-c
+@interface TreeNode : NSObject
+
+@property (nonatomic, weak) TreeNode *parent;
+
+@end
+```
+
+When the targets of weak pointers are deallocated, the weak pointer is set to `nil`.
+
+Weak points can be explicitly created with the `__weak` keyword:
+
+``` objective-c
+__weak MYPerson *parent;
+```
+
+Before ARC, manual reference counting was necessary using the `retain` and `release` methods. For example, in a setter, the passed object was `retain`ed to increment its reference count and the previously-held object was `release`d to decrease its reference count, then the pointer was set to the new object:
+
+``` objective-c
+- (void)setPerson:(MYPerson *)newPerson
+{
+  [newPerson retain];
+  [_person release];
+  _person = newPerson;
+}
+```
+
+Furthermore, the `dealloc` call had the responsibility of `release`ing all held objects and `dealloc`ating the immediate superclass.
+
+``` objective-c
+- (void)dealloc
+{
+  [_holder release];
+  [super dealloc];
+}
+```
+
+Newly created and returned objects would be marked as `autorelease`, i.e. `release` sometime in the future. For example, the `description` method creates and returns a new `NSString`, so it was marked for `autorelease`:
+
+``` objective-c
+- (NSString *)description
+{
+  NSString *result = [[NSString alloc] initWithFormat:@"Person: %@", [self name]];
+
+  [result autorelease];
+  return result;
+}
+```
+
+Specifically the object was sent the `release` message when the current autorelease pool was drained:
+
+``` objective-c
+NSAutoreleasePool *arp = [[NSAutoreleasePool alloc] init];
+
+NSString *desc = [[[MyPerson alloc] init] description];
+
+[arp drain]; // `desc` sent `release` message
+```
+
+The syntax sugar `@autoreleasepool` can be used to automatically create an autorelease pool and drain it at the end of the provided block.
+
+``` objective-c
+@autoreleasepool {
+  NSString *desc = [[[MyPerson alloc] init] description];
+} // drained here
+```
+
+There are a couple of rules of thumb for manual reference counting:
+
+* Creating an object using a method starting with `alloc`, `new`, or containing `copy` gives you ownership of it. Assume refcount = 1, not in autorelease pool.
+
+* Objects created by any other means are not owned by you. Assume refcount = 1, in autorelease pool.
+
+* Take ownership by `retain`ing it.
+
+* Relinquish ownership by using `release` or `autorelease`.
+
+* Objects exist as long as they have an owner.
+
+This explains why the `NSString` returned by `description` is `autorelease`d: because although it created the object via `alloc`-`init` and thus gained ownership of it, it is giving it away by returning it. Sending it a `release` message would immediately decrement its refcount, thereby deallocating it, so instead it is `autorelease`d.

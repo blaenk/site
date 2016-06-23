@@ -206,7 +206,7 @@ Previously it was then necessary to place a corresponding `@synthesize` directiv
 @end
 ```
 
-However, as of XCode 4.4 this is no longer necessary as the compiler does this for you. It's still necessary to do if the compiler ends up not generating any of the methods, for example if a property is marked `readonly` but the getter is manually overridden, then the `_variable` won't be defined, in which case it's necessary to explicitly `@synthesize` to define it or declare it manually in the `@interface`.
+However, as of Xcode 4.4 this is no longer necessary as the compiler does this for you. It's still necessary to do if the compiler ends up not generating any of the methods, for example if a property is marked `readonly` but the getter is manually overridden, then the `_variable` won't be defined, in which case it's necessary to explicitly `@synthesize` to define it or declare it manually in the `@interface`.
 
 Properties are also usable using dot notation as in C++ and Java. However, rather than simply accessing a field in a struct as in C++, dot notation translates to a message sent to the corresponding accessor method.
 
@@ -702,3 +702,59 @@ if ([_dataSource respondsToSelector:@selector(numberOfSectionsInTableView:)]) {
   // don't call it; use some default value
 }
 ```
+
+# Property Lists
+
+A property list (aka P-list) is an XML file format which is used to serialize Objective-C objects such as `NSArray`, `NSDictionary`, `NSString`, `NSData`, `NSDate`, and `NSNumber`.
+
+Writing a property list can be achieved by using `NSMutableArray`'s `writeToFile:atomically:`. It can then be read in by using `arrayWithContentsOfFile`.
+
+# iOS Applications
+
+GUI applications start a run loop which listens for events.
+
+The _company identifier_ is used to generate a _bundle identifier_ which is used to uniquely identify each app in the App Store.
+
+Every iOS application has an app delegate which is a subclass of `UIResponder` which conforms to `UIApplicationDelegate`. The app delegate has a property of type `UIWindow` which fills the screen of the iOS application. Other controls can be added onto the window.
+
+When an iOS application launches, an instance of `UIApplication` is created to control the application state and liaison with the operating system. An instance of the application delegate serves as the `UIApplication`'s delegate. For example, the `application:didFinishLaunchingWithOptions` method is invoked when the application becomes ready.
+
+A control is created by specifying the a `CGRect` to specify its frame (positions and dimensions) and then it's added to the `UIWindow` as a sub-view.
+
+``` objective-c
+- (BOOL)application:(UIApplication *)application
+        didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+  // CGRect is (x, y, width, height)
+
+  CGRect winFrame [[UIScreen mainScreen] bounds];
+  UIWindow *theWindow = [[UIWindow alloc] initWithFrame:winFrame];
+  self.window = theWindow;
+
+  CGRect buttonFrame = CGRectMake(228, 40, 72, 31);
+  self.button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+  self.button.frame = buttonFrame;
+
+  [self.button setTitle:@"Click me" forState:UIControlStateNormal];
+
+  [self.window addSubview:self.button];
+  [self.window makeKeyAndVisible];
+
+  return YES;
+}
+```
+
+A `UIButton` uses the target-action callback pattern to send a message when it receives certain events. For example, to send the `addTask:` message to the application delegate:
+
+``` objective-c
+[self.button addTarget:self
+                action:@selector(addTask:)
+      forControlEvents:UIControlEvenTouchUpInside];
+```
+
+The [App Distribution Guide](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/Introduction/Introduction.html) details Apple's process of distributing an application.
+
+When using the Interface Builder, the `IBOutlet` keyword is actually an empty `#define` which only serves to tell Xcode that the pointer to the object will be set by Interface Builder and not manually in code. The `IBAction` keyword is actually an alias for `void` that tells Xcode that a method is an action method that will be used in a target-action pair configured in Interface Builder and not manually in code.
+
+Interface Builder files `.xib` are XML files representing the UI.
+

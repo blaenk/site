@@ -16,6 +16,8 @@ Explicit integer types can be used such as `UInt32` for an unsigned 32-bit integ
 
 The `NSInteger` and `NSUInteger` types are aliases for the integer width of the system, e.g. 32-bit on 32-bit systems.
 
+It's possible to create a boxed expression using the `@(…)` literal syntax.
+
 # Objects
 
 Instead of invoking a method on an object, a message is sent to it:
@@ -82,6 +84,8 @@ Previously it was necessary to perform manual reference counting by invoking ref
 NSString *name = @"John";
 ```
 
+It's also possible to box named C strings using boxed expressions.
+
 `NSString`s can contain Unicode characters by escaping them with `\u`.
 
 It's possible to create an `NSString` from a given format:
@@ -113,6 +117,9 @@ Elements of the array are accessed as with any other array, using subscript nota
 ``` objective-c
 NSString *john = names[0];
 ```
+
+This syntax is desugared into a call to `objectAtIndexedSubscript:`. When the subscript notation is used to set an element, it's desugared into a call to `setObject:atIndexedSubscript:`.
+
 Before subscripting was introduced, the method `objectAtIndex:` was used to access a particular element.
 
 The size of the array can be obtained with the `count` method.
@@ -442,6 +449,8 @@ NSDictionary *ages = @{
 NSNumber johnAge = ages[@"John"];
 ```
 
+This syntax is desugared into `objectForKeyedSubscript:`. When an entry is being set, it's desugared into `setObject:forKeyedSubscript:`.
+
 Mutable arrays can be sorted using:
 
 ``` objective-c
@@ -464,7 +473,14 @@ NSArray *adults = [people filteredArrayUsingPredicate:pred];
 
 An `NSNumber` is essentially a boxed number type which is used to wrap numbers so that they can be stored in collections such as `NSDictionary`. They can be constructed using `NSNumber` literals such as `@2`.
 
-The `NSValue` type can be used to box/wrap arbitrary types such as structs.
+The `NSValue` type can be used to box/wrap arbitrary types such as structs. C structures with the `objc_boxable` attribute can be boxed into `NSValue` via boxed expressions. Structures without this attribute can add the attribute via a typedef:
+
+``` objective-c
+typedef struct __attribute__((objc_boxable)) _OldThing Thing;
+
+Thing thing;
+NSValue *myThing = @(thing);
+```
 
 It's not possible to insert `nil` into a collection. In order to represent a "hole" in a collection, the `NSNull` class can be used.
 
@@ -479,6 +495,8 @@ typedef NS_ENUM(int, Color) {
   ColorGreen
 };
 ```
+
+Enumerations can be boxed using boxed expressions. For example, `@(AVAudioQualityMax)` converts the enumeration to an integer type and boxes the value.
 
 # NSError
 

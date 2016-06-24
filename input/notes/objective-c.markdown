@@ -834,3 +834,103 @@ The `copy` attribute creates a copy of an object and then makes the pointer poin
 
 The `atomic` attribute ensures that the setters are atomic. This is the default attribute but is rarely needed, so most properties should be explicitly marked `nonatomic`.
 
+# Key-Value Coding
+
+Key-Value Coding allows reading and setting a property using its name, for example the following two are equivalent:
+
+``` objective-c
+[person setName:@"John"];
+[person setValue:@"John" forKey:@"name"];
+```
+
+The `setValue:forKey:` method is defined in `NSObject` and looks for a setter method, property, or instance variable of the given name.
+
+Similarly, the `valueForKey:` method can be used to read a value.
+
+Key-value coding is used by general frameworks that need to read or push data to one's own custom objects, since it provides a uniform way of accessing that information regardless of the object's layout and capabilities.
+
+It's possible to use key-value coding to set primitive types by for example using `NSNumber`.
+
+``` objective-c
+[person setAge:[NSNumber numberWithInt:18] forKey:@"age"];
+```
+
+A _key path_ is a way to use dot notation to specify a property in a given object hierarchy. For example:
+
+``` objective-c
+NSString *schoolName = [person valueForKeyPath:@"class.school.name"];
+```
+
+There is also `setValue:forKeyPath:`.
+
+# Key-Value Observing
+
+Key-value observing (KVO) is a way of subscribing to notifications that are emitted when an object's property changes. KVO enables Cocoa bindings and Core Data.
+
+KVO is accomplished by using `NSObject`'s `addObserver:forKeyPath:options:context:` to specify an observer object which implements a method called when the property changes.
+
+``` objective-c
+@implementation MYObserver
+
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context
+{
+  NSString *oldValue = [change objectForKey:NSKeyValueChangeOldKey];
+  NSString *newValue = [change objectForKey:NSKeyValueChangeNewKey];
+
+  NSLog(@"Property %@ on object %@ changed: %@ → %@",
+        keyPath, object, oldValue, newValue);
+}
+
+@end
+```
+
+``` objective-c
+__unused MYObserver *observer = [[MYObserver alloc] init];
+
+[person addObserver:observer
+         forKeyPath:@"name"
+            options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
+            context:nil];
+```
+
+Since a superclass may itself use KVO, it may be necessary for the subclass to determine if the notification was meant for it or its superclass, in which case it would need to be forwarded to the superclass. This differentiation can be accomplished by passing a class-unique pointer to the `context:` parameter. This class-unique pointer is often accomplished by creating a static variable.
+
+``` objective-c
+// pass as context:&contextForKVO
+static int contextForKVO;
+
+@implementation MYObserver
+
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context
+{
+  if (context != &contextForKVO) {
+    // notification is for superclass
+    [super observeValueforkeypath:keyPath
+                         ofObject:object
+                           change:change
+                          context:context];
+  } else {
+    // notification is for us
+  }
+}
+
+@end
+```
+
+If the accessor method is not used, the notification will have to be sent explicitly by using `NSObject`'s `willChangeValueForKey:` and `didChangeValueForKey:`.
+
+It's possible to specify that a given property is changed whenever another one is changed. For example, if an `ageString` property is recomputed whenever the `age` property is changed, KVO can be configured to send notifications whenever `age` changes. This is accomplished by implementing a method named `keyPathsForValuesAffecting` concatenated with the name of the property in camel case. This method returns an `NSSet` of properties that, when changed, lead to a change in the named property:
+
+``` objective-c
++ (NSSet *)keyPathsForValuesAffectingAgeString
+{
+  return [NSSet setWithObject:@"age"];
+}
+```
+

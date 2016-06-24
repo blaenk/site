@@ -968,3 +968,19 @@ NSString *string = @"testing";
 int vowelCount = [string my_vowelCount];
 ```
 
+# Runtime
+
+The `respondsToSelector:` method is an example of run-time introspection.
+
+The C function `objc_msgSend` is the function that performs the lookup and execution of an Objective-C method.
+
+``` objective-c
+#import <objc/message.h>
+
+NSString *name = @"John";
+int length = objc_msgSend(name, @selector(length));
+```
+
+KVO works by creating a subclass of the observed object at run-time and changing the object's `isa` pointer to point to that new subclass (effectively changing the type of the object) and overriding the accessors for the observed properties so that the `willChangeValueForKey:` and `didChangeValueForKey` methods are invoked around the property change.
+
+See the [Objective-C Runtime Programming Guide](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Introduction/Introduction.html) and [Objective-C Runtime Reference](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ObjCRuntimeRef/) for more information.

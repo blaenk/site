@@ -934,3 +934,37 @@ It's possible to specify that a given property is changed whenever another one i
 }
 ```
 
+# Categories
+
+Categories are a way of adding new methods to existing classes. By convention, categories are declared in files named as a combination of the target class and the category name. For example, `NSString+MYVowelCounting.{h,m}` would contain a category for `NSString` named `MYVowelCounting`:
+
+By convention, to avoid clobbering existing methods---including private ones that we may not know about---we prefix category method names with the namespace we use and an underscore, e.g. `my_`.
+
+``` objective-c
+@interface NSString (MYVowelCounting)
+
+- (int)my_vowelCount;
+
+@end
+```
+
+``` objective-c
+#import "NSString+MYVowelCounting.h"
+
+@implementation NSString (MYVowelCounting)
+
+- (int)my_vowelCount
+{
+  …
+}
+
+@end
+```
+
+``` objective-c
+#import "NSString+MYVowelCounting.h"
+
+NSString *string = @"testing";
+int vowelCount = [string my_vowelCount];
+```
+

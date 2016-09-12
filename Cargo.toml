@@ -21,7 +21,8 @@ chrono = "*"
 rss = "*"
 zmq-rs = "*"
 sha1 = "*"
-syncbox = "*"
+
+futures-cpupool = "*"
 
 diecast = { path = "../diecast" }
 diecast-tags = { path = "../tags" }

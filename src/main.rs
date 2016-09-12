@@ -25,14 +25,16 @@ extern crate regex;
 extern crate rss;
 extern crate rustc_serialize;
 extern crate sha1;
-extern crate syncbox;
 extern crate time;
 extern crate toml;
 extern crate typemap;
 extern crate zmq_rs as zmq;
 
+extern crate futures_cpupool;
+
 use time::PreciseTime;
-use syncbox::ThreadPool;
+
+use futures_cpupool::CpuPool;
 
 use diecast::{Site, Rule, Item};
 use diecast::command;
@@ -71,7 +73,8 @@ fn main() {
 
     let md = markdown::markdown();
     let ws_tx = websocket::init();
-    let pool = bind::PooledEach::new(ThreadPool::fixed_size(2));
+
+    let pool = bind::PooledEach::new(CpuPool::new(2));
 
     let templates =
         Rule::named("templates")

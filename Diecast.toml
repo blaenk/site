@@ -1,5 +1,5 @@
-[diecast]
-ignore = '^\.|^#|~$|\.swp$|4913'
+# [diecast]
+# ignore = '^\.|^#|~$|\.swp$|4913'
 
 [diecast.command.live]
 address = "0.0.0.0:3000"
@@ -13,4 +13,3 @@ address = "0.0.0.0:9160"
 # dependencies = [ "templates" ]
 # pattern = "posts/*.markdown"
 # recipe = "content"
-

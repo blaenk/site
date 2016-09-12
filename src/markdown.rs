@@ -281,7 +281,7 @@ r#"<figure class="codeblock">
                 hash.update(lang.as_bytes());
                 hash.update(code);
 
-                let digest = hash.hexdigest();
+                let digest = hash.digest().to_string();
 
                 let cache = format!("cache/pygments/{}", digest);
                 diecast::support::mkdir_p("cache/pygments/").unwrap();

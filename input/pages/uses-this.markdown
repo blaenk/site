@@ -4,7 +4,7 @@ published = "March 21, 2013"
 comments = false
 ---
 
-* toc
+<toc align="right"/>
 
 This page is setup in the spirit of the website [of the same name]. This page is here to list the specific tools I use at any given moment.
 

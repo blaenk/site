@@ -12,7 +12,7 @@ use diecast::support;
 // TODO toml re-export?
 use metadata;
 
-use helpers::PublishDate;
+use helpers::{self, PublishDate};
 
 #[inline]
 fn item_meta(item: &Item) -> Option<&toml::Value> {
@@ -36,6 +36,11 @@ fn item_comments(item: &Item) -> bool {
             m.lookup("comments")
                 .and_then(toml::Value::as_bool))
         .unwrap_or(true)
+}
+
+#[inline]
+fn item_push(item: &Item) -> bool {
+    helpers::is_pushable(item) && item.bind().configuration.is_preview
 }
 
 #[inline]
@@ -120,6 +125,7 @@ pub fn post_template(item: &Item) -> Json {
     bt.insert(String::from("title"), item_title(&item).to_json());
     bt.insert(String::from("page_title"), append_site(item_title(&item)).to_json());
     bt.insert(String::from("comments"),   item_comments(&item).to_json());
+    bt.insert(String::from("push"),   item_push(&item).to_json());
     bt.insert(String::from("url"),   item_url(&item).to_json());
     bt.insert(String::from("path"), item_path(&item).to_json());
     bt.insert(String::from("body"),  item.body.to_json());
@@ -139,6 +145,7 @@ pub fn note_template(item: &Item) -> Json {
     bt.insert(String::from("page_title"), append_site(item_title(&item)).to_json());
     bt.insert(String::from("url"),   item_url(&item).to_json());
     bt.insert(String::from("comments"),   item_comments(&item).to_json());
+    bt.insert(String::from("push"),   item_push(&item).to_json());
     bt.insert(String::from("path"), item_path(&item).to_json());
     bt.insert(String::from("body"),  item.body.to_json());
     bt.insert(String::from("date"),  item_date(&item).to_json());
@@ -156,6 +163,7 @@ pub fn page_template(item: &Item) -> Json {
     bt.insert(String::from("page_title"), append_site(item_title(&item)).to_json());
     bt.insert(String::from("url"),   item_url(&item).to_json());
     bt.insert(String::from("comments"),   item_comments(&item).to_json());
+    bt.insert(String::from("push"),   item_push(&item).to_json());
     bt.insert(String::from("path"), item_path(&item).to_json());
     bt.insert(String::from("body"),  item.body.to_json());
 

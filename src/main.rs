@@ -94,6 +94,7 @@ fn main() {
                 glob!("static/**/*"),
                 glob!("js/**/*"),
                 "favicon.png",
+                "_redirects",
                 "CNAME")
             ),
             pool.each(chain![

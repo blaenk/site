@@ -14,7 +14,7 @@ I started out by fixing the italic pattern, which would previously get tripped u
 
 The most substantial contribution was [embedded-language highlighting] for codeblocks. That is, if one writes a Haskell codeblock, the codeblock's contents would be highlighted using the Haskell syntax highlighter:
 
-<img src="http://i.imgur.com/WpK6jNZ.png" class="center">
+<img src="//i.imgur.com/WpK6jNZ.png" class="center">
 
 [vim-pandoc-syntax]: https://github.com/vim-pandoc/vim-pandoc-syntax
 [variety]: https://github.com/vim-pandoc/vim-pandoc-syntax/pulls/blaenk?direction=desc&page=1&sort=created&state=closed

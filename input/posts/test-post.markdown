@@ -33,7 +33,7 @@ end
 
 Donec vitae turpis non augue pulvinar imperdiet eu non erat. Integer mollis diam ac quam lobortis luctus. Suspendisse scelerisque sodales massa sit amet pharetra. $\Delta S = \pi$ [^2] Donec cursus, velit in mollis dapibus, nunc elit pharetra erat, et dictum sem sapien pretium ligula. Cras nibh elit, mollis eu eleifend sed, faucibus in velit. Aliquam gravida tristique molestie. Donec gravida, diam ac auctor auctor, nulla enim varius sem, non auctor urna mi vitae enim. Cras aliquam semper nibh, quis viverra urna ultrices et. Nunc rhoncus fringilla dapibus.
 
-<img src="http://placekitten.com/720/250" class="center">
+<img src="//placekitten.com/720/250" class="center">
 
 # Immortal Words #
 
@@ -47,7 +47,7 @@ Aenean mauris augue, faucibus vel sagittis nec, viverra sit amet sapien. Etiam n
 
 ## The Meaning of Life ##
 
-<img src="http://placekitten.com/150/100" class="right" title="Place Kitten #3">
+<img src="//placekitten.com/150/100" class="right" title="Place Kitten #3">
 
 Aenean tristique, magna a semper venenatis, orci odio tempor lorem, ac molestie ligula enim ac urna. Fusce egestas nisl id massa porta vitae pretium tellus aliquet. Morbi tempor arcu sit amet felis hendrerit aliquam. Nulla facilisi. Suspendisse diam tortor, pharetra ac porta eu, ullamcorper nec lectus. Sed nulla turpis, blandit et tincidunt vel, `condimentum` et sapien. Aliquam dignissim blandit pharetra. Mauris ornare accumsan libero at bibendum. Morbi dui nisl, aliquet sit amet gravida sit amet, mollis commodo nulla. Quisque eu felis purus.
 

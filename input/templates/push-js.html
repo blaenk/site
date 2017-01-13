@@ -4,7 +4,8 @@
 
 <script type="text/javascript">
   jQuery(function (){
-    var ws = new WebSocket('ws://' + window.location.hostname + ':9160/{{{path}}}');
+    var protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    var ws = new WebSocket(protocol + '//' + window.location.hostname + ':9160/{{{path}}}');
 
     ws.onmessage = function (e) {
       var content = jQuery('article .entry-content');

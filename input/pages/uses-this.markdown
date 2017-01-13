@@ -39,7 +39,7 @@ I publish a lot of my [notes] to this site.
 
 Exemplifying my belief of non-fanaticism, I have Windows 8, Arch Linux, and Mac OS X 10.8 Mountain Lion installed on my computer. This [picture] shows the custom boot screen I designed which I'm greeted with upon booting. This is not just for show; I actually use each one regularly for different things.
 
-[picture]: http://i.imgur.com/Xa5suXo.jpg
+[picture]: //i.imgur.com/Xa5suXo.jpg
 
 The setup consists of SSDs for the OSes and regular HDDs for media. Windows is on a 120 GB SSD and Mac and Linux are on separate 60 GB SSDs. Aside from this I have two 1 TB and one 1.5 TB HDDs for media storage.
 

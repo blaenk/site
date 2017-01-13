@@ -21,7 +21,7 @@ The spanning tree of the network topology can be constructed in a distributed ma
 
 In the image below, the top orange node is the root. The blue links are part of the spanning tree. Some links have the distance to the root shown in orange.
 
-<img src="https://i.imgur.com/GpjILZs.png" class="center" />
+<img src="//i.imgur.com/GpjILZs.png" class="center" />
 
 To determine the root of the spanning tree, switches run an election process to determine the switch with the smallest ID. Whenever a switch learns of another switch with a smaller ID, it updates its view of the root, computing the distance to that new root. This way when neighbors receive this new information, they can determine their distance to the new root by adding one to the neighboring node's distance to the root.
 
@@ -60,7 +60,7 @@ Split horizon ensures that updates received on an interface are not sent back on
 
 The _count to infinity problem_ is when the cost of a link changes but a neighbor chooses to reach a destination by visiting the node and reversing. Poison reverse prevents this by actively advertising a route as unreachable over the interface over which it was learned. For example, in the following network:
 
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/A-B-C.svg/300px-A-B-C.svg.png" class="center" />
+<img src="//upload.wikimedia.org/wikipedia/commons/thumb/b/ba/A-B-C.svg/300px-A-B-C.svg.png" class="center" />
 
 If A learns about the distance to C from B, A will make sure to advertise to B the distance to C as infinity/unreachable. This way if the link between B and C goes down, B won't try to reach C through A, which would only loop back to B thus creating an infinite loop.
 

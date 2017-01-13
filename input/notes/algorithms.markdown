@@ -75,19 +75,19 @@ $$ \log_a n^b = b \cdot \log_a n $$
 
 ## Bounds
 
-<img src="http://i.imgur.com/fMlyzap.png" class="center" />
+<img src="//i.imgur.com/fMlyzap.png" class="center" />
 
 The upper-bound $f(n) = O(g(n))$ means that there exists some constant $c$ such that $f(n)$ is _always_ $\le c \cdot g(n)$ for a large enough $n$, that is, for some offset $n_0$ such that $n \ge n_0$.
 
-<img src="https://i.imgur.com/L5oa2vN.png" class="center" />
+<img src="//i.imgur.com/L5oa2vN.png" class="center" />
 
 The lower-bound $f(n) = \Omega(g(n))$ is similar except that it is a lower-bound, so that there exists some constant $c$ such that $f(n)$ is _always_ $\ge c \cdot g(n)$ for $n \ge n_0$.
 
-<img src="https://i.imgur.com/GzSDZW7.png" class="center" />
+<img src="//i.imgur.com/GzSDZW7.png" class="center" />
 
 There is also $f(n) = \Theta(g(n))$ which means that $c_1 \cdot g(n)$ is an upper-bound and $c_2 \cdot g(n)$ is a lower-bound on $f(n)$ for $n \ge n_0$. This is a tighter bound on $f(n)$ than simply a lower or upper-bound alone would provide.
 
-<img src="https://i.imgur.com/mdfglLj.png" class="center" />
+<img src="//i.imgur.com/mdfglLj.png" class="center" />
 
 Constant factors are ignored since they can easily be beaten out by a different chosen value of $c$.
 
@@ -143,19 +143,19 @@ Then the run-time complexity of an algorithm can be determined based on the valu
 
     The same amount of work $n^d$ is being done at each level, of which there are $\log n$.
 
-    <img src="https://i.imgur.com/MPsr8vI.png" />
+    <img src="//i.imgur.com/MPsr8vI.png" />
 
 * when $a < b^d$, the complexity is $O\left(n^d\right)$
 
     Most of the work is done at the root, as if only at a single level.
 
-    <img src="https://i.imgur.com/01nnPMf.png" />
+    <img src="//i.imgur.com/01nnPMf.png" />
 
 * when $a > b^d$, the complexity is $O\left(n^{\log_b a}\right)$
 
     It's equivalent to the number of leaves in the recursion tree, since most of the work is done at the bottom of the tree.
 
-    <img src="https://i.imgur.com/R2poF7S.png" />
+    <img src="//i.imgur.com/R2poF7S.png" />
 
 Essentially, the master theorem is a tug-of-war between:
 
@@ -3565,7 +3565,7 @@ Third it's important to compute the final solution after solving all subproblems
 
 Example problem: given a path graph $G = (V, E)$ with non-negative weights on the vertices, produce a subset of the graph's vertices so that **no two vertices are adjacent** and that the subset has the **maximum total weight** of every such subset.
 
-<img src="http://i.imgur.com/kQkyCTD.png" class="center" />
+<img src="//i.imgur.com/kQkyCTD.png" class="center" />
 
 A brute-force search would be exponential in the number of vertices.
 
@@ -3579,7 +3579,7 @@ Suppose $v_n \not\in S$ and let $G'$ be the graph with $v_n$ deleted off of the 
 
 Suppose $v_n \in S$, then the penultimate vertex $v_{n - 1} \not\in S$, since it is adjacent to $v_n$. Then let $G''$ be the graph with $v_{n - 1}$ and $v_n$ deleted.
 
-<img src="http://i.imgur.com/J0oxqD1.png" class="center" />
+<img src="//i.imgur.com/J0oxqD1.png" class="center" />
 
 Unlike the earlier claim that if $v_n \not\in S$ then $S$ is also an independent set of $G'$, it's not true that if $v_{n - 1} \not\in S$ then $S$ is also an independent set of $G''$, because the $v_n \in S$ but $v_n \not\in G''$.
 

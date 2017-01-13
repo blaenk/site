@@ -109,7 +109,7 @@ The advantage of the 2-Bit Predictor is that a single anomaly will not completel
 
 The preferred state of a 2-Bit Predictor is one of the weak states, 2 or 3, since there's a one-time misprediction cost in the worst case. If it started on a strong state, such as 0 or 4, then there would need to be two mispredictions to update the prediction.
 
-<img src="http://i.imgur.com/ibzq3pF.png" class="center" />
+<img src="//i.imgur.com/ibzq3pF.png" class="center" />
 
 The pathological case of initializing a 2-Bit Predictor with a weak state is that if it alternates between taking a branch and not taking the branch, then each misprediction will only flip between the weak states, causing a misprediction _every time_. If it had started on a strong state, it would only move to a weak state on a misprediction, which would mean that the prediction would be correct half of the time.
 
@@ -119,7 +119,7 @@ A _history-based predictor_ works by keeping track of the last $N$ branch outcom
 
 A 1-Bit History BHT works by storing the branch outcome bit along with two 2-Bit Counters. On any given prediction, the current branch outcome bit is used to determine which 2-Bit Counter to use for the prediction. On a misprediction, the outcome bit is updated to reflect the outcome. Regardless of the outcome, the chosen 2-Bit Counter is updated based on that outcome.
 
-<img src="http://i.imgur.com/gP7Fnjh.png" class="center" />
+<img src="//i.imgur.com/gP7Fnjh.png" class="center" />
 
 An entry in the BHT of a 2-Bit History Predictor contains 2 bits of history and 4 x 2-Bit Counters (one for each history configuration).
 
@@ -131,7 +131,7 @@ $$N + \text{2-bit counter} \cdot 2^N \text{ history permutations}$$
 
 The _PShare Predictor_ works by storing a private history for each branch and sharing 2-Bit Counters. The history bits are stored in a _Pattern History Table_ (PHT). Each entry is XORed with the PC bits to index into the BHT to obtain the shared 2-Bit Counters. When the 2-Bit Counter is updated, the new history is mapped to this updated counter.
 
-<img src="http://i.imgur.com/TNz1iDw.png" class="center" />
+<img src="//i.imgur.com/TNz1iDw.png" class="center" />
 
 The _GShare Predictor_ works similarly to the PShare Predictor, except that there is a global history. This is useful for _correlated branches_. For example, the following branches are correlated in the sense that if one branch is taken, the other is not:
 
@@ -420,7 +420,7 @@ The number of bits used in a cache block offset is determined by the size capaci
 
 The block size should be a power of 2 because it simplifies the process of determining the appropriate block for a particular memory address, which is done by dividing by the block size. Dividing by $2^k$ is just a right-shift by $k$ bits, i.e. discarding the lower $k$ bits determines the block number. This is much simpler and faster than dividing by a non-power of 2.
 
-<img src="https://i.imgur.com/jX1dCZp.png" class="center" />
+<img src="//i.imgur.com/jX1dCZp.png" class="center" />
 
 For example, given a block size of $2^4$ = 16 bytes and a 32-bit address, the block offset is the least significant (lower) 4 bits and the block number is the most significant 28 bits.
 
@@ -478,7 +478,7 @@ A direct-mapped cache can be thought of as a special instance of a set-associati
 
 In a direct-mapped cache, a cache block's cache line is determined by using some _index bits_, which are taken from above the block offset component. The number of index bits used is determined by the number of lines in the cache, in particular, $\log_2 (\text {total lines})$. The tag comprises the rest of the bits, essentially identifying which of all possible blocks that can go in that cache line is actually present.
 
-<img src="https://i.imgur.com/j3Q5olI.png" class="center" />
+<img src="//i.imgur.com/j3Q5olI.png" class="center" />
 
 The advantage of a direct-mapped cache is that there is only one place to look-up for a block, making it fast, cheap, and energy-efficient. However, since a given block can only go in _one_ place, it increases contention/conflicts for each cache line, which increases the miss rate.
 
@@ -964,7 +964,7 @@ If a block is in the _shared state_ and snoops on the bus that another cache wro
 
 If a block is in the _shared state_ and is written to (local write), then the block transitions to the _modified state_. It also puts an invalidation on the bus.
 
-<img src="https://i.imgur.com/iRjEHE2.png" class="center" />
+<img src="//i.imgur.com/iRjEHE2.png" class="center" />
 
 A _cache-to-cache transfer_ works as follows:
 
@@ -1019,7 +1019,7 @@ MSI and MOSI coherence can be optimized for thread-private data by introducing a
 
 When a block is read and the cache detects that it's the only copy of that block in all of the caches, it transitions from the _invalid state_ to the _exclusive state_. It can then transition straight to the modified state on a write.
 
-<img src="https://i.imgur.com/vahUw1S.png" class="center" />
+<img src="//i.imgur.com/vahUw1S.png" class="center" />
 
 If a block is in the _exclusive state_ and it's written to, it transitions to the _modified state_.
 
@@ -1074,7 +1074,7 @@ while (res == 1) {
 
 A barrier can be implemented with a counter variable that counts arriving threads and ready flag that is set when all threads have arrived. The ready flag is set to a thread-local value which starts the same and alternates independently each time it enters a new barrier, in order to ensure that the barrier is reusable.
 
-<img src="http://i.imgur.com/u1VW97a.png" class="center" />
+<img src="//i.imgur.com/u1VW97a.png" class="center" />
 
 # Memory Consistency
 

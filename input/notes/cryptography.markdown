@@ -30,8 +30,8 @@ $$
 \exists k \text { such that } g^k = x
 $$
 
-<img src="http://i.imgur.com/aAnzCCF.png" class="center" />
+<img src="//i.imgur.com/aAnzCCF.png" class="center" />
 
 A common analogy is that of mixing paint.
 
-<img src="http://i.imgur.com/Cp3ZKm4.png" class="center" />
+<img src="//i.imgur.com/Cp3ZKm4.png" class="center" />

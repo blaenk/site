@@ -195,15 +195,14 @@ The window frame can be specified using `RANGE` mode or `ROWS` mode.
 { RANGE | ROWS } frame_start
 { RANGE | ROWS } BETWEEN frame_start AND frame_end
 
-
--- frame_start and frame_end can be
+-- where frame_start and frame_end is one of:
 UNBOUNDED PRECEDING
 CURRENT ROW
 UNBOUNDED FOLLOWING
 
--- ROWS mode
-some_value PRECEDING
-some_value FOLLOWING
+-- as well as these in ROWS mode:
+x PRECEDING
+x FOLLOWING
 ```
 
 `frame_end` defaults to `CURRENT ROW` if omitted.

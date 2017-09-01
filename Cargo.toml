@@ -19,7 +19,7 @@ hoedown = "*"
 regex = "*"
 chrono = "*"
 rss = "*"
-zmq-rs = "*"
+zmq-rs = { git = "https://github.com/Ginurx/zmq-rs.git" }
 sha1 = "*"
 
 futures-cpupool = "*"

@@ -299,7 +299,7 @@ r#"<figure class="codeblock">
                             info!("[PYGMENTS] cache miss {}", digest);
 
                             let lang = zmq::Message::from_slice(lang.as_bytes()).unwrap();
-                            self.socket.send_msg(lang, zmq::socket::SNDMORE).unwrap();
+                            self.socket.send_msg(lang, zmq::SNDMORE).unwrap();
 
                             let code = zmq::Message::from_slice(&code).unwrap();
                             self.socket.send_msg(code, 0).unwrap();

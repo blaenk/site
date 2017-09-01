@@ -420,7 +420,7 @@ expression::target_type
 
 A cast of a value expression of a known type represents a run-time type conversion which will only succeed if the corresponding type conversion operation has been defined. This is _different_ from a "cast" of a constant, which represents the initial assignment of a type and so will succeed for any type as long as the string literal is acceptable input for the target type.
 
-Target types can sometimes be inferred and explicit type casts omitted, such as when assigning to a table column, in which case the system automatically applies an implicit type cast. Note that this is _only_ done for certain types known by system catalogs for this to be a OK operation.
+Target types can sometimes be inferred and explicit type casts omitted, such as when assigning to a table column, in which case the system automatically applies an implicit type cast. Note that this is _only_ done for certain types for which system catalogs know this to be an OK operation.
 
 A third type cast syntax is the function-like syntax. Naturally this only works for types whose names are valid as function names. An example of a type whose name is not a valid function name is `double precision`. Function-like type cast syntax should be avoided due to this inconsistency.
 

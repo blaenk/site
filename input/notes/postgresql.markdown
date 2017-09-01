@@ -408,6 +408,28 @@ FROM households;
 
 Type names are not keywords in the syntax, except where required by the SQL standard for special cases.
 
+## Type Casts
+
+PostgreSQL supports two equivalent syntaxes for type casts. The `CAST` syntax conforms to the SQL standard, whereas the `::` is historical PostgreSQL syntax.
+
+``` postgresql
+CAST ( expression AS target_type )
+
+expression::target_type
+```
+
+A cast of a value expression of a known type represents a run-time type conversion which will only succeed if the corresponding type conversion operation has been defined. This is _different_ from a "cast" of a constant, which represents the initial assignment of a type and so will succeed for any type as long as the string literal is acceptable input for the target type.
+
+Target types can sometimes be inferred and explicit type casts omitted, such as when assigning to a table column, in which case the system automatically applies an implicit type cast. Note that this is _only_ done for certain types known by system catalogs for this to be a OK operation.
+
+A third type cast syntax is the function-like syntax. Naturally this only works for types whose names are valid as function names. An example of a type whose name is not a valid function name is `double precision`. Function-like type cast syntax should be avoided due to this inconsistency.
+
+Note that function-like syntax is literally a direct invocation of the registered, underlying conversion function, which by convention has the same name as the output type.
+
+``` postgresql
+target_type ( expression )
+```
+
 # Operators
 
 Schema-qualified operators can be written by using the `OPERATOR` keyword. Note that the effective operator's precedence is the same regardless of the precedence of the operator passed as the argument.

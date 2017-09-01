@@ -177,21 +177,60 @@ Rolling back to a savepoint does not automatically release the resources associa
 
 # Window Functions
 
-> A window function performs a calculation across a set of table rows that are somehow related to the current row. […] unlike regular aggregate functions, use of a window function does not cause rows to be grouped into a single output row — the rows retain their separate identities.
+A window function applies an aggregate-like function over a portion of rows selected by a query. Unlike aggregate functions, the input rows are not reduced to a single row—each row remains separate in the output.
 
-A window function is syntactically different from a regular or aggregate function by the presence of the `OVER` clause directly after the call. The clause specifies how the rows are split up for processing. The `PARTITION BY` sub-clause declares to partition (group) the rows sharing the same values for the provided expression. The `ORDER BY` sub-clause can be used to order each resulting partition. Then, for each row, the window function is computed across the rows that are in the same partition.
+A window function is syntactically different from a regular or aggregate function by the presence of the `OVER` clause directly after the call. The clause specifies how the rows are split up for processing.
+
+Window functions are only permitted in the `SELECT` list and the `ORDER BY` clause of a query.
+
+The `PARTITION BY` sub-clause partitions (groups) the rows sharing the same values for the provided expression. These partitions are processed separately by the window function. The `PARTITION BY` clause is similar to `GROUP BY` except its values are always expressions, not output-column names or numbers The `ORDER BY` sub-clause can be used to order each resulting partition. Then, for each row, the window function is computed across the rows that are in the same partition.
 
 If the `PARTITION BY` clause is omitted then there will only be one resulting partition containing all of the rows.
 
 For each row, there is a set of rows within its partition called its _window frame_. Many window functions act only on the rows of the window frame rather than the whole partition. By default, if the `ORDER BY` clause is provided, then the window frame consists of all rows from the start of the partition (as defined by the order) up through the current row and including any rows considered equal to the current row as defined by the order.
 
-If the `ORDER BY` clause is omitted then the window frame consists of all rows in the partition.
+The window frame can be specified using `RANGE` mode or `ROWS` mode.
 
-Window functions are only permitted in the `SELECT` list and the `ORDER BY` clause of a query.
+``` postgresql
+{ RANGE | ROWS } frame_start
+{ RANGE | ROWS } BETWEEN frame_start AND frame_end
+
+
+-- frame_start and frame_end can be
+UNBOUNDED PRECEDING
+CURRENT ROW
+UNBOUNDED FOLLOWING
+
+-- ROWS mode
+some_value PRECEDING
+some_value FOLLOWING
+```
+
+`frame_end` defaults to `CURRENT ROW` if omitted.
+
+`UNBOUNDED PRECEDING` means the frame starts with the first row in the partition, and vice versa for `UNBOUNDED FOLLOWING` and the frame end.
+
+A _peer row_ is a row that `ORDER BY` considers to be equivalent to the current row.
+
+If the `ORDER BY` clause is omitted then the window frame consists of all rows in the partition, since all rows are considered peers of the row.
+
+In `RANGE` mode, a `frame_start` of `CURRENT ROW` means that the frame starts with the first peer row in the partition, and vice versa for `frame_end`.
+
+In `ROWS` mode, `CURRENT ROW` literally means the current row.
+
+In `ROWS` mode, `x PRECEDING` means that the frame starts at `x` rows before, and vice versa with `x FOLLOWING`. The value `x` must be an integer, where `0` refers to the current row.
 
 Since window functions execute _after_ aggregate functions, it's possible to include an aggregate function call as a parameter to a window function, but not vice versa.
 
+Rows input to the window function can be filtered with a `FILTER` clause, only if the window function is an aggregate.
+
 A sub-select can be used if it's necessary to filter or group rows after window calculations.
+
+The asterisk `*` "argument" is used to call parameter-less aggregate functions as window functions.
+
+``` postgresql
+count(*) OVER (PARTITION BY x ORDER BY y)
+```
 
 A window can be defined in order to be used by multiple window function calls by using the `WINDOW` clause.
 

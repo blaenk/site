@@ -249,6 +249,17 @@ Expressions can be written in the `SELECT` output list.
 
 The `AS` option can be provided to rename an output column.
 
+## Scalar Subqueries
+
+A _scalar subquery_ is an ordinary parenthesized `SELECT` query that returns exactly _one_ row with _one_ column. It would be an error if it returned more than one row or column, but returning nothing at all is interpreted as being `NULL`.
+
+``` postgresql
+SELECT
+  name,
+  (SELECT max(pop) FROM cities WHERE cities.state = states.name)
+FROM states;
+```
+
 # Value Expressions
 
 A value expression is one of:

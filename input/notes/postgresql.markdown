@@ -5,6 +5,8 @@ excerpt = "Arguably the premiere open source RDBMS"
 comments = false
 ---
 
+<toc />
+
 # Architecture
 
 A PostgreSQL session consists of a server process `postgres` which manages the database files, accepts connections, and performs database actions. PostgreSQL handles multiple concurrent connections by forking a process for each connection.

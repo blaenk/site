@@ -430,6 +430,37 @@ Note that function-like syntax is literally a direct invocation of the registere
 target_type ( expression )
 ```
 
+# Collation Expressions
+
+_Collation_ refers to the set of rules that determine how data is compared and sorted. The collation of a particular expression can be overridden using a `COLLATE` clause.
+
+``` postgresql
+expr COLLATE the_collation
+```
+
+When a collation is omitted, it's derived from the columns involved in the expression, or if no column is involved in the expression then it defaults to the default collation of the database.
+
+A common use of the `COLLATE` clause is to override the sort order in an `ORDER BY` clause.
+
+``` postgresql
+SELECT a, b, c
+FROM tbl
+WHERE …
+ORDER BY a COLLATE "C";
+```
+
+Another use is overriding the collation of a function or operator that has locale-sensitive results.
+
+``` postgresql
+SELECT *
+FROM tbl
+WHERE a > 'foo' COLLATE "C";
+```
+
+Note that even though the `COLLATE` expression above is attached to the `'foo'` argument of the `>` operator when we intend to affect the collation of the `>` operator itself, this doesn't matter because the collation used by operators and functions is derived by considering all arguments, and an explicit` COLLATE` clause overrides the collations of all other arguments. By extension, attaching non-matching `COLLATE` clauses to multiple arguments is an error.
+
+This means, in fact, that the `COLLATE` expression _must_ be attached to an argument, since parenthesizing the operation and attaching it to the parenthesized group would attempt to apply it to the _result_ of the operation, which in this case is of non-collatable data type `boolean`.
+
 # Operators
 
 Schema-qualified operators can be written by using the `OPERATOR` keyword. Note that the effective operator's precedence is the same regardless of the precedence of the operator passed as the argument.

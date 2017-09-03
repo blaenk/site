@@ -441,6 +441,41 @@ Note that function-like syntax is literally a direct invocation of the registere
 target_type ( expression )
 ```
 
+## Arrays
+
+An array constructor uses brackets `[]` and an `ARRAY` prefix. The array element type is the common type of the member expressions, in a manner similar to `UNION` and `CASE`, unless the constructor is explicitly cast, which has the same effect as casting each individual element expression.
+
+Note that array indices begin at `1`.`
+
+``` postgresql
+ARRAY[1, 2, 3]
+
+ARRAY[1, 2, 22.7]::integer[]; -- {1, 2, 23}
+```
+
+Arrays can be nested to produce multidimensional arrays. Interior arrays may omit the `ARRAY` prefix. Note that multidimensional arrays _must_ be rectangular (i.e. they can't be jagged), so all interior arrays at the same level must have the same dimension. Outer casts propagate to inner constructors.
+
+Interior array elements may be any expression that yields an array.
+
+Empty arrays must be explicitly cast to the desired type, since it's impossible to have an array of no type.
+
+``` postgresql
+SELECT ARRAY[ARRAY[1, 2], ARRAY[3, 4]];
+-- {{1, 2}, {3, 4}}
+
+-- Equivalent:
+SELECT ARRAY[[1, 2], [3, 4]];
+
+SELECT ARRAY[]::integer[];
+```
+
+It's possible to build an array from the results of a subquery by placing it within the array constructor _without_ the brackets `[]`. The subquery _must_ return a single column.
+
+``` postgresql
+SELECT ARRAY(SELECT oid FROM pg_proc WHERE proname LIKE 'bytea%');
+-- {2011, 1954, …}
+```
+
 # Collation Expressions
 
 _Collation_ refers to the set of rules that determine how data is compared and sorted. The collation of a particular expression can be overridden using a `COLLATE` clause.

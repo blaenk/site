@@ -412,7 +412,7 @@ The difference between `WHERE` and `HAVING` is that `WHERE` selects the rows bef
 
 An aggregate expression within a subquery usually applies over the rows of the subquery, _except when_ its arguments or `FILTER` clause contain any outer-level variables, in which case the aggregate then belongs to the nearest outer level and so applies over the rows of _that_ query, so that the aggregate expression is effectively an outer reference for the subquery it appears in, and acts as a constant over any one evaluation of the subquery. In this case, the placement restriction (i.e. in the result list or `HAVING` clause) applies with respect to the query level that the aggregate belongs to.
 
-Most aggregate functions ignore null inputs, i.e. rows in which one or more of the expression(s) yield null are discarded. Assume this to be true for all built-in functions unless otherwise specified.
+Most aggregate functions ignore `NULL` inputs, i.e. rows in which one or more of the expression(s) yield `NULL` are discarded. Assume this to be true for all built-in functions unless otherwise specified.
 
 ``` postgresql
 -- Total input rows.

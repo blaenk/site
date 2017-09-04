@@ -175,6 +175,41 @@ Rolling back to a savepoint does not automatically release the resources associa
 
 > `ROLLBACK TO` is the only way to regain control of a transaction block that was put in an aborted state by the system due to an error, short of rolling it back completely and starting again.
 
+# Functions
+
+Functions with named parameters may be called using either positional or named notation. Named notation permits an arbitrary argument order. _Mixed notation_ combines positional and named notation so that positional parameters are written first, with named parameters appearing after.
+
+``` postgresql
+CREATE FUNCTION concat_lower_or_upper(a text, b text, uppercase boolean DEFAULT false)
+RETURNS text
+AS
+$$
+ SELECT CASE
+        WHEN $3 THEN UPPER($1 || ' ' || $2)
+        ELSE LOWER($1 || ' ' || $2)
+        END;
+$$
+LANGUAGE SQL IMMUTABLE STRICT;
+
+-- Positional notation:
+SELECT concat_lower_or_upper('Hello', 'World', true);
+```
+
+Named notation separates the parameter name from the argument with `=>`. For backward compatibility, the `:=` separator is also supported.
+
+``` postgresql
+-- Named notation:
+SELECT concat_lower_or_upper(a => 'Hello', b => 'World');
+```
+
+Mixed notations requires _all_ positional arguments to come before named parameters.
+
+``` postgresql
+SELECT concat_lower_or_upper('Hello', 'World', uppercase => true);
+```
+
+Named and mixed notations cannot be used with aggregate functions, unless they're used as window functions.
+
 # Window Functions
 
 A window function applies an aggregate-like function over a portion of rows selected by a query. Unlike aggregate functions, the input rows are not reduced to a single row—each row remains separate in the output.

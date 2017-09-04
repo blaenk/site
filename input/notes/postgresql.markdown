@@ -350,6 +350,60 @@ Aggregate expressions can be given the `DISTINCT` qualifier to specify that the 
 count(DISTINCT *)
 ```
 
+# Expression Evaluation
+
+The order of evaluation of subexpressions is not defined; they're not evaluated in left-to-right order. Certain expressions may be short-circuited, _not_ necessarily in a left-to-right order. For example, it's possible that `somefunc()` is never called at all:
+
+``` postgresql
+SELECT somefunc() OR true;
+```
+
+Evaluation order can be forced with a `CASE` expression. For example, to avoid dividing by zero:
+
+``` postgresql
+-- Right operand may be evaluated before left,
+-- defeating the purpose of the guard check.
+SELECT … WHERE x > 0 AND y / x > 1.5;
+
+-- Explicitly force the evaluation order:
+SELECT …
+WHERE CASE WHEN x > 0
+      THEN y / x > 1.5
+      ELSE false
+      END;
+```
+
+This can't be used to prevent early evaluation of constant subexpressions, such as functions and operators marked `IMMUTABLE`, which may be evaluated when the query is planned rather than when it is executed. For example, the planner may try to simplify a constant subexpression which divides by zero even if, when executed, that subexpression would never be evaluated. Consider a table where the value of all rows' column `x` is greater than `0`.
+
+``` postgresql
+SELECT
+  CASE WHEN tab.x > 0
+  -- In practice, it may be that x > 0 for all rows.
+  THEN tab.x
+  -- Regardless, the planner may attempt to simplify
+  -- this constant subexpression.
+  ELSE 1 / 0
+  END
+FROM tab;
+```
+
+The above situation may also occur when queries are executed within functions, where function arguments and local variables may be inserted into queries as constants for planning purposes.
+
+Note that `CASE` inhibits optimization attempts, so in this case it would be better to use math to avoid division-by-zero:
+
+``` postgresql
+SELECT … WHERE y > 1.5 * x;
+```
+
+Also, since aggregate expressions are computed before other expressions in a `SELECT` list or `HAVING` clause, `CASE` cannot prevent evaluation of interior aggregate expressions. For example, in the query below, the `min()` and `avg()` aggregates are computed over all input rows before the `CASE` clause ever takes effect, which would yield a division-by-zero if any row has zero employees. This query should instead use `WHERE` or `FILTER` clauses to discard rows with zero employees.
+
+``` postgresql
+SELECT CASE WHEN min(employees) > 0
+            THEN avg(expenses / employees)
+       END
+FROM departments;
+```
+
 # Aggregate Functions
 
 An aggregate function reduces multiple inputs to a single output value.

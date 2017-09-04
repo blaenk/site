@@ -476,6 +476,30 @@ SELECT ARRAY(SELECT oid FROM pg_proc WHERE proname LIKE 'bytea%');
 -- {2011, 1954, …}
 ```
 
+## Row Constructors
+
+A row constructor is an expression that builds a "row", or _composite value_. This consists of parenthesizing the fields and using a `ROW` prefix. The prefix is optional if there's more than one field. The type of this row is anonymous unless cast to a named composite type: either the row type of a table or one created with `CREATE TYPE AS`.
+
+``` postgresql
+SELECT ROW(1, 2.5, 'this is a test');
+```
+
+Row constructors are typically used for storing values in composite-type table columns or passing composite arguments to functions.
+
+Rows can be compared and tested for being `NULL`.
+
+The `.*` syntax may be used to expand an element row expression into fields of the row being constructed. In other words, if table `t` has fields `f1` and `f2`, this is possible:
+
+``` postgresql
+SELECT ROW(t.*, 42) FROM t;
+
+-- Equivalent to:
+SELECT ROW(t.f1, t.f2, 42) FROM t;
+
+-- To get a row whose first field is itself a row:
+SELECT ROW(t, 42) FROM t;
+```
+
 # Collation Expressions
 
 _Collation_ refers to the set of rules that determine how data is compared and sorted. The collation of a particular expression can be overridden using a `COLLATE` clause.

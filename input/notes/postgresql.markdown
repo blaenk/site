@@ -445,7 +445,7 @@ target_type ( expression )
 
 An array constructor uses brackets `[]` and an `ARRAY` prefix. The array element type is the common type of the member expressions, in a manner similar to `UNION` and `CASE`, unless the constructor is explicitly cast, which has the same effect as casting each individual element expression.
 
-Note that array indices begin at `1`.`
+Note that array indices begin at `1`.
 
 ``` postgresql
 ARRAY[1, 2, 3]

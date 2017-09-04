@@ -627,3 +627,172 @@ Schema-qualified operators can be written by using the `OPERATOR` keyword. Note 
 ``` postgresql
 SELECT 3 OPERATOR(pg_catalog.+) 4;
 ```
+
+# Data Definition
+
+SQL does not guarantee the order of rows in a table; order is imposed when the table is read.
+
+Tables are created with the `CREATE TABLE` command which takes the table name and a list of column names and their types.
+
+``` postgresql
+CREATE TABLE products (
+  product_no integer,
+  name text,
+  price numeric
+);
+```
+
+Tables can be dropped with the `DROP TABLE` command. Attempting to drop a table that doesn't exist is an error. The `DROP TABLE IF EXISTS` variant can be used to silence that error.
+
+``` postgresql
+DROP TABLE products;
+```
+
+Columns can be assigned default values which are used when the column isn't given an explicit value or when a command requests that the default be used. If the default value is omitted, it is assumed to be `NULL`. Default values appear after the column type, with the `DEFAULT` keyword.
+
+``` postgresql
+CREATE TABLE products (
+  product_no integer,
+  name text,
+  price numeric DEFAULT 9.99
+);
+```
+
+The default value may be any expression which will be evaluated whenever the default value is to be inserted. One common expression to use is `CURRENT_TIMESTAMP` so that a timestamp of the time of row insertion is used. Another common default value expression is to increment a sequence generator, for which the `SERIAL` sugar exists.
+
+``` postgresql
+CREATE TABLE products (
+  product_no integer DEFAULT nextval('products_product_no_seq'),
+
+  -- Equivalent to:
+  product_no SERIAL,
+  …
+);
+```
+
+## Constraints
+
+Constraints are a way of limiting the kind of data stored in a table. Attempting to store data in a column that would violate a constraint causes an error to be raised.
+
+A _check constraint_ is the most generic constraint type. It simply specifies that a value in a column must satisfy some Boolean predicate. Constraints come after the data type with the keyword `CHECK`.
+
+``` postgresql
+CREATE TABLE products (
+  product_no integer,
+  name text,
+  price numeric CHECK (price > 0)
+);
+```
+
+Constraints may be given names with keyword `CONSTRAINT` in order to clarify error messages and to gain the ability to refer to them for future alteration.
+
+``` postgresql
+CREATE TABLE products (
+  product_no integer,
+  name text,
+  price numeric CONSTRAINT positive_price CHECK (price > 0)
+);
+```
+
+Checked constraints may refer to multiple columns, in which case it is not attached to any particular column but instead appears as a separate item in the comma-separated column list. The order between column and constraint definitions may be mixed.
+
+_Column constraints_ are constraints attached to a particular column, whereas _table constraints_ are constraints that are written separately from any one column. Like column constraints, table constraints can be given names with the `CONSTRAINT` keyword.
+
+``` postgresql
+CREATE TABLE products (
+  product_no integer,
+  name text,
+  price numeric CHECK (price > 0),
+  discounted_price numeric CHECK (discounted_price > 0),
+  CHECK (price > discounted_price)
+);
+```
+
+Note that column constraints may be written as table constraints, but the reverse is not always possible.
+
+``` postgresql
+-- The above can also be expressed as:
+CREATE TABLE products (
+  product_no integer,
+  name text,
+  price numeric,
+  CHECK (price > 0),
+  discounted_price numeric,
+  CHECK (discounted_price > 0),
+  CHECK (price > discounted_price)
+);
+```
+
+A _not-null constraint_ is one that ensures that a value is not `NULL`. Note that this can also be done via checked constraints with an `IS NOT NULL` expression, but a not-null constraint is more efficient in PostgreSQL at the expense of being unable to name them.
+
+``` postgresql
+CREATE TABLE products (
+  product_no integer NOT NULL,
+  name text NOT NULL,
+  price numeric
+);
+```
+
+Note that columns may have more than one constraint, written in any order, which doesn't necessarily determine the order in which they are checked.
+
+There is an inverse to the `NULL` constraint, `NOT NULL`, which explicitly specifies the default constraint that the value _may be_ `NULL`.
+
+It is generally a good idea to mark the majority of columns `NOT NULL`.
+
+_Unique constraints_ ensure that data in a column or group of columns is unique among all other rows in the table. This is commonly used for row identifiers, since otherwise the identifier could not be used reliably to identify a single row. A unique constraint is represented by the `UNIQUE` keyword. Unique constraints may be given names via `CONSTRAINT`.
+
+``` postgresql
+CREATE TABLE products (
+  product_no integer UNIQUE,
+  name text,
+  price numeric
+);
+```
+
+It can also be written as a table constraint.
+
+``` postgresql
+CREATE TABLE products (
+  product_no integer,
+  name text,
+  price numeric,
+  UNIQUE (product_no)
+);
+```
+
+Unique constraints may be specified for a _group_ of columns, which ensures that the _combination_ of values of the specified columns is unique across the entire table, by using a table constraint with a comma-separated list of columns.
+
+``` postgresql
+CREATE TABLE products (
+  a integer,
+  b integer,
+  c integer,
+  UNIQUE (a, c)
+);
+```
+
+Creating a unique constraint also automatically creates a unique B-tree index on the column(s) involved in the constraint.
+
+Since any two `NULL` values are _never_ considered to be equal, it is possible to store duplicate rows despite a multi-column constraint if at least one of the constrained columns contains a `NULL` value, as per the SQL standard.
+
+A _primary key constraint_ is one that indicates that a column or group of columns can be used as a _unique identifier_ for rows in a table. This necessitates that the values be unique and _not_ null, i.e. similar to `UNIQUE NOT NULL`, except that the existence of a primary key constraint automatically creates a B-tree index on the constrained column(s), and forces the column(s) to be marked `NOT NULL`.
+
+A table can have at most one primary key, but may have multiple unique not-null constraints.
+
+A primary key defines the default target column(s) for foreign keys referencing the table.
+
+``` postgresql
+CREATE TABLE products (
+  product_no integer PRIMARY KEY,
+  name text,
+  price numeric
+);
+
+-- More than one column:
+CREATE TABLE example (
+  a integer,
+  b integer,
+  c integer,
+  PRIMARY KEY (a, c)
+);
+```

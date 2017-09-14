@@ -1,13 +1,28 @@
 ---
-title = "Chrome Extension API"
+title = "Browser Extensions"
 published = "August 26, 2017"
-excerpt = "The Chrome Extension API"
+excerpt = "The various APIs used to create browser extensions"
 comments = false
 ---
 
+I will mostly be focusing on the Chrome Extensions API, but I will do so with a bias towards the "standardized" portion of it, the [Browser Extensions] standard, as adopted by FireFox in the form of the [WebExtensions API].
+
+[Browser Extensions]: https://browserext.github.io/browserext/
+[WebExtensions API]: https://developer.mozilla.org/en-US/Add-ons/WebExtensions
+
+# Portability
+
+Mozilla seems to be the only one making an effort to provide documentation for the APIs with consideration for other browsers, such as detailing the discrepancies. They have a document on [differences][webextension-differences] between FireFox and Chrome's implementation of the APIs. Going further, they maintain a [polyfill package] which provides a unified interface to the common extension APIs in a promisified manner. They also provide information on [porting a Chrome extension].
+
+[webextension-differences]: https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Chrome_incompatibilities
+[polyfill package]: https://github.com/mozilla/webextension-polyfill
+[porting a Chrome extension]: https://developer.mozilla.org/en-US/Add-ons/WebExtensions/Porting_a_Google_Chrome_extension
+
+Overall, their documentation is often much more in-depth compared to Chrome's, though to be fair, many pages are actually imported from Chrome's and then later augmented.
+
 # Anatomy
 
-The structure of a Chrome extension is defined by a `manifest.json` file which contains the extension's metadata, including name, description, version, permissions it requires, etc. Here is an example manifest:
+The structure of a browser extension is defined by a `manifest.json` file which contains the extension's metadata, including name, description, version, permissions it requires, etc. Here is an example manifest:
 
 ``` json
 {
@@ -37,7 +52,7 @@ Overall an extension may be comprised of:
 
 Extensions can communicate with servers or other pages via content scripts or cross-origin XMLHttpRequests.
 
-Extensions can add to the Chrome UI by way of _browser actions_ or _page actions_. An extension can have only one of them or none at all.
+Extensions can add to the browser UI by way of _browser actions_ or _page actions_. An extension can have only one of them or none at all.
 
 A _browser action_ is for actions that make sense for any page (e.g. an ad blocker), while a _page action_ is for actions that only makes sense for certain pages.
 

@@ -53,3 +53,70 @@ new Vue({
 Here's a diagram detailing a Vue instance's lifecycle:
 
 <img src="https://vuejs.org/images/lifecycle.png" />
+
+## Templates
+
+Vue's templates remind me a bit of Angular's. A common misconception is that this is just "plain HTML," often mentioned as a counterpoint to React's JSX. However, Vue's templates—although possible to define as HTML—are nonetheless compiled to JavaScript as Virtual DOM render functions, similar to JSX.
+
+Text interpolation can be accomplished through Mustache-style curly braces. These interpolations will update whenever the value being interpolated changes. The `v-once` directive can be used to suppress that behavior.
+
+``` html
+<span>Reactive message: {{ message }}</span>
+
+<span v-once>This will not update: {{ message }}</span>
+```
+
+The above interpolations escape HTML, but raw HTML can be inserted via the `v-html` directive, which takes as argument the property containing the HTML, and causes the contents of the tag it is placed on to take on that HTML content.
+
+``` html
+<div v-html="rawHTMLProperty"></div>
+```
+
+Mustaches cannot be placed within HTML attributes; instead, the `v-bind` directive should be used to "bind" a value to an attribute. Boolean attributes such as `disabled` are configured to remove themselves if the value is falsy.
+
+``` html
+<!-- `id` attribute set to the value of `idProperty`. -->
+<div v-bind:id="idProperty"></div>
+
+<!-- if `isButtonDisabled` is falsy, remove `disabled` attribute. -->
+<button v-bind:disabled="isButtonDisabled">Button</button>
+```
+
+Mustaches and attributes can contain arbitrary JavaScript expressions, but like JSX, each may contain a _single_ expression.
+
+``` html
+{{ number + 1 }}
+{{ ok ? 'YES' : 'NO' }}
+
+<div v-bind:id="'list-' + id"></div>
+```
+
+### Directives
+
+Directives are attributes with a `v-` prefix. Directives may take arguments, denoted by a colon `:` after the directive name.
+
+``` html
+<!-- argument is `href` -->
+<a v-bind:href="url"></a>
+```
+
+Modifiers are denoted by a dot `.` prefix.
+
+``` html
+<!-- modifier is `prevent` -->
+<form v-on:submit.prevent="onSubmit"></form>
+```
+
+The shorthand for `v-bind` is the colon `:` by itself.
+
+``` html
+<a v-bind:href="url"></a>
+<a :href="url"></a>
+```
+
+The shorthand for `v-on` is the at symbol `@`.
+
+``` html
+<a v-on:click="clicked"></a>
+<a @click="clicked"></a>
+```

@@ -120,3 +120,43 @@ The shorthand for `v-on` is the at symbol `@`.
 <a v-on:click="clicked"></a>
 <a @click="clicked"></a>
 ```
+
+## Computed Properties
+
+A computed property can be defined for complex expressions, often based on instance properties.
+
+For example, the following should be factored out to a computed property:
+
+``` html
+<div id="example">
+  {{ message.split('').reverse().join('') }}
+</div>
+```
+
+Defining a computed property has the effect of defining a getter function for a property with the provided name.
+
+``` javascript
+const vm = Vue({
+  el: '#example',
+  data: { message: 'Hello' },
+  computed: {
+    reversedMessage() {
+      return this.message.split('').reverse().join('');
+    },
+  },
+})
+```
+
+Since this defines a property, it can be accessed like any other:
+
+``` html
+<div id="example">
+  {{ reversedMessage }}
+</div>
+```
+
+Vue is aware of a computed property's data dependencies, so that when those dependencies are updated, so are any bindings that themselves depend on the computed property.
+
+Unlike methods, computed properties are cached based on their dependencies, so that they are only re-evaluated if any of the dependencies have changed, otherwise it serves the cached value.
+
+For that same reason, including any global side-effect code such as `Date.now()` may not have the intended effect, because the value will not change if _only_ that expression changed, since it's not a reactive dependency. Such code could be better expressed as a method.

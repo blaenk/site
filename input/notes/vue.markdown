@@ -160,3 +160,77 @@ Vue is aware of a computed property's data dependencies, so that when those depe
 Unlike methods, computed properties are cached based on their dependencies, so that they are only re-evaluated if any of the dependencies have changed, otherwise it serves the cached value.
 
 For that same reason, including any global side-effect code such as `Date.now()` may not have the intended effect, because the value will not change if _only_ that expression changed, since it's not a reactive dependency. Such code could be better expressed as a method.
+
+Watchers may appear to be equivalent to computed properties. For example, the following intends to maintain a `fullName` property updated whenever either the `firstName` _or_ the `lastName` changes.
+
+``` javascript
+var vm = new Vue({
+  data: {
+    firstName: 'John',
+    lastName: 'Doe',
+    fullName: 'John Doe'
+  },
+  watch: {
+    firstName: function (val) {
+      this.fullName = val + ' ' + this.lastName
+    },
+    lastName: function (val) {
+      this.fullName = this.firstName + ' ' + val
+    },
+  },
+});
+```
+However, the above is much more verbose and imperative compared to the declarative, computed property implementation. With a computed property implementation, Vue already knows to only recompute the value when the dependencies change, and the dependencies are automatically detected. This makes the code less error-prone and more flexible, such as in the event that the dependencies change.
+
+``` javascript
+var vm = new Vue({
+  data: {
+    firstName: 'John',
+    lastName: 'Doe'
+  },
+  computed: {
+    fullName: function () {
+      return this.firstName + ' ' + this.lastName
+    },
+  },
+})
+```
+
+A setter can also be provided for a computed property. For example, the setter below will ensure that if the value of the computed property is set, the underlying dependencies are updated accordingly.
+
+``` javascript
+var vm = new Vue({
+  data: {
+    firstName: 'John',
+    lastName: 'Doe'
+  },
+  computed: {
+    get() {
+      return this.firstName + ' ' + this.lastName;
+    },
+    set(newValue) {
+      const names = newValue.split(' ');
+
+      this.firstName = names[0];
+      this.lastName = names[names.length - 1];
+    },
+  },
+})
+```
+
+## Watchers
+
+Watchers are a more general construct compared to computed properties. A function can be registered to "watch" a given property, and execute when it is changed. This is accomplished by registering a function for a given property which accepts the new value of that property.
+
+Watchers are usually used in asynchronous or expensive computational contexts.
+
+``` javascript
+const vm = new Vue({
+  data: { someProperty: 1 },
+  watch: {
+    someProperty(newValue) {
+      …
+    }
+  }
+})
+```

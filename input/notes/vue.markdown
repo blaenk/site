@@ -168,7 +168,7 @@ Prefer to use `v-show` for content that is likely to be toggled often, and `v-if
 
 ### List Rendering
 
-The `v-for` directive can be used to replicate the element it's applied to for each element in the given array.
+The `v-for` directive can be used to replicate the element it's applied to for each element in an array, object, or integer range. It's possible to replicate multiple elements by wrapping them in the `<template>` tag, as with `v-if`.
 
 ``` html
 <ul>
@@ -196,6 +196,27 @@ The `v-for` directive may also iterate over an object's property _values_. Howev
 <div v-for="(value, key, index) in object">
   {{ index }}. {{ key }}: {{ value }}
 </div>
+```
+
+The `v-for` directive can also iterate over a range by supplying an integer instead of an array or object.
+
+``` html
+<div>
+  <span v-for="n in 10">{{ n }}</span>
+</div>
+```
+
+When an element contains both `v-for` and `v-if`, the `v-for` has higher precedence and is evaluated _before_ the `v-if`, meaning that each replicated element will evaluate `v-if` separately.
+
+The `v-for` directive can be applied to custom components, but data must be passed explicitly via `v-bind` for example, since each component has its own isolated scope. It was Vue's design decision to be explicit about the interface rather than implicitly—perhaps inadvertently—tightly couple the component with its parent.
+
+``` html
+<my-component
+  v-for="(item, index) in items"
+  v-bind:item="item"
+  v-bind:index="index"
+  v-bind:key="item.id">
+</my-component>
 ```
 
 ### Element Keys

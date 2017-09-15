@@ -275,10 +275,10 @@ var vm = new Vue({
     fullName: 'John Doe'
   },
   watch: {
-    firstName: function (val) {
+    firstName(val) {
       this.fullName = val + ' ' + this.lastName
     },
-    lastName: function (val) {
+    lastName(val) {
       this.fullName = this.firstName + ' ' + val
     },
   },
@@ -293,7 +293,7 @@ var vm = new Vue({
     lastName: 'Doe'
   },
   computed: {
-    fullName: function () {
+    fullName() {
       return this.firstName + ' ' + this.lastName
     },
   },
@@ -459,10 +459,10 @@ There are also modifiers for mouse buttons:
 
 ``` html
 <!-- Alt + C -->
-<input @keyup.alt.67="clear">
+<input v-on:keyup.alt.67="clear">
 
 <!-- Ctrl + Click -->
-<div @click.ctrl="doSomething">Do something</div>
+<div v-on:click.ctrl="doSomething">Do something</div>
 ```
 
 # Form Bindings

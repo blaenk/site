@@ -145,6 +145,27 @@ Much like `v-bind:class`, `v-bind:style` also accepts an object of style propert
 
 Vue automatically applies vendor prefixes to CSS property names that require them.
 
+### Conditional Rendering
+
+The `v-if` directive can be used to conditionally render an element. An immediately-following, sibling element can optionally be provided with a corresponding `v-else` directive, with the expected effect.
+
+``` html
+<div v-if="isVisible">Visible</div>
+<div v-else></div>
+```
+
+The `<template>` element can be used as an invisible wrapper to group multiple same-level elements in order to, for example, toggle all of their visibility at once.
+
+There is also a `v-else-if` directive that has the expected effect.
+
+The `v-show` directive can be used to conditionally _hide_ an element. Whereas `v-if` affects whether or not the element is rendered _at all_, `v-show` simply toggles the element's `display` property. For this reason, it wouldn't work on a `<template>` element since it has no corresponding element in the output DOM on which to apply the `display` property.
+
+Since `v-if` affects whether or not the element is rendered at all, if it's _not_ rendered, it will avoid creating the element and with it everything that that may entail, such as creating event listeners and child components. On the other hand, since `v-show` only affects the resulting element's _visibility_, the element and everything it contains is fully created.
+
+That means that `v-show` has a higher initial render cost but cheaper toggle cost, whereas `v-if` has a lower initial render cost (if it's not rendered) but a higher toggle cost (having to recreate the elements each time).
+
+Prefer to use `v-show` for content that is likely to be toggled often, and `v-if` otherwise.
+
 ## Computed Properties
 
 A computed property can be defined for complex expressions, often based on instance properties.

@@ -465,7 +465,79 @@ There are also modifiers for mouse buttons:
 <div v-on:click.ctrl="doSomething">Do something</div>
 ```
 
-# Form Bindings
+### Custom Events
+
+Every Vue instance implements an events interface so that it can listen to an event via `$on(eventName)` and trigger an event via `$emit(eventName)`.
+
+A parent component can listen to events emitted from a child via the `v-on` directive on that child component.
+
+For example, the below example shows that the child component emits an event whenever it is clicked, which the parent component listens on to maintain a total count.
+
+``` html
+<div id="counter-event-example">
+  <p>{{ total }}</p>
+  <button-counter v-on:increment="incrementTotal"></button-counter>
+  <button-counter v-on:increment="incrementTotal"></button-counter>
+</div>
+```
+
+``` javascript
+Vue.component('button-counter', {
+  template: '<button v-on:click="incrementCounter">{{ counter }}</button>',
+  data() {
+    return {
+      counter: 0,
+    };
+  },
+  methods: {
+    incrementCounter() {
+      this.counter += 1;
+      this.$emit('increment');
+    },
+  },
+});
+
+new Vue({
+  el: '#counter-event-example',
+  data: { total: 0 },
+  methods: {
+    incrementTotal() {
+      this.total += 1;
+    },
+  },
+});
+```
+
+A parent component can listen for a native event on a child component's root element by using the `.native` modifier for `v-on`.
+
+``` html
+<my-component v-on:click.native="doTheThing"></my-component>
+```
+
+It is possible to declare a prop to be a two-way binding by using the `.sync` modifier on `v-bind`. This actually has the effect of adding a `v-on` directive listening for the `update` event on the specified property, in which case it updates the property.
+
+``` html
+<!-- Declare prop `foo` to be a two-way binding to parent's `bar` property. -->
+<comp v-bin:foo.sync="bar"></comp>
+
+<!-- Expands to this.
+     An explicit listener for the update event affecting the `foo` prop,
+     which has the effect of setting parent's `bar` property to the new
+     given value. -->
+<comp v-bin:foo="bar" v-on:update:foo="val => bar = val"></comp>
+```
+
+To cause this update to occur, the child must explicitly emit the event rather than directly mutating the property.
+
+``` javascript
+// wrong
+this.foo = newValue;
+
+// correct
+this.$emit('update:foo', newValue);
+```
+
+## Form Bindings
 
 The `v-model` directive can be used to create two-way data bindings on form `<input>` and `<textarea>` elements. These bindings automatically use the correct way to update the element based on its type.
 

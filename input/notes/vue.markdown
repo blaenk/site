@@ -620,3 +620,315 @@ The `.lazy` modifier makes the data synchronize on each `change` event instead o
 The `.number` modifier specifies to automatically convert the input string to a number.
 
 The `.trim` modifier automatically trims the input string.
+
+## Components
+
+A component can be registered _globally_ with the `Vue.component` method which takes a tag name and options object. The W3C rules for custom tag names are that they are all lowercase and must contain a hyphen; while a good practice, Vue does not enforce these rules.
+
+``` html
+<div id="example">
+  <my-component></my-component>
+</div>
+```
+
+``` javascript
+Vue.component('my-component', {
+  template: '<div>A custom component!</div>',
+});
+
+// create a root instance
+new Vue({
+  el: '#example',
+});
+```
+
+A component can be registered locally for a particular Vue instance by specifying it in its `components` property.
+
+``` javascript
+var Child = {
+  template: '<div>A custom component!</div>',
+};
+
+new Vue({
+  components: {
+    // only available in parent's template
+    'my-component': Child,
+  },
+});
+```
+
+Since objects are passed by reference, the `data` property of a component should be defined as a function that returns an object, rather than as an object itself, so as to prevent having multiple instances of the component mutating the same data object.
+
+The preferred method of component communication is "props down, events up," meaning that parent components should pass data down to child components via props, and child components may communicate with parents by emitting events that propagate up the component hierarchy.
+
+<img src="https://vuejs.org/images/props-events.png" />
+
+Since each component has its own isolated scope, parents can't directly access a child's data. Instead, parents may pass data to a child component via `props`. Each component explicitly declares which `props` it accepts via the `props` option property.
+
+``` javascript
+Vue.component('child', {
+  props: ['message'],
+  template: '<span>{{ message }}</span>',
+});
+```
+
+``` html
+<child message="hello!"></child>
+```
+
+Props can be dynamically bound to data on the parent with the `v-bind` directive.
+
+``` html
+<div>
+  <input v-model="parentMsg">
+  <br>
+  <child v-bind:my-message="parentMsg"></child>
+</div>
+```
+
+Prop values are interpreted as strings, unless they are applied to `v-bind` in which case they are interpreted as a JavaScript expression:
+
+``` html
+<!-- this passes down a plain string "1" -->
+<comp some-prop="1"></comp>
+
+<!-- this passes down an actual number -->
+<comp v-bind:some-prop="1"></comp>
+```
+
+Mutating the parent's state is highly discouraged and may occur by inadvertently mutating an object or array passed via a prop, since both are passed by reference.
+
+If the purpose of a prop is to serve as an initial value for an internal data property, it should be prefixed with the word `initial` and used to set the initial value of that data property:
+
+``` javascript
+props: ['initialCounter'],
+data() {
+  return { counter: this.initialCounter }
+},
+```
+
+If the purpose of a prop is to read a raw value which the component uses to compute another, create a computed property for the target value:
+
+``` javascript
+props: ['size'],
+computed: {
+  normalizedSize() {
+    return this.size.trim().toLowerCase();
+  }
+},
+```
+
+If a parent passes an attribute that is not a declared prop to a child component, the attribute is applied to the child's root element, replacing the root element's corresponding attribute if any is found. However, if the attribute in question is a `class` or `style` attribute, the values are merged with the corresponding attributes on the root element, instead of replacing them.
+
+### Validation
+
+It's possible to define validation criteria for props by using an object instead of an array of prop names, where each key is the name of the prop and value is some validation criteria. That criteria can be a constructor function such as `String`, `Number`, or a custom one. An array of these can be used to specify multiple allowed types.
+
+An object can be passed where the `type` property specifies the allowed types, `required` property declares that the prop must be specified, `default` property specifies a value or function yielding a default value if none is given, and `validator` property specifies a function that validates the actual value.
+
+``` javascript
+Vue.component('example', {
+  props: {
+    // basic type check (`null` means accept any type)
+    propA: Number,
+
+    // multiple possible types
+    propB: [String, Number],
+
+    // a required string
+    propC: {
+      type: String,
+      required: true,
+    },
+
+    // a number with default value
+    propD: {
+      type: Number,
+      default: 100,
+    },
+
+    // object/array defaults should be returned from a
+    // factory function
+    propE: {
+      type: Object,
+      default() {
+        return { message: 'hello' };
+      },
+    },
+
+    // custom validator function
+    propF: {
+      validator(value) {
+        return value > 10;
+      },
+    },
+  },
+});
+```
+
+### Content Distribution
+
+It's possible to parent content with a component's own template via a process called _content distribution_. Content placed within a child component by the parent is discarded unless the child component template contains at least one `<slot>` outlet.
+
+If there is only one, without any attributes, then the entire content fragment is inserted at that position, replacing the slot itself. Anything inside of a `<slot>` tag is considered _fallback content_ which is rendered only if the hosting element is empty and has no content to be inserted.
+
+``` html
+<!-- Child -->
+<div>
+  <h2>I'm the child title</h2>
+  <slot>
+    This will only be displayed if there is no content
+    to be distributed.
+  </slot>
+</div>
+
+<!-- Parent -->
+<div>
+  <h1>I'm the parent title</h1>
+  <my-component>
+    <p>This is some original content</p>
+    <p>This is some more original content</p>
+  </my-component>
+</div>
+
+<!-- Rendered -->
+<div>
+  <h1>I'm the parent title</h1>
+  <div>
+    <h2>I'm the child title</h2>
+    <p>This is some original content</p>
+    <p>This is some more original content</p>
+  </div>
+</div>
+```
+
+It's also possible to name slots via `<slot>`'s `name` attribute in order to specify how content should be distributed. The hosting element declares that a given element will be distributed to a `<slot>` with a given `name` attribute by specifying that name via a `slot` attribute on an arbitrary element.
+
+An unnamed, _default slot_ may coexist as a catch-all for any unmatched content. If there is no default slot, unmatched content is discarded.
+
+``` html
+<!-- Child -->
+<div class="container">
+  <header>
+    <slot name="header"></slot>
+  </header>
+  <main>
+    <slot></slot>
+  </main>
+  <footer>
+    <slot name="footer"></slot>
+  </footer>
+</div>
+
+<!-- Parent -->
+<app-layout>
+  <h1 slot="header">Here might be a page title</h1>
+  <p>A paragraph for the main content.</p>
+  <p>And another one.</p>
+  <p slot="footer">Here's some contact info</p>
+</app-layout>
+
+<!-- Rendered -->
+<div class="container">
+  <header>
+    <h1>Here might be a page title</h1>
+  </header>
+  <main>
+    <p>A paragraph for the main content.</p>
+    <p>And another one.</p>
+  </main>
+  <footer>
+    <p>Here's some contact info</p>
+  </footer>
+</div>
+```
+
+_Scoped slots_ allow a child to expose data that the parent can use when filling that slot. To do this, the child simply passes the data via attributes on the `<slot>` tag, binding if necessary. The parent must then fill that slot using a `<template>` tag with a `scope` attribute naming an object that will be created and populated with the exposed data, then the data becomes available within that `<template>` as a property on that object.
+
+``` html
+<!-- Child -->
+<div class="child">
+  <slot text="hello from child"></slot>
+</div>
+
+<!-- Parent -->
+<div class="parent">
+  <child>
+    <template scope="props">
+      <span>hello from parent</span>
+      <span>{{ props.text }}</span>
+    </template>
+  </child>
+</div>
+
+<!-- Rendered -->
+<div class="parent">
+  <div class="child">
+    <span>hello from parent</span>
+    <span>hello from child</span>
+  </div>
+</div>
+```
+
+This can be used to allow a parent scope to customized the way that a child component renders list items.
+
+``` html
+<!-- Child -->
+<ul>
+  <slot name="item"
+    v-for="item in items"
+    v-bind:text="item.text">
+    <!-- fallback content -->
+    <li>Default: {{ item.text }}</li>
+  </slot>
+</ul>
+
+<!-- Parent -->
+<my-awesome-list v-bind:items="items">
+  <!-- scoped slot can be named too -->
+  <template slot="item" scope="props">
+    <li class="my-fancy-item">{{ props.text }}</li>
+  </template>
+</my-awesome-list>
+```
+
+It's possible to dynamically switch between multiple components mounted at the same point by using the reserved `<component>` element and dynamically binding its `is` attribute.
+
+``` javascript
+var vm = new Vue({
+  el: '#example',
+  data: { currentView: 'home' },
+  components: {
+    home: { … },
+    posts: { … },
+    archive: { … },
+  },
+});
+```
+
+``` html
+<component v-bind:is="currentView">
+  <!-- component changes when vm.currentView changes! -->
+</component>
+```
+
+It's also possible to bind to component objects directly:
+
+``` javascript
+var Home = { template: '<p>Welcome home!</p>' };
+
+var vm = new Vue({
+  el: '#example',
+  data: { currentView: Home }
+});
+```
+
+Components can be marked to be kept in memory in order to preserve their state and avoid re-rendering by wrapping it in a `<keep-alive>` element.
+
+``` html
+<keep-alive>
+  <component :is="currentView">
+    <!-- inactive, switched-from components will be cached! -->
+  </component>
+</keep-alive>
+```

@@ -121,6 +121,30 @@ The shorthand for `v-on` is the at symbol `@`.
 <a @click="clicked"></a>
 ```
 
+### Class and Style Bindings
+
+The `v-bind:class` directive can accept an object where keys are class names that will be part of the final `class` attribute if the corresponding value is truthy. The object can be specified inline or as a reference to a property. A computed property may be most natural to use for this, since dependencies are automatically registered.
+
+A separate, direct `class` attribute may also be specified and will be part of the resulting `class` attribute unconditionally.
+
+``` html
+<div v-bind:class="{ active: isActive }"></div>
+
+<div v-bind:class="someObject"></div>
+```
+
+The `v-bind:class` directive can also accept an array of class names. Going further, objects may be embedded within an array of classes to mix conditional and unconditional classes.
+
+``` html
+<div v-bind:calss"[unconditionalClass, { conditionalClass: isActive }]"></div>
+```
+
+When a `class` attribute is used on a custom component, it ends up being applied to that component's root element, appended if that element itself contains a `class` attribute.
+
+Much like `v-bind:class`, `v-bind:style` also accepts an object of style properties, referred to as a "style object". It also accepts an array of style objects that are merged together with later conflicting styles overriding earlier ones.
+
+Vue automatically applies vendor prefixes to CSS property names that require them.
+
 ## Computed Properties
 
 A computed property can be defined for complex expressions, often based on instance properties.

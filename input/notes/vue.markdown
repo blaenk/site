@@ -166,6 +166,38 @@ That means that `v-show` has a higher initial render cost but cheaper toggle cos
 
 Prefer to use `v-show` for content that is likely to be toggled often, and `v-if` otherwise.
 
+### List Rendering
+
+The `v-for` directive can be used to replicate the element it's applied to for each element in the given array.
+
+``` html
+<ul>
+  <li v-for="item in items">
+    {{ item.message }}
+  </li>
+</ul>
+```
+
+It's possible to enumerate the indices of the array by binding a second variable:
+
+``` html
+<li v-for="(item, index) in items">
+```
+
+The `v-for` enumeration syntax may use `in` or `of` as a delimiter.
+
+The `v-for` directive may also iterate over an object's property _values_. However, as with array index enumeration, the key can be enumerated as well by binding a second variable. In fact, an index can also be bound by providing yet another third variable.
+
+``` html
+<div v-for="value in object">{{ value }}</div>
+
+<div v-for="(value, key) in object">{{ key }}: {{ value }}</div>
+
+<div v-for="(value, key, index) in object">
+  {{ index }}. {{ key }}: {{ value }}
+</div>
+```
+
 ## Computed Properties
 
 A computed property can be defined for complex expressions, often based on instance properties.

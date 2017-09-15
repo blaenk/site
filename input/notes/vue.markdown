@@ -7,7 +7,7 @@ comments = false
 
 ## Vue Instance
 
-The `Vue` function can be used to create a Vue instance, which by convention is often named `vm` for "view model." The `Vue` function takes an options object.
+The `Vue` function can be used to create a Vue instance, which by convention is often named `vm` for "ViewModel." The `Vue` function takes an options object.
 
 Upon creation, all properties found in its `data` object are registered with the reactivity system. Only the `data` properties that existed at instantiation time are reactive.
 
@@ -100,7 +100,7 @@ Directives are attributes with a `v-` prefix. Directives may take arguments, den
 <a v-bind:href="url"></a>
 ```
 
-Modifiers are denoted by a dot `.` prefix.
+Modifiers are denoted by a dot `.` prefix, and may be stacked.
 
 ``` html
 <!-- modifier is `prevent` -->
@@ -399,3 +399,68 @@ this.userProfile = Object.assign({}, this.userProfile, {
 ```
 
 When wanting to show filtered or sorted results, it's best to create a computed property with those filtered or sorted items. If this would end up being too expensive, it's also possible to just define a method that does this.
+
+## Event Handling
+
+The `v-on` directive can be used to listen to DOM events and register methods to be invoked in response to them. Invoked methods are passed the event object. The directive can take as argument the event to listen for.
+
+Any event listeners registered with `v-on` are automatically removed when the ViewModel is destroyed.
+
+The directive can take modifiers which affect the event, such as `.stop` to invoke `event.stopPropagation()`. Note that the code is generated in the order specified by the modifiers. Possible modifiers include:
+
+| Modifier   | Description                       |
+|------------+-----------------------------------|
+| `.stop`    | `e.stopPropagation()`             |
+| `.prevent` | `e.preventDefault()`              |
+| `.capture` | Handle before inner element       |
+| `.self`    | Only trigger if is `event.target` |
+| `.once`    | Trigger at most once              |
+
+The `v-on` directive also has modifiers for filtering for specific keycodes when listening for keyboard events by defining modifiers with aliases for common keycodes, such as `.enter`.
+
+``` html
+<!-- Explicit write enter's keycode -->
+<input v-on:keyup.13="submit"></input>
+
+<!-- Or use the alias -->
+<input v-on:keyup.enter="submit"></input>
+```
+
+It's possible to define new key modifier aliases using the `Vue.config.keyCodes` object.
+
+``` javascript
+Vue.config.keycodes.f1 = 11;
+```
+
+Existing key modifiers are:
+
+* `.enter`
+* `.tab`
+* `.delete` (also captures backspace)
+* `.esc`
+* `.space`
+* `.up`
+* `.down`
+* `.left`
+* `.right`
+
+There are also modifiers for key modifiers:
+
+* `.ctrl`
+* `.alt`
+* `.shift`
+* `.meta`
+
+There are also modifiers for mouse buttons:
+
+* `.left`
+* `.right`
+* `.middle`
+
+``` html
+<!-- Alt + C -->
+<input @keyup.alt.67="clear">
+
+<!-- Ctrl + Click -->
+<div @click.ctrl="doSomething">Do something</div>
+```

@@ -10,7 +10,7 @@ I will mostly be focusing on the Chrome Extensions API, but I will do so with a 
 [Browser Extensions]: https://browserext.github.io/browserext/
 [WebExtensions API]: https://developer.mozilla.org/en-US/Add-ons/WebExtensions
 
-# Portability
+## Portability
 
 Mozilla seems to be the only one making an effort to provide documentation for the APIs with consideration for other browsers, such as detailing the discrepancies. They have a document on [differences][webextension-differences] between FireFox and Chrome's implementation of the APIs. Going further, they maintain a [polyfill package] which provides a unified interface to the common extension APIs in a promisified manner. They also provide information on [porting a Chrome extension].
 
@@ -20,7 +20,7 @@ Mozilla seems to be the only one making an effort to provide documentation for t
 
 Overall, their documentation is often much more in-depth compared to Chrome's, though to be fair, many pages are actually imported from Chrome's and then later augmented.
 
-# Anatomy
+## Anatomy
 
 The structure of a browser extension is defined by a `manifest.json` file which contains the extension's metadata, including name, description, version, permissions it requires, etc. Here is an example manifest:
 
@@ -72,12 +72,12 @@ A _content script_ defines code that executes in the context of a page loaded by
 
 Since content scripts run in the context of the loaded page, they can manipulate their DOM, but _not_ the DOM of their parent extension. Instead, a content script can exchange messages with the parent extension if it needs to communicate with it. For example, a background page might send a message to the content script directing it to change the appearance of some element, or a content script might send a message to the background page informing it of information it needs that it found on the page.
 
-# Development Workflow
+## Development Workflow
 
 Extensions can be loaded at `chrome://extensions`. Ensure that Developer Mode is enabled and use the "Load unpacked extension" button.
 
 The manifest file is only read when the extension is loaded, so it is necessary to reload the extension in order to observe changes made to it. This is done by clicking on the "Reload" button next to the extension, or by reloading the extensions page.
 
-# Distribution
+## Distribution
 
 Extensions are packaged up into a ZIP archive with a `.crx` extension.

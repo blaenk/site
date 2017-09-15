@@ -409,7 +409,7 @@ Any event listeners registered with `v-on` are automatically removed when the Vi
 The directive can take modifiers which affect the event, such as `.stop` to invoke `event.stopPropagation()`. Note that the code is generated in the order specified by the modifiers. Possible modifiers include:
 
 | Modifier   | Description                       |
-|------------+-----------------------------------|
+|------------|-----------------------------------|
 | `.stop`    | `e.stopPropagation()`             |
 | `.prevent` | `e.preventDefault()`              |
 | `.capture` | Handle before inner element       |

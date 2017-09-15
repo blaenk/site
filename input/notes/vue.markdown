@@ -541,6 +541,50 @@ this.$emit('update:foo', newValue);
 
 The `v-model` directive can be used to create two-way data bindings on form `<input>` and `<textarea>` elements. These bindings automatically use the correct way to update the element based on its type.
 
+The `v-model` directive is essentially sugar for binding the variable to the input's value with `v-bind` and updating the variable whenever there is new input.
+
+``` html
+<input v-model="something">
+
+<!-- Expands to -->
+<input
+  v-bind:value="something"
+  v-on:input="something = $event.target.value">
+```
+
+Therefore, for a component to work with `v-model`, it should accept a `value` prop and emit an `input` event with the new value when appropriate.
+
+It's possible to specify something other than `value` as the prop that is bound to and `input` as the event that is emitted by using the `model` option.
+
+``` javascript
+Vue.component('my-checkbox', {
+  model: {
+    // v-bind to prop `checked`
+    prop: 'checked',
+
+    // listen v-on `change`
+    event: 'change',
+  },
+  props: {
+    checked: Boolean,
+
+    // now `value` can be used for something else
+    value: String,
+  },
+});
+```
+
+``` html
+<my-checkbox v-model="foo" value="some value"></my-checkbox>
+
+<!-- Expands to -->
+<my-checkbox
+  v-bind:checked="foo"
+  v-on:change="val => { foo = val }"
+  value="some value">
+</my-checkbox>
+```
+
 Note that `v-model` ignores the initial `value`, `checked`, or `selected` attributes. More simply, Vue treats the instance data as the single source of truth, so all initial values should be specified in the `data` option.
 
 ``` html

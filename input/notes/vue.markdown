@@ -198,6 +198,12 @@ The `v-for` directive may also iterate over an object's property _values_. Howev
 </div>
 ```
 
+### Element Keys
+
+Similar DOM sub-trees can be differentiated with a `key` attribute, as in React. This ensures that the Virtual DOM diff algorithm wont inadvertently reuse elements that it shouldn't reuse.
+
+It's considered good practice to use a `key` in conjunction with a `v-for` directive to ensure optimal efficiency and avoid surprising behavior.
+
 ## Computed Properties
 
 A computed property can be defined for complex expressions, often based on instance properties.

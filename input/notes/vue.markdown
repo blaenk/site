@@ -338,3 +338,64 @@ const vm = new Vue({
   }
 })
 ```
+
+## Reactivity Caveats
+
+Vue wraps observed arrays' mutation methods so that they trigger view updates. In particular, the wrapped methods are:
+
+* `push()`
+* `pop()`
+* `shift()`
+* `unshift()`
+* `splice()`
+* `sort()`
+* `reverse()`
+
+Since objects are also observed, it's also possible to simply replace an array property.
+
+Vue _cannot_ detect direct element setting via the indexing operator.
+
+``` javascript
+// wrong
+vm.items[index] = value;
+
+// correct
+Vue.set(vm.items, index, value);
+```
+
+Vue also _cannot_ detect the direct modification of the array length.
+
+``` javascript
+// wrong
+vm.items.length = newLength;
+
+// correct
+vm.items.splice(newLength);
+```
+
+Vue also _cannot_ detect property addition or deletion. This is why Vue cannot allow dynamically adding new root-level reactive properties. This _is_ possible to do on existing objects via `Vue.set`:
+
+``` javascript
+Vue.set(vm.someObject, 'newProperty', someValue);
+
+// Equivalent (in instance):
+this.$set(this.someObject, 'newProperty', someValue);
+```
+
+When doing mass assignment via `Object.assign`, do so in pure, immutable fashion as in Redux, replacing the original property, instead of overwriting it.
+
+``` javascript
+// wrong
+Object.assign(this.userProfile, {
+  age: 27,
+  favoriteColor: 'Vue Green'
+});
+
+// correct
+this.userProfile = Object.assign({}, this.userProfile, {
+  age: 27,
+  favoriteColor: 'Vue Green'
+});
+```
+
+When wanting to show filtered or sorted results, it's best to create a computed property with those filtered or sorted items. If this would end up being too expensive, it's also possible to just define a method that does this.

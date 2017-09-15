@@ -464,3 +464,43 @@ There are also modifiers for mouse buttons:
 <!-- Ctrl + Click -->
 <div @click.ctrl="doSomething">Do something</div>
 ```
+
+# Form Bindings
+
+The `v-model` directive can be used to create two-way data bindings on form `<input>` and `<textarea>` elements. These bindings automatically use the correct way to update the element based on its type.
+
+Note that `v-model` ignores the initial `value`, `checked`, or `selected` attributes. More simply, Vue treats the instance data as the single source of truth, so all initial values should be specified in the `data` option.
+
+``` html
+<input v-model="message" placeholder="edit me">
+<p>Message is: {{ message }}</p>
+```
+
+If multiple checkboxes bind to the same array, the effect is that for each checkbox that is checked, its `value` attribute is inserted into the array.
+
+It's possible to set an element's value to something other than a string or boolean by using the `v-bind` directive with a `:value`, `:true-value`, or `:false-value` argument. This sets the `v-model` to the specified value.
+
+``` html
+<input
+  type="checkbox"
+  v-model="toggle"
+  v-bind:true-value="a"
+  v-bind:false-value="b">
+
+<!-- For a radio button -->
+<input type="radio" v-model="pick" v-bind:value="a">
+```
+
+``` javascript
+// when checked:
+vm.toggle === vm.a
+
+// when unchecked:
+vm.toggle === vm.b
+```
+
+The `.lazy` modifier makes the data synchronize on each `change` event instead of on each `input` event.
+
+The `.number` modifier specifies to automatically convert the input string to a number.
+
+The `.trim` modifier automatically trims the input string.

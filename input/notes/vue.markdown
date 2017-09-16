@@ -932,3 +932,57 @@ Components can be marked to be kept in memory in order to preserve their state a
   </component>
 </keep-alive>
 ```
+
+It's possible to name a particular element and access it directly by using the `ref` attribute on that element and accessing it via the `$refs` instance property. If it's used together with `v-for`, the ref will be an array.
+
+``` html
+<div id="parent">
+  <user-profile ref="profile"></user-profile>
+</div>
+```
+
+``` javascript
+var parent = new Vue({ el: '#parent' });
+
+// access child component instance
+var child = parent.$refs.profile;
+```
+
+It's possible to define a component as a factory function that is resolved asynchronously via a callback or  by returning a promise.
+
+``` javascript
+Vue.component('async-example', function (resolve, reject) {
+  setTimeout(function () {
+    // Pass the component definition to the resolve callback
+    resolve({ template: '<div>I am async!</div>' });
+  }, 1000);
+});
+
+Vue.component('async-promise-example', () => somePromise());
+```
+
+There is also a more advanced method of specifying asynchronous components by passing an options object that can specify the `component` as a promise, a component to use while it is `loading`, a `delay` before showing that `loading` component, a component to use in case of an `error`, and a `timeout` after which to show the `error` component.
+
+``` javascript
+const AsyncComponent = () => ({
+  component: getSomeComponent(),
+  loading: LoadingComp,
+  error: ErrorComp,
+  delay: 200,
+  timeout: 3000,
+});
+```
+
+Components can be recursive by specifying the `name` option for them to refer to themselves recursively. The `name` is automatically set when the component is registered globally.
+
+Tools like Webpack may have difficulty importing cyclically-dependent components. For example, consider a `Folder` component that has a child component `FolderContents`, which itself may have a `Folder` component within it. Webpack would see that `Folder` imports `FolderContents`, but `FolderContents` needs to import `Folder`—a cyclic dependency. This can be remedied by deferring the import, usually on the `beforeCreate` lifecycle hook.
+
+``` javascript
+beforeCreate() {
+  this.$options.components.FolderContents = require('./folder-contents').default;
+}
+```
+
+The `inline-template` attribute can be applied to a child component so that its inner content is used as the child component's template (in the child's scope), rather than treating it as distributed content.
+
+It's possible to ensure that static HTML is only evaluated once by applying the `v-once` attribute to the element.

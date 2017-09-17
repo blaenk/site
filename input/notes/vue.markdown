@@ -986,3 +986,93 @@ beforeCreate() {
 The `inline-template` attribute can be applied to a child component so that its inner content is used as the child component's template (in the child's scope), rather than treating it as distributed content.
 
 It's possible to ensure that static HTML is only evaluated once by applying the `v-once` attribute to the element.
+
+## Transitions
+
+The `<transition>` wrapper component can be used to add entering/leaving transitions to the contents for conditional rendering, conditional display, dynamic components, and component root nodes.
+
+When a wrapped element is inserted or removed, Vue detects whether the element has CSS transitions or animations applied, and if so it adds or removes the CSS transition classes at the appropriate timings, and any JavaScript hooks are executed. Otherwise the DOM insertion/removal operations are executed on the next browser animation frame.
+
+The possible transition classes include:
+
+1. `v-enter`: Starting to enter, before insertion until one frame after the element is inserted.
+2. `v-enter-active`: Applied during the entire entering phase, before insertion until transition finishes.
+3. `v-enter-to`: Ending enter, one frame after insertion (right after `v-enter`) until transition finishes.
+4. `v-leave`: Starting to leave, as soon as transition is triggered until one frame.
+5. `v-leave-active`: Applied during the entire leaving phase, as soon as transition is triggered until transition finishes.
+6. `v-leave-to`: Ending leave, one frame after transition is triggered (right after `v-leave` is removed) until transition finishes.
+
+<img src="https://vuejs.org/images/transition.png" />
+
+The classes that are added or removed are prefixed by the `<transition>`'s `name` attribute and the `v-` prefixed is removed, unless there is no `name` attribute. A `<transition>` with `name="my-transition"` becomes `my-transition-enter`.
+
+The classes used can be overridden with attributes on the `<transition>` tag which are named after the class in question with a `-class` suffix, such as `enter-active-class`.
+
+Vue registers event listeners for the animation end on `transitionend` or `animatinoend` depending on the type used. If both are animation types are used, it is necessary to declare to Vue which one to care about by using the `type` attribute on the `<transition>` tag with a value of `animation` or `transition`.
+
+Vue automatically detects when a transition has finished by using the `transitionend` or `animationend` events. However, an explicit duration can be specified with the `duration` attribute, set to either an integer for milliseconds or an object with `enter` and/or `leave` properties specifying the enter or leave duration, respectively.
+
+It's possible to register JavaScript hooks to run at different stages of the transition by using `v-on` with the name of the stage as an argument, e.g. `v-on:after-enter`. These can be used to create JavaScript animations. Each hook is passed the root element within the `<transition>`, while the `enter` and `leave` hooks are also passed a callback that should be invoked to signal the end of the phase.
+
+If the `appear` attribute is present in the `<transition>`, the entering and leaving transitions are used when the element is rendered or is removed, or separate ones can be specified with an `appear-` prefix, such as `appear-active-class`. This can also be done for JavaScript hooks, such as `v-on:after-appear`.
+
+Here's a complete example:
+
+``` html
+<div id="demo">
+  <button v-on:click="show = !show">
+    Toggle
+  </button>
+  <transition name="fade">
+    <p v-if="show">hello</p>
+  </transition>
+</div>
+```
+
+``` javascript
+new Vue({
+  el: '#demo',
+  data: { show: true },
+});
+```
+
+``` css
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s
+}
+
+.fade-enter, .fade-leave-to {
+  opacity: 0
+}
+```
+
+It's possible to use `<transition>` to transition between raw elements, such as between a `v-if` and its `v-else`, but care should be taken to add `key` attributes to each in the event that they each use the same tag.
+
+``` html
+<transition>
+  <button v-if="isEditing" key="save">
+    Save
+  </button>
+  <button v-else key="edit">
+    Edit
+  </button>
+</transition>
+```
+
+In fact, that can be condensed further by binding the `key` attribute and using a ternary expression for the content:
+
+``` html
+<transition>
+  <button v-bind:key="isEditing">
+    {{ isEditing ? 'Save' : 'Edit' }}
+  </button>
+</transition>
+```
+
+Transitioning between custom components simply entails the use of a dynamic `<component>`.
+
+By default, the entering and leaving transitions are simultaneous, meaning that if transitioning between two elements, one will begin entering at the same time that the other begins leaving. Other _transition modes_ include `in-out` where the current element transitions out until the new element has transitioned in, and `out-in` where the current element transitions out and _then_ the new element transitions in. These modes are specified via the `mode` attribute on the `<transition>` element.
+
+The `<transition-group>` element can be used to render multiple items. Unlike `<transition>`, it renders a physical element which is `<span>` by default (for example, for a list it can be `<ul>`), and every element _must_ have a unique `key` attribute. The `<transition-group>` element also adds a `v-move` class to elements that are changing positions. This can be used in conjunction with a CSS `transform` transition so that Vue automatically uses [FLIP animations].
+
+[FLIP animations]: https://aerotwist.com/blog/flip-your-animations/

@@ -1248,3 +1248,43 @@ on: {
   `~!mouseover`: this.doOnceInCaptureMode,
 },
 ```
+
+## Plugins
+
+There are different types of plugins:
+
+1. Some add some global methods or properties
+2. Some add one or more global assets (directives, filters, transitions)
+3. Some add some component options via a global mixin
+4. Some add some Vue instance methods via `Vue`'s prototype
+5. Some act as libraries with an API of their own
+
+A plugin should expose an `install` method which is called with the `Vue` constructor as the first argument and possibly other options.
+
+``` javascript
+MyPlugin.install = function (Vue, options) {
+  // add global method or property (1)
+  Vue.myGlobalMethod = function () { … };
+
+  // or add a global asset (2)
+  Vue.directive('my-directive', {
+    bind (el, binding, vnode, oldVnode) { … },
+  });
+
+  // or inject some component options (3)
+  Vue.mixin({ created() { … } });
+
+  // or add an instance method (4)
+  Vue.prototype.$myMethod = function (methodOptions) { … },
+};
+```
+
+A plugin is used via `Vue.use` with an optional options argument. This automatically guards against loading the same plugin more than once.
+
+``` javascript
+// calls `MyPlugin.install(Vue)`
+Vue.use(MyPlugin)
+
+// with options:
+Vue.use(MyPlugin, { someOption: true })
+```

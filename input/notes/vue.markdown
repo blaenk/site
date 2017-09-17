@@ -1131,3 +1131,60 @@ Vue.config.optionMergeStrategies.myOption = Vue.config.optionMergeStrategies.met
 ```
 
 Although discouraged, it's also possible inject mixins globally via `Vue.mixin()`.
+
+## Custom Directives
+
+Custom directives can be defined globally via the `Vue.directive` method.
+
+``` javascript
+// Define a `v-focus` directive.
+Vue.directive('focus', {
+  // When the bound element is inserted into the DOM…
+  inserted(el) {
+    el.focus();
+  }
+})
+```
+
+Custom directives may also be defined locally within a component via the `directives` property.
+
+``` javascript
+directives: { focus: { … } }
+```
+
+``` html
+<input v-focus>
+```
+
+A directive can hook into different points:
+
+* `bind`: When the directive is first bound to the element.
+* `inserted`: When the element is inserted into its parent node (just parent node presence—not necessarily in-document).
+* `update`: When component's vnode has updated, possibly before its children vnodes have. The binding's old and new values can be checked to avoid unnecessary updates.
+* `componentUpdated`: When component's vnode and the vnodes of its children have updated.
+* `unbind`: When the directive is unbound from the element.
+
+Each hook is passed three arguments:
+
+1. The `element` the directive is bound to
+2. The `binding` object.
+3. The `vnode` (virtual node) of the element.
+
+The `update` and `componentUpdated` hooks are also passed the `oldVnode`, the previous virtual node.
+
+The `binding` object contains the following properties:
+
+* `name` of the directive without the `v-` prefix
+* `value` passed to the directive, specifically, the expression's value
+* `oldValue` whether or not it changed (for `update` and `componentUpdated`)
+* `expression` passed to the directive as a string
+* `arg` passed to the directive, if any
+* `modifiers`: an object mapping the provided modifiers to `true`
+
+There exists a shorthand for registering a custom directive that only executes on `bind` and `update`:
+
+``` javascript
+Vue.directive('color-swatch', (el, binding) => {
+  el.style.backgroundColor = binding.value;
+});
+```

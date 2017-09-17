@@ -1160,8 +1160,8 @@ A directive can hook into different points:
 
 * `bind`: When the directive is first bound to the element.
 * `inserted`: When the element is inserted into its parent node (just parent node presence—not necessarily in-document).
-* `update`: When component's vnode has updated, possibly before its children vnodes have. The binding's old and new values can be checked to avoid unnecessary updates.
-* `componentUpdated`: When component's vnode and the vnodes of its children have updated.
+* `update`: When component's VNode has updated, possibly before its children VNodes have. The binding's old and new values can be checked to avoid unnecessary updates.
+* `componentUpdated`: When component's VNode and the VNodes of its children have updated.
 * `unbind`: When the directive is unbound from the element.
 
 Each hook is passed three arguments:

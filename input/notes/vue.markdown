@@ -1317,6 +1317,39 @@ filters: {
 
 Since filters are just functions, they can be defined to take additional arguments, however, the filtered value is always the first argument.
 
+## Reactivity
+
+Given a passed-in `data` option, Vue automatically traverses the object and converts each property into getters and setters via `Object.defineProperty`, allowing Vue to inject behavior such as threading dependency-tracking and change-notification when properties are accessed or modified. This is why vue-devtools may be more useful for inspecting properties, since browser log functions will output the getters and setters themselves.
+
+Each component instance has a watcher instance that records as dependencies any properties that are touched during the component's render. Then when a dependency's setter is triggered it notifies the watcher which then causes a re-render.
+
+<img src="https://vuejs.org/images/data.png" />
+
+Vue debounces multiple watcher triggers within the same event loop iteration, flushing the queue of changes on the next tick. It's possible to do some work until after Vue has performed the DOM updates by registering a callback to run on the next tick via `Vue.nextTick()`.
+
+``` html
+<div id="example">{{ message }}</div>
+```
+
+``` javascript
+const vm = new Vue({
+  el: '#example',
+  data: { message: '123' },
+});
+
+vm.message = 'new message';
+vm.$el.textContent === 'new message'; // => false
+
+Vue.nextTick(function () {
+  vm.$el.textContent === 'new message'; // => true
+});
+
+// Or within an instance:
+this.$nextTick(function () {
+  console.log(this.$el.textContent);
+});
+```
+
 ## Error Handling
 
 The `Vue.config.errorHandler` property can be set to a function that will receive any emitted errors.

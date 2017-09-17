@@ -720,6 +720,25 @@ computed: {
 
 If a parent passes an attribute that is not a declared prop to a child component, the attribute is applied to the child's root element, replacing the root element's corresponding attribute if any is found. However, if the attribute in question is a `class` or `style` attribute, the values are merged with the corresponding attributes on the root element, instead of replacing them.
 
+A _functional component_ is a stateless component marked with the option property `functional`. It has no instance, it simply consists of a `render` function that takes `props` and `children` as arguments and returns one or more vnodes (as an array), unlike stateful components that can only return a single root node.
+
+``` javascript
+Vue.component('wrap-with-tag', {
+  functional: true,
+  props: ['tag'],
+  render (h, props, children) {
+    return h(props.tag, null, children);
+  },
+});
+```
+
+``` html
+<wrap-with-tag tag="div">hello</wrap-with-tag>
+
+<!-- Produces -->
+<div>hello</div>
+```
+
 ### Validation
 
 It's possible to define validation criteria for props by using an object instead of an array of prop names, where each key is the name of the prop and value is some validation criteria. That criteria can be a constructor function such as `String`, `Number`, or a custom one. An array of these can be used to specify multiple allowed types.

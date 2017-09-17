@@ -720,14 +720,28 @@ computed: {
 
 If a parent passes an attribute that is not a declared prop to a child component, the attribute is applied to the child's root element, replacing the root element's corresponding attribute if any is found. However, if the attribute in question is a `class` or `style` attribute, the values are merged with the corresponding attributes on the root element, instead of replacing them.
 
-A _functional component_ is a stateless component marked with the option property `functional`. It has no instance, it simply consists of a `render` function that takes `props` and `children` as arguments and returns one or more vnodes (as an array), unlike stateful components that can only return a single root node.
+### Functional Components
+
+A _functional component_ is a stateless component marked with the option property `functional`. It has no instance, it simply consists of a `render` function that takes `props` and `children` as arguments and returns one or more VNodes (as an array), unlike stateful components that can only return a single root node. It can also specify an optional `props` property, although all attributes found on the component node are implicitly extracted as props.
+
+The `context` object passed to the render function has many properties:
+
+* `props` object
+* `children` array of VNodes
+* `slots` function returning a slots object
+* `data` the data object passed to the component
+* `parent` reference to parent component
+* `listeners` object of parent-registered event listeners (alias of `data.on`)
+* `injections` containing the resolved injections
+
+Note that functional components don't show up in Vue devtools since they lack a persistent instance.
 
 ``` javascript
 Vue.component('wrap-with-tag', {
   functional: true,
   props: ['tag'],
-  render (h, props, children) {
-    return h(props.tag, null, children);
+  render (createElement, context) {
+    return createElement(context.props.tag, null, context.children);
   },
 });
 ```

@@ -1188,3 +1188,49 @@ Vue.directive('color-swatch', (el, binding) => {
   el.style.backgroundColor = binding.value;
 });
 ```
+
+## Render Functions
+
+It's possible to write components that have explicit render functions instead of implicit ones via an associated templates.
+
+``` javascript
+Vue.component('anchored-heading', {
+  render: function (createElement) {
+    return createElement(
+      'h' + this.level,   // tag name
+      this.$slots.default // array of children
+    );
+  },
+  props: {
+    level: {
+      type: Number,
+      required: true,
+    },
+  },
+});
+```
+
+The `createElement` function takes up to three arguments:
+
+1. The tag name, component options, or function returning either.
+2. An optional attributes object.
+3. The text string or array of children VNodes.
+
+A _virtual node_ is essentially a node description which. A _virtual DOM_ is a tree of VNodes. Each VNode must be unique.
+
+When defining event handlers directly within a component's `on` data object property, modifiers can be leveraged by using certain prefixes on the handler's name:
+
+| Modifiers       | Prefix |
+|-----------------|--------|
+| `.passive`      | `&`    |
+| `.capture`      | `!`    |
+| `.once`         | `~`    |
+| `.capture.once` | `~!`   |
+
+``` javascript
+on: {
+  '!click': this.captureMode,
+  '~keyup': this.doOnce,
+  `~!mouseover`: this.doOnceInCaptureMode,
+},
+```

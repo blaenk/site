@@ -1095,3 +1095,39 @@ By default, the entering and leaving transitions are simultaneous, meaning that 
 The `<transition-group>` element can be used to render multiple items. Unlike `<transition>`, it renders a physical element which is `<span>` by default (for example, for a list it can be `<ul>`), and every element _must_ have a unique `key` attribute. The `<transition-group>` element also adds a `v-move` class to elements that are changing positions. This can be used in conjunction with a CSS `transform` transition so that Vue automatically uses [FLIP animations].
 
 [FLIP animations]: https://aerotwist.com/blog/flip-your-animations/
+
+## Mixins
+
+Mixins are simply objects that contain component options which can be mixed into a component via its `mixins` property:
+
+``` javascript
+const mixin = {
+  created() {
+    this.hello();
+  },
+  methods: {
+    hello() {
+      console.log('hello from mixin!');
+    },
+  },
+}
+
+const Component = Vue.extend({
+  mixins: [mixin],
+});
+
+new Component() // => "hello from mixin!"
+```
+
+Mixed-in hooks are called _before_ the components hooks. Otherwise-conflicting options are sensibly mixed, except when merging properties that expect object values, such as `methods`, in which case the component's corresponding property overrides the mixin's. When merging custom options, the existing value is overwritten unless a custom merge strategy is defined for that option.
+
+``` javascript
+Vue.config.optionMergeStrategies.myOption = function (toVal, fromVal) {
+  // return mergedVal
+}
+
+// Or just use `methods`'s strategy.
+Vue.config.optionMergeStrategies.myOption = Vue.config.optionMergeStrategies.methods;
+```
+
+Although discouraged, it's also possible inject mixins globally via `Vue.mixin()`.

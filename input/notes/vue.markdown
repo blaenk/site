@@ -373,7 +373,7 @@ vm.items.length = newLength;
 vm.items.splice(newLength);
 ```
 
-Vue also _cannot_ detect property addition or deletion. This is why Vue cannot allow dynamically adding new root-level reactive properties. This _is_ possible to do on existing objects via `Vue.set`:
+Vue also _cannot_ detect property addition or deletion, which is why all data properties must be defined upfront, even if to empty values. This also is why Vue cannot allow dynamically adding new root-level reactive properties. This _is_ possible to do on existing objects via `Vue.set()`:
 
 ``` javascript
 Vue.set(vm.someObject, 'newProperty', someValue);
@@ -382,7 +382,7 @@ Vue.set(vm.someObject, 'newProperty', someValue);
 this.$set(this.someObject, 'newProperty', someValue);
 ```
 
-When doing mass assignment via `Object.assign`, do so in pure, immutable fashion as in Redux, replacing the original property, instead of overwriting it.
+When doing mass assignment via `Object.assign`, do so in an immutable fashion as in Redux, replacing the original property, instead of directly mutating the object.
 
 ``` javascript
 // wrong
@@ -623,7 +623,7 @@ The `.trim` modifier automatically trims the input string.
 
 ## Components
 
-A component can be registered _globally_ with the `Vue.component` method which takes a tag name and options object. The W3C rules for custom tag names are that they are all lowercase and must contain a hyphen; while a good practice, Vue does not enforce these rules.
+A component can be registered _globally_ with the `Vue.component()` method which takes a tag name and options object. The W3C rules for custom tag names are that they are all lowercase and must contain a hyphen; while a good practice, Vue does not enforce these rules.
 
 ``` html
 <div id="example">
@@ -1148,7 +1148,7 @@ Although discouraged, it's also possible inject mixins globally via `Vue.mixin()
 
 ## Custom Directives
 
-Custom directives can be defined globally via the `Vue.directive` method.
+Custom directives can be defined globally via the `Vue.directive()` method.
 
 ``` javascript
 // Define a `v-focus` directive.
@@ -1279,7 +1279,7 @@ MyPlugin.install = function (Vue, options) {
 };
 ```
 
-A plugin is used via `Vue.use` with an optional options argument. This automatically guards against loading the same plugin more than once.
+A plugin is used via `Vue.use()` with an optional options argument. This automatically guards against loading the same plugin more than once.
 
 ``` javascript
 // calls `MyPlugin.install(Vue)`

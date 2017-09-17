@@ -1316,3 +1316,7 @@ filters: {
 ```
 
 Since filters are just functions, they can be defined to take additional arguments, however, the filtered value is always the first argument.
+
+## Error Handling
+
+The `Vue.config.errorHandler` property can be set to a function that will receive any emitted errors.

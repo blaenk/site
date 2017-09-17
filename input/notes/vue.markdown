@@ -1288,3 +1288,31 @@ Vue.use(MyPlugin)
 // with options:
 Vue.use(MyPlugin, { someOption: true })
 ```
+
+## Filters
+
+Filters can be used in mustache interpolations and `v-bind` expressions. Filters can be chained.
+
+``` html
+<!-- in mustaches -->
+{{ message | capitalize }}
+
+<!-- in v-bind -->
+<div v-bind:id="rawId | formatId"></div>
+```
+
+Custom filters can be defined in the component's `filters` property, which is an object mapping filter names to functions that handle them. Each filter is passed the expression's value.
+
+``` javascript
+filters: {
+  capitalize(value) {
+    if (!value) return '';
+
+    value = value.toString();
+
+    return value.charAt(0).toUpperCase() + value.slice(1);
+  },
+},
+```
+
+Since filters are just functions, they can be defined to take additional arguments, however, the filtered value is always the first argument.

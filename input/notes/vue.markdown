@@ -1353,3 +1353,437 @@ this.$nextTick(function () {
 ## Error Handling
 
 The `Vue.config.errorHandler` property can be set to a function that will receive any emitted errors.
+
+## Vuex
+
+Like Redux, Vue has a notion of a store. A store in Vue is reactive and is mutated by committing mutations.
+
+``` javascript
+import Vue from 'vue'
+import Vuex from 'vuex'
+
+Vue.use(Vuex);
+
+const store = new Vuex.Store({
+  state: { count: 0 },
+  mutations: {
+    increment(state) {
+      state.count++
+    },
+  },
+});
+
+// …
+store.commit('increment');
+store.state.count // => 1
+```
+
+Besides accessing a global Vuex store within a component, Vuex allows for the injection of the store into all child components of a given component by simply specifying the store to inject as the `store` component option. This makes the store available via the `this.$store` instance property.
+
+``` javascript
+const app = new Vue({
+  el: '#app',
+  store,
+  components: { Counter },
+  template: `
+    <div class="app">
+      <counter></counter>
+    </div>
+  `,
+});
+
+const Counter = {
+  template: `<div>{{ count }}</div>`,
+  computed: {
+    count() {
+      return this.$store.state.count;
+    },
+  },
+};
+```
+
+Store state is usually wrapped in a component's computed property, so that the property is recomputed automatically when the state changes. The `mapState()` function helps with this repetitive task. If passed an array, it creates `computed` properties for each state property.
+
+``` javascript
+computed: mapState({
+  count: (state) => state.count,
+
+  // String 'count' is the same as `(state) => state.count`
+  countAlias: 'count',
+
+  // Use a normal function in order to access local state with `this`.
+  countPlusLocalState(state) {
+    return state.count + this.localCount;
+  },
+});
+
+// Map this.count to store.state.count.
+computed: mapState(['count']);
+```
+
+The object spread operator can be used to mix Vuex' `mapState()` with local computed properties.
+
+``` javascript
+computed: {
+  localComputed() { … },
+  ...mapState({ … }),
+},
+```
+
+### Getters
+
+The store can define _getters_ which are essentially computed properties defined on the store itself. Like computed properties, these only re-evaluate when any dependencies have changed. Getters are passed the state as the first argument and all getters as the second argument.
+
+``` javascript
+const store = new Vuex.Store({
+  state: {
+    todos: [{ id: 1, text: '...', done: true }],
+  },
+  getters: {
+    doneTodos: (state, getters) => state.todos.filter((todo) => todo.done),
+  },
+});
+```
+
+Getters can be used within components by accessing them directly.
+
+``` javascript
+computed: {
+  doneTodosCount() {
+    return this.$store.getters.doneTodosCount;
+  },
+},
+```
+
+A getter can return a closure in order to take arbitrary arguments.
+
+``` javascript
+getters: {
+  getTodoById: (state, getters) => (id) => {
+    return state.todos.find((todo) => todo.id === id);
+  },
+},
+
+store.getters.getTodoById(1); // => { id: 1, text: '...', done: true }
+```
+
+Like the `mapSetters()` helper function, the `mapGetters()` function can be used to map local `computed` properties to a store's getters by passing an array with the name of the store's getter, or an object mapping the desired local computed property name to the name of the store's getter.
+
+``` javascript
+computed: {
+  ...mapGetters(['doneTodosCount']),
+
+  // or
+  ...mapGetters({ doneCount: 'doneTodosCount' }),
+},
+```
+
+### Mutations
+
+State in a store can only be changed by committing a mutation. Each mutation has a `type` named by a string and a `handler` function which actually performs the state modifications. The handler function is passed the state object as the first argument and an optional additional `payload` argument.
+
+Mutations _must_ be synchronous.
+
+``` javascript
+const store = new Vuex.Store({
+  state: {
+    count: 1
+  },
+  mutations: {
+    increment(state) {
+      state.count++;
+    },
+  },
+});
+
+// invoke as
+store.commit('increment');
+```
+
+When a mutation needs additional arguments, it should be done by passing an object as the `payload`.
+
+``` javascript
+mutations: {
+  increment(state, payload) {
+    state.count += payload.amount;
+  },
+},
+
+// invoke as
+store.commit('increment', { amount: 10 });
+```
+
+It's also possible to commit a mutation with a single object argument which specifies the mutation via a `type` property. This is known as _object-style_ commit.
+
+``` javascript
+store.commit({ type: 'increment', amount: 10 });
+```
+
+Since Vuex state is reactive it has the same [reactivity caveats]. All fields should be defined upfront, and any new properties on a nested object should either use `Vue.set()` or should result in a new nested object that replaces the original via `Object.assign()` or the spread operator.
+
+[reactivity caveats]: #reactivity-caveats
+
+Components can commit mutations by using `this.$store.commit()` directly or by using the `mapMutations()` helper function which maps component `methods` to store mutations either by a simple array mapping names one-to-one or with an object which can be used to specify the local name. This works whether or not the mutation takes a payload.
+
+``` javascript
+methods: {
+  ...mapMutations(['increment', 'incrementBy']),
+
+  // Map `this.add()` to `this.$store.commit('increment')`.
+  ...mapMutations({ add: 'increment' }),
+},
+```
+
+### Actions
+
+Actions are possibly-asynchronous functions that commit mutations. Actions are passed a `context` object which exposes the `commit()` function, the `state`, and the `getters`.
+
+Whereas mutations are triggered via `commit()`, actions are triggered via `dispatch()`.
+
+Like mutations, actions support payload format and object-style dispatch.
+
+``` javascript
+actions: {
+  increment(context) {
+    context.commit('increment')
+  },
+},
+```
+
+Components can dispatch actions by directly accessing `this.$store.dispatch()` or by using the `mapActions()` helper function to map component `methods` to dispatch calls, much like `mapMutations()`.
+
+``` javascript
+methods: {
+  ...mapActions(['increment', 'incrementBy']),
+
+  // Map `this.increment()` to `this.$store.commit('increment)`
+  ...mapActions({ add: 'increment' })
+}
+```
+
+An action can return a promise, which is also returned by `dispatch()`.
+
+``` javascript
+actions: {
+  asyncAction({ commit }) {
+    commit('someMutation');
+
+    return Promise.resolve();
+  },
+  otherAsyncAction({ dispatch, commit }) {
+    return dispatch('asyncAction').then(() => commit('otherMutation'));
+  },
+},
+```
+
+### Modules
+
+A store can be divided into separate `modules`, each with its own state, mutations, actions, getters, and even other modules within it.
+
+``` javascript
+const moduleA = {
+  state: { … },
+  mutations: { … },
+  actions: { … },
+  getters: { … },
+};
+
+const moduleB = {
+  state: { … },
+  mutations: { … },
+  actions: { … },
+};
+
+const store = new Vuex.Store({
+  modules: {
+    a: moduleA,
+    b: moduleB,
+  },
+});
+
+store.state.a; // -> `moduleA`'s state
+store.state.b; // -> `moduleB`'s state
+```
+
+A module's mutations and getters are passed the _module's_ local state. Module actions get the _module's_ local state via `context.state`, but the store's root state is also accessible via `context.rootState`. Module getters can access the root state via the third argument.
+
+Although a module's state is nested under a state property named after the module, actions, mutations, and getters are registered under the global namespace by default, allowing multiple modules to react to the same mutation or action type (when this happens, asynchronous actions yield a Promise that resolves when _all_ triggered handlers have resolved).
+
+This can be avoided by marking the module as `namespaced`, then all getters, actions, and mutations are namespaced under the module name with a forward slash `/` separating namespace components.
+
+``` javascript
+modules: {
+  account: {
+    namespaced: true,
+
+    // module state is already nested
+    state: { … },
+
+    // -> getters['account/isAdmin']
+    getters: { isAdmin () { … } },
+
+    // -> dispatch('account/login')
+    actions: { login () { … } },
+
+    // -> commit('account/login')
+    mutations: { login () { … } },
+
+    // nested modules
+    modules: {
+      // inherits the namespace from parent module
+      myPage: {
+        state: { … },
+
+        // -> getters['account/profile']
+        getters: { profile () { … } },
+      },
+
+      // further nest the namespace
+      posts: {
+        namespaced: true,
+
+        state: { … },
+
+        // -> getters['account/posts/popular']
+        getters: { popular () { … } },
+      },
+    },
+  },
+},
+```
+
+Namespaced getters and actions receive _localized_ `getters`, `dispatch`, and `commit`, that is, ones that act upon the namespaced module itself. Global state and getters can be accessed via `rootState` and `rootGetters` which are passed as third and fourth arguments to getter functions and exposed via the `context` object in action functions. Given a localized `dispatch` or `commit` function, global actions or commits can be invoked by passing `{ root: true }` as the third argument.
+
+``` javascript
+modules: {
+  foo: {
+    namespaced: true,
+
+    getters: {
+      someOtherGetter: (state) => { … },
+
+      someGetter(state, getters, rootState, rootGetters) {
+        // -> 'foo/someOtherGetter'
+        getters.someOtherGetter;
+
+        // -> 'someOtherGetter'
+        rootGetters.someOtherGetter;
+      },
+    },
+
+    actions: {
+      someAction({ dispatch, commit, getters, rootGetters }) {
+        // -> 'foo/someGetter'
+        getters.someGetter;
+
+        // -> 'someGetter'
+        rootGetters.someGetter;
+
+        // -> 'foo/someOtherAction'
+        dispatch('someOtherAction')
+
+        // -> 'someOtherAction'
+        dispatch('someOtherAction', null, { root: true })
+
+        // -> 'foo/someMutation'
+        commit('someMutation')
+
+        // -> 'someMutation'
+        commit('someMutation', null, { root: true })
+      },
+      someOtherAction(ctx, payload) { … }
+    },
+  },
+},
+```
+
+The helper functions `mapState()`, `mapGetters()`, `mapActions()`, and `mapMutations()` each can take a namespace string as the first argument so that all bindings are done in that module's context.
+
+``` javascript
+computed: {
+  ...mapState({
+    a: (state) => state.some.nested.module.a,
+    b: (state) => state.some.nested.module.b,
+  }),
+},
+
+// or
+computed: {
+  ...mapState('some/nested/module', {
+    a: (state) => state.a,
+    b: (state) => state.b,
+  }),
+},
+
+methods: {
+  ...mapActions([
+    'some/nested/module/foo',
+    'some/nested/module/bar',
+  ]),
+},
+
+// or
+methods: {
+  ...mapActions('some/nested/module', [
+    'foo',
+    'bar',
+  ]),
+},
+```
+
+In fact, namespaced helpers can be created with `createNamespacedHelpers()`, which returns an object with each helper method already bound to the given namespace.
+
+``` javascript
+import { createNamespacedHelpers } from 'vuex';
+
+const { mapState, mapActions } = createNamespacedHelpers('some/nested/module');
+
+```
+
+Modules can be dynamically registered via the store's `registerModule()` method, which takes the module name or an array that includes its namespace components, and the module itself. A dynamically registered module can be unregistered dynamically with the store's `unregisterModule()` method.
+
+Modules can be made safely reusable by ensuring that the `state` is a function that returns the state object, similar to a component's `data` property.
+
+Plugins can be registered which can subscribe to mutations.
+
+``` javascript
+// Called on store initialization.
+const myPlugin = (store) => {
+  // Called after every mutation.
+  store.subscribe((mutation, state) => {
+    // The mutation is object-style: `{ type, payload }`.
+  });
+}
+
+const store = new Vuex.Store({
+  plugins: [myPlugin],
+  …,
+});
+```
+
+Plugins can commit mutations, allowing them to be used to sync a data source with the store.
+
+Strict mode causes an error to be thrown when state mutation occurs outside of mutation handlers, and can be enabled on a store by setting its `strict` property.
+
+Using a Vuex store state value as a form input model with `v-model` is incorrect since that would make Vue mutate the state directly instead of through mutations. Instead, a two-way computed property should be created to wrap around the state.
+
+``` html
+<input v-model="message">
+```
+
+``` javascript
+computed: {
+  message: {
+    get() {
+      return this.$store.state.obj.message;
+    },
+    set(value) {
+      this.$store.commit('updateMessage', value);
+    },
+  },
+},
+```
+
+The focus on unit testing a Vuex store should be on mutations and actions. Testing mutations simply entails importing them and passing them a mock state object. Testing actions can leverage [inject-loader] in order to mock API calls.
+
+[inject-loader]: https://github.com/plasticine/inject-loader

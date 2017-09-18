@@ -1787,3 +1787,178 @@ computed: {
 The focus on unit testing a Vuex store should be on mutations and actions. Testing mutations simply entails importing them and passing them a mock state object. Testing actions can leverage [inject-loader] in order to mock API calls.
 
 [inject-loader]: https://github.com/plasticine/inject-loader
+
+## Router
+
+The router is installed by instantiating a `VueRouter` instance and giving it a list of route record, then passing that instance to `Vue`'s `router` property. A route's match priority is determined by its order in the list of routes.
+
+Vue router has a `<router-link>` tag which can be used to link to a particular route and a `<router-view>` tag which renders the component matched by the route. Active routes linked with `<router-link>` automatically gain a `.router-link-active` class.
+
+``` javascript
+const router = new VueRouter({
+  routes: [
+    { path: '/foo', component: Foo },
+    { path: '/bar', component: Bar },
+  ],
+});
+
+const app = new Vue({ router }).$mount('#app');
+```
+
+Routes can be nested by leveraging a route record's `children` option, which is simply an array of route records. It's possible to define an "index route" for a nested route by simply specifying an empty `path` property.
+
+A route record can be declared as a redirection to another by using the `redirect` property which takes input similar to `push()`: a string path or link descriptor object, _or_ a function that is passed the target route and must return a redirect path or location.
+
+``` javascript
+const router = new VueRouter({
+  routes: [{ path: '/a', redirect: '/b' }],
+});
+```
+
+It's also possible to define a route as an alias to another by using the `alias` property.
+
+Dynamic route segments can be specified with a colon `:` prefix. Vue router uses [path-to-regexp] under the hood.
+
+[path-to-regexp]: https://github.com/pillarjs/path-to-regexp
+
+The bound value for a dynamic segment is available within the matched component through the `this.$route.params` object.
+
+Routes can be named using the `name` property and referred to by that name with the `name` property on a link descriptor given to `push()`.
+
+Instead of tightly coupling a component to the router's `$route` instance property, necessary information should be passed through as props. This is accomplished by the route record's `props` property. The property can take on three types of values: `true` which means to pass `route.params` as the component's entire props, an object specifying the props, or a function that is passed the route object and returns a props object.
+
+``` javascript
+const router = new VueRouter({
+  routes: [
+    {
+      path: '/search',
+      component: SearchUser,
+      props: (route) => ({ query: route.query.q })
+    },
+  ],
+});
+```
+
+It's possible to have multiple _named_ `<router-view>`s via the `name` attribute and each can receive different components when any one route matches, similar to template content distribution. the `<router-view>` without any `name` attribute is named `default`.
+
+In the example below, different components will be distributed to different `<router-view>`s when the `'/'` route matches.
+
+``` html
+<div class="view main">
+  <router-view></router-view>
+</div>
+
+<div class="view sidebar">
+  <router-view name="sidebar"></router-view>
+</div>
+
+<div class="view footer">
+  <router-view name="footer"></router-view>
+</div>
+```
+
+``` javascript
+const router = new VueRouter({
+  routes: [
+    {
+      path: '/',
+      components: {
+        default: UserMain,
+        sidebar: UserOverview,
+        footer: UserStatistics,
+      },
+    },
+  ],
+});
+```
+
+When navigating between similar routes such as `/user/:id` where only the `id` differs, the same component will be re-used, meaning that lifecycle hooks will not be used. It is possible to react to navigation changes by adding a watch to `$route` or by using the `beforeRouteUpdate()` hook.
+
+``` javascript
+const User = {
+  template: '…',
+  beforeRouteUpdate(to, from, next) {
+    // React to route changes…
+
+    next();
+  }
+}
+```
+
+Programmatic navigation is possible via methods on the router. The `push()` method takes a string or location descriptor object, and is the function that is invoked with `<router-link>`'s attribute `to`. Note that the `query` option is ignored when specifying a raw `path`.
+
+``` javascript
+// path
+router.push('home');
+router.push({ path: 'home' });
+
+// named route
+router.push({ name: 'user', params: { userId: 123 }});
+
+// with query, resulting in /register?plan=private
+router.push({ path: 'register', query: { plan: 'private' }});
+```
+
+The `push()` method can also take optional `onComplete` and `onAbort` callbacks, in that order, which are called when navigation has successfully completed or has been aborted.`
+
+The `replace()` method works like `push()` except that it doesn't push a history entry.
+
+The `go(n)` method can go backwards or forwards in the history stack.
+
+Vue router uses hash mode for its history simulation by default. This can be changed by setting `VueRouter`'s `mode` property to `'history'` for example.
+
+Navigation guards are used to guard navigations either by redirecting or canceling it. Navigation can be hooked into globally, per-route, or in-component.
+
+A global before-guard can be registered via `router.beforeEach()` and is passed the route that is being navigated `to`, the route navigating `from`, and a callback used to resolve the hook, allowing for asynchronous guards. The way that the callback is called determines what happens next:
+
+* no arguments: continue to next hook, or confirm the navigation if none are left
+* `false`: abort the navigation
+* `/` or `{ path: '/' }`: redirect elsewhere
+* `Error` instance: abort the navigation and pass the error to error callbacks registered via `router.onError()`
+
+A global guard can be registered with `router.beforeResolve()` and is similar to a before-guard except that a regular guard is called right before the navigation is confirmed, that is, it can be assumed that the navigation has been confirmed, after all in-component guards and async route components are resolved.
+
+A global after-guard can be registered with `router.afterEach()` and it is not passed a resolution callback since the navigation has already completed by then.
+
+Per-route before-enter guards can be specified with the route record's `beforeEnter` property.
+
+In-component guards can be defined within a component:
+
+* `beforeRouteEnter`: before navigation is confirmed; no access to `this`.
+* `beforeRouteUpdate`: when route changes but component is reused.
+* `beforeRouteLeave`: right before navigating away from this route.
+
+Although `beforeRouteEnter` doesn't have access to `this` because the instance hasn't been created yet, it can pass a callback to the resolution callback.
+
+``` javascript
+beforeRouteEnter(to, from, next) {
+  next((vm) => {
+    // access to component instance via `vm`
+  });
+},
+```
+
+Route record can define meta fields using the `meta` property. Since route records can be nested, multiple routes can be matched for a given path. The list of matched records is accessible through the `$route.matched` field. This field can be iterated on to check the meta fields.
+
+For example, a meta field `requiresAuth` can be processed such that if _any_ of the matched routes contains that field and the user is not logged in, the navigation will be aborted and redirected to the login page.
+
+``` javascript
+router.beforeEach((to, from, next) => {
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
+    if (!auth.loggedIn()) {
+      next({
+        path: '/login',
+        query: { redirect: to.fullPath },
+      });
+    } else {
+      next();
+    }
+  } else {
+    next();
+  }
+});
+```
+
+Since `<router-view>` is essentially a dynamic component, `<transition>` works as expected.
+
+When using HTML5 history mode it's possible to define a scroll behavior when navigating by defining a `scrollBehavior` function which is passed the `to` and `from` route records as well as the `savedPosition` and should return a scroll position object containing `x` and `y` properties or a `selector` to scroll to and optional `offset` coordinates object from it.

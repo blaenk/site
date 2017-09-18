@@ -524,7 +524,7 @@ It is possible to declare a prop to be a two-way binding by using the `.sync` mo
      An explicit listener for the update event affecting the `foo` prop,
      which has the effect of setting parent's `bar` property to the new
      given value. -->
-<comp v-bin:foo="bar" v-on:update:foo="val => bar = val"></comp>
+<comp v-bin:foo="bar" v-on:update:foo="(val) => bar = val"></comp>
 ```
 
 To cause this update to occur, the child must explicitly emit the event rather than directly mutating the property.
@@ -580,7 +580,7 @@ Vue.component('my-checkbox', {
 <!-- Expands to -->
 <my-checkbox
   v-bind:checked="foo"
-  v-on:change="val => { foo = val }"
+  v-on:change="(val) => { foo = val }"
   value="some value">
 </my-checkbox>
 ```

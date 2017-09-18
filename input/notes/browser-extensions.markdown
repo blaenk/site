@@ -10,6 +10,8 @@ I will mostly be focusing on the Chrome Extensions API, but I will do so with a 
 [Browser Extensions]: https://browserext.github.io/browserext/
 [WebExtensions API]: https://developer.mozilla.org/en-US/Add-ons/WebExtensions
 
+<toc />
+
 ## Portability
 
 Mozilla seems to be the only one making an effort to provide documentation for the APIs with consideration for other browsers, such as detailing the discrepancies. They have a document on [differences][webextension-differences] between FireFox and Chrome's implementation of the APIs. Going further, they maintain a [polyfill package] which provides a unified interface to the common extension APIs in a promisified manner. They also provide information on [porting a Chrome extension].

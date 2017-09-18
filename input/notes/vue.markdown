@@ -5,6 +5,8 @@ excerpt = "The Vue.js Library"
 comments = false
 ---
 
+<toc />
+
 ## Vue Instance
 
 The `Vue` function can be used to create a Vue instance, which by convention is often named `vm` for "ViewModel." The `Vue` function takes an options object.

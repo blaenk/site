@@ -1962,3 +1962,7 @@ router.beforeEach((to, from, next) => {
 Since `<router-view>` is essentially a dynamic component, `<transition>` works as expected.
 
 When using HTML5 history mode it's possible to define a scroll behavior when navigating by defining a `scrollBehavior` function which is passed the `to` and `from` route records as well as the `savedPosition` and should return a scroll position object containing `x` and `y` properties or a `selector` to scroll to and optional `offset` coordinates object from it.
+
+## Resources
+
+* [vue-loader](https://vue-loader.vuejs.org/en/): Webpack loader for Vue

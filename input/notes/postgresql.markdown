@@ -861,3 +861,16 @@ The `ON DELETE SET NULL` clause can be used to set the foreign key column(s) in 
 There is a corresponding `ON UPDATE` clause with the same possible options.
 
 Since deleting or updating a referenced row requires a scan of referencing tables, it's a good idea to create an index for referencing columns.
+
+### Exclusion Constraints
+
+Exclusion constraints ensure that no two rows satisfy a given set of operators, that is, the constraint is satisfied if at least one operator returns false or `NULL`. An exclusion constraint automatically adds an index of the type specified.
+
+For example, an exclusion constraint can be used to ensure that no two circles overlap.
+
+``` postgresql
+CREATE TABLE circles (
+  c circle,
+  EXCLUDE USING gist (c WITH &&)
+);
+```

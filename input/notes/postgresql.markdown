@@ -670,6 +670,18 @@ CREATE TABLE products (
 );
 ```
 
+Every table also has _system columns_ that are implicitly defined by the system, which means that it is not possible to user-define columns with clashing names.
+
+| Name       | Purpose                                                        |
+|------------|----------------------------------------------------------------|
+| `oid`      | row's object ID                                                |
+| `tableoid` | table's object ID                                              |
+| `xmin`     | transaction ID of row version's inserting transaction          |
+| `cmin`     | command ID within inserting transaction                        |
+| `xmax`     | transaction ID of undeleted row version's deleting transaction |
+| `cmax`     | command ID within deleting transaction                         |
+| `ctid`     | row's physical location within table                           |
+
 ## Constraints
 
 Constraints are a way of limiting the kind of data stored in a table. Attempting to store data in a column that would violate a constraint causes an error to be raised.

@@ -674,6 +674,8 @@ CREATE TABLE products (
 
 Constraints are a way of limiting the kind of data stored in a table. Attempting to store data in a column that would violate a constraint causes an error to be raised.
 
+### Check Constraints
+
 A _check constraint_ is the most generic constraint type. It simply specifies that a value in a column must satisfy some Boolean predicate. Constraints come after the data type with the keyword `CHECK`.
 
 ``` postgresql
@@ -695,6 +697,8 @@ CREATE TABLE products (
 ```
 
 Checked constraints may refer to multiple columns, in which case it is not attached to any particular column but instead appears as a separate item in the comma-separated column list. The order between column and constraint definitions may be mixed.
+
+### Column Constraints
 
 _Column constraints_ are constraints attached to a particular column, whereas _table constraints_ are constraints that are written separately from any one column. Like column constraints, table constraints can be given names with the `CONSTRAINT` keyword.
 
@@ -723,6 +727,8 @@ CREATE TABLE products (
 );
 ```
 
+### Not-NULL Constraints
+
 A _not-null constraint_ is one that ensures that a value is not `NULL`. Note that this can also be done via checked constraints with an `IS NOT NULL` expression, but a not-null constraint is more efficient in PostgreSQL at the expense of being unable to name them.
 
 ``` postgresql
@@ -738,6 +744,8 @@ Note that columns may have more than one constraint, written in any order, which
 There is an inverse to the `NULL` constraint, `NOT NULL`, which explicitly specifies the default constraint that the value _may be_ `NULL`.
 
 It is generally a good idea to mark the majority of columns `NOT NULL`.
+
+### Unique Constraints
 
 _Unique constraints_ ensure that data in a column or group of columns is unique among all other rows in the table. This is commonly used for row identifiers, since otherwise the identifier could not be used reliably to identify a single row. A unique constraint is represented by the `UNIQUE` keyword. Unique constraints may be given names via `CONSTRAINT`.
 
@@ -775,6 +783,8 @@ Creating a unique constraint also automatically creates a unique B-tree index on
 
 Since any two `NULL` values are _never_ considered to be equal, it is possible to store duplicate rows despite a multi-column constraint if at least one of the constrained columns contains a `NULL` value, as per the SQL standard.
 
+### Primary Key Constraints
+
 A _primary key constraint_ is one that indicates that a column or group of columns can be used as a _unique identifier_ for rows in a table. This necessitates that the values be unique and _not_ null, i.e. similar to `UNIQUE NOT NULL`, except that the existence of a primary key constraint automatically creates a B-tree index on the constrained column(s), and forces the column(s) to be marked `NOT NULL`.
 
 A table can have at most one primary key, but may have multiple unique not-null constraints.
@@ -796,3 +806,58 @@ CREATE TABLE example (
   PRIMARY KEY (a, c)
 );
 ```
+
+### Foreign Key Constraints
+
+A _foreign key constraint_ declares that values in a column must match values of some row in another table, so as to maintain _referential integrity_ between two related tables. In practice this means that a row cannot be created on the referencing table if it doesn't have a foreign key value that exists in the referenced table.
+
+If no explicit referenced column is specified then the primary key of the referenced table is used.
+
+``` postgresql
+CREATE TABLE products (
+  product_no integer PRIMARY KEY,
+  name text,
+  price numeric
+);
+
+CREATE TABLE orders (
+  order_id integer PRIMARY KEY,
+  product_no integer REFERENCES products (product_no),
+
+  -- Equivalent:
+  product_no integer REFERENCES products,
+
+  quantity integer
+);
+```
+
+A foreign key can constrain and reference a group of columns, in which case it needs to be specified in table constraint form.
+
+Foreign keys must reference columns that are primary keys or uniquely constrained, which implies that the referenced columns always have an index.
+
+Foreign key constraints must specify `NOT NULL` if they want to enforce that each foreign constraint is satisfied. Otherwise any referencing columns may be `NULL` unless `MATCH FULL` is specified which requires all referencing columns to be set or `NULL`.
+
+``` postgresql
+CREATE TABLE t1 (
+  a integer PRIMARY KEY,
+  b integer,
+  c integer,
+  FOREIGN KEY (b, c) REFERENCES other_table (c1, c2);
+);
+```
+
+It's possible to define more than one foreign key constraint, something which is often done to implement many-to-many relationships.
+
+It's possible to configure what occurs when a referenced row is removed by using an `ON DELETE` clause:
+
+The `ON DELETE RESTRICT` clause can be used to prevent the referenced row from being deleted.
+
+The `ON DELETE NO ACTION` clause is the default behavior, which simply raises an error, essentially preventing the deletion. The difference between this and `RESTRICT` is that this check can be deferred until the end of a transaction.
+
+The `ON DELETE CASCADE` clause causes referencing row(s) to be deleted as well.
+
+The `ON DELETE SET NULL` clause can be used to set the foreign key column(s) in the referencing row(s) to `NULL`. There is also an `ON DELETE SET DEFAULT` variant which sets the default value for that type instead. Both of these behaviors are still subject to any constraints.
+
+There is a corresponding `ON UPDATE` clause with the same possible options.
+
+Since deleting or updating a referenced row requires a scan of referencing tables, it's a good idea to create an index for referencing columns.

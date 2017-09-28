@@ -961,3 +961,38 @@ CREATE TABLE circles (
   EXCLUDE USING gist (c WITH &&)
 );
 ```
+
+# Privileges
+
+Each created object is assigned an owner, which is usually the role that executed the creation statement. For most object kinds, the initial configuration is such that only the owner or a superuser can do anything with the object unless another role is granted _privilege_. The right to modify or destroy the object is always the privilege of the owner _only_.
+
+Different privileges apply to different kinds of objects. The different kinds of privilege are:
+
+* `SELECT`
+* `INSERT`
+* `UPDATE`
+* `DELETE`
+* `TRUNCATE`
+* `REFERENCES`
+* `TRIGGER`
+* `CREATE`
+* `CONNECT`
+* `TEMPORARY`
+* `EXECUTE`
+* `USAGE`
+
+An object can be assigned to a new owner with the appropriate `ALTER` command for the particular object kind. Superusers can always do this, and ordinary roles can only do this if they are the current owner of the object _and_ a member of the new owning role.
+
+Specific privileges can be granted with the `GRANT` command. Specifying `ALL` as the privilege grants all of the privileges. The special role `PUBLIC` can be used to grant a privilege to every role on the system.
+
+It's possible to grant a privilege which carries the additional privilege to grant that same privilege to others (known as "with grant privilege"), and if the grant option is subsequently revoked then everyone who received that privilege also loses it.
+
+``` postgresql
+GRANT UPDATE ON accounts TO joe;
+```
+
+Privileges can be revoked with the `REVOKE` command. Note that the owner's special privileges to `DROP`, `GRANT`, and `REVOKE` are implicit in being the owner, but the owner can revoke their other ordinary privileges.
+
+``` postgresql
+REVOKE ALL ON accounts FROM PUBLIC;
+```

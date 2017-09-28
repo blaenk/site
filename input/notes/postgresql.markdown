@@ -996,3 +996,30 @@ Privileges can be revoked with the `REVOKE` command. Note that the owner's speci
 ``` postgresql
 REVOKE ALL ON accounts FROM PUBLIC;
 ```
+
+# Row Security Policies
+
+Also known as _Row-Level Security_ (RLS).
+
+Tables can have row security policies which restrict, on a per-user basis, which rows are returned by normal queries or inserted, updated, or deleted by data modification commands.
+
+When row security is enabled on a table, all access must be allowed by the policy, which is default-deny when none is specified. Table-wide operations such as `TRUNCATE` or `REFERENCES` are not subject to row security. Row security policies can be specific to commands, roles, or both.
+
+The condition for which rows are visible or modifiable according to a policy is expressed by an expression that yields a Boolean result, which is then evaluated for each row prior to any conditions or functions of the user's query. Separate expressions can be specified for separate readable and modifiable policies.
+
+Superusers, roles with the `BYPASSRLS` attribute, and table owners bypass row security, although the owner can choose to subject themselves to RLS.
+
+Enabling or disabling row security or adding policies is a privilege of the owner only. Removing row security does not remove any existing policies, it simply ignores them.
+
+The following example only allows the `managers` role to access rows, and only rows of their accounts.
+
+``` postgresql
+CREATE TABLE accounts (manager text, company text, contact_email text);
+
+ALTER TABLE accounts ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY account_managers ON accounts TO managers
+  USING (manager = current_user);
+```
+
+Row security should be turned off when doing a backup to avoid certain rows from being omitted in the backup.

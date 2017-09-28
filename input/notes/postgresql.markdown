@@ -682,6 +682,81 @@ Every table also has _system columns_ that are implicitly defined by the system,
 | `cmax`     | command ID within deleting transaction                         |
 | `ctid`     | row's physical location within table                           |
 
+## Table Alteration
+
+It's possible to alter existing tables in a variety of ways with the `ALTER TABLE` command. This is preferred over dropping the table and recreating it when it already has a lot of data or when the table is already referenced by other database objects, such as foreign key constraints.
+
+A table can be renamed with the `RENAME` clause:
+
+``` postgresql
+ALTER TABLE products RENAME TO items;
+```
+
+A column can be renamed with the `RENAME COLUMN` clause:
+
+``` postgresql
+ALTER TABLE products RENAME COLUMN product_no TO product_number;
+```
+
+A column can be added to a table with the `ADD COLUMN` clause, which accepts all of the same options that a column description accepts within a `CREATE TABLE` command:
+
+``` postgresql
+ALTER TABLE products ADD COLUMN description text;
+
+-- With a constraint:
+ALTER TABLE products ADD COLUMN description text
+CHECK (description <> '');
+```
+
+A column can be removed with the `DROP COLUMN` clause. Table constraints involving the column are dropped, unless it is a foreign key constraint, unless the `CASCADE` option is given.
+
+``` postgresql
+ALTER TABLE products DROP COLUMN description;
+
+-- Drop anything that depends on the column:
+ALTER TABLE products DROP COLUMN description CASCADE;
+```
+
+A constraint can be added to the table using table constraint syntax.
+
+``` postgresql
+ALTER TABLE products ADD CHECK (name <> '');
+ALTER TABLE products ADD CONSTRAINT some_name UNIQUE (product_no);
+ALTER TABLE products ADD FOREIGN KEY (product_group_id) REFERENCES product_groups;
+
+-- Add Not-NULL constraint
+ALTER TABLE products ALTER COLUMN product_no SET NOT NULL;
+```
+
+A constraint can be removed from a table by name. The `CASCADE` option may be necessary in order to drop everything that may depend on that constraint, such as a foreign key constraint depending on a unique or primary key constraint on the referenced column(s).
+
+``` postgresql
+ALTER TABLE products DROP CONSTRAINT some_constraint;
+
+-- Remove Not-NULL constraint
+ALTER TABLE products ALTER COLUMN product_no DROP NOT NULL;
+```
+
+A column's default value can be changed with the `ALTER COLUMN` clause. Since this is setting the new _default_, it doesn't affect any existing defaulted values.
+
+``` postgresql
+ALTER TABLE products ALTER COLUMN price SET DEFAULT 7.77;
+```
+
+A column's default value can be removed with the `DROP DEFAULT` option. This is equivalent to setting the default to `NULL`, making this option idempotent.
+
+``` postgresql
+ALTER TABLE products ALTER COLUMN price DROP DEFAULT;
+```
+
+The type of a column can be changed with the `TYPE` option. This operation only succeeds if every row's corresponding column value can be converted to the new type by an _implicit cast_. Otherwise, an explicit conversion can be specified with the `USING` option.
+
+PostgreSQL also attempts to convert the default value to the new type and any existing affected constraints. This may not always yield expected results, so it's advised to drop the constraints, convert the column, then recreate them.
+
+``` postgresql
+ALTER TABLE products ALTER COLUMN price TYPE numeric(10,2);
+```
+
 ## Constraints
 
 Constraints are a way of limiting the kind of data stored in a table. Attempting to store data in a column that would violate a constraint causes an error to be raised.

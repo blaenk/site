@@ -682,6 +682,55 @@ Every table also has _system columns_ that are implicitly defined by the system,
 | `cmax`     | command ID within deleting transaction                         |
 | `ctid`     | row's physical location within table                           |
 
+## Schemas
+
+Each database contains one or more named schemas, each of which can contain named objects such as tables, data types, functions, and operators.
+
+Schemas facilitate many users using a single database. They allow the organization of database objects into logical groups. For example, third-party applications may operate in separate schemas to avoid colliding with user objects.
+
+Any given connection can only access data from a single database: the one connected to. However, a user can access objects from any schema in that database as long as they have the required privileges.
+
+A schema can be created with the `CREATE SCHEMA` command. It's possible to create a schema that will be owned by someone else with the `AUTHORIZATION` option, and if the schema name is omitted then it will be named after the authorized user.
+
+``` postgresql
+CREATE SCHEMA myschema;
+
+-- Give ownership to myuser:
+CREATE SCHEMA myschema AUTHORIZATION myuser;
+```
+
+An empty schema can be dropped with the `DROP SCHEMA` command. The `CASCADE` option can be specified to drop any contained objects.
+
+``` postgresql
+DROP SCHEMA myschema;
+
+-- Drop all contained objects too:
+DROP SCHEMA myschema CASCADE;
+```
+
+Objects can be created within the schema by giving them a qualified name consisting of the schema name as the prefix.
+
+``` postgresql
+CREATE TABLE myschema.mytable ( … );
+
+-- More general:
+CREATE TABLE mydatabase.myschema.mytable ( … );
+```
+
+By default, tables and other objects without a qualified schema are put into a schema named "public".
+
+A schema _search path_ is consulted when the system attempts to lookup an unqualified name. Non-existent schemas in the search path are ignored. The first effective schema in the search path is called the _current schema_, which is also the schema in which new unqualified tables are created.
+
+The `pg_`-prefixed schemas comprise a PostgreSQL namespace. For example, the `pg_catalog` schema contains system tables and all of the built-in data types, functions, and operators. The `pg_catalog` schema is implicitly always part of the search path, although it can also be explicitly placed, such as at the end of the search path to enable user-defined names to override built-in ones.
+
+In order to qualify operators it's necessary to use the `OPERATOR` keyword:
+
+``` postgresql
+SELECT 3 OPERATOR(pg_catalog.+) 4;
+```
+
+A schema's owner can grant access privilege to another user with the `USAGE` privilege, and the `CREATE` privilege can be granted to allow the creation of objects within the schema. By default, everyone has `CREATE` and `USAGE` privileges on the `public` schema.
+
 ## Table Alteration
 
 It's possible to alter existing tables in a variety of ways with the `ALTER TABLE` command. This is preferred over dropping the table and recreating it when it already has a lot of data or when the table is already referenced by other database objects, such as foreign key constraints.

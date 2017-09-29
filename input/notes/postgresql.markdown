@@ -1190,3 +1190,9 @@ Constraint exclusion has a few caveats:
 * It only works when the query's `WHERE` clause contains constants. For example, comparing against `CURRENT_TIMESTAMP` cannot be optimized because the planner cannot know which partition it would fall under at run time.
 * The partitioning constraints should be simple in order to facilitate the query planner's attempt to prove that the partitions won't be visited.
 * All constraints on all partitions of the master table are examined, which can increase query planning time as the number of partitions and constraints increases (e.g. more than 100).
+
+# Dependency Tracking
+
+The creation of database objects often implies dependencies between those objects. PostgreSQL prevents dropping objects that are being depended on unless explicitly specified via `CASCADE`, in which case the dependent objects are dropped recursively as well. The default behavior is `RESTRICT`.
+
+Dependency tracking for functions is based on the arguments and result types, but not the function body.

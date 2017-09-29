@@ -1072,3 +1072,70 @@ CREATE POLICY account_managers ON accounts TO managers
 ```
 
 Row security should be turned off when doing a backup to avoid certain rows from being omitted in the backup.
+
+# Inheritance
+
+In PostgreSQL a table can inherit from zero or more tables.
+
+``` postgresql
+CREATE TABLE cities (
+  name text,
+  population float,
+  altitude int
+);
+
+CREATE TABLE capitals (
+  state char(2)
+) INHERITS (cities);
+```
+
+A query can reference either all rows of that table or all rows of that table _plus_ all of its descendant tables, the latter behavior being the default. An asterisk `*` suffix on the table name can be included to explicitly specify that all tables of the specified type should be queried.
+
+``` postgresql
+-- Query all kinds of cities, including capitals
+SELECT name, altitude
+  FROM cities
+  WHERE altitude > 500;
+
+-- Equivalent:
+SELECT name, altitude
+  FROM cities*
+  WHERE altitude > 500;
+```
+
+The system column `tableoid` can be used to determine the source table of a row.
+
+``` postgresql
+SELECT c.tableoid::regclass, c.name, c.altitude
+FROM cities c
+WHERE c.altitude > 500;
+```
+
+A query can be restricted to a specific type of table with the `FROM ONLY` clause. The `ONLY` keyword is supported by many commands including `SELECT`, `UPDATE`, and `DELETE`.
+
+``` postgresql
+-- Query only cities, excluding capitals
+SELECT name, altitude
+  FROM ONLY cities
+  WHERE altitude > 500;
+```
+
+Note that inheritance does not automatically propagate data from `INSERT` or `COPY` commands. That is, it would not be correct to insert a capital into `cities` expecting it to be routed to `capitals`.
+
+Check constraints and not-null constraints are automatically inherited by children, unless specified otherwise via `NO INHERIT` clauses, but other constraints such as unique, primary, or foreign key constraints are not inherited.
+
+A table that inherits from more than one table is comprised of the union of the columns of the parent tables plus the columns in the child table. Duplicate columns and check/not-null constraints are merged if they are of the same type, otherwise an error is raised.
+
+Existing tables can have their inheritance relationship linked or unlinked with the `ALTER TABLE` command assuming they are compatible. This is often used for table partitioning.
+
+Parent tables cannot be dropped while children exist, nor can columns or check constraints of child tables be dropped or altered. However, a parent and all of its children can be removed with the `CASCADE` option, and a parent's columns and checks can be altered and the changes will be propagated to all children.
+
+Note that inherited queries only perform access permission checks on the parent table. Likewise a child table's row security policies are only applicable when the table is explicitly named in the query.
+
+Not all SQL commands work with inheritance hierarchies, such as database maintenance and tuning commands (e.g. `REINDEX`, `VACUUM`), which only work on individual physical tables.
+
+A serious limitation is that indexes (unique constraints implied) and foreign key constraints only apply to single tables and not children. This means:
+
+* A `UNIQUE` or `PRIMARY` constraint on the parent table will not prevent a duplicate row on a child table.
+* A foreign key constraint is not propagated to children; they must be manually added on the child.
+* A table referencing the parent will not mean that child tables can be referenced.

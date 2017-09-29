@@ -1139,3 +1139,54 @@ A serious limitation is that indexes (unique constraints implied) and foreign ke
 * A `UNIQUE` or `PRIMARY` constraint on the parent table will not prevent a duplicate row on a child table.
 * A foreign key constraint is not propagated to children; they must be manually added on the child.
 * A table referencing the parent will not mean that child tables can be referenced.
+
+# Partitioning
+
+Partitioning entails logically splitting a table into smaller physical pieces. The benefits are:
+
+* Query performance can be improved when most of the heavily accessed rows are in a single or a few partitions, which can in turn reduce index size, which improves the possibility that the most heavily used parts of the index fit in memory.
+* Query or update performance can be improved for accesses that span a large percentage of a single partition through the use of a sequential scan versus an index and random access.
+* Bulk loads and deletes can simply entail adding or removing partitions.
+* Rarely-used data can be migrated to cheaper and slower storage.
+
+These benefits are generally only worthwhile when the table is very large, typically when it can't fit in physical memory.
+
+There are two main partitioning schemes.
+
+Range partitioning involves partitioning into ranges of a key column or set of columns such that there is no overlap between the ranges.
+
+List partitioning involves explicitly listing which keys appear in which partition.
+
+The partitioning process typically involves:
+
+1. A master table is created from which all partitions will inherit, which specifies the columns but does not store any data or define any check constraints.
+2. Children inherit from the parent, usually without specifying additional columns.
+3. Table constraints are added to each child to specify which key values belong in it. It's crucial to ensure that there is no overlap.
+
+    ``` postgresql
+    -- List partitioning:
+    CHECK ( county IN ( 'Los Angeles', 'Orange' ))
+
+    -- Range partitioning:
+    CHECK ( outletID >= 100 AND outletID < 200 )
+    ```
+4. Create an index on the key column(s) for each child.
+5. Optionally create a trigger or rule to redirect data inserted into the master table to the correct partition.
+6. Ensure that `constraint_exclusion` is disabled.
+
+One scenario for leveraging partitioning might be for tables where only recent rows (e.g. past month) rows are accessed. Data can then be rotated throughout different partitions as they age, with the oldest partition simply being dropped if there's a cut-off.
+
+Partitioned tables have a few caveats:
+
+* No automatic way to verify that all `CHECK` constraints are mutually exclusive.
+* The partition key column(s) cannot be easily changed.
+* Manual `VACUUM` and `ANALYZE` commands must be run on each partition individually.
+* `INSERT` commands with `ON CONFLICT` probably won't work as expected since conflicts with child relations aren't considered.
+
+_Constraint exclusion_ is a query optimization that causes the planner to analyze the check constraints of each partition to try to prove that a partition need not be scanned because it will not contain any candidate rows, and if it succeeds in proving this then the partition can be excluded.
+
+Constraint exclusion has a few caveats:
+
+* It only works when the query's `WHERE` clause contains constants. For example, comparing against `CURRENT_TIMESTAMP` cannot be optimized because the planner cannot know which partition it would fall under at run time.
+* The partitioning constraints should be simple in order to facilitate the query planner's attempt to prove that the partitions won't be visited.
+* All constraints on all partitions of the master table are examined, which can increase query planning time as the number of partitions and constraints increases (e.g. more than 100).

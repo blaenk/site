@@ -713,3 +713,78 @@ The `BlueprintType` struct specifier allows the struct to be used for variables 
 
 The `NoExport` struct specifier indicates that no code be generated for the struct, so that the header is only provided to parse metadata from.
 
+# Interfaces
+
+Interfaces are declared with a regular `U`-prefixed class that inherits from the `UInterface` class and is marked with the `UINTERFACE` macro.
+
+``` cpp
+UINTERFACE([specifier, …], [meta(key=value, …)])
+class UClassName : public UInterface
+{
+  GENERATED_BODY()
+};
+```
+
+This class is not an actual interface, but merely an empty class that simply exists for Unreal Engine's reflection system's purposes. The actual implementation for the interface is expected in a class named with an `I` prefix instead of a `U` prefix.
+
+``` cpp
+#pragma once
+
+#include "ReactToTriggerInterface.generated.h"
+
+UINTERFACE(Blueprintable)
+class UReactToTriggerInterface : public UInterface
+{
+  GENERATED_BODY()
+};
+
+// Note that the actual implementation uses an I-prefix
+class IReactToTriggerInterface
+{
+  GENERATED_BODY()
+
+public:
+  // React to a trigger volume activating this object.
+  // Return true if the reaction succeeds.
+  UFUNCTION(BlueprintCallable, BlueprintImplementableEvent,
+            Category="Trigger Reaction")
+  bool ReactToTrigger() const;
+};
+```
+
+Any class wishing to implement the interface must derive from the interface implementation class with the `I`-prefix.
+
+``` cpp
+class ATrap : public AActor, public IReactToTriggerInterface
+{
+  GENERATED_BODY()
+
+public:
+  virtual bool ReactToTrigger() const override;
+};
+```
+
+It's possible to dynamically test if a given class implements an interface via the `U`-prefix interface's `UClass`'s `ImplementsInterface` function or by attempting to cast to the interface's _implementation_ type (`I`-prefix).
+
+``` cpp
+bool bIsImplemented = Object->GetClass()->ImplementsInterface(UReactToTriggerInterface::StaticClass());
+
+// null if it doesn't implement the interface
+IReactToTriggerInterface* ReactingObject = Cast<IReactToTriggerInterface>(Object);
+```
+
+More generally, it's possible to cast from one interface to another provided that the object implements both.
+
+``` cpp
+// ReactingObject will be non-null if the interface is implemented.
+IReactToTriggerInterface* ReactingObject = Cast<IReactToTriggerInterface>(Object);
+
+// non-null if ReactingObject is non-null and also implements IOtherInterface.
+IOtherInterface* OtherInterface = Cast<IOtherInterface>(ReactingObject);
+
+// non-null if ReactingObject is non-null and Object is an AActor or AActor-derived class.
+AActor* Actor = Cast<AActor>(ReactingObject);
+```
+
+The `CannotImplementInterfaceInBlueprint` interface metadata specifier prevents the interface from being implemented by a Blueprint. This is useful if it has only non-exposed C++ methods, for example. More generally, if the interface has any functions that aren't `BlueprintImplementableEvent` or `BlueprintNativeEvent` then it must be marked as `CannotImplementInterfaceInBlueprint`, since the Blueprint would be unable to implement those methods.
+

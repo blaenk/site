@@ -2486,3 +2486,211 @@ During [patching], the engine compares all post-cook content to the originally r
 
 [patching]: https://docs.unrealengine.com/latest/INT/Engine/Deployment/Patching/index.html
 
+# Automation System
+
+The automation system facilitates automated testing.
+
+* Unit Tests: API-level verification tests (e.g. <span class="path">TimespanTest.cpp</span>)
+* Feature Tests: System-level verification tests, such as verifying Play-In-Editor functions, correct in-game stats, changing of video resolution, etc. (e.g. <span class="path">EditorAutomationTests.cpp</span>)
+* Smoke Tests: Intended to be fast enough to run whenever the Editor, game, or commandlet starts.
+* Content Stress Tests: Testing system to its limits to avoid crashes, such as loading all maps or compiling all Blueprints. (e.g. <span class="path">EditorAutomationTests.cpp</span>)
+* [Screenshot Comparison]: Compare screenshots to detect rendering issues/disparities.
+
+[Screenshot Comparison]: https://docs.unrealengine.com/latest/INT/Programming/Automation/ScreenShotComparison/index.html
+
+## Automation Tests
+
+Automation tests are declared with macros and implemented by overriding functions from `FAutomationTestBase`.
+
+There are two types of tests: simple and complex, declared with `IMPLEMENT_SIMPLE_AUTOMATION_TEST` and `IMPLEMENT_COMPLEX_AUTOMATION_TEST`, respectively. Both macros take the following parameters:
+
+* `TClass`: The desired class name of the test.
+* `PrettyName`: A string specifying a hierarchical, period `.`-delimited test name to appear int eh UI.
+* `TFlags`: Combination of `EAutomationTestFlags` for specifying test requirements and behaviors.
+
+The following functions can be overridden.
+
+* `RunTest`: Performs the actual test, returning `true` if it passes.
+    * Parameter - `Parameters`: Can be parsed or passed-through to other functions.
+* `GetTests`: Must be overridden for Complex Tests.
+    * Parameter - `OutBeautifiedNames`: Array of strings that must be populated with the UI-visible `PrettyName` of each Test
+    * Parameter - `OutTestCommands`: Parallel of `OutBeautifiedNames` containing the `Parameters` passed to `RunTest`
+
+By convention, tests go into the <span class="path">Private/Tests</span> directory of the relevant module. If the test is for a specific class, it should be named after the class with a `Test` suffix.
+
+``` cpp
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(
+  FPlaceholderTest,
+  "TestGroup.TestSubgroup.Placeholder Test",
+  EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FPlaceholderTest::RunTest(const FString& Parameters)
+{
+  return true;
+}
+```
+
+Simple tests are appropriate for unit or feature tests. This example tests the `SetRes` command.
+
+``` cpp
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSetResTest, "Windows.SetResolution", ATF_Game);
+
+bool FSetResTest::RunTest(const FString& Parameters)
+{
+  FString MapName = TEXT("AutomationTest");
+  FEngineAutomationTestUtilities::LoadMap(MapName);
+
+  int32 ResX = GSystemSettings.ResX;
+  int32 ResY = GSystemSettings.ResY;
+  FString RestoreResolutionString = FString::Printf(TEXT("setres %dx%d"), ResX, ResY);
+
+  ADD_LATENT_AUTOMATION_COMMAND(FEngineWaitLatentCommand(2.0f));
+  ADD_LATENT_AUTOMATION_COMMAND(FExecStringLatentCommand(TEXT("setres 640x480")));
+  ADD_LATENT_AUTOMATION_COMMAND(FEngineWaitLatentCommand(2.0f));
+  ADD_LATENT_AUTOMATION_COMMAND(FExecStringLatentCommand(RestoreResolutionString));
+
+  return true;
+}
+```
+
+Complex tests can run the same test on a range of inputs, and are usually appropriate for stress tests, such as loading all maps or compiling all Blueprints. This example loads all of the project's maps.
+
+``` cpp
+IMPLEMENT_COMPLEX_AUTOMATION_TEST(FLoadAllMapsInGameTest, "Maps.LoadAllInGame", ATF_Game)
+
+void FLoadAllMapsInGameTest::GetTests(TArray<FString>& OutBeautifiedNames,
+                                      TArray <FString>& OutTestCommands) const
+{
+  FEngineAutomationTestUtilities Utils;
+  TArray<FString> FileList = GPackageFileCache->GetPackageFileList();
+
+  // Iterate over all files, adding the ones with the map extension..
+  for (int32 FileIndex = 0; FileIndex< FileList.Num(); FileIndex++)
+  {
+    const FString& Filename = FileList[FileIndex];
+
+    // Disregard filenames that don't have the map extension if we're in MAPSONLY mode.
+    if (FPaths::GetExtension(Filename, true) == FPackageName::GetMapPackageExtension())
+    {
+      if (!Utils.ShouldExcludeDueToPath(Filename))
+      {
+        OutBeautifiedNames.Add(FPaths::GetBaseFilename(Filename));
+        OutTestCommands.Add(Filename);
+      }
+    }
+  }
+}
+
+bool FLoadAllMapsInGameTest::RunTest(const FString& Parameters)
+{
+  FString MapName = Parameters;
+
+  FEngineAutomationTestUtilities::LoadMap(MapName);
+  ADD_LATENT_AUTOMATION_COMMAND(FEnqueuePerformanceCaptureCommands());
+
+  return true;
+}
+```
+
+Latent commands can be queued during a `RunTest` to run across multiple frames. A Latent Action is defined with the `DEFINE_LATENT_AUTOMATION_COMMAND` macro, whose parameter is the `CommandName` to name the class that is created for the Latent Command. The class needs a definition for the `Update` function.
+
+A Latent Command continues to execute until the `Update` command returns `true`, which is taken to mean that it is completed. A return value of `false` causes the Automation Test to stop executing immediately and try again next frame.
+
+``` cpp
+DEFINE_LATENT_AUTOMATION_COMMAND(FNUTWaitForUnitTests);
+
+bool FNUTWaitForUnitTests::Update()
+{
+  return GUnitTestManager == NULL || !GUnitTestManager->IsRunningUnitTests();
+}
+```
+
+The `DEFINE_LATENT_AUTOMATION_COMMAND_ONE_PARAMETER` macro allows specifying a parameter type and name that will be defined on the class and accessible in the `Update` method.
+
+``` cpp
+DEFINE_LATENT_AUTOMATION_COMMAND_ONE_PARAMETER(
+  FConnectLatentCommand,
+  SourceControlAutomationCommon::FAsyncCommandHelper,
+  AsyncHelper);
+
+bool FConnectLatentCommand::Update()
+{
+  // Attempt a login and wait for the result.
+  if(!AsyncHelper.IsDispatched())
+  {
+    auto result = ISourceControlModule::Get().GetProvider().Login(
+      FString(),
+      EConcurrency::Asynchronous,
+      FSourceControlOperationComplete::CreateRaw(
+        &AsyncHelper,
+        &SourceControlAutomationCommon::FAsyncCommandHelper::SourceControlOperationComplete))
+
+    if(result != ECommandResult::Succeeded)
+    {
+      return false;
+    }
+
+    AsyncHelper.SetDispatched();
+  }
+
+  return AsyncHelper.IsDone();
+}
+```
+
+A Latent Command is executed by invoking `ADD_LATENT_AUTOMATION_COMMAND` with the Latent Command's constructor and parameter, if one was specified.
+
+``` cpp
+ADD_LATENT_AUTOMATION_COMMAND(FNUTWaitForUnitTests());
+ADD_LATENT_AUTOMATION_COMMAND(FConnectLatentCommand(SourceControlAutomationCommon::FAsyncCommandHelper()));
+```
+
+## Configuration
+
+Classes with the `Config` class specifier can invoke the `SaveConfig` function To save any properties marked with the `Config` property specifier. Variables are generally saved in a section title with the `[:package.:classname]` format. The `Config` specifier requires a category parameter which determines the configuration file the properties are read from and written to.
+
+The `Config` class specifier only indicates that the class can have variables read-in from configuration files, and which configuration file to read from. Specific properties must still be marked with the `Config` property specifier for that to actually occur. Both `Config` specifiers are inherited by child classes, except that their configuration section uses the child name.
+
+If the `PerObjectConfig` class specifier is used, per-instance properties can be saved to a section named with the format `[ObjectName ClassName]`.
+
+The configuration categories are:
+
+* Compat
+* DeviceProfiles
+* Editor
+* EditorGameAgnostic
+* EditorKeyBindings
+* EditorUserSettings
+* Engine
+* Game
+* Input
+* Lightmass
+* Scalability
+
+The configuration files are read from the file system in a pre-defined order, with later, more specific files overriding values from earlier files. There are Engine-wide files that apply to all projects, project-specific files, and finally platform-specific, project-specific files.
+
+1. <span class="path">Engine/Config/Base.ini</span>
+2. <span class="path">Engine/Config/BaseEngine.ini</span>
+3. <span class="path">Engine/Config/[Platform]/[Platform]Engine.ini</span>
+4. <span class="path">[ProjectDirectory]/Config/DefaultEngine.ini</span>
+5. <span class="path">[ProjectDirectory]/Config/[Platform]Engine.ini</span>
+6. <span class="path">[ProjectDirectory]/Saved/Config/[Platform]/Engine.ini</span>
+
+Configuration files support comments via a semicolon `;`.
+
+Configuration files support special line prefix characters.
+
+* `+` - adds the property if it doesn't exist already (e.g. in the same file or a previous configuration)
+* `.` - adds a new property, potentially duplicate
+
+    This is useful for bindings where the latest bind takes effect.
+
+    ``` ini
+    [/Script/Engine.PlayerInput]
+    Bindings=(Name="Q",Command="Foo")
+    .Bindings=(Name="Q",Command="Bar")
+    .Bindings=(Name="Q",Command="Foo")
+    ```
+
+* `-` - removes a line. requires exact match
+* `!` - removes a property by name. doesn't require exact match
+

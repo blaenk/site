@@ -2046,3 +2046,53 @@ bool UAnalyticsBlueprintLibrary::StartSession()
 }
 ```
 
+# Assertions
+
+Unreal Engine provides assertion macros that are elided for release builds. Three categories of assertions exist: halting, halting in debug builds, and error-reporting without halting.
+
+## Halting Assertions
+
+The `check()` macro evaluates the expression if `DO_CHECK` is defined and halts execution if it yields false.
+
+The `checkf(expr, …)` is similar but takes a formatted string and its parameters.
+
+``` cpp
+checkf(WasDestroyed, TEXT("Failed to destroy Actor %s (%s)"),
+                     *Actor->GetClass()->GetName(),
+                     *Actor->GetActorLabel());
+```
+
+The `verify()` macro is similar to `check()` except that it evaluates the expression even if `DO_CHECK` is undefined, though no halting occurs.
+
+There is also a `verifyf(expr, …)` variant.
+
+There is a `checkCode()` variant that wraps the argument in a `do-while` loop in order to [support multi-statement arguments](https://www.securecoding.cert.org/confluence/display/c/PRE10-C.+Wrap+multistatement+macros+in+a+do-while+loop).
+
+The `checkNoEntry()` macro asserts that it is never reached, similar to Rust's [`unreachable!`](https://doc.rust-lang.org/std/macro.unreachable.html) macro.
+
+The `checkNoReentry()` macro asserts that a function completes before being called again.
+
+The `checkNoRecursion()` macro is a synonym of `checkNoReentry()`.
+
+The `unimplemented()` macro ensures that a function should not be overridden or called on on a specific class because it's not implemented.
+
+## Debug Halting Assertions
+
+This class of assertions only evaluate their expressions when `DO_GUARD_SLOW` is defined, which is usually only the case in debug builds. These assertions are appropriate for slower and more pedantic checks that aren't really necessary in release builds.
+
+The macros are variants of their non-slow counterparts and simply take on a `Slow` suffix:
+
+* `checkSlow()`
+* `checkfSlow()`
+* `verifySlow()`
+
+## Call-Stack Assertions
+
+This category of assertions don't halt execution but instead construct a call-stack if the expression evaluates to false. The expressions are always evaluated, but the call-stacks are only generated when `DO_CHECK` is defined.
+
+The `ensure()` macro generates the call-stack for that location if the expression fails.
+
+The `ensureMsg()` macro is similar to `ensure()` but additionally takes a string message to display as part of the call-stack.
+
+The `ensureMsgf()` macro is simlar to `ensureMsg()` but also takes string formatting parameters.
+

@@ -90,3 +90,63 @@ Solution directories contain:
 * <span class="path">Private</span>: private game object class implementations (.cpp)
 * <span class="path">Public</span>: public game object class implementations (.cpp)
 
+# Terminology
+
+The base object type `UObject` implements garbage collection, support for exposing object metadata to the Unreal Editor via the `UProperty` macro, and serialization.
+
+An _Actor_ is any object that can be placed in a level. It supports 3D transformations and can be spawned and destroyed. An actor can be moved with the [`SetActorLocation`](https://docs.unrealengine.com/latest/INT/API/Runtime/Engine/GameFramework/AActor/SetActorLocation/index.html) method, for example. Example actors include `StaticMeshActor`, `CameraActor`, and `PlayerStartActor`.
+
+A _Component_ encapsulates functionality that can be added to an Actor.
+
+A _Pawn_ is an Actor that can be possessed (controlled) by a player or AI, not assumed to be humanoid. The `DefaultPawn` class contains a spherical `CollisionComponent`, `StaticMeshComponent`, and a `DefaultPawnMovementComponent` with a no-gravity, flying movement style. The `SpectatorPawn` class is a subclass of `DefaultPawn` and is useful for spectating functionality.
+
+A _Character_ is a Pawn that is specifically intended for use by a player (as opposed to an AI). It includes collision setup via `CapsuleComponent`, input bindings, movement behavior via `CharacterMovementComponent`, and some animation-related functionality. Its movement can be replicated smoothly across the network.
+
+A _Controller_ is an Actor that controls a Pawn. Controllers receive notifications for many of the events for the possessed Pawn, allowing it to intercept and even supercede the Pawn's default behavior. A Controller can be made to tick before a Pawn, minimizing latency between input processing and Pawn movement. By default a Controller controls a single Pawn at any given time, but this can be changed for certain games such as RTSes.
+
+A _PlayerController_ is used to translate human input into game interactions through a possessed Pawn or Character. In a multiplayer setting, the server has a PlayerController instance for each player in the game and network calls are routed and processed by the corresponding player's PlayerController. From a player (client)'s perspective they can only communicate with the server through the PlayerController.
+
+A _PlayerController_ can have a heads-up display (HUD), a CameraComponent, a CameraActor which is used to calculate its position and orientation, and a PlayerCameraManager, which as the name suggestions, manages how the player camera behaves.
+
+An _AIController_ is similar to a PlayerController except that it is meant to possess a Pawn that represents an NPC. Note that Pawns and Characters have a base AIController by default unless specifically possessed by a PlayerController or told not to create an AIController.
+
+The _CameraActor_ class is mainly a wrapper for CameraComponent so that it can be placed directly in the level rather than within another class. The CameraComponent has two components to aid in visual placement: a StaticMeshComponent representing the camera's placement and a FrustumComponent representing the camera's field of view, whose appearance must be enabled in the editor under the Viewport's **Show** → **Advanced** → **Camera Frustums** menu.
+
+The _PlayerCameraManager_ by default blends between pending view targets and debug cameras triggered by console commands. It queries the ViewTarget for what to do for the camera's viewpoint. The ViewTarget provides the PlayerCameraManager with the ideal point of view (POV). In order to do this, it maintains information on the target Actor, the Actor's Controller (for non-locally controlled Pawns), and the PlayerState, in order to follow the same player through Pawn transitions while spectating, for example.
+
+A _CameraComponent_ provides the ViewTarget information if a CameraActor or any Actor that contains a CameraComponent and has `bFindCameraComponentWhenViewTarget` set. The camera view is obtained from the first found CameraComponent via an Actor's `CalcCamera` function. If none exists or the property is off, it uses the Actor's location and rotation. A PlayerController also has the `CalcCamera` function which returns the location of the possessed pawn, if one exists, and the control rotation of the PlayerController. One level higher, the `PlayerCameraManager` uses the `UpdateViewTarget` function to query the ViewTarget, returning its Point of View.
+
+Game-specific camera behavior can be provided at any point within the camera responsibility chain beginning with the CameraComponent, then Actor or PlayerController, then PlayerCameraManager.
+
+A _Brush_ is an Actor that describes a 3D volume used to define level geometry (known as BSPs) and gameplay volumes. BSP Brushes are often used to block-out levels. Volume Brushes are often used for Blocking Volumes (invisible; impede Actor passage), Pain Causing Volumes (damage over time on collision), or Trigger Volumes (trigger events on entry/exit).
+
+A _Level_ (aka _Map_) is a user-defined area of gameplay, and are mainly defined by the properties of the Actors contained within them. A level corresponds to a `.umap` file.
+
+A _World_ consists of a list of loaded Levels, and handles streaming the levels and spawning dynamic Actors.
+
+A _GameMode_ is responsible for setting the game rules, such as the maximum number of players, spawn locations and their behavior, whether it can be paused, level transitions, and game-specific behavior like win conditions such as whichever player crosses the finish line first is the winner. The default GameMode can be set in the Project Settings and can be overridden by a Level. In a multiplayer setting, the GameMode only exists on the server and the rules are replicated to each client. It should not have much data that changes during play, and definitely not transient data that clients need to know about.
+
+The default game mode for all maps in a project can be set in the <span class="path">/Script/EngineSettings.GameMapsSettings</span> section of the <span class="path">DefaultEngine.ini</span> configuration file. A specific map's GameMode can be set through the **World Settings** tab with the **GameMode Override** setting. It's also possible to override the game used via the `game` query parameter to the map path given to the game when the `-game` argument is passed. It's also possible to register game modes with map name prefixes. For example, the map name prefix "DM" can be associated with a game mode `UTDMGameMode` by specifying it in the <span class="path">/Script/EngineSettings.GameMapSettings</span> section of the <span class="path">DefaultEngine.ini</span> configuration file with the `+GameModeMapPrefixes` and `+GameModeClassAliases` settings:
+
+``` ini
+[/Script/EngineSettings.GameMapsSettings]
++GameModeMapPrefixes=(Name="DM",GameMode="/Script/UnrealTournament.UTDMGameMode")
++GameModeClassAliases=(Name="DM",GameMode="/Script/UnrealTournament.UTDMGameMode")
+```
+
+The new `AGameModeBase` (>=4.14) is the base of all GameModes, which itself is a simplified, streamlined version of the original `AGameMode`, which now derives from the new class. The `AGameMode` class is suited for a traditional multiplayer shooter.
+
+The `InitGame` function runs before Actors run their `PreInitializeComponents` function (including the `GameMode` instance, which itself is an `Actor`) and is used to initialize parameters and spawn helper classes.
+
+The `PreLogin` function determines whether to accept or reject a player attempting to join the server. The `PostLogin` function is called after a successful login and can be used to call replicated functions which invoke the `PlayerController::OnPostLogin` handler. The `HandleStartingNewPlayer` is called after `PostLogin` or after a seamless travel and is usually used to create a Pawn for the player. The `RestartPlayer` is used to start spawning the player's Pawn. The `SpawnDefaultPawnAtTransform` function actually performs the spawn. The `Logout` function is called when the player leaves or is destroyed.
+
+It is common to create a separate `GameMode` for each match format, mission type, or special zone, though only one is in use at any given moment, instantiated whenever a level is initialized for play via `UGameEngine::LoadMap`.
+
+Meanwhile, rule-related game events may trigger game state mutations which need to be tracked by all players in a `GameState`. The `GameState` may contain information such as the match duration (beyond when a particular player joined), when a particular player joined, the `GameMode`'s base class, and whether the game has begun. In other words, it should manage information meant to be known to _all_ connected clients that is specific to the `GameMode` but _not_ specific to any particular player.
+
+The base `GameState` class is `AGameStateBase`. Some of the functionality that this class provides is `GetServerWorldTimeSeconds` which yields the server's `UWorld::GetTimeSeconds`, which is synchronized between the server and the client, the `PlayerArray` which is the array of all `APlayerState` objects, which is useful for performing actions on all players, and the `HasBegunPlay` function which determines if the `BeginPlay` function has been invoked on all Actors.
+
+The `PlayerState` contains information specific to a particular player, be it a human player or bot simulating a player (not non-player AI), This information can be the player's name, score, or health. Each player's `PlayerState` is replicated from the server to each client.
+
+![class-diagram](https://i.imgur.com/GtaF8os.jpg)
+

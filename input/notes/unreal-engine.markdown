@@ -945,16 +945,6 @@ Fields that should only be accessible by derived classes should be made private 
 
 Classes that should not be derived from should be marked `final`.
 
-# Source vs Launcher
-
-The source must be built in order to build a [standalone dedicated server](https://wiki.unrealengine.com/Standalone_Dedicated_Server).
-
-The engine can be added as a submodule of the game repository, in which case the `.uproject`'s [`EngineAssociation`](https://docs.unrealengine.com/latest/INT/API/Runtime/Projects/FProjectDescriptor/EngineAssociation/index.html) setting must be set to a relative path to that submodule:
-
-> For users which mount the engine through a Git submodule (where the engine is in a subdirectory of the project), this field can be manually edited to be a relative path.
-
-It seems that Epic's own [internal workflow](https://answers.unrealengine.com/questions/43614/uproject-files-engineassociation-saves-a-guid-whic.html) is to embed the game directly within the engine source tree.
-
 # Actors
 
 An actor is an object that can be placed in a level. They support 3D transformation sand can be spawned and destroyed. The base class is `AActor`. Note that although actors support 3D transformations they don't actually store the Transform data. Instead, the Actor's root component's Transform data is used instead.
@@ -2890,3 +2880,13 @@ There are some console commands that can help with profiling and debugging the r
 * `pause`: pause simulation but continue rendering
 * `slomo x`: alter game speed. useful for slowing time without skipping simulation work when profiling
 * `debugcreateplayer 1`: testing splitscreen
+
+# Source vs Launcher
+
+The source must be built in order to build a [standalone dedicated server](https://wiki.unrealengine.com/Standalone_Dedicated_Server).
+
+The engine can be added as a submodule of the game repository, in which case the `.uproject`'s [`EngineAssociation`](https://docs.unrealengine.com/latest/INT/API/Runtime/Projects/FProjectDescriptor/EngineAssociation/index.html) setting must be set to a relative path to that submodule:
+
+> For users which mount the engine through a Git submodule (where the engine is in a subdirectory of the project), this field can be manually edited to be a relative path.
+
+It seems that Epic's own [internal workflow](https://answers.unrealengine.com/questions/43614/uproject-files-engineassociation-saves-a-guid-whic.html) is to embed the game directly within the engine source tree.

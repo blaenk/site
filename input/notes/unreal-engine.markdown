@@ -177,3 +177,56 @@ Many classes have a prefix character that denotes their expected usage or lineag
 
 The Unreal Engine source code style is to keep each brace on its own line.
 
+# Logging
+
+To see logs, the game must be run with the `-Log` argument or the console command `showlog` must be run. When run in the editor, the logs are enabled by default due to the argument being set in `GameCommandLine` in the Engine configuration file, and they will be visible in the **Output Log** window.
+
+Text can be logged with the `UE_LOG` macro. The macro takes a category, verbosity level, and the actual text. For example:
+
+``` cpp
+UE_LOG(LogTemp, Warning, TEXT("The message"));
+```
+
+The verbosity levels are:
+
+* `Fatal`: Always appear in console and log files even if logging is disabled.
+* `Error`: Red. Appear in console and log files.
+* `Warning`: Yellow. Appear in console and log files.
+* `Display`: Appear in console and log files.
+* `Log`: Appear in log files.
+* `Verbose`: Appear in log files. Used for detailed logging and debugging.
+* `VeryVerbose`: Appear in log files. Used for very detailed logging (like trace)
+
+A log category can be declared with the `DECLARE_LOG_CATEGORY_EXTERN` macro. It takes the category name, its default verbosity, and the compile-time verbosity. The default verbosity sets the threshold past which no logging occurs. The compile-time verbosity sets the threshold past which the logging macro doesn't compile into code.
+
+``` cpp
+DECLARE_LOG_CATEGORY_EXTERN(CategoryName, DefaultVerbosity, CompileTimeVerbosity);
+```
+
+The log category should then be defined in the implementation file with the `DEFINE_LOG_CATEGORY` macro.
+
+``` cpp
+DEFINE_LOG_CATEGORY(CategoryName);
+```
+
+The `UE_LOG` takes variable arguments that can be used for formatting the log message [^fstring_printf].
+
+[^fstring_printf]: This seems to be based on [`FString::Printf`](https://docs.unrealengine.com/latest/INT/API/Runtime/Core/Containers/FString/Printf/index.html).
+
+``` cpp
+UE_LOG(MyLog, Warning, TEXT("MyCharacter's Name is %s"), *(MyCharacter->GetName()));
+```
+
+More directly, a message can be displayed on the screen with the [`UEngine::AddOnScreenDebugMessage`](https://docs.unrealengine.com/latest/INT/API/Runtime/Engine/Engine/UEngine/AddOnScreenDebugMessage/1/index.html) method. It takes a unique key (to prevent duplicates; -1 for a transient message), its display duration in seconds, the color to use, and the message as an `FString`.
+
+``` cpp
+#include <EngineGlobals.h>
+#include <Runtime/Engine/Classes/Engine/Engine.h>
+
+FString message = FString::Printf(TEXT("Some variable values: x: %f, y: %f"), x, y);
+
+GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, message);
+```
+
+It's also possible to log a message directly to the console through [`APlayerController::ClientMessage`](https://docs.unrealengine.com/latest/INT/API/Runtime/Engine/GameFramework/APlayerController/ClientMessage/index.html).
+

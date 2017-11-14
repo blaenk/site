@@ -1662,3 +1662,133 @@ The `BulkSerialize` function can be used instead of `operator<<` to serialize an
 
 The `Swap` and `SwapMemory` functions can be used to swap the elements at two indices.
 
+## TMap
+
+`TMap` is a hashed, associative container equivalent to `std::unordered_map`. There is also a `TMultiMap` equivalent to `std::unordered_multimap`. The key type must support the non-member `GetTypeHash` function and provide an `operator==` for comparing keys by equality. This can be customized via the final type parameter `KeyFuncs`.
+
+the `Add` function is used to insert a key-value association. An overload exists that only takes the key, in which case it default-constructs the value.
+
+There is also an equivalent `Emplace` function. Since it's used to construct the map value type `TPair`, `Emplace` can only be used for key and value types with single-argument constructors, as `Emplace` wouldn't otherwise know which parameters go to the key type constructor and which go to the value type constructor, for lack of something like [`std::piecewise_construct`](http://en.cppreference.com/w/cpp/utility/piecewise_construct).
+
+``` cpp
+TMap<int32, FString> FruitMap;
+
+FruitMap.Add(5, TEXT("Banana"));
+
+// Default-construct the FString value.
+FruitMap.Add(4);
+```
+
+The `Append` function inserts all elements from another `TMap`, with elements from the other map overwriting any pre-existing, clashing associations.
+
+The `Num` function retrieves the number of contained elements.
+
+The subscript operator is overloaded to facilitate access by key, yielding a reference to the value. This asserts if the key is missing.
+
+The `Contains` function can be used to test membership by key.
+
+The `Find` function returns a pointer to the value associated with the given key, or `nullptr` if none exists.
+
+The `FindOrAdd` function is similar except that it if it doesn't exist, it adds the association with a default-constructed value, and returns a reference to the value. Note that such references may become invalidated if a reallocation occurred since the time the reference was obtained.
+
+The `FindRef` function **does not** return a reference, it returns a copy of the found value. If no such key exists, a default-constructed value is returned. The primary use of this is to unconditionally get a value for the given key without modifying the map.
+
+The `FindKey` function can be used to reverse-lookup a key from a given value. This is a linear operation since the values aren't hashed. Since values aren't gauranteed to be unique, the returned key may be arbitrary.
+
+The `GenerateKeyArray` and `GenerateValueArray` functions insert copies of all of the keys or values in the map into the passed `TArray` which is emptied before insertion.
+
+The `Remove` function removes an association by key.
+
+The `FindAndRemove` function removes an association and returns its value. It asserts if the association does not exist.
+
+The `RemoveAndCopyValue` function is similar except that it returns the value via an output parameter and instaed returns a bool indicating whether or not the association existed, which by extension indicates whether the written value is valid.
+
+The `Empty` function empties the entire map. It takes an optional slack value to reserve a certain amount of space.
+
+As with `TArray`, `TMap` can be iterated with a ranged-for loop, and the key and value can be accessed via `Key` and `Value` properties. It's also possible to explicitly construct an iterator via `CreateIterator` or `CreateConstIterator`, each of which have `Key()` and `Value()` accessor functions.
+
+``` cpp
+for (auto& Elem : FruitMap)
+{
+  FPlatformMisc::LocalPrint(
+    *FString::Printf(TEXT("(%d, \"%s\")\n"), Elem.Key, *Elem.Value)
+  );
+}
+
+for (auto It = FruitMap.CreateConstIterator(); It; ++It)
+{
+  FPlatformMisc::LocalPrint(
+    *FString::Printf(TEXT("(%d, \"%s\")\n"),
+      It.Key(),   // same as It->Key
+      *It.Value() // same as *It->Value
+    )
+  );
+}
+```
+
+It's possible to sort a map so that it appears sorted for the next iteration by using the `KeySort` or `ValueSort` functions, which sort based on a provided lambda.
+
+the `Shrink` function removes any holes at the _end_ of the internal structure. The `Compact` function removes interior holes.
+
+Any type with an overloaded `operator==` and overloaded `GetTypeHash` can be used as the `KeyType` in a `TMap`.
+
+A custom `KeyFuncs` type can be passed to avoid the need to overload those functions. It can inherit from `BaseKeyFuncs` which defines certain types such as `KeyInitType` and `ElementInitType`.
+
+A `KeyFuncs` type requires the definition of two types and three static functions.
+
+Types:
+
+* `KeyInitType`: to pass the keys around, e.g. value or `const` reference
+* `ElementInitType`: to pass elements around, e.g. value or `const` reference of a `TPair`
+
+Functions:
+
+* `KeyInitType GetSetKey(ElementInitType Element)`
+
+    returns the element's key
+
+* `bool Matches(KeyInitType A, KeyInitType B)`
+
+    checks if keys A and B are equivalent
+
+* `uint32 GetKeyHash(KeyInitType Key)`
+
+    computes key's hash
+
+Here's an example implementation for a hypothetitcal type `FMyStruct` which has a `UniqueID` field which will be used for the key functionality. This type can then be passed as the fourth type parameter to `TMap`, after the allocator type (e.g. `FDefaultSetAllocator`).
+
+``` cpp
+template <typename ValueType>
+struct TMyStructMapKeyFuncs :
+  BaseKeyFuncs<
+    TPair<FMyStruct, ValueType>,
+    FString
+  >
+{
+private:
+  typedef BaseKeyFuncs<
+    TPair<FMyStruct, ValueType>,
+    FString
+  > Super;
+
+public:
+  typedef typename Super::ElementInitType ElementInitType;
+  typedef typename Super::KeyInitType     KeyInitType;
+
+  static KeyInitType GetSetKey(ElementInitType Element)
+  {
+    return Element.Key.UniqueID;
+  }
+
+  static bool Matches(KeyInitType A, KeyInitType B)
+  {
+    return A.Compare(B, ESearchCase::CaseSensitive) == 0;
+  }
+
+  static uint32 GetKeyHash(KeyInitType Key)
+  {
+    return FCrc::StrCrc32(*Key);
+  }
+};
+```
+

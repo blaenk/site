@@ -1493,3 +1493,43 @@ There are thread-safe variants of the pointer types which use atomic reference c
 * `TThreadSafeWeakPtr<T>`
 * `TThreadSafeSharedFromThis<T>`
 
+# Strings
+
+All strings in Unreal Engine are stored in memory as UTF-16 in `FStrings` or `TCHAR` arrays.
+
+It's recommended to put string literals in INT files instead of in the source code.
+
+The `FName` type represents an interned, immutable string. Equality checks between two `FName`s simply compares their index into the intern table. The `FName::Compare` function can be used to compare the actual strings. Membership in the intern table can be tested by using an `FName` constructor overload.
+
+``` cpp
+FName TestHUDName = FName(TEXT("ThisIsMyTestFName"));
+
+if (FName(TEXT("needle"), FNAME_Find) != NAME_None) {
+  // Success. "needle" is in the intern table.
+}
+```
+
+The `FString` type is the general, mutable string type. The `FString::Printf` function can be used to format `FString`s. An `FString` can be dereferenced to access the raw underlying string.
+
+``` cpp
+FString TestHUDString = FString(TEXT("This is my test FString."));
+```
+
+The `FText` type represents immutable text to display and has built-in support for localization. It's more efficient for use when rendering because of its immutable nature, the engine is able to use the string's address as a key for cache lookups.
+
+For localization purposes, an `FText` needs to have a key set. The `NSLOCTEXT` macro can be used to construct an `FText` with an explicit namespace and key.
+
+``` cpp
+FText TestHUDText = NSLOCTEXT("My_Namespace", "My_Key", "My Text");
+```
+
+Similarly, the `LOCTEXT` macro can be used to construct an `FText` with an explicit key and implicit namespace as defined by `LOCTEXT_NAMESPACE`.
+
+``` cpp
+#define LOCTEXT_NAMESPACE "My_Namespace"
+
+FText TestHUDText = LOCTEXT("My_Key", "My Text");
+
+#undef LOCTEXT_NAMESPACE
+```
+

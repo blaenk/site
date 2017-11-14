@@ -1792,3 +1792,42 @@ public:
 };
 ```
 
+## TSet
+
+`TSet` is a set data structure similar to `std::unordered_set`. As with `TMap`, a custom `KeyFuncs` structure can be passed. It's possible to permit duplicates, similar to `std::unordered_multiset`..
+
+The `Add` and `Emplace` functions adds an element to the set.
+
+The `Append` function adds all of the elements from another set.
+
+Sets can be iterated with a ranged-for loop or by explicitly constructing an iterator with the `CreateIterator` or `CreateConstIterator` functions.
+
+The `Num` function returns the number of contained elements.
+
+the `Index` function returns the index of the given value as an `FSetElementId` type,  or `INDEX_NONE` if it doesn't exist. This index can bhen be used to explicitly index into the set using the subscript operator.
+
+``` cpp
+FSetElementId BananaIndex = FruitSet.Index(TEXT("Banana"));
+
+if (BananaIndex != INDEX_NONE)
+{
+  FPlatformMisc::LocalPrint(*FruitSet[BananaIndex]);
+}
+```
+
+The `Contains` function tests for membership.
+
+The `Find` function finds an element and returns a pointer to it or `nullptr` if it doesn't exist.
+
+The `Array` function inserts a copy of each element in the set into the output parameter `TArray`, emptying it before insertion.
+
+The `Remove` function removes an element by index or by key for _all matching keys_, and returns the number of elements removed. Removing by index is primarily useful while iterating through elements. 
+
+The `Empty` function empties the container and accepts an optional slack parameter which instructs it to reserve a minimum slack of the specified sizei _after_ emptying the set. The `Reset` function is similar but doesn't free memory previously used by elements.
+
+The `Reserve` function preallocates a slack prior to element insertion.
+
+As with `TMap`, the `Shrink` function only removes holes at the end of the internal structure. The `Compact` function can be used to remove interior holes. The `CompactStable` function is similar but stable.
+
+As with `TMap`, a set can be sorted for the next iteration with the `Sort` function, which takes a sort-order function.
+

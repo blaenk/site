@@ -150,3 +150,15 @@ The `PlayerState` contains information specific to a particular player, be it a 
 
 ![class-diagram](https://i.imgur.com/GtaF8os.jpg)
 
+# User Interface
+
+Heads-up displays (HUD) are generally for non-interactive  game state, while user interfaces are for interactive elements drawn on the screen (like a HUD) or onto a surface in the world.
+
+The `HUD` class is the base object for displaying elements overlaid on the screen. Each human-controlled player has their own instance of the `AHUD` class which draws to their individual Viewport. For example, while a split-screen multiplayer game may have multiple Viewports sharing the same screen, each HUD draws to its own Viewport.
+
+The `Canvas` object can be used in the HUD's render loop to draw low-level elements (text, texture and material tiles, triangles, shapes) to the screen.
+
+[Slate](https://docs.unrealengine.com/latest/INT/Programming/Slate/index.html) is a user interface framework that facilitates the design of user interfaces for tools (e.g. Unreal Editor) or games. It appears that the use of Slate is now preferred over the use of UMG.
+
+[Unreal Motion Graphics UI Designer](https://docs.unrealengine.com/latest/INT/Engine/UMG/index.html) (UMG) is a visual UI authoring tool that can be used to create HUDs, menus, or other interfaces.
+

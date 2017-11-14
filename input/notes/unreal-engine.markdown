@@ -1353,6 +1353,30 @@ class FAssetRegistery : public IAssetRegistry
 
 Note that a derived class does not automatically have permission to access a base class' event members. If that is desired, it must be exposed explicitly through a function on the base class that invokes the broadcast.
 
+# Timers
+
+Timers can be used to schedule actions to be performed at a specified delay, such as applying a power-up perk some time after picking it up, or applying a damage-per-second.
+
+Note that currently timers are not thread-safe, and will assert if accessed outside of the game thread.
+
+Timers are managed by a `FTimerManager`. Each World has a timer manager, and so does each Game Instance object (known as the global timer manager). The World's global timer manager can be accessed through the `AActor::GetWorldTimerManager` function, which itself calls `UWorld::GetTimerManager`. The Game Instance's global timer manager can be accessed through `UGameInstance::GetTimerManager`. If the World doesn't have its own timer manager, the Game Instance's is used instead. The global timer manager should be used for function calls that aren't specific to any particular World.
+
+Timers automatically cancel if the object which they would be called on is destroyed.
+
+The `SetTimer` function has various overloads for registering a timer to fire, which can be attached to any type of object or function delegate, including native function pointers and [`IFunction`](https://docs.unrealengine.com/latest/INT/API/Runtime/Core/Templates/TFunction/index.html) objects. A timed function can be made to repeat at regular intervals.
+
+Those functions create an `FTimerHandle` which can be used to pause and resume a countdown, query or change the time remaining, or even cancel the timer. It is safe to set timers within a timed function, or even to reuse the timer handle associated with the timed function.
+
+The `FTimerManager::ClearTimer` function takes a timer handle to clear. Calling `SetTimer` with a valid, existing timer handle clears that timer handle before overwriting it.
+
+Similarly, calling `SetTimer` with a rate of zero or less causes the timer handle to clear.
+
+All timers associated with a particular object can be cleared at once with the `FTimerManager::ClearAllTimersForObject` function.
+
+The `SetTimerForNextTick` function can be used to have a timer run on the next frame rather than on a time interval. This function does not create an `FTimerHandle`.
+
+The `FTimerManager::PauseTimer` function pauses the timer associated with the given timer handle.
+
 # Smart Pointers
 
 Unreal Engine has its own implementation of a variety of smart pointers.
@@ -1769,30 +1793,6 @@ The `Reserve` function preallocates a slack prior to element insertion.
 As with `TMap`, the `Shrink` function only removes holes at the end of the internal structure. The `Compact` function can be used to remove interior holes. The `CompactStable` function is similar but stable.
 
 As with `TMap`, a set can be sorted for the next iteration with the `Sort` function, which takes a sort-order function.
-
-# Timers
-
-Timers can be used to schedule actions to be performed at a specified delay, such as applying a power-up perk some time after picking it up, or applying a damage-per-second.
-
-Note that currently timers are not thread-safe, and will assert if accessed outside of the game thread.
-
-Timers are managed by a `FTimerManager`. Each World has a timer manager, and so does each Game Instance object (known as the global timer manager). The World's global timer manager can be accessed through the `AActor::GetWorldTimerManager` function, which itself calls `UWorld::GetTimerManager`. The Game Instance's global timer manager can be accessed through `UGameInstance::GetTimerManager`. If the World doesn't have its own timer manager, the Game Instance's is used instead. The global timer manager should be used for function calls that aren't specific to any particular World.
-
-Timers automatically cancel if the object which they would be called on is destroyed.
-
-The `SetTimer` function has various overloads for registering a timer to fire, which can be attached to any type of object or function delegate, including native function pointers and [`IFunction`](https://docs.unrealengine.com/latest/INT/API/Runtime/Core/Templates/TFunction/index.html) objects. A timed function can be made to repeat at regular intervals.
-
-Those functions create an `FTimerHandle` which can be used to pause and resume a countdown, query or change the time remaining, or even cancel the timer. It is safe to set timers within a timed function, or even to reuse the timer handle associated with the timed function.
-
-The `FTimerManager::ClearTimer` function takes a timer handle to clear. Calling `SetTimer` with a valid, existing timer handle clears that timer handle before overwriting it.
-
-Similarly, calling `SetTimer` with a rate of zero or less causes the timer handle to clear.
-
-All timers associated with a particular object can be cleared at once with the `FTimerManager::ClearAllTimersForObject` function.
-
-The `SetTimerForNextTick` function can be used to have a timer run on the next frame rather than on a time interval. This function does not create an `FTimerHandle`.
-
-The `FTimerManager::PauseTimer` function pauses the timer associated with the given timer handle.
 
 # TSubclassOf
 

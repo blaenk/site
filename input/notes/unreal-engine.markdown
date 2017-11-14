@@ -1414,3 +1414,82 @@ class FAssetRegistery : public IAssetRegistry
 
 Note that a derived class does not automatically have permission to access a base class' event members. If that is desired, it must be exposed explicitly through a function on the base class that invokes the broadcast.
 
+# Smart Pointers
+
+Unreal Engine has its own implementation of a variety of smart pointers.
+
+Note that shared pointers are not compatible with Unreal `UObject`s.
+
+The `TSharedPtr` type is a reference-counted shared pointer similar to `std::shared_ptr`.
+
+``` cpp
+// Create an empty shared pointer
+TSharedPtr<FTreeNode> EmptyNode;
+
+// Create a shared pointer to a new object
+TSharedPtr<FTreeNode> Node(new FTreeNode());
+```
+
+The `TSharedRef` type is a non-nullable, reference counted smart pointer. This is made possible by the fact that it's not possible to create an empty shared reference, nor is it possible to assign `nullptr` to a shared reference. Their non-nullable property obviates the need for the `IsValid` function present in `TSharedPtr`. The best practice is to use shared references when possible.
+
+There are implicit conversions defined for shared references to shared pointers.
+
+Converting from a shared pointer to a shared reference is potentially unsafe since the shared pointer may be empty, so the `TSharedPtr::ToSharedRef` function asserts if the pointer is null.
+
+``` cpp
+TSharedRef<FTreeNode> NodeRef(new FTreeNode());
+```
+
+The `TWeakPtr` type is a weak pointer, which is automatically emptied when the object is destroyed. The referenced object is only accessible by promoting the weak pointer to a shared pointer.
+
+``` cpp
+// Allocate a new tree node.
+TSharedRef<FTreeNode> NodeOwner(new FTreeNode());
+
+// Create a weak pointer to the new tree node.
+TWeakPtr<FTreenode> NodeObserver(NodeOwner);
+
+// Get access to the node through the weak pointer.
+TSharedPtr<TFreeNode> LockedObserver(NodeObserver.Pin());
+
+// Check that the shared reference was successfully created from the weak reference.
+if (LockedObserver.IsValid())
+{
+  // Object still exists, so it can be accessed.
+  LockedObserver->ListChildren();
+}
+```
+
+The `TSharedFromthis` helper class can be derived to enable the acquisition of `this` as a `TSharedRef`, equivalent to [`std::enable_shared_from_this`].
+
+[`std::enable_shared_from_this`]: http://en.cppreference.com/w/cpp/memory/enable_shared_from_this/shared_from_this
+
+``` cpp
+class FAnimation : public TSharedFromThis<FMyClass>
+{
+  void Register()
+  {
+    // Access a shared reference to 'this'
+    TSharedRef<FMyClass> SharedThis = AsSharedRef();
+
+    // Class a function that is expecting a shared reference
+    AnimationSystem::RegisterAnimation(SharedThis);
+  }
+}
+```
+
+The `MakeShareable` function can be used to initialize shared pointers, equivalent to [`std::make_shared`].
+
+[`std::make_shared`]: http://en.cppreference.com/w/cpp/memory/shared_ptr/make_shared
+
+There are shared pointer cast functions `StaticCastSharedPtr`, `ConstCastSharedPtr`, `DynamicCastSharedPtr`, and corresponding variants for references with `Ref` suffixes, which are equivalent to the `std::shared_ptr` [cast functions](http://en.cppreference.com/w/cpp/memory/shared_ptr/pointer_cast). In particular, the `StaticCast*` variants can be used to downcast a pointer to a derived class.
+
+The performance characteristics of shared pointers are that they are generally fast, but they are not well-suited for engine or rendering hot paths.
+
+There are thread-safe variants of the pointer types which use atomic reference counting, like `std::shared_ptr` does:
+
+* `TThreadSafeSharedPtr<T>`
+* `TThreadSafeSharedRef<T>`
+* `TThreadSafeWeakPtr<T>`
+* `TThreadSafeSharedFromThis<T>`
+

@@ -1533,3 +1533,132 @@ FText TestHUDText = LOCTEXT("My_Key", "My Text");
 #undef LOCTEXT_NAMESPACE
 ```
 
+# Collections
+
+Note that currently neither `TMap` nor `TSet` can be used as replicated members, nor can they be accessed by Blueprints. By extension, the garbage collector only traverses `TArray`s, not `TMap` or `TSet`.
+
+## TArray
+
+A `TArray` can be populated with the `Init` function which creates `n` copies of the second argument.
+
+Elements can be appended with `Push`/`Add` and `Emplace`, equivalent to `std::vector::push_back` and `std::vector::emplace_back` respectively.
+
+The `Append` function can append all of the elements elements from another `TArray` or native array.
+
+The `AddUnique` function conditionally appends an element if it's not already present.
+
+The `Insert` function can be used to insert an element at a particular index, shifting existing elements to the right.
+
+The `SetNum` function can be used to explicitly set the length of the array, either truncating it or filling in default elements.
+
+The `CreateIterator` and `CreateConstIterator` functions can be used to explicitly construct an iterator.
+
+C++'s ranged for can be used to iterate over a `TArray`.
+
+``` cpp
+FString JoinedStr;
+
+for (auto& Str : StrArr)
+{
+  JoinedStr += Str;
+  JoinedStr += TEXT(" ");
+}
+```
+
+The `Sort` function sorts the `TArray` in an unstable manner, based on `operator<`, while an overload takes a lambda that defines the comparison function that determines if the first parameter is less than the second.
+
+The array's size is obtained with the `Num` function.
+
+A raw pointer to the underlying array can be obtained with the `GetData` function.
+
+`TArray` overloads the subscript operator to facilitate direct indexing.
+
+The `Last` function makes it possible to index from the end of the array, with the parameter defaulted to `0` so that the last element is obtained.
+
+The `Top` function is equivalent to `Last()` which is equivalent to `Last(0)`.
+
+The `Contains` function can be used to test for membership.
+
+The `ContainsByPredicate` function can be used to test if any element in the array satisfies the predicate.
+
+The `Find` function can be used to find the index of the first element that matches the given parameter. The `FindLast` function is similar but starts from the end of the array. Both functions return a bool indicating if an element was found, and if so, its position's index is written to the output parameter. Overloads exist which instead return the index itself and don't take the second parameter (to write the index to). If no element was found, the returned value is equal to `INDEX_NONE`.
+
+The `IndexOfByKey` function is similar to `Find` except that the passed value isn't converted to the type of the array element, instead it's passed as the second argument to the array element type's `operator==`.
+
+the `FindByKey` function is similar to `IndexOfByKey` but returns a pointer to the found element, or `nullptr` if none is found.
+
+The `IndexOfByPredicate` function finds the first element that satisfies the given predicate, returning `INDEX_NONE` if none is found.
+
+the `FindByPredicate` function is similar to `IndexOfByPredicate` but returns a pointer to the found element, or `nullptr` if none is found.
+
+The `FilterByPredicate` function produces a copy of the array with its elements filtered by the given predicate.
+
+The `Remove` function removes all elements in the array equal to the argument, whereas the `RemoveSingle` function removes only the first match.
+
+The `RemoveAll` function removes an element by predicate.
+
+The `RemoveAt` function removes an element at the specified index.
+
+When elements are removed, elements beyond them are shifted to the left to fill the hole left by the removed element. the `RemoveSwap`, `RemoveAtSwap`, and `RemoveAllSwap` variants can be used to skip this overhead by simply swapping the last element into the hole's position.
+
+the `Pop` function removes the final element.
+
+The `Empty` function removes all elements from the array.
+
+An array's "slack" is Unreal Engine's term for the difference between the maximum number of elements in an array and the current number of elements, i..e the amount of elements that can be added before needing to re-allocate.
+
+The `Empty` and `Reset` functions take an optional slack requirement which ensures that the array have a slack of that size at a minimum. The `Reset` function in particular doesn't free memory if the array already has a slack of that size or larger.
+
+The `Shrink` function can be used to resize the array to free any memory from the slack region.
+
+Arrays can be copied, which performs a deep copy.
+
+Arrays can be concatenated with the `operator+=`.
+
+The `MoveTemp` function can be used to mark a value for moving, similar to `std::move`.
+
+An array is left empty when it's moved.
+
+Arrays can be tested for equality using the `operator==` and `operator!=`, which performs a pair-wise equality check on the elements.
+
+The `Heapify` function can be used to structure the array as a [heap] using the element's `operator<` to determine the lesser element, or an overload exists which takes a lambda. If such a predicate is provided, it must be passed to each heap operational function.
+
+[heap]: https://www.blaenkdenum.com/notes/algorithms/#heaps
+
+The `HeapTop` function can be used to return the top element of the heap.
+
+The `HeapPush` and `HeapPop` functions can be used to push and pop onto the heap. The `HeapPop` function can write a copy of the removed top element to the output parameter reference, otherwise the `HeapDiscard` function can be used which simply removes the top element.
+
+The `AddUninitialized` and `InsertUninitialized` add the specified number of appropriately-sized "slots" for the given element type. These slots can then be filled in with a memory copy or placement new.
+
+``` cpp
+// Memory copy.
+int32 SrcInts[] = { 2, 3, 5, 7 };
+
+TArray<int32> UninitInts;
+UninitInts.AddUninitialized(4);
+
+FMemory::Memcpy(UninitInts.GetData(), SrcInts, 4 * sizeof(int32));
+// UninitInts == [2,3,5,7]
+
+// Placement new.
+TArray<FString> UninitStrs;
+
+UninitStrs.Emplace(TEXT("A"));
+UninitStrs.Emplace(TEXT("D"));
+
+UninitStrs.InsertUninitialized(1, 2);
+
+new ((void *)(UninitStrs.GetData() + 1)) FString(TEXT("B"));
+new ((void *)(UninitStrs.GetData() + 2)) FString(TEXT("C"));
+// UninitStrs == ["A","B","C","D"]
+```
+
+the `AddZeroed` and `InsertZeroed` functions are similar except that they also zero the memory region, which may be useful for certain types for which being zeroed is valid and expected.
+
+The `SetNumUninitialized` and `SetNumZeroed` functions are similar to `SetNum` except that any new elements are left uninitialized or uninitialized and zeroed.
+
+The `BulkSerialize` function can be used instead of `operator<<` to serialize an array as a raw memory copy instead of performing per-element serialization as with `operator<<`. This may benefit arrays of elements comprised of primitive types.
+
+The `Swap` and `SwapMemory` functions can be used to swap the elements at two indices.
+

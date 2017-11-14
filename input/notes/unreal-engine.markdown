@@ -2335,3 +2335,22 @@ void UGameCheatManager::OnItemsLoaded()
 }
 ```
 
+# Build Configurations
+
+Build configuration names are comprised of two components: state and project.
+
+The available configuration states are:
+
+* `Debug`: Contains debug symbols. Builds both the Engine and Game in with `Debug` configuration. Opening the editor build with Debug configuration requires the `-debug` flag.
+* `DebugGame`: Builds optimized Engine, but Debug Engine. Ideal for only debugging game modules.
+* `Development`: Equivalent to `Release`. Enables Editor hot-reload.
+* `Shipping`: Fully optimized build. Strips out console commands, statistics, and profiling tools.
+* `Test`: Equivalent to `Shipping` but retains statistics, profiling tools, and certain console commands.
+
+The available configuration targets are:
+
+* `[empty]`: Builds stand-alone executable. Requires platform-specific cooked content.
+* `Editor`: Enables Editor hot-reload.
+* `Client`: Designates project as being the Client in the client-server model. Enacts the <span class="path"><Game>Client.Target.cs</span> build file.
+* `Server`: Designates project as being the Server in the client-server model. Enacts the <span class="path"><Game>Server.Target.cs</span> build file.
+

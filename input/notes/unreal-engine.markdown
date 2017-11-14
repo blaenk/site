@@ -1158,3 +1158,73 @@ APawn* ResultPawn = SpawnActor<APawn>(DefaultPawnClass,
                                       Instigator);
 ```
 
+# Ticking
+
+Ticking can occur on each frame, at minimum time intervals, or not at all. An Actor or Component's tick group determines when within a given frame it should tick, relative to other frame processes such as physics simulation. Only after a tick group has finished ticking all of the contained actors and components does the next tick group begin ticking. Actors can be updated in parallel if they're in the same tick group.
+
+Although plain `UObjects` don't have any built-in update ability, they can gain it by deriving from `FTickableGameObject` with the `inherits` class specifier on `UCLASS`, so that they may then override the `Tick` function.
+
+Components, Actors, or entire Tick Groups can declare tick dependencies so that they will not tick until the specified actor or component's tick has completed.
+
+The available tick groups are:
+
+1. `TG_PrePhysics`: beginning of frame
+    * This tick group ensures that an Actor's movement is complete and ready to be factored into the physics simulation.
+    * Physics data is one frame old (which was used to render the previous frame).
+    * Appropriate for physics object and physics-based attachments.
+
+2. `TG_DuringPhysics`: beginning of physics simulation.
+    * Runs during physics simulation, so physics data may be from the previous or current frame.
+    * Simulation may finish and update engine physics data at any time, even before this group finishes ticking, without indication.
+    * Appropriate for:
+        * physics-independent logic
+        * logic that can afford to be one frame off, such as updating inventory screens or mini-maps, where physics data is irrelevant or coarse enough for one-frame-off to be indistinguishable.
+
+3. `TG_PostPhysics`: end of physics simulation.
+    * Engine now using current frame's data.
+    * Appropriate for weapon or movement traces, such as a laser sight, since the final positions of physics objects are now known.
+
+4. N/A: for latent actions, ticking world timer manager, camera updates, update level streaming volumes and streaming operations
+
+4. `TG_PostUpdateWork`: after cameras are updated.
+    * Historically for feeding last-possible-moment data to particle systems.
+    * Appropriate for:
+        * effects that depend on where the camera is pointed.
+        * logic intended to run after everything else in the frame, such as resolution of characters trying to perform a mutually exclusive action on the same frame.
+
+5. N/A: deferred Actor spawns created earlier in the frame.
+
+The `AddTickPrerequisiteActor` and `AddTickPrerequisiteComponent` functions can be used to declare tick dependencies, so that the calling Actor or Component's tick function doesn't begin until the specified Actor or Component's tick has completed.
+
+Tick dependencies are especially useful when one Actor or Component prepares data that another will need. This provides more explicit, fine-grained (per-object) dependency declarations. Since actors in the same tick group can be updated in parallel, if only individual actors may depend on a few particular other actors, it makes more sense to specify them as dependencies rather than moving the entire group of actors to a later tick group and then needing to wait for the entire previous group to finish before the moved group of actors can begin ticking.
+
+An Actor's tick function's settings (the tick group to run in, whether to run at all) is usually set in the constructor via the `PrimaryActorTick` property. These properties are then registered to take effect in `BeginPlay`.
+
+``` cpp
+PrimaryActorTick.bCanEverTick = true;
+PrimaryActorTick.bTickEvenWhenPaused = true;
+PrimaryActorTick.TickGroup = TG_PrePhysics;
+```
+
+An Actor's Components all tick during the Actor's tick by default, but components can specify their own tick settings via `PrimaryComponentTick`, in which case the Components are added to lists corresponding to the tick group they belong to.
+
+``` cpp
+PrimaryComponentTick.bCanEverTick = true;
+PrimaryComponentTick.bTickEvenWhenPaused = true;
+PrimaryComponentTick.TickGroup = TG_PrePhysics;
+```
+
+The tick function can be toggled dynamically via `SetActorTickEnabled` and `SetComponentTickEnabled`.
+
+An Actor or Component can have multiple tick functions to facilitate ticking multiple times, in different tick groups and with different dependencies per tick function. This is accomplished by creating a struct that derives from `FTickFunction` and overriding `ExecuteTick` and `DiagnosticMessage`, then initializing them in the owner's constructor, then enabling and registering them by overriding `RegisterActorTickFunctions` and adding calls to each tick structure's `SetTickFunctionEnable` followed by `RegisterTickFunction` with the owner's Level as an argument. A tick dependency can be registered from one tick structure to another with the tick structure's `AddPrerequisite` function and the target dependency tick structure as an argument.
+
+For example, consider a game with an Animated Actor, a Targeting Reticule Actor, a Laster Sight Actor, and a HUD Actor that displays a meter that fills as long as the laser is pointed at a certain type of target object.
+
+The Animated Actor could be in `TG_PrePhysics` so that its animation is factored into the physics simulation.
+
+The HUD Actor could be in any group but since it's physics-independent it can occur in `TG_DuringPhysics`, so that the physics simulation doesn't have to wait for the HUD to finish ticking if it were to occur in `TG_PrePhysics`. Since the physics simulation may not have finished by the time the HUD ticks in this group, it will be based on data from the previous frame, but it is likely to be imperceptible.
+
+The Targeting Reticule could occur in `TG_PostPhysics` since it needs to trace against the scene as it will be rendered, which is only known after physics simulation has completed. This is also necessary for updating the charging meter value with the correct value. There's no point in declaring a tick dependency so that it only ticks after the Animated Actor ticks since it's already in a later tick group, so it's guaranteed to tick only after _all_ Actors and Components in previous tick groups.
+
+The Laser Sight could occur in `TG_PostUpdatework` since the particle effect needs to be updated with the final locations of the aiming actor and the reticule. However, it could instead occur in `TG_PostPhysics` and register a tick dependency so that it only ticks after the Targeting Reticule has ticked. This allows the Laser Sight to tick as soon as it can, but no sooner.
+

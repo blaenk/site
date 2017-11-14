@@ -2696,26 +2696,6 @@ The Simulate-In-Editor function is similar to PIE except that it works even if t
 
 The **Play** button has a drop-down to the right displaying various simulation styles and options. For example, it's possible to specify the number of players for a multi-player game, so that the Server will use the selected viewport and new windows are created for each added player. The **Advanced Options** can be used to specify further options such as spawning a dedicated server.
 
-# Coordinate-Space Terminology
-
-Unreal Engine's convention is to name transformations as `XToY`, e.g. `WorldToView`.
-
-**Tangent Space** is orthogonal. The `TangentToLocal` transform only contains rotation.
-
-**Local Space** aka **Object Space** is orthogonal. The `LocalToWorld` transform contains rotation, non-uniform scaling (can also change winding order), and translation.
-
-With **World Space**, the `WorldToView` transform only contains rotation and translation, so distances in View Space and World Space are equivalent.
-
-With **TranslatedWorld Space** matrices are used to remove the camera position from concatenated transform matrices in order to improve precision when trasnforming vertices. The `TranslatedWorld` transform is equivalent to translating the `World` transform by the `PreViewTranslation`.
-
-With the **View Space** aka `CameraSpace`, the `ViewToClip` transform contains x and y scale and no translation. This inherently scales and translates z and applies projection to convert into homogenous **Clip Space**.
-
-**Clip Space** aka `HomogenousCoordinates` aka `PostProjectionSpace` aka `ProjectionSpace` represents the space after perspective projection has been applied. Remember that w in **Clip space** is equivalent to z in **View Space**.
-
-**Screen Space** aka `NormalizedDeviceCoordinates` (in OpenGL) represents the space after the perspective divide, where left is -1, right is 1, top is 1, bottom is -1, near is 0, and far is 1.
-
-**Viewport space** aka `ViewportCoordinates` aka `WindowCoordinates` is representative of the pixel resolution of the display, where left is 0, right is $\text{width} - 1$, top is 0, and bottom is $\text{height} - 1$.
-
 # Rendering
 
 Each frame is rendered in `FDeferredShadingSceneRenderer::Render`. The rendering thread runs in parallel to the game thread. Certain classes bridge the gap.
@@ -2882,6 +2862,26 @@ There are some console commands that can help with profiling and debugging the r
 * `pause`: pause simulation but continue rendering
 * `slomo x`: alter game speed. useful for slowing time without skipping simulation work when profiling
 * `debugcreateplayer 1`: testing splitscreen
+
+## Coordinate-Space Terminology
+
+Unreal Engine's convention is to name transformations as `XToY`, e.g. `WorldToView`.
+
+**Tangent Space** is orthogonal. The `TangentToLocal` transform only contains rotation.
+
+**Local Space** aka **Object Space** is orthogonal. The `LocalToWorld` transform contains rotation, non-uniform scaling (can also change winding order), and translation.
+
+With **World Space**, the `WorldToView` transform only contains rotation and translation, so distances in View Space and World Space are equivalent.
+
+With **TranslatedWorld Space** matrices are used to remove the camera position from concatenated transform matrices in order to improve precision when trasnforming vertices. The `TranslatedWorld` transform is equivalent to translating the `World` transform by the `PreViewTranslation`.
+
+With the **View Space** aka `CameraSpace`, the `ViewToClip` transform contains x and y scale and no translation. This inherently scales and translates z and applies projection to convert into homogenous **Clip Space**.
+
+**Clip Space** aka `HomogenousCoordinates` aka `PostProjectionSpace` aka `ProjectionSpace` represents the space after perspective projection has been applied. Remember that w in **Clip space** is equivalent to z in **View Space**.
+
+**Screen Space** aka `NormalizedDeviceCoordinates` (in OpenGL) represents the space after the perspective divide, where left is -1, right is 1, top is 1, bottom is -1, near is 0, and far is 1.
+
+**Viewport space** aka `ViewportCoordinates` aka `WindowCoordinates` is representative of the pixel resolution of the display, where left is 0, right is $\text{width} - 1$, top is 0, and bottom is $\text{height} - 1$.
 
 # Source vs Launcher
 

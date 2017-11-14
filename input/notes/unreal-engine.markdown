@@ -2694,3 +2694,13 @@ Configuration files support special line prefix characters.
 * `-` - removes a line. requires exact match
 * `!` - removes a property by name. doesn't require exact match
 
+# Play-In-Editor
+
+By default, the <kbd>SHIFT</kbd> + <kbd>F1</kbd> hotkey can be used to regain mouse control without stopping the simulation.
+
+By default any values changed for Actors during a Play-In-Editor (PIE) session will be reverted when the session ends unless the **Keep Simulation Changes** option is used on the Actor (or <kbd>K</kbd> is pressed).
+
+The Simulate-In-Editor function is similar to PIE except that it works even if there's no playable character, and is useful for testing Actors that simulate physics.
+
+The **Play** button has a drop-down to the right displaying various simulation styles and options. For example, it's possible to specify the number of players for a multi-player game, so that the Server will use the selected viewport and new windows are created for each added player. The **Advanced Options** can be used to specify further options such as spawning a dedicated server.
+

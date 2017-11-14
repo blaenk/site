@@ -2746,7 +2746,7 @@ This table shows what class owns the state of the thread they're in.
 | :-------------------- | :--------------------------------------------- |
 | `UWorld`              | `FScene`                                       |
 | `UPrimitiveComponent` | `FPrimitiveSceneProxy` / `FPrimitiveSceneInfo` |
-|                       | `FSceneView` / `FViewInfo`                     |
+|  &nbsp;               | `FSceneView` / `FViewInfo`                     |
 | `ULocalPlayer`        | `FSceneViewState`                              |
 | `ULightComponent`     | `FLightSceneProxy` / `FLightSceneInfo`         |
 

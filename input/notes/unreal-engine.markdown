@@ -695,3 +695,21 @@ The `DeprecatedFunction` function metadata specifier marks the function as depre
 
 The `UnsafeDuringActorConstruction` function metadata specifier marks the function as unsafe to call during Actor construction.
 
+# Structs
+
+Structs can be marked with the `USTRUCT` macro. The generated body is inserted via the `GENERATED_BODY` macro.
+
+``` cpp
+USTRUCT([Specifier, …])
+struct StructName
+{
+  GENERATED_BODY()
+};
+```
+
+The `Atomic` struct specifier indicates that the struct must be serialized as a single unit.
+
+The `BlueprintType` struct specifier allows the struct to be used for variables in Blueprints.
+
+The `NoExport` struct specifier indicates that no code be generated for the struct, so that the header is only provided to parse metadata from.
+

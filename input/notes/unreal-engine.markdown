@@ -1228,3 +1228,189 @@ The Targeting Reticule could occur in `TG_PostPhysics` since it needs to trace a
 
 The Laser Sight could occur in `TG_PostUpdatework` since the particle effect needs to be updated with the final locations of the aiming actor and the reticule. However, it could instead occur in `TG_PostPhysics` and register a tick dependency so that it only ticks after the Targeting Reticule has ticked. This allows the Laser Sight to tick as soon as it can, but no sooner.
 
+# Delegates
+
+Delegates make it possible to call member functions in a generic type-safe way. It's possible to dynamically bind a member function to an arbitrary object and subsequently call it, even if the caller doesn't know the object's type.
+
+Delegates are safe to copy and should generally be passed by reference.
+
+Delegates are declared via a delegate declaration macro depending on the function's kind of signature. This has the effect of defining a new type that represents a delegate that can bind to a function of that type. The following types are supported:
+
+* those returning a value
+* those with up to four "payload" arguments
+* those with up to eight function parameters
+* those declared as `const`
+
+Simple functions with no parameters or return values.
+
+``` cpp
+void Function();
+DECLARE_DELEGATE(Function);
+```
+
+Functions with one or more parameters.
+
+``` cpp
+void Function(ParamType Param);
+DECLARE_DELEGATE_OneParam(Function, ParamType);
+
+void Function(ParamType Param, OtherType Param2);
+DECLARE_DELEGATE_TwoParams(Function, ParamType, OtherType);
+```
+
+Functions with a return value.
+
+``` cpp
+ReturnType Function();
+DECLARE_DELEGATE_RetVal(ReturnType, Function);
+
+ReturnType Function(ParamType Param);
+DECLARE_DELEGATE_RetVal_OneParam(ReturnType, Function, ParamType);
+
+ReturnType Function(ParamType Param, OtherType Param2);
+DECLARE_DELEGATE_RetVal_TwoParams(ReturnType, Function, ParamType, OtherType);
+```
+
+Variants of each of those delegate declaration macros exist for multi-cast, dynamic, and wrapped delegates.
+
+* `DECLARE_MULTICAST_DELEGATE_*`
+* `DECLARE_DYNAMIC_DELEGATE_*`
+* `DECLARE_DYNAMIC_MULTICAST_DELEGATE_*`
+
+The delegate system has special handling for certain types of objects. For example, binding a delegate to a member of a `UObject` causes the delegate system to maintain a weak reference to the object so that `IsBound` or `ExecuteIfBound` can be used to only conditionally invoke the delegate when the `UObject` still exists.
+
+The different bind functions include:
+
+* `Bind` binds to an existing delegate object
+* `BindStatic` binds a native C++ global function
+* `BindRaw` binds a native C++ function pointer (so the pointer may dangle)
+* `BindSP` binds to a shared pointer object member function, so that a weak reference to the object is kept and `ExecuteIfBound` may be used
+* `BindUObject` binds a member function on a `UObject`, so that a weak reference to the object is kept and `ExecuteIfBound` may be used
+* `UnBind` unbinds the delegate
+
+It's possible to pre-bind certain arguments by passing them to the `Bind*` calls, except for dynamic delegates.
+
+``` cpp
+MyDelegate.BindRaw(&MyFunction, true, 20);
+```
+
+A delegate can be invoked by calling its `Execute` function, although they should first be checked via `IsBound` to ensure that they remain bound, or if the delegate has no return value, the `ExecuteIfBound` helper function can be used. It's important to keep in mind that if the function has output parameters and the function ended up not being called, the output parameters will remain uninitialized.
+
+For example, assume that `FLogWriter::WriteToLog` is meant to be called via a delegate.
+
+``` cpp
+class FLogWriter
+{
+  void WriteToLog(FString);
+};
+```
+
+A delegate type is created via the delegate declaration macro that matches the function's type.
+
+``` cpp
+DECLARE_DELEGATE_OneParam(FStringDelegate, FString);
+```
+
+The delegate can then be added to a class. The delegate can then be bound to the function by specifying the class' type as a template parameter, the instance to invoke the function on, and a pointer to the member function.
+
+``` cpp
+class FMyClass
+{
+  FStringDelegate WriteToLogDelegate;
+
+  FMyClass() {
+    // Create an instance of the log writer.
+    FSharedRef<LogWriter> LogWriter(new FLogWriter());
+
+    // Bind the delegate to that instance' member function.
+    WriteToLogDelegate.BindSP(LogWriter, &FLogWriter::WriteToLog);
+  }
+
+  void DoThing() {
+    // Do some things.
+    WriteToLogDelegate.Execute(Text("Did some things.));
+
+    // Safer when appropriate.
+    WriteToLogDelegate.ExecuteIfBound(Text("Did some things.));
+  }
+};
+```
+
+## Dynamic Delegates
+
+A dynamic delegate can be serialized. Their functions can be found by name, and so they are slower than regular delegates. They are declared with the same declaration macros except that they begin with `DECLARE_DYNAMIC_` and `DECLARE_DYNAMIC_MULTICAST_`.
+
+Some helper macros exist for dynamic delegates, each of which takes as arguments the object and the function name.
+
+The `BindDynamic` macro calls `BindDynamic` and automatically generates the function name string.
+
+The `AddDynamic` macro calls `AddDynamic` on a multi-cast delegate and automatically generates the function name string.
+
+The `RemoveDynamic` macro calls `RemoveDynamic` on a multi-cast delegate and automatically generates the function name string.
+
+## Multi-cast Delegates
+
+Multi-cast delegates can bind multiple functions that all get called when the delegate fires.
+
+Multi-cast delegates only have weak references to objects and can be copied around easily. Multi-cast delegates cannot use return values. They're best used to pass around a collection of delegates.
+
+Multi-cast delegates are declared with similar delegate declaration macros except that they contain `MULTICAST` in their name: `DECLARE_MULTICAST_DELEGATE` and `DECLARe_DYNAMIC_MULTICAST_DELEGATE`.
+
+The `Add` function adds a function to the invocation list.
+
+The `AddStatic` function adds a native global function.
+
+The `AddRaw` function adds a native function. May dangle.
+
+The `AddSP` function adds a member function to a shared-pointer'd object. Keeps a weak reference to the object.
+
+The `AddUObject` function adds a member function to a `UObject`. Keeps a weak reference to the object.
+
+The `Remove` function removes a particular function from the invocation list.
+
+The `RemoveAll` function removes all functions bound to the particular object. This means that since native statuc functions that are not bound to an object will _not_ be removed.
+
+The `Broadcast` function invokes all bound functions in an undefined order and except those that may have expired. Note that it is safe to call `Broadcast` even if nothing is bound, though the same caveat applies with regard to output variable initialization.
+
+## Events
+
+Events are similar to multi-cast delegates except that only the class that declares the event may invoke `Broadcast`, `IsBound`, and `Clear`, whereas multi-cast delegates have no such restriction. This allows event objects to be exposed in a public interface.
+
+Events are declared in a manner similar to multi-cast delegates except that there are event-specific declaration macros. All of them take the owner type and the event name as the first and second parameters. The owner is the sole class with permission to invoke the delegates.
+
+The `DECLARE_EVENT` creates an event with no parameters, then there are variants for the different amount of parameters, such as `DECLARE_EVENT_TwoParams`.
+
+Events are bound and invoked in a manner similar to multi-cast delegates.
+
+By convention, accessors for events should be named with an `On` prefix.
+
+``` cpp
+public:
+  DECLARE_EVENT(FLayerViewModel, FChangedEvent)
+  FChangedEvent& OnChanged() { return ChangedEvent; }
+
+private:
+  FChangedEvent ChangedEvent;
+```
+
+Note that it's possible to define an abstract event which can be inherited by derived classes. The derived class needs to specify that the event is derived with the `DECLARE_DERIVED_EVENT` macro which takes the name of the derived class, a member pointer to the event on the base class, and the new name of the event (which can remain the same).
+
+``` cpp
+// Base
+class IAssetRegistry
+{
+  DECLARE_EVENT_OneParam(IAssetRegistry, FAssetAddedEvent, const FAssetData &);
+  virtual FAseetAddedEvent& OnAssetAdded() = 0;
+}
+
+// Derived
+class FAssetRegistery : public IAssetRegistry
+{
+  DECLARE_DERIVED_EVENT(FAssetRegistry, IAssetRegistry::FAssetAddedEvent,
+                        FAssetAddedEvent);
+  virtual FassetAddedEvent& OnAssetAdded() override { return AssetAddedEvent; }
+}
+```
+
+Note that a derived class does not automatically have permission to access a base class' event members. If that is desired, it must be exposed explicitly through a function on the base class that invokes the broadcast.
+

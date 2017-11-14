@@ -633,3 +633,65 @@ AWindPointSource::AWindPointSource()
 }
 ```
 
+# Functions
+
+Functions can be marked up with the `UFUNCTION` macro which, like `UCLASS`, accepts function specifiers. Assuming that the appropriate function specifiers are set, these functions could be:
+
+* called and overridden from Blueprints.
+* assigned as delegates within the default properties of a class.
+* used as replication callbacks, which are invoked when the associated variable changes.
+* executed through the console.
+
+``` cpp
+UFUNCTION([specifier, …], [meta(key=value, …)])
+ReturnType FunctionName([Parameter, …])
+```
+
+Parameters can be marked up with the `UPARAM` macro.
+
+The `ref` param specifier marks a reference parameter as an input parameter as opposed to the assumed output parameter.
+
+The `DisplayName` param specifier specifies how the parameter should appear in the Blueprint editor.
+
+It's possible to add function parameter specifiers `out` or `optional`. The `out` specifier declares the parameter as being passed by reference, allowing it to be modified by the function. The `optional` specifier marks certain parameters as optional, and an optional default value can be specified with the usual C++ syntax for default arguments.
+
+The `BlueprintAuthorityOnly` function specifier prevents the function from running in a Blueprint if running on something that lacks network authority.
+
+The `BlueprintCallable` function specifier allows the function to be called from a Blueprint or a Level Blueprint.
+
+The `BlueprintCosmetic` function specifier prevents the function from running on dedicated servers.
+
+The `BlueprintImplementableEvent` function specifier allows the function to be overridden in a Blueprint or Level Blueprint.
+
+The `BlueprintNativeEvent` function specifier allows the function to be overridden by a Blueprint but _also_ has a default native implementation. The native implementation is defined by a function of the same name with an `_implementation` suffix, which the generated code automatically calls when necessary. These are more costly than `BlueprintImplementableEvent`.
+
+The `BlueprintPure` function specifier allows the function to be called from a Blueprint or Level Blueprint and assures that the function does not affect the owning object or any other global state.
+
+The `Category` function specifier can be used to specify the category under which to display the function in the Blueprint editor, with a vertical bar `|` separating the major and sub-category.
+
+The `Client` function specifier indicates that the function is only executed on the client that owns the Object that the function belongs to. A native implementation can be defined as with `BlueprintNativeEvent`,
+
+The `CustomThunk` function specifier can be used to manually define the `execSomeFunc` thunk function that executes the native implementation of functions marked `BlueprintNativeEvent` or `Client`.
+
+The `Exec` function specifier indicates that the function can be called from the in-game console. This only works for functions within certain classes.
+
+The `NetMulticast` function specifier indicates that the function is executed on the server and replicated to all clients regardless of the Actor's NetOwner.
+
+The `Reliable` function specifier indicates that the function should be replicated over the network in a guaranteed manner [^reliable_tcp] regardless of badnwidth or network errors.
+
+[^reliable_tcp]: As if it's done via TCP or some other reliability protocol over UDP.
+
+The `Unrealiable` function specifier indicates that the function should be replicated over the network without any guarantees.
+
+The `Sserver` function specifier indicates that the function is only executed on the server. A native implementation can be defined as with `BlueprintNativeEvent`,
+
+There are also function metadata specifiers.
+
+The `BlueprintInternalUseOnly` function metadata specifier marks the function as an internal implementation detail used to implement another function or node, so as not to directly expose it in a graph.
+
+The `BlueprintProtected` function metadata specifier restricts the function call on the Blueprint's `this`, so that it cannot be called on another instance.
+
+The `DeprecatedFunction` function metadata specifier marks the function as deprecated so that any Blueprint references cause a compilation warning. The deprecation warning message can be customized via the `DeprecationMessage` function metadata specifier.
+
+The `UnsafeDuringActorConstruction` function metadata specifier marks the function as unsafe to call during Actor construction.
+

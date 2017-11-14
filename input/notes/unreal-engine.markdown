@@ -1456,6 +1456,39 @@ There are thread-safe variants of the pointer types which use atomic reference c
 * `TThreadSafeWeakPtr<T>`
 * `TThreadSafeSharedFromThis<T>`
 
+# TSubclassOf
+
+the `TSubclassOf` type can be used to encode and enforce a reference to a type that is derived from a given type. This provides better guarantees than simply using a broad `UClass` pointer and hoping that the user provides an object of the appropriate kind.
+
+``` cpp
+// Too broad and dangerous.
+UPROPERTY(EditDefaultsOnly, Category=Damage)
+UClass* DamageType;
+
+// Statically encoded and checked.
+UPROPERTY(EditDefaultsOnly, Category=Damage)
+TSubclassOf<UDamageType> DamageType;
+```
+
+Specifically, assigning a `TSubclassOf` to another where the type parameter of the right-hand side is a subclass of the left-hand side is statically enforced.
+
+However, assigning a general `UClass` pointer to a `TSubclassOf` results in a run-time check, which results in a `nullptr` if the check fails.
+
+``` cpp
+TSubclassOf<UDamageType> damageType;
+TSubclassOf<UDamageType_Lava> lavaDamage;
+
+// Performs a compile time check
+damageType = lavaDamage;
+
+UClass* generalDamage = UDamageType::StaticClass();
+
+// Performs a runtime check
+damageType = generalDamage;
+```
+
+using `TSubclassOf` also restricts the choices available in the Editor to those that are subclasses of the specified type.
+
 # Strings
 
 All strings in Unreal Engine are stored in memory as UTF-16 in `FStrings` or `TCHAR` arrays.
@@ -1793,39 +1826,6 @@ The `Reserve` function preallocates a slack prior to element insertion.
 As with `TMap`, the `Shrink` function only removes holes at the end of the internal structure. The `Compact` function can be used to remove interior holes. The `CompactStable` function is similar but stable.
 
 As with `TMap`, a set can be sorted for the next iteration with the `Sort` function, which takes a sort-order function.
-
-# TSubclassOf
-
-the `TSubclassOf` type can be used to encode and enforce a reference to a type that is derived from a given type. This provides better guarantees than simply using a broad `UClass` pointer and hoping that the user provides an object of the appropriate kind.
-
-``` cpp
-// Too broad and dangerous.
-UPROPERTY(EditDefaultsOnly, Category=Damage)
-UClass* DamageType;
-
-// Statically encoded and checked.
-UPROPERTY(EditDefaultsOnly, Category=Damage)
-TSubclassOf<UDamageType> DamageType;
-```
-
-Specifically, assigning a `TSubclassOf` to another where the type parameter of the right-hand side is a subclass of the left-hand side is statically enforced.
-
-However, assigning a general `UClass` pointer to a `TSubclassOf` results in a run-time check, which results in a `nullptr` if the check fails.
-
-``` cpp
-TSubclassOf<UDamageType> damageType;
-TSubclassOf<UDamageType_Lava> lavaDamage;
-
-// Performs a compile time check
-damageType = lavaDamage;
-
-UClass* generalDamage = UDamageType::StaticClass();
-
-// Performs a runtime check
-damageType = generalDamage;
-```
-
-using `TSubclassOf` also restricts the choices available in the Editor to those that are subclasses of the specified type.
 
 # Blueprints
 

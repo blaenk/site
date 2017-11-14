@@ -2724,3 +2724,169 @@ With the **View Space** aka `CameraSpace`, the `ViewToClip` transform contains x
 
 **Viewport space** aka `ViewportCoordinates` aka `WindowCoordinates` is representative of the pixel resolution of the display, where left is 0, right is $\text{width} - 1$, top is 0, and bottom is $\text{height} - 1$.
 
+# Rendering
+
+Each frame is rendered in `FDeferredShadingSceneRenderer::Render`. The rendering thread runs in parallel to the game thread. Certain classes bridge the gap.
+
+* `UWorld`: contains a collection of Actors and Components. Levels can be streamed in and out of the world. Multiple worlds can be active.
+* `ULevel`: contains a collection of Actors and Components that are loaded and unloaded as a group and saved to a single map file
+* `USceneComponent`: base class of any object in an `FScene`
+* `UPrimitiveComponent`: base class of anything that can be rendered or that can interact with physic. visibility culling is performed at the granularity level of a `UPrimitiveComponent`. The game thread owns all variables and state, so the render thread should not access it directly.
+* `ULightComponent`: represents a light source that the renderer is responsible for computing and adding its light contribution to the scene
+* `FScene`: the renderer's view of a `UWorld`. objects are only known to the renderer once they're added to the `FScene`, which is known as registering a component. the render thread owns all of the state in `FScene` and the game thread should not modify it directly.
+* `FPrimitiveSceneProxy`: the renderer's view of `UPrimitiveComponent`. it's intended to be derived to support different types of primitives such as skeletal, rigid, and BSP. An `FPrimitiveSceneProxy` is created once the corresponding `UPrimitiveComponent` is registered
+* `FPrimitiveSceneInfo`:the internal, `FRendererModule` implementation-specific renderer state that corresponds to a `UPrimitiveComponent` and `FPrimitiveSceneProxy`
+* `FSceneView`: a single view into an `FScene` by the engine. Multiple views can be rendered with separate calls to `FSceneRenderer::Render`, such as to support multiple editor viewports, or multiple views can be rendered simultaneously with the same call to `FSceneRenderer::Render`, such as to support split-screen.
+* `FSceneViewState`: stores the renderer's private information about a view that is needed across frames. one `FSceneViewState` per `ULocalPlayer`
+* `FSceneRenderer`: created each frame to encapsulate inter-frame temporaries
+
+This table shows the primary classes and their analogs in the corresponding module.
+
+| Engine                                           | Renderer              |
+| :----------------------------------------------- | :-------------------- |
+| `UWorld`                                         | `FScene`              |
+| `UPrimitiveComponent` and `FPrimitiveSceneProxy` | `FPrimitiveSceneInfo` |
+| `FSceneView`                                     | `FViewInfo`           |
+| `ULocalPlayer`                                   | `FSceneViewState`     |
+| `ULightComponent` and `FLightSceneProxy`         | `FLightSceneInfo`     |
+
+This table shows what class owns the state of the thread they're in.
+
+| Game                  | Renderer                                       |
+| :-------------------- | :--------------------------------------------- |
+| `UWorld`              | `FScene`                                       |
+| `UPrimitiveComponent` | `FPrimitiveSceneProxy` / `FPrimitiveSceneInfo` |
+|                       | `FSceneView` / `FViewInfo`                     |
+| `ULocalPlayer`        | `FSceneViewState`                              |
+| `ULightComponent`     | `FLightSceneProxy` / `FLightSceneInfo`         |
+
+Primitive components are the basic unit of visibility and relevance determination, as determined by the component's bounds, which are used for culling, shadow casting, light influence determination, etc. For this reason, a component's size should be considered carefully.
+
+Components only become visible once they're registered, and any further changes to the component's properties must be "flushed" to the render thread by calling `MarkRenderStateDirty()` on the component.
+
+The `FPrimitiveSceneProxy::GetViewRelevance()` method is called from `InitViews` at the beginning of each frame to return a populated `FPrimitiveViewRelevance`.
+
+The `FPrimitiveSceneProxy::DrawDynamicElements` method is called to draw the proxy in any passes in which it is relevant, if it indicated that it has dynamic relevance.
+
+The `FPrimitiveSceneProxy::DrawStaticElements` method is called to submit `StaticMesh` elements for the proxy when the primitive is being attached on the game thread, if it indicated that it has static relevance.
+
+The `FPrimitiveViewRelevance` type contains the information on what effects (and their passes) are relevant to the primitive. Since a primitive may have multiple elements with different relevancies, the `FPrimitiveViewRelevance` is essentially a union of the relevancies of all of the elements. The `FPrimitiveViewRelevance` type also indicates if it uses the dynamic and/or static rendering paths via `bStaticRelevance` and `bDynamicRelevance`.
+
+Draw policies render meshes with pass-specific shaders. The `FVertexFactory` interface abstracts the mesh type and the `FMaterial` interface abstracts the material details. A drawing policy takes a set of mesh material shaders and an `FVertexFactor` to apply them to, then binds the `FVertexFactory`'s buffers and the mesh material shaders to the Rendering Hardware Interface (RHI), sets the appropriate shader parameters, then issues the draw call.
+
+## Render Paths
+
+The dynamic rendering path provides more control but is slower to traverse, while the static rendering path caches the scene traversal as close to the RHI level as possible. Each rendering pass (drawing policy) needs to be able to handle both rendering paths.
+
+For the dynamic rendering path, the `TDynamicPrimitiveDrawer` is used. The `FViewInfo::VisibleDynamicPrimitives` method keeps track of and returns an array of visible dynamic primitives, then for each the rendering pass calls its `DrawDynamicElements` method, which then needs to assemble as many `FMeshElements` as it needs to then submit them with `DrawRichMesh` or `TDynamicPrimitiveDrawer::DrawMesh`, which creates a temporary drawing policy.
+
+In the dynamic rendering path, each proxy has a callback in `DrawDynamicElements` where it can execute logic specific to that component type. Despite minimal insertion cost, it has high traversal cost because there is no state sorting and nothing is cached.
+
+The static rendering path uses static draw lists, with meshes inserted into draw lists when they are attached to the scene. As each mesh is inserted, `DrawStaticElements` is called on the proxy to collect the `FStaticMeshElements`. A drawing policy instance is created and stored and sorted based on its `Compare` and `Matches` functions, then inserted into the appropriate place in the draw list. The `InitViews` function then initializes a bitarray with visibility data for the static draw list, then it's passed to `TStaticMeshDrawList::DrawVisible` which actually draws the draw list. The `DrawShared` method is only called once for _all_ drawing policies that match each other. The `SetMeshRenderState` and `DrawMesh` methods are called for _each_ `FStaticMeshElement`.
+
+Bugs may be exposed by the static rendering path since it only calls `DrawShared` once per state bucket, especially since it depends on the rendering and attach order of the meshes in the scene. The dynamic rendering path can be forced by using certain view modes like "lighting only," which can be used to forcefully expose a static rendering bug in a drawing policy's `DrawShared` and/or `Matches` method.
+
+The static rendering path moves a lot of work to attach time, thereby speeding up traversal at render time. Only view-independent state is cached since it's cached at attach time.
+
+A high-level rendering order is:
+
+1. `GSceneRenderTargets.Allocate`
+
+    If needed, reallocates the global scene render targets to fit the current view.
+
+2. `InitViews`
+
+    Uses various culling methods to initialize primitive visibility, sets up visible dynamic shadows, and intersects shadow frustrums with the world.
+
+3. `PrePass` and `FDepthDrawingPolicy` (Depth-only pass)
+
+    Renders occluders, outputting depth to the depth buffer. Can operate with occlusion only, complete depths, or disabled outright. The main purpose is to initialize Hierarchical Z to reduce shading cost of the base pass.
+
+4. `RenderBasePass` and `TBasePassDrawingPolicy`
+
+    Renders opaque and masked materials, outputting material attributes to the `GBuffer`. Lightmap contribution and sky lighting is also computed and put in the scene color.
+
+5. Issue Occlusion Queries and `BeginOcclusionTests`
+
+    Starts latent occlusion queries that are used in the next frame's `InitViews`. Occlusion queries are done by rendering bounding boxes around the objects being queried, sometimes merging bounding boxes to reduce draw calls.
+
+6. Lighting
+
+    Shadowmaps for each light are rendered and light contribution is accumulated to the scene color through a mix of standard and tiled deferred shading. Light is also accumulated in the translucency lighting volumes.
+
+7. Fog
+
+    Fog and atmosphere are computed per-pixel for opaque surfaces in a deferred pass.
+
+8. Translucency
+
+    Translucency is accumulated into an offscreen render target, and fog is applied to it per-vertex so it can integrate into the scene. Lit translucency computes final lighting in a single pass to blend correctly.
+
+9. Post-Processing
+
+    Post-processing effects are applied using the `GBuffer`s and translucency is composited into the scene.
+
+## Render Hardware Interface
+
+The Render Hardware Interface (RHI) is a thin wrapper around platform-specific graphics APIs, as low-level as possible. Feature sets are wrapped into `ERHIFeatureLevel`s, so that if a platform cannot support an entire feature level, it must drop to the feature level that it _can_ fully support.
+
+| Feature Level | Description |
+| :------------ | :---------- |
+| SM5 | Corresponds to D3D11 Shader model 5 with a cap on 16 textures due to OpenGL 4.3 limits. Supports tessellation, compute shaders, cubemap arrays, and the deferred shading path. |
+| SM4 | Corresponds to D3D11 Shader Model 4. Equivalent to Feature Level SM5 without tessellation, compute shaders, or cubemap arrays. |
+| ES2 | Corresponds to OpenGL ES2 feature sets. Uses a pared down forward shading path. |
+
+Render states are grouped based on the part of the pipeline that they affect, such as `RHISetDepthState` affecting all state relevant to depth buffering.
+
+Unreal Engine has an implicit set of states that it assumes are set to the defaults. If they're changed, they must be restored to the defaults. The following smaller set of states need to be set explicitly:
+
+* `RHISetRenderTargets`
+* `RHISetBoundShaderState`
+* `RHISetDepthState`
+* `RHISetBlendState`
+* `RHISetRasterizerState`
+* shader dependencies set by `RHISetBoundShaderState`
+
+The rest of the states are assumed to be set to their defaults, as determined by the corresponding `TStatic*State`, such as `RHISetStencilState(TStaticStencilState<>::GetRHI())`.
+
+## Simulation-Renderer Synchronization
+
+Asynchronous communication between the game and render thread can be accomplished through the use of the `ENQUEUE_UNIQUE_RENDER_COMMAND_*PARAMTER` macro which creates a local class with an overridden `Execute` method. The class is pushed onto the rendering command queue and then invoked by the renderer when it is able to.
+
+The `FRenderCommandFence` class can be used to synchronize with the render thread by having the game thread call its `BeginFence` method and then either synchronously waiting on it with `Wait` or poll progress via `GetNumPendingFences`.
+
+Synchronous communication can be achieved with the `FlushRenderingCommands` method which blocks the game thread until the render thread has caught up, though its use is discouraged outside of offline operations..
+
+Resources on the renderer thread can be represented by the `FRenderResource` base class. Anything deriving from it must be initialized before rendering and released before being deleted. Since its `InitResource` method can only be called from the rendering thread, the helper function `BeginInitResource` enqueues a rendering command which calls it (`InitResource`).
+
+It is considered poor practice to combine update and render operations in `DrawDynamicElements`. This is because `DrawDynamicElements` is called at a high level by rendering code which assumes that no RHI state is being changed and that it may call `DrawDynamicElements` as many times as it needs to within each frame, or not at all due to the occlusion system, which would prevent the once-per-frame updating of the state.
+
+Instead the update should be taken out of the render traversal by enqueuing a render command within the game thread's `Tick` which performs the update operation, which the rendering command can optionally skip based on visibility or by using `LastRenderTime`. This allows any RHI functions to be used, including setting different render targets. An exception to this is stat caching, which stores the intermediate result of the rendering traversal as an optimization, and since it doesn't change RHI state, it doesn't suffer from the aforementioned pitfalls as long as cache determiniation is correct.
+
+A `USkeletalMesh` static resource that is freed is handled by the renderer thread as follows:
+
+1. `USkeletalMesh::PostLoad` invokes `InitResources` which invokes `BeginInitResource` for any static `FRenderResources` it contains, which invokes `FRenderResource::InitResource` on the render thread, after which the render thread takes ownership of the index buffer memory, so the game thread must not modify it unless it regains ownership
+2. component registers, which starts rendering the `USkeletalMesh`'s index buffer
+3. GC deems it time to detach the component. The game thread _cannot_ delete the index buffer memory becuase the rendering thread may still be rendering with it.
+4. GC invokes `USkeletalMesh::BeginDestroy` as the last chance for the game thread to enqueue render commands to release rendering resources, i.e. `BeginReleaseResource(&IndexBuffer)`. It's still not safe for the game thread to delete the index buffer because the command may not have been processed by the render thread.
+5. GC invokes `USkeletalMesh::IsReadyForFinishDestroy` until it returns `true`, at which point the GC destroys the `UObject`. `USkeletalMesh`'s implementation would only return `true` once the fence has been passed by the render thread, meaning it is safe for the game thread to delete the index buffer memory.
+6. GC calls `UObject::FinishDestroy` as the central location in which to release memory. For `USkeletalMesh`'s index buffer memory this is handled by its destructor calling `FRawStaticIndexBuffer`'s destructor calling `TArray`'s destructor.
+
+A `USkinnedMeshComponent` dynamic resource that is freed is handled by the renderer thread as follows:
+
+1. `USkinnedMeshComponent::CreateRenderState_Concurrent` allocates a `USkinnedMeshComponent::MeshObject` which the game thread can modify through a pointer instead of modifying the `FSkeletalMeshObject` directly.
+2. `USkinnedMeshComponent:UpdateTransform` is called at least once per frame to update the component's movement, which calls `FSkeletalMeshObjectGPUSkin::Update` when doing GPU skinning to obtain updated transforms on the game thread. The updated transforms are communicated to the render thread by allocating heap memory with `FDynamicSkelMeshObjectData`, copying the bone transforms into it, then copying it to the render thread with the `ENQUEUE_UNIQUE_RENDER_COMMAND_TWOPARAMETER` macro which contains code to copy the transforms to their final destinations so that they may be set as shader constants. If updating vertex positions, the vertex buffer would be locked before being updated.
+3. When the component gets detached, the game thread enqueues render commands to release all of the dyanmic `FRenderResources` and sets the `MeshObject` pointer to `nullptr`, although the actual memory is still referenced by the render thread and so cannot be deleted. Deletion is deferred by deriving from the `FDeferredCleanupInterface` class and invoking `BeginCleanup(MeshObject)`, which eventually frees the memory when it's safe to do so.
+
+## Render Commands
+
+There are some console commands that can help with profiling and debugging the rendering process.
+
+* `stat unit`: show overall frame time and game thread, rendering thread, and GPU times.
+* `recompileshaders changed` (<kbd>CTRL</kbd> + <kbd>SHIFT</kbd> + <kbd>.</kbd>): recompile shaders taht changed based on `.usf` file. Happens automatically on load.
+* `profilegpu` (<kbd>CTRL</kbd> + <kbd>SHIFT</kbd> + <kbd>;</kbd>): GPU timings for the view being rendered. View results in UI popup or engine log.
+* `Vis` or `Visualize Texture`: visualizes the contents of render targets
+* `show x`: toggles showflags
+* `pause`: pause simulation but continue rendering
+* `slomo x`: alter game speed. useful for slowing time without skipping simulation work when profiling
+* `debugcreateplayer 1`: testing splitscreen

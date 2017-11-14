@@ -788,3 +788,128 @@ AActor* Actor = Cast<AActor>(ReactingObject);
 
 The `CannotImplementInterfaceInBlueprint` interface metadata specifier prevents the interface from being implemented by a Blueprint. This is useful if it has only non-exposed C++ methods, for example. More generally, if the interface has any functions that aren't `BlueprintImplementableEvent` or `BlueprintNativeEvent` then it must be marked as `CannotImplementInterfaceInBlueprint`, since the Blueprint would be unable to implement those methods.
 
+## Properties
+
+Class properties can be marked up with the `UPROPERTY` macro.
+
+``` cpp
+UPROPERTY([specifier, …], [meta(key=value, …)])
+VariableType VariableName;
+```
+
+By convention, integers should use types which designate their size, such as `uint64` or `int32`.
+
+Integer properties can be exposed to the Editor as bitmasks by using the `Meta` property `Bitmask`. This causes the Editor to show a generically-named entry in a drop-down for each possible flag for that integer width.
+
+An integer property designated as a `Bitmask` can also be associated with an enumeration, so that each enumeration is displayed in the drop-down.
+
+``` cpp
+UENUM(Meta = (Bitflags))
+enum class EColorBits
+{
+  ECB_Red,
+  ECB_Green,
+  ECB_Blue
+};
+
+// In class
+UPROPERTY(Editanywhere, Meta = (Bitmask, BitmaskEnum = "EColorBits"))
+int32 ColorFlags;
+```
+
+The Editor interprets Boolean values to be `bool` or a bit-field.
+
+Four core string types are supported.
+
+* `FString` which is a dynamically-sized string similar to `std::string`
+* `FName` which is an interned, immutable, case-insensitive string
+* `FText` which is a robust string representation that supports localization
+
+The `TCHAR` type is used for characters. The `TEXT()` macro is used to denote string literals made up of `TCHAR`.
+
+There are a variety of property specifiers that control how the property should behave.
+
+The `AdvanceDisplay` property specifier puts the property in the Advanced drop-down in the Editor.
+
+The `AssetRegistrySearchable` property specifier automatically adds the property to the asset registry for any asset class instance containing the property. Does not apply to structs or parameters.
+
+The `BlueprintAssignable` property specifier only applies to multi-cast delegates and serves to expose the property for assigning in Blueprints.
+
+``` cpp
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnItemRemoved, FItemStruct, RemovedItem);
+
+UCLASS(meta=(BlueprintSpawnableComponent))
+class UInventoryComponent : public UActorComponent
+{
+  GENERATED_BODY()
+
+public:
+  UPROPERTY(BlueprintAssignable)
+  FOnItemRemoved OnItemRemoved;
+};
+```
+
+The `BlueprintReadOnly` property specifier indicates that the property can be read by Blueprints but not modified.
+
+The `BlueprintReadWrite` property specifier indicates that the property can be read _and_ written by a Blueprint.
+
+The `Category` property specifier specifies the category that the property should appear under in the Editor, with nested categories delimited by a vertical bar `|`.
+
+The `Config` property specifier makes the property configurable, so that its current value can be saved in a configuration file and loaded when created. As a result, it cannot be given a value in default properties. This implied `ReadOnly`.
+
+The `GlobalConfig` property specifier works like the `Config` property specifier except that it cannot be overridden in a subclass.
+
+The `BlueprintCallable` property specifier only applies to multi-cast delegates and serves to expose the delegate for calling from Blueprints.
+
+The `Const` property specifier indicates that the variable is `const` and should be exported as `const`, so that it will not be modifiable in the editor.
+
+The `DuplicateTransient` property specifier specifies that the variable's value should be reset to the CDO's value whenever the object is copied (e.g. copy-pasted, binary duplication).
+
+The `EditAnywhere` property specifier specifies that the property can be edited by property windows on archetypes and instances.
+
+The `EditDefaultsOnly` property specifier indicates that the property can be edited by property windows but only on archetypes, not instances.
+
+The `EditInstanceOnly` property specifier indicates that the property can be edited from property windows but only on instances, not archetypes.
+
+The `EditFixedSize` property specifier only applies to dynamic arrays and serves to prevent the user from changing the length of the array from within property windows.
+
+The `EditInline` property specifier allows the user to edit the object property's properties within the property inspector. Primarily useful for object references, including arrays of them.
+
+The `VisibleAnywhere` property specifier indicates that the property be visible in property windows, but not editable.
+
+The `VisibleDefaultsOnly` property specifier indicates that the property be visible in property windows for archetypes, but not editable.
+
+the `VisibleInstanceOnly` property specifier indicates that the property be visible in property windows for instances and not archetypes, but not edible.
+
+The `Export` property specifier only applies to object properties (or arrays of them) and indicates that the object should be deep-copied exported in its entirety as a sub-object block when it's copied, instead of a simple shallow-copy (copying the reference).
+
+The `Instanced` property specifier only applies to object properties and causes any reference assignments to the property to instead reference a unique copy of the assigned object. Primarily useful for instancing sub-objects defined in CDO properties.
+
+The `Interp` property specifier indicates that the value can be interpolated over time by a track in the Matinee editor.
+
+The `Localized` property specifier primarily applies to strings and indicates that the property will have a localized value.
+
+The `Native` property specifier indicates that the property is native, so that native code is responsible for serializing it and exposing it to the garbage collector.
+
+The `NoClear` property specifier prevents the object reference from being nullified from the editor. It hides the "Clear" and "Browse" button.
+
+The `NoExport` property specifier is primarily applies to native classes and indicates that the variable should not be included in the auto-generated class declaration.
+
+The `NonTransactionl` property specifier indicates that changes to the variable should not be included in the Editor's undo history.
+
+The `Ref` property specifier only applies to function parameter declarations and specifies that the value is to be copied out after a function call.
+
+The `Replicated` property specifier indicates that the variable should be replicated.
+
+The `ReplicatedUsing` property specifier indicates that the variable should be replicated and that it should invoke the specified callback when it is received.
+
+The `RepRetry` property specifier primarily applies to structs and instructs the engine to retry a failed replication. This is the default behavior for simple references but not structs due to the bandwidth cost.
+
+The `SaveGame` property specifier indicates that the property should be included in the checkpoint or save system. A proxy archiver is then used to read and write the specified properties.
+
+The `SerializeText` property specifier indicates that the native property should be serialized as text.
+
+The `SimpleDisplay` property specifier indicates that the property should appear in the Details panel.
+
+The `Transient` property specifier indicates that the property is transient and should not be saved. It is zeroed at load time.
+

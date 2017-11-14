@@ -2442,3 +2442,47 @@ Console variables can also be set at start-up with the `-ExecCmds` program argum
 UE4Editor.exe GAMENAME -ExecCmds="r.BloomQuality 12;vis 21;Quit"
 ```
 
+# Packaging
+
+When a project is packaged, its code is compiled, its content is cooked into the target platform's format, then everything is bundled into a distributable set of files such as an installer. The Editor exposes this process through the **File** → **Package Project** menu option.
+
+_Cooking_ is the process of converting from an internal asset format to a platform-specific format.
+
+A Game Default Map should be set which will load when the packaged game starts, which can be done through **Edit** → **Project Settings** → **Maps & Modes**.
+
+Packaging the project prompts the user for an output directory, under which a sub-directory is created containing the packaged game.
+
+Additional packaging settings can be set at **Edit** → **Project Settings** → **Packaging**.
+
+For development, it's possible to skip the packaging process and only cook the content for a particular target platform _without_ packaging by using **File** → **Cook Content** → **[Platform Name]**. Note that this will litter the local developer workspace with the cooked content.
+
+Loading times can be optimized through a variety of features.
+
+The Asynchronous Loading Thread (ALT) feature, which is off by default, runs serialization and post-loading code concurrently on two separate threads, effectively doubling loading speed. The caveat is that `UObject` class constructors, `PostInitProperties` functions, and `Serialize` functions in the game must be thread-safe.
+
+The Event-Driven Loader, which is on by default, also doubles loading speed.
+
+Compressing <span class="path">.pak</span> files can also decrease loading times with certain platforms as exceptions. Also note that on Steam, the trade-off is that the differential patching system works better with uncompressed assets. Compression can be enabled in the Packaging settings section.
+
+The order of contents in the <span class="path">.pak</span> files can affect load times. The Engine provides tools for determining what order the assets are required.
+
+1. Run the _packaged_ game with the `-fileopenlog` argument.
+2. Exercise all major areas to cause the loading of as many assets as possible.
+3. Quit the game.
+4. Find the file <span class="path">GameOpenOrder.log</span> which may be in <span class="path">Game/Build/WindowsNoEditor/FileOpenOrder/</span> and copy it to the development directory under <span class="path">/Build/WindowsNoEditor/FileOpenOrder/</span>
+5. Rebuild the <span class="path">.pak</span> file. This will build it according to the file order recorded in the log file.
+
+The log file should be checked into source control and periodically updated, based on changes to assets.
+
+## Cooking
+
+Cooking can be done through the [command line][cooking]. The `-iterate` option only builds whatever is out of date (without it, the output directory is deleted and everything is recooked). There is also a `-cookonthefly` option which starts a server which games (clients) can connect to with the `-filehostip=<ip>` argument so that the server cooks and serves content as it is needed by the client.
+
+[cooking]: https://docs.unrealengine.com/latest/INT/Engine/Deployment/Cooking/index.html
+
+## Patching
+
+During [patching], the engine compares all post-cook content to the originally released content to determine what is part of the patch. The smallest unit of content is a single package (<span class="path">.ulevel</span> or <span class="path">.uasset</span>), so that if anything within a package changes, the entire package is included in the patch. At run-time, both the original and the patch <span class="path">.pak</span> files are loaded, with a higher priority given to the patch file so that content within it is loaded first. A higher priority can be specified via the file system by naming the <span class="path">.pak</span> file with a `_p` suffix.
+
+[patching]: https://docs.unrealengine.com/latest/INT/Engine/Deployment/Patching/index.html
+

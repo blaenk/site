@@ -2354,3 +2354,91 @@ The available configuration targets are:
 * `Client`: Designates project as being the Client in the client-server model. Enacts the <span class="path"><Game>Client.Target.cs</span> build file.
 * `Server`: Designates project as being the Server in the client-server model. Enacts the <span class="path"><Game>Server.Target.cs</span> build file.
 
+## Console
+
+There are console commands and console variables.
+
+A console variable can be registered in any source file by defining a static variable wrapping the underlying type in `TAutoConsoleVar<T>`. It's also possible to dynamically register a console variable with the `IConsoleManager::RegisterConsoleVariable` function.
+
+It's also possible to register a reference to a variable with `RegisterConsoleVariableRef` but it's use is discouraged because it bypasses various important features.
+
+``` cpp
+static TAutoConsoleVariable<int32> CVarRefractionQuality(
+  // Name
+  TEXT("r.RefractionQuality"),
+
+  // Default value
+  2,
+
+  // Documentation
+  TEXT("Defines the distortion/refraction quality, adjust for quality or performance.\n")
+  TEXT("<=0: off (fastest)\n")
+  TEXT("  1: low quality (not yet implemented)\n")
+  TEXT("  2: normal quality (default)\n")
+  TEXT("  3: high quality (e.g. color fringe, not yet implemented)"),
+
+  // Flags
+  ECVF_Scalability | ECVF_RenderThreadSafe);
+```
+
+The state of a console variable can be retrieved by storing a pointer to the `IConsoleVariable` returned by the registration function or by using the `IConsoleManager::FindConsoleVariable` function to obtain a a pointer to the `IConsoleVariable` representing the console variable, then obtaining the underylng value with the `GetInt` function, for example. In the latter case, it's safe to store the `IConsoleVariable` in a static variable because the variable will never move and only gets destroyed on engine shutdown.
+
+``` cpp
+static const auto CVar = IConsoleManager::Get().FindConsoleVariable(TEXT("TonemapperType"));
+
+int32 Value = CVar->GetInt();
+```
+
+There are three ways to respond to variable changes.
+
+The first is to store the old value and check on each frame if the current value differs.
+
+The second is to register a _console variable sink_ which is a callback function that is called whenever the console variable is changed by the user. Sinks are called at a specific point on the main thread before rendering. Multiple related changes should be coalesced into a single change by setting a flag, instead of depending on an undefined execution order.
+
+``` cpp
+static void MySinkFunction()
+{
+  bool bNewAtmosphere = CVarAtmosphereRender.GetValueOnGameThread() != 0;
+
+  // Assume the state is true.
+  static bool GAtmosphere = true;
+
+  if (GAtmosphere != bNewAtmosphere)
+  {
+    GAtmosphere = bNewAtmosphere;
+
+    // Handle change.
+  }
+}
+
+FAutoConsoleVariableSink CMyVarSink(FConsoleCommandDelegate::CreateStatic(&MySinkFunction));
+```
+
+Finally, it's possible to register a callback to fire when the variable changes. This is dangerous and discouraged compared to a sink because other console variables in the delegate can cause infinite loops.
+
+``` cpp
+void OnChangeResQuality(IConsoleVariable* Var)
+{
+  SetResQualityLevel(Var->GetInt());
+}
+
+CVarResQuality.AsVariable()
+  ->SetOnChangedCallback(FConsoleVariableDelegate::CreateStatic(&OnChangeResQuality));
+```
+
+Developers can specify variable values to automatically load in `Engine/Config/ConsoleVariables.ini`, as well as in `Engine/Config/BaseEngine.ini`:
+
+``` cpp
+[SystemSettings]
+r.MyCvar = 2
+
+[SystemSettingsEditor]
+r.MyCvar = 3
+```
+
+Console variables can also be set at start-up with the `-ExecCmds` program argument.
+
+```
+UE4Editor.exe GAMENAME -ExecCmds="r.BloomQuality 12;vis 21;Quit"
+```
+

@@ -230,3 +230,21 @@ GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, message);
 
 It's also possible to log a message directly to the console through [`APlayerController::ClientMessage`](https://docs.unrealengine.com/latest/INT/API/Runtime/Engine/GameFramework/APlayerController/ClientMessage/index.html).
 
+# Unreal Build System
+
+The UnrealHeaderTool (UHT) does custom parsing and code-generation to facilitate the `UObject` system. First when UHT is invoked, C++ headers are parsed for Unreal-related class metadata in order to generate custom code to implement the various `UObject` features. Then the regular C++ compiler is invoked to compile the resulting code.
+
+Each engine module has its own <span class="path">.build.cs</span> file that controls how it is built by defining module dependencies, libraries to link, additional include paths, etc. Each module is compiled into shared libraries (DLLs on Windows) and loaded by a single binary. Instead of shared libraries, each module can be statically linked into the binary via the <span class="path">BuildConfiguration.cs</span> file.
+
+The Unreal Build System's build process executes _independently_ of IDE project files (<span class="path">.sln</span> or <span class="path">.vcproj</span>), which are mainly used for editing purposes, and are generated dynamically based on the project source tree with the <span class="path">GenerateProject.bat</span> script.
+
+The UnrealBuildTool (UBT) supports the following targets:
+
+* Game: standalone game, requires cooked data
+* Client: "Game" target without server code; for network clients
+* Server: "Game" target without client code; for dedicated servers
+* Editor: for extending the Unreal Editor
+* Program: for standalone utility programs built on UE
+
+Targets are declared in <span class="path">.target.cs</span> files within the <span class="path">Source/</span> directory. Such a file declares a class deriving from the `TargetRules` class, with properties set in its constructor for how it should be built. When UBT is asked to build a target, it compiles the eponymous file and instantiates the class to determine its settings.
+

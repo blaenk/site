@@ -1019,3 +1019,142 @@ During destruction, while an object is being garbage collected, the following pr
 2. `IsReadyForFinishDestroy` is called by the garbage collector to determine whether the object is ready to be deallocated, which means that the object can return `false` to defer its destruction until the next GC pass.
 3. `FinishDestroy` is called when the object is finally going to be destroyed and is the final chance to free up internal data structures
 
+# Components
+
+`UActorComponent` is the base class of `Component`. It can `Tick`. They're associated with an Actor but don't exist in the world. They're for conceptual functionality like AI or interpreting player input.
+
+`USceneComponent` is an ActorComponent that has a transform. SceneComponents can be attached hierarchically. An Actor's transform is taken from the root SceneComponent if there is one.
+
+`UPrimitiveComponent` is a SceneComponent with a graphical representation, physics, and collision properties, such as a mesh or a particle system.
+
+Components are registered in a scene with the `RegisterComponent` function, so that they may be updated each frame. That function calls `RegisterComponentWithScene` to ensure that the component is present in the Actor's `Components` array, is associated with the scene, and creates a render proxy and physics state for it.
+
+ActorComponents are automatically registered when their owning Actor is spawned as long as they are created as sub-objects and were added to the `Components` array in the Actor's default properties. Otherwise they can be registered dynamically via `RegisterComponent`. A Component can override the following registration callbacks:
+
+* `OnRegister` which allows for additional component initialization
+* `CreateRenderState` which initializes the Component's render state
+* `OnCreatePhysicsState` which initializes the Component's physics state
+
+A Component can be unregistered to prevent it from being updated, simulated, or rendered by calling the `UnregisterComponent` function, which triggers the following callbacks:
+
+* `OnUnRegister` which allows for additional actions to occur when unregistering
+* `DestroyRenderState` which uninitializes the Component's render state
+* `OnDestroyPhysicsState` which uninitializes the Component's physics state
+
+A Component can be updated each frame as long as they are registered, are set to tick by disabling `bComponentNEverTicks`, and define the `TickComponent` function.
+
+A Component's render state must exist for it to be rendered. It can be used to indicate to the Engine when the render data needs to be updated, in which case the render state is marked dirty so that it may be updated at the end of the current frame.
+
+A Component's physics state must exist for it to be simulated by the physics engine. Unlike the render state, physics changes happen immediately.
+
+Since SceneComponents have an associated transform, they can be attached to one another. An attached SceneComponent has an `AttachParent` property that points to the parent SceneComponent that they're attached to. This is generally used to allow one Component to contain multiple other Components.
+
+This also makes it possible to "attach" one Actor to another, although what's actually happening is that a SceneComponent from one is being attached to the SceneComponent in another. Naturally, since each Component can only have a single parent, only the attached Actor's root component can be attached to another Actor's component, otherwise only the subtree rooted at the attached Component would be attached, which would essentially leave the Actor unaffected since it takes on its root Component's transform.
+
+The `ComponentToWorld` `FTransform` contained in a SceneComponent describes its world-relative transform and is generally for internal use. A SceneComponent also contains a `RelativeLocation` vector, `RelativeRotation` rotator, and `RelativeScale3D` vector which together describe the Component's transform relative to their parent, unless the `bAbsoluteLocation`, `bAbsoluteRotation`, and `bAbsoluteScale` properties are set in which case they are world-relative. It's possible to set world-relative translation and rotation transforms despite the value of those properties with the `SetWorldLocation` and `SetWorldRotation` functions.
+
+PrimitiveComponents are SceneComponents that create or generate geometry that is rendered and/or used as collision data. Examples include `CapsuleComponent` which generates geometry used for collision detection, and `StaticMeshComponent` and `SkeletalMeshComponent` which contain pre-built geometry and can _also_ be used for collision detection.
+
+A PrimitiveComponent contains an `FPrimitiveSceneProxy` which encapsulates scene data that is mirrored to facilitate rendering the primitive in parallel to the game thread. A subclass of `FPrimitiveSceneProxy` is created for each primitive type in order to hold the render data necessary to render that type of primitive.
+
+The canonical Actor-spawning function is on `UWorld` and takes a variety of arguments for fine-grained spawning configuration. The only required argument is the `UClass` of the Actor to spawn. Some optional arguments include:
+
+* a name to give the Actor
+* a location and rotation
+* a template Actor whose properties should be copied (instead of the CDO)
+* whether to fail the spawn if it collides
+* who the Actor's owner will be
+* the instigator: the Actor will be responsible for damage caused by the spawned Actor
+
+``` cpp
+AActor* UWorld::SpawnActor
+(
+  UClass*         Class,
+  FName           InName,
+  FVector const*  Location,
+  FRotator const* Rotation,
+  AActor*         Template,
+  bool            bNoCollisionFail,
+  bool            bRemoteOwned,
+  AActor*         Owner,
+  APawn*          Instigator,
+  bool            bNoFail,
+  ULevel*         OverrideLevel,
+  bool            bDeferConstruction
+)
+
+// Example
+AKAsset* actor = (AKAsset*)GetWorld()->SpawnActor(AKAsset::StaticClass(), NAME_None, &Location);
+```
+
+Several templated functions exist for common spawning cases.
+
+One exists which spawns an Actor at the location and rotation of the Actor performing the spawn, and automatically returns a pointer of the Actor's type so no casting is necessary.
+
+``` cpp
+template<class T>
+T* SpawnActor (
+  AActor* Owner = NULL,
+  APawn* Instigator = NULL,
+  bool bNoCollisionFail = false
+)
+{
+  return (T*)(GetWorld()->SpawnActor(T::StaticClass(),
+                                     NAME_None,
+                                     NULL,
+                                     NULL,
+                                     NULL,
+                                     bNoCollisionFail,
+                                     false,
+                                     Owner,
+                                     Instigator));
+}
+
+// Example
+AHUD *MyHUD = SpawnActor<AHUD>(this, Instigator);
+```
+
+There's also a variant like this one which takes an explicit Location and Rotation:
+
+``` cpp
+template<class T>
+T* SpawnActor (
+  FVector const& Location,
+  FRotator const& Rotation,
+  AActor* Owner=NULL,
+  APawn* Instigator=NULL,
+  bool bNoCollisionFail=false
+)
+{
+  return (T*)(GetWorld()->SpawnActor(T::StaticClass(),
+                                     NAME_None,
+                                     &Location,
+                                     &Rotation,
+                                     NULL,
+                                     bNoCollisionFail,
+                                     false,
+                                     Owner,
+                                     Instigator));
+}
+
+// Example
+AController *Controller = SpawnActor<AController>(GetLocation(),
+                                                  GetRotation(),
+                                                  NULL,
+                                                  Instigator,
+                                                  true);
+```
+
+There are also variants of each of the above variants which take a `UClass` and automatically cast to the correct type.
+
+``` cpp
+AHUD *MyHUD = SpawnActor<AHUD>(NewHUDClass, this, Instigator);
+
+// With explicit location + rotation
+APawn* ResultPawn = SpawnActor<APawn>(DefaultPawnClass,
+                                      StartLocation,
+                                      StartRotation,
+                                      NULL,
+                                      Instigator);
+```
+

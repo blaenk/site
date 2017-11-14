@@ -1888,3 +1888,161 @@ damageType = generalDamage;
 
 using `TSubclassOf` also restricts the choices available in the Editor to those that are subclasses of the specified type.
 
+# Blueprints
+
+Blueprints are a visual programming tool. Each Blueprint has a _Construction Script_ which is analogous to a class constructor: it is run when the object is created.
+
+## Blueprint Primitives
+
+A _reroute node_ is used to steer paths of blueprint graph edges.
+
+Macros are mainly used to group simple, frequently used instructions. Unlike functions, macros are inlined.
+
+A variable is created for each component included in a blueprint which points to that component.
+
+Event dispatchers allow the binding of one event to another.
+
+The _Spawn Actor From Class_ node can be used to spawn an actor of a specified class. One can specify the transform to use upon spawning, how it should handle collision when spawning within another object, and a reference to an instigator: a pawn responsible for damage caused by the spawned actor.
+
+## Blueprint Compilation
+
+Blueprints are compiled into UnrealScript VM bytecode before they can be used in-game.
+
+`FKismetCompilerContext` is the class that compiles the Blueprint. It stores a reference to the class being compiled.
+
+`FKismetFunctionContext` stores information for compiling a single function, such as a reference to the associated graph, its properties, and generated `UFunction`.
+
+`FNodeHandlingFunctor` processs one class of node in the compiler (a singleton). Handles registering pin connections and generating compiled statements.
+
+`FKismetCompiledStatement` represents a unit of work in the compiler. The compiler translates nodes into a set of compiled statements which the backend translates into bytecode. Examples of compiled statements include `Goto`, `Call`, etc.
+
+`FKismetTerm` represents a terminal node in the graph, such as a literal value, `const`, or variable reference. Each data pin connection is associated with an `FKismetTerm`.
+
+The compilation process is as follows:
+
+1. Clean the class.
+
+    The same `UBlueprintGeneratedClass` is cleaned and reused for each compilation.
+
+2. Create Class Properties
+
+    Find all `UProperties` needed by the class and create them on the `UClass`' scope.
+
+3. Create Function List
+
+    Create the function list for the class by processing the event graphs, regular function graphs, and then pre-compiling the functions.
+
+    Processing the event graphs involves copying and merging all event graphs into a single graph, expanding its nodes, then creating function stubs for each Event node. An `FKismetFunctionContext` is created for each event graph.
+
+    Processing the function graphs involves duplicating each graph to a temporary graph in order to expand the nodes. An `FKismetFunctionContext` is created for each function graph.
+
+    Pre-compiling functions involves:
+
+      * scheduling execution and calculating data dependencies
+      * pruning nodes that are unscheduled or not data dependencies
+      * generating `FKismetTerms` for values in the function
+      * creating the `UFunction` and any associated properties
+
+4. Bind and Link the Class
+
+    The class is bound and linked now that all `UProperty`s and `UFunction`s are known. This essentially produces a class header and the Class Default Object.
+
+5. Compile Functions
+
+    Generates `FKismetCompiledStatement` objects for the remaining nodes.
+
+    This only occurs during a Full Compile.
+
+6. Finish Compiling Class
+
+    Finalizes the class flags and propagates flags and metadata from the parent class.
+
+7. Backend Emits Generated Code
+
+    Converts the statements from each function context into code using either of two backends:
+
+    * `FKismetCompilerVMBackend` which generates UnrealScript VM bytecode which are then serialized into the function's script array
+    * `FKismetCppBackend` which generates C++-like code for debugging purposes only
+
+    This only occurs during a Full Compile.
+
+8. Copy Class Default Object Properties
+
+    Copies the values from the old CDO of the class into the new CDO. Components of the CDO are re-instanced and fixed-up.
+
+9. Re-instance
+
+    All objects are re-instanced with the newly compiled class since the class may have changed size and properties may have been added or removed.
+
+## Blueprints versus Native Code
+
+Epic says that it's common for them to use Blueprints extensively and then profile and optimize by collapsing certian nodes into native C++.
+
+Some things are better expressed in C++ than Blueprints, so complexity may be a deciding factor.
+
+Some examples of divisions of labor include:
+
+* C++ `Character` class with custom events, which is extended to Blueprints assign meshes and set defaults
+* C++ base `Turret` class that is extended in Blueprints into concrete classes such as `ArrowTurret`
+* C++ `Pickup` class with `BlueprintImplementableEvent` functions `Collect` and `Respawn` which are overridden in Blueprints to spawn different particle emitters and sound effects
+
+## Blueprint Nativization
+
+[Blueprint nativization](https://docs.unrealengine.com/latest/INT/Engine/Blueprints/TechnicalGuide/NativizingBlueprints/index.html) generates C++ from the Blueprint Classes.
+
+Inclusive nativization nativizes all supported Blueprint classes, which can greatly increase the executable's size.
+
+Exclusive nativization allows the explicit specification of which Blueprint classes should be nativized.
+
+## Blueprint Best Practices
+
+Favor multiple output parameters over returning structs.
+
+Adding new parameters is acceptable, but avoid removing or changing parameters. Instead deprecate the old function and create a new one.
+
+Consider using the `ExpandEnumAsExecs` function specifier to make it easier to work with enumeration parameters.
+
+Functions that take time to complete (e.g. a move order) should be marked with the `Latent` and `Duration` function specifiers. This also requires passing an `FLatentActionInfo` parameter.
+
+Functions can be put into a shared library to make them usable from multiple classes, obviating the "Target" blueprint pin.
+
+## Blueprint Function Libraries
+
+Shared utility static C++ functions that don't belong to any particular gameplay object type can be exposed to Blueprints through Blueprint Function Libraries, which are created by defining a class that derives from `UBluePrintFunctionLibrary`.
+
+Blueprint Function Libraries can be useful for collapsing multiple Blueprint nodes into a single C++ node, yielding greater performance and reducing complexity.
+
+See this example from `AnalyticsBlueprintLibrary.h`.
+
+``` cpp
+UCLASS()
+class UAnalyticsBlueprintLibrary :
+  public UBlueprintFunctionLibrary
+{
+  GENERATED_BODY()
+
+  // Starts an analytics session without any custom attributes specified.
+  UFUNCTION(BlueprintCallable, Category="Analytics")
+  static bool StartSession();
+}
+
+bool UAnalyticsBlueprintLibrary::StartSession()
+{
+  TSharedPtr<IAnalyticsProvider> Provider = FAnalytics::Get().GetDefaultConfiguredProvider();
+
+  if (Provider.IsValid())
+  {
+    return Provider->StartSession();
+  }
+  else
+  {
+    UE_LOG(LogAnalyticsBPLib,
+           Warning,
+           TEXT("StartSession: Failed to get the default analytics provider. ")
+           TEXT("Double check your [Analytics] configuration in your INI"));
+  }
+
+  return false;
+}
+```
+

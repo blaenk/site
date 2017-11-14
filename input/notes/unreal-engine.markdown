@@ -582,7 +582,7 @@ AWindPointSource::AWindPointSource()
 }
 ```
 
-# Functions
+## Functions
 
 Functions can be marked up with the `UFUNCTION` macro which, like `UCLASS`, accepts function specifiers. Assuming that the appropriate function specifiers are set, these functions could be:
 
@@ -644,7 +644,7 @@ The `DeprecatedFunction` function metadata specifier marks the function as depre
 
 The `UnsafeDuringActorConstruction` function metadata specifier marks the function as unsafe to call during Actor construction.
 
-# Structs
+## Structs
 
 Structs can be marked with the `USTRUCT` macro. The generated body is inserted via the `GENERATED_BODY` macro.
 
@@ -662,7 +662,7 @@ The `BlueprintType` struct specifier allows the struct to be used for variables 
 
 The `NoExport` struct specifier indicates that no code be generated for the struct, so that the header is only provided to parse metadata from.
 
-# Interfaces
+## Interfaces
 
 Interfaces are declared with a regular `U`-prefixed class that inherits from the `UInterface` class and is marked with the `UINTERFACE` macro.
 
@@ -737,7 +737,7 @@ AActor* Actor = Cast<AActor>(ReactingObject);
 
 The `CannotImplementInterfaceInBlueprint` interface metadata specifier prevents the interface from being implemented by a Blueprint. This is useful if it has only non-exposed C++ methods, for example. More generally, if the interface has any functions that aren't `BlueprintImplementableEvent` or `BlueprintNativeEvent` then it must be marked as `CannotImplementInterfaceInBlueprint`, since the Blueprint would be unable to implement those methods.
 
-# Properties
+## Properties
 
 Class properties can be marked up with the `UPROPERTY` macro.
 
@@ -862,7 +862,7 @@ The `SimpleDisplay` property specifier indicates that the property should appear
 
 The `Transient` property specifier indicates that the property is transient and should not be saved. It is zeroed at load time.
 
-# Enumerations
+## Enumerations
 
 Enumerations can be marked up with the `UENUM` macro. Generally the `BlueprintType` enum specifier is provided to expose the enumeration type to the editor. Individual enumerations can be marked up with the `UMETA` macro, which is useful for setting the `DisplayName` meta specifier, which specifies the name that the enumeration should appear as in the editor.
 

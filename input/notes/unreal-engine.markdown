@@ -945,3 +945,13 @@ Fields that should only be accessible by derived classes should be made private 
 
 Classes that should not be derived from should be marked `final`.
 
+# Source vs Launcher
+
+The source must be built in order to build a [standalone dedicated server](https://wiki.unrealengine.com/Standalone_Dedicated_Server).
+
+The engine can be added as a submodule of the game repository, in which case the `.uproject`'s [`EngineAssociation`](https://docs.unrealengine.com/latest/INT/API/Runtime/Projects/FProjectDescriptor/EngineAssociation/index.html) setting must be set to a relative path to that submodule:
+
+> For users which mount the engine through a Git submodule (where the engine is in a subdirectory of the project), this field can be manually edited to be a relative path.
+
+It seems that Epic's own [internal workflow](https://answers.unrealengine.com/questions/43614/uproject-files-engineassociation-saves-a-guid-whic.html) is to embed the game directly within the engine source tree.
+

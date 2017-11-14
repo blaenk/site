@@ -913,3 +913,35 @@ The `SimpleDisplay` property specifier indicates that the property should appear
 
 The `Transient` property specifier indicates that the property is transient and should not be saved. It is zeroed at load time.
 
+# Enumerations
+
+Enumerations can be marked up with the `UENUM` macro. Generally the `BlueprintType` enum specifier is provided to expose the enumeration type to the editor. Individual enumerations can be marked up with the `UMETA` macro, which is useful for setting the `DisplayName` meta specifier, which specifies the name that the enumeration should appear as in the editor.
+
+``` cpp
+UENUM(BlueprintType)
+enum class EDamageElement : uint8
+{
+  DE_Earth  UMETA(DisplayName="Earth"),
+  DE_Fire   UMETA(DisplayName="Fire"),
+  DE_Water  UMETA(DisplayName="Water")
+};
+```
+
+The `ENUM_CLASS_FLAGS` macro can be used to automatically define all bitwise operators for an enumeration class, _except_ for boolean checks, for which the enumeration must define a `None` enumeration set to `0` which is tested against explicitly.
+
+An enumeration can be marked as a `UPROPERTY` as long as it is based on a `uint8`.
+
+``` cpp
+// Old way.
+UPROPERTY()
+TEnumAsByte<EDamageElement> MyProperty;
+
+// New way.
+UPROPERTY()
+EDamageElement MyProperty;
+```
+
+Fields that should only be accessible by derived classes should be made private with protected accessors.
+
+Classes that should not be derived from should be marked `final`.
+

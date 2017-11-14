@@ -162,3 +162,18 @@ The `Canvas` object can be used in the HUD's render loop to draw low-level eleme
 
 [Unreal Motion Graphics UI Designer](https://docs.unrealengine.com/latest/INT/Engine/UMG/index.html) (UMG) is a visual UI authoring tool that can be used to create HUDs, menus, or other interfaces.
 
+# Code Style
+
+Many classes have a prefix character that denotes their expected usage or lineage. Type definitions should have a prefix corresponding to the prefix that would be used on for underlying type. These prefixes are actually expected by UnrealHeaderTool.
+
+* `T`: Template class
+* `U`: Inherits from `UObject`
+* `A`: Inherits from `AActor`
+* `S`: Inherits from `SWidget`
+* `I`: Abstract interface
+* `E`: Enum
+* `b`: Boolean variable
+* `F`: most other classes
+
+The Unreal Engine source code style is to keep each brace on its own line.
+

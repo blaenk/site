@@ -955,3 +955,67 @@ The engine can be added as a submodule of the game repository, in which case the
 
 It seems that Epic's own [internal workflow](https://answers.unrealengine.com/questions/43614/uproject-files-engineassociation-saves-a-guid-whic.html) is to embed the game directly within the engine source tree.
 
+# Actors
+
+An actor is an object that can be placed in a level. They support 3D transformation sand can be spawned and destroyed. The base class is `AActor`. Note that although actors support 3D transformations they don't actually store the Transform data. Instead, the Actor's root component's Transform data is used instead.
+
+The `SpawnActor` function can be used to spawn an Actor.
+
+Actors are essentially containers for Components, which control how the Actor moves, renders, etc.
+
+All Actors have the ability to tick each frame or at a user-defined interval so that calculations can be updated or actions performed. Actors tick via the `Tick` function, while ActorComponents tick via `TickComponent`.
+
+Actors are generally not garbage collected since the World Object holst a list of Actor references, but they can be explicitly destroyed via `Destroy`, which removes them from the level and marks them for removal.
+
+An Actor can be loaded from disk when it's already in a level, via `LoadMap` or `AddToWorld`.
+
+1. Actors in a package or level are loaded from the disk
+2. `PostLoad` called by serialized Actors when they're finished loading. Custom versioning and fixup occurs here. It's mutually exclusive with `PostActorCreated`.
+3. `InitializeActorsForPlay`
+4. `RouteActorInitialize` is called for any non-initialized Actor in order to cover seamless travel carry-over.
+    1. `PreInitializeComponents` is called before `InitializeComponent` is called on the Actor's Components
+    2. `InitializeComponent` is a helper function for the creation of each component defined on the Actor
+    3. `PostInitializeComponents` is called after the Actor's components have been initialized.
+5. `BeginPlay` is called when the level is started
+
+When an actor is instantiated for Play-in-Editor, the Actors in the Editor are duplicated into a new World and `PostDuplicate` is called, then the process follows as with step #3 of the loading-from-disk process.
+
+When an Actor is spawned, the following process is followed:
+
+1. `SpawnActor` is called
+2. `PostSpawnInitialize`
+3. `PostActorCreated` is called for spawned Actors after their creation, so initialization go there. It's mutually exclusive with `PostLoad`.
+4. `ExecuteConstruction`
+    1. `OnConstruction` is the construction of the Actor, where Blueprint Actors create their components and initialize their Blueprint variables
+5. `PostActorConstruction`
+    1. `PreInitializeComponents` is called before `InitializeComponent` is called on the Actor's Components
+    2. `InitializeComponent` is a helper function for the creation of each component defined on the Actor
+    3. `PostInitializeComponents` is called after the Actor's components have been initialized.
+6. `OnActorSpawned` is broadcast on the `UWorld`
+7. `BeginPlay` is called
+
+It's possible for an Actor to be Deferred Spawned by setting any property to "Expose on Spawn." In that case, the following process is followed:
+
+1. `SpawnActorDeferred` is called and is meant to spawn procedural Actors, allowing for additional setup before the Blueprint construction
+2. Everything in `SpawnActor` occurs, then after `PostActorCreated`:
+    1. Call various initializers with the valid but incomplete Actor instance
+    2. `FinishSpawningActor` is called to finalize the Actor
+    3. Continue at the `ExecuteConstruction`
+
+The `EndPlay` function guarantees that an Actor's life is coming to an end by marking it as `RF_PendingKill` so that it's removed on the next garbage collection cycle. It is called in many places such as:
+
+* the `Destroy` function
+* Play-in-Editor ended
+* Level Transitions, be it seamless travel or load map
+* when a streaming level containing the Actor is unloaded
+* Actor's lifetime has expired
+* application shutdown
+
+To check if an Actor is pending kill, an attempt should be made to acquire a weak pointer `FWeakObjectPtr<TheActor>`.
+
+During destruction, while an object is being garbage collected, the following process is followed:
+
+1. `BeginDestroy` is called to allow the Actor to free any resources. Gameplay-related destruction behavior should occur in `EndPlay`
+2. `IsReadyForFinishDestroy` is called by the garbage collector to determine whether the object is ready to be deallocated, which means that the object can return `false` to defer its destruction until the next GC pass.
+3. `FinishDestroy` is called when the object is finally going to be destroyed and is the final chance to free up internal data structures
+

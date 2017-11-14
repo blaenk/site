@@ -788,7 +788,7 @@ AActor* Actor = Cast<AActor>(ReactingObject);
 
 The `CannotImplementInterfaceInBlueprint` interface metadata specifier prevents the interface from being implemented by a Blueprint. This is useful if it has only non-exposed C++ methods, for example. More generally, if the interface has any functions that aren't `BlueprintImplementableEvent` or `BlueprintNativeEvent` then it must be marked as `CannotImplementInterfaceInBlueprint`, since the Blueprint would be unable to implement those methods.
 
-## Properties
+# Properties
 
 Class properties can be marked up with the `UPROPERTY` macro.
 

@@ -248,3 +248,388 @@ The UnrealBuildTool (UBT) supports the following targets:
 
 Targets are declared in <span class="path">.target.cs</span> files within the <span class="path">Source/</span> directory. Such a file declares a class deriving from the `TargetRules` class, with properties set in its constructor for how it should be built. When UBT is asked to build a target, it compiles the eponymous file and instantiates the class to determine its settings.
 
+# Engine Architecture
+
+## Object System
+
+Marking classes, properties, and functions with the corresponding Unreal macros turns them into `UClass`s, `UProperty`s, and `UFunction`s, which exposes them to the Unreal Engine.
+
+`UObject`s are automatically zeroed on initialization _before_ their constructors are invoked, both native members and `UProperty`s.
+
+### Garbage Collection
+
+The engine maintains a reference graph of `UObjects` that are periodically flagged for destruction. The "root set" consists of the objects at the root of the graph. Any `UObject` can be added to the root set. Any `UObjects` not found in the reference graph are assumed unneeded and will be removed. This can be done in a separate thread, known as multithreaded reachability analysis.
+
+Objects can be retained by marking them as a `UProperty` or keeping them in an engine container such as `TArray`. Actors are usually referenced by an Object that is directly or indirectly linked to the root set, such as through a Level in which they were placed, while their Components are linked to the root set through the Actor that they belong to.
+
+Actors can be explicitly marked for destruction through the `AActor::Destroy` function, while Components have the `UActorComponent::DestroyComponent` function.
+
+All references to a destroyed or otherwise removed `AActor` or `UActorComponent` that is visible to the reflection system are automatically nulled, including `UProperty`s and those stored in Unreal Engine containers such as `TArray`, so as to prevent dangling pointers from persisting. A weak pointer can be created via `TWeakObjectPtr` for cases where an Object pointer should not be a `UProperty`.
+
+All references to a `UObject` `UProperty` are also nulled when an asset is "Force Deleted" within the Editor.
+
+By default the garbage collector clusters `UObject`s so that an entire cluster is checked instead of each individual Object, which generally improves garbage collection performance and decreases time spent on reachability analysis.
+
+Furthermore, clusters can optionally be merged when one Object references an Object in another. This is irreversible, so that even if the reference that caused the merge is severed, the cluster remains. This may prevent collection in some cases since any reference to any object within the cluster will keep the entire cluster from being collected.
+
+Actors can merged into clusters if the feature is enabled and the actor opts-in by setting its `bCanBeInCluster` property or overriding the `CanBeInCluster` function to return `true`. This is usually useful for Actors that are expected to be destroyed all at once, such as indestructible static meshes that are only destroyed by unloading the level. By default only StaticMeshActors and Reflection Capture Components opt-in.
+
+It's also possible to configure the amount of time between collections, which generally decreases the likely amount of unreachable objects that will be discovered in the next reachability analysis pass.
+
+### Run-Time Type Information
+
+`UObjects` know their `UClass`, which facilitates run-time type checking and casting.
+
+``` cpp
+class ALegendaryWeapon : public AWeapon
+{
+  void SlayMegaBoss()
+  {
+    TArray<AEnemy> EnemyList = GetEnemyList();
+
+    // The legendary weapon is only effective against the MegaBoss
+    for (AEnemy Enemy : EnemyList)
+    {
+      AMegaBoss* MegaBoss = Cast<AMegaBoss>(Enemy);
+
+      if (MegaBoss)
+      {
+        Incinerate(MegaBoss);
+      }
+    }
+  }
+};
+```
+
+Each `UObject` has a `typedef` named `Super` that is set to its parent class, which can be used to invoke behavior in the parent class.
+
+``` cpp
+class AEnemy : public ACharacter
+{
+  virtual void Speak()
+  {
+    Say("Time to fight!");
+  }
+};
+
+class AMegaBoss : public AEnemy
+{
+  // "Powering up! Time to fight!"
+  virtual void Speak()
+  {
+    Say("Powering up! ");
+    Super::Speak();
+  }
+};
+```
+
+### Serialization
+
+Serializing `UObject`s consists of serializing its `UProperty` values unless they're marked `Transient` or if they are unchanged from the post-constructor default value. Any `UProperty`s that were added receive default values from the CDO, while those removed are simply ignored.
+
+Custom behavior can be defined by overriding the `UObject::Serialize` function, which is often used for detecting data errors, checking version numbers, or performing data migrations.
+
+When a `UClass`'s CDO is changed, the engine attempts to apply those changes to future instances when they are loaded as long as the instance's copy of the member that was changed in the CDO has the previous CDO's value (i.e. the previous default), otherwise it's assumed that the instance explicitly requested a non-default value for a reason.
+
+## Network Replication
+
+`UProperty`s can marked for network replication. A common flow is for the server to change a variable, then for the Engine to detect and replicate the change to all clients, each of which can optionally receive a callback function when the variable changes via replication.
+
+`UFunction`s can also be marked to execute on a remote machine. For example, a function marked `Server` that is called on a client causes that function to be invoked on the server, and vice versa.
+
+## Gameplay Modules
+
+Each game is modular just like the engine is. Each gameplay module is a collection of related classes usually resulting in shared libraries (just like engine modules). At the very least, each gameplay module must have a header file, implementation file, and build file.
+
+Multiple gameplay modules may result in better link times and faster code iteration at the expense of more interfacing glue code.
+
+<span class="path">MyGame/Source/MyModule/Public/MyModule.h</span>:
+
+``` cpp
+#include "Engine.h"
+#include "EnginePrivate.h"
+#include "MyModuleClasses.h" // UHT-generated
+```
+
+<span class="path">MyGame/Source/MyModule/Private/MyModule.cpp</span>:
+
+``` cpp
+// Include our game's header file
+#include "MyModule.h"
+
+// Designate the module as primary
+IMPLEMENT_PRIMARY_GAME_MODULE(MyModule, "MyGame");
+```
+
+<span class="path">MyGame/Source/MyModule/MyModule.build.cs</span>:
+
+``` csharp
+using UnrealBuildTool;
+
+public class MyModule : ModuleRules
+{
+    public MyModule(TargetInfo Target)
+    {
+        PublicDependencyModuleNames.AddRange(new string[] { "Core", "Engine" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "RenderCore" });
+    }
+}
+```
+
+The module must then be registered in the <span class="path">DefaultEngine.ini</span> configuration file.
+
+In the `EditPackages` array of the `UnrealEd.EditorEngine` section:
+
+``` ini
+[UnrealEd.EditorEngine]
++EditPackages=MyModule
+```
+
+The `Launch` section:
+
+``` ini
+[Launch]
+Module=MyModule
+```
+
+And the `NativePackages` array of the <span class="path">/Script/Engine.UObjectPackages</span> section:
+
+``` ini
+[/Script/Engine.UObjectPackages]
++NativePackages=MyModule
+```
+
+## Gameplay Classes
+
+Each gameplay class has a header and implementation. Using the C++ Class Wizard automatically creates the header and implementation files and configures the game module. By convention, the file names _omit_ the Unreal Engine standard prefixes, so that `AActor` is defined in <span class="path">Actor.h</span>, although the engine places no formal relationship between the class and file name.
+
+Each gameplay class header should include, as the final inclusion, the UHT-generated header file named after the class in question with a <span class="path">.generated</span>. infix marker, so that <span class="path">MyClass.h</span> would include <span class="path">MyClass.generated.h</span>.
+
+A class is registered with Unreal Engine through the `UCLASS()` macro which describes how the class' corresponding `UClass` should be constructed.
+
+The `Abstract` class specifier prevents the user from creating instances of that class, which includes adding Actors of that class with the Unreal Editor. An example would be `ATriggerBase`.
+
+The `Blueprintable` class and interface specifier exposes the class as an acceptable base class for a Blueprint. The default is `NotBlueprintable`. Inherited.
+
+The `BlueprintType` class specifier exposes the class as a type that can be used for variables in Blueprints.
+
+The `ClassGroup` class specifier can be used to specify the group name under which to show this class in the Actor Browser.
+
+The `Config` class specifier indicates that the class can store data in a configuration file for any configurable variables in the class declared with the `config` or `globalconfig` variable specifiers.
+
+The `Const` class specifier indicates that _all_ properties and functions in the class are `const` and should be exported as `const`. Inherited.
+
+The `DefaultToInstanced` class specifier indicates that all instances should be considered "instanced," which are duplicated upon construction. Inherited.
+
+The `DependsOn` class and interface specifier can be used to specify one or more classes that are compiled before this class. This is useful when using structs or enums declared in another class.
+
+The `Deprecated` class specifier marks the class as deprecated, and objects of that class will not be saved when serializing (presumably because it may not be possible to read it back). Inherited.
+
+The `MinimalAPI` class and interface specifier causes only the type information to be exported for use by other modules, so that they can cast to it but not invoke its functions (besides inline methods), which improves compile times.
+
+The `PerObjectConfig` class specifier indicates that the object's configuration will be stored per-object where each object will have its own section named `[ObjectName ClassName]`. Inherited.
+
+The `Placeable` class specifier indicates that the class can be created and placed within a level, UI scene, or Blueprint (depending on the class type). Inherited. Can override with `NonPlaceable`.
+
+The `Transient` class specifier indicates that objects of this class should never be persisted to disk, particularly for use with native classes that are non-persistent by nature, such as players or windows. Inherited. Can override with `NonTransient`.
+
+The `Within` class specifier indicates that its objects cannot exist outside of an instance of the given class name, so that in order to instantiate this class, an instance of the given class name must be specified as its `Outer` object.
+
+The `BlueprintSpawnableComponent` class metadata specifier allows the component class to be spawned by a Blueprint.
+
+The `GENERATED_BODY()` macro must be at the very top of the class definition for the UHT to inject the generated code.
+
+The `UCLASS` macro gives a `UObject` a reference to a `UClass` that contains a set of properties and functions that describe its Unreal-based type. The `UClass` keeps an object called the Class Default Object (CDO) which is an object initialized by the `UObject` constructor which serves as the "template object," an object whose properties are copied to every new instance of that `UObject`.
+
+Objects are automatically garbage collected. The `MarkPendingKill` function nullifies all pointers to the object and then deletes the object on the next garbage collection.
+
+The `UClass` and the CDO can be retrieved for any object, but they should be considered read-only. The `UClass` is accessible through the `GetClass` function.
+
+``` cpp
+UCLASS([specifier, …], [meta(key=value, …)])
+class ClassName : public ParentName
+{
+  GENERATED_BODY()
+}
+```
+
+The constructors are used to set default values for properties and necessary initialization. They're generally defined in the implementation file, but they can be defined inline in the class declaration, in which case the `CustomConstructor` specifier must be passed to its `UCLASS()` invocation to prevent the UHT from generating a corresponding declaration which would clash with the inline definition.
+
+A constructor variant can take an `FObjectInitializer` which can be used to override properties and sub-objects. For example, the following prevents the superclass of `AMyObject` from creating the sub-objects named `"SomeComponent"` and `"SomeOtherComponent"`.
+
+``` cpp
+AMyObject::AMyObject(const FObjectInitializer& ObjectInitializer)
+  : Super(ObjectInitializer
+            .DoNotCreateDefaultSubobject(TEXT("SomeComponent"))
+            .DoNotCreateDefaultSubobject(TEXT("SomeOtherComponent")))
+{
+    // Initialize CDO properties here.
+}
+```
+
+`UObject` provides the following functionality:
+
+* garbage collection
+* reference updating
+* reflection
+* serialization
+* automatic updating of default property changes
+* automatic property initialization
+* editor integration
+* run-time type information
+* network replication
+
+`UObject`s can be instantiated in a variety of ways.
+
+The `NewObject<Type>()` function instantiates with an auto-generated name and takes as optional parameters the object's `Outer` and the `UClass` to instantiate, which by default is determined by the template type parameter.
+
+``` cpp
+template<class T>
+T *NewObject
+(
+  // The object's Outer.
+  UObject *Outer (UObject *)GetTransientPackage(),
+
+  // The UClass to instantiate.
+  UClass *Class = T::StaticClass()
+)
+```
+
+The `NewNamedObject<Type>()` function instantiates with the specified name. It takes as parmeters the object's `Outer`, the name to use, optional object flags, and the template object to use as the CDO. It asserts that the name conflicts with the instance's `Outer`.
+
+``` cpp
+template<class T>
+T *NewNamedObject
+(
+  UObject *Outer,
+
+  // The object name.
+  FName Name,
+
+  // Object flags.
+  EObjectFlags Flags = RF_NoFlags,
+
+  // Archetype object which is treated as the CDO.
+  UObject const *Template=NULL
+)
+```
+
+The `ConstructObject<Type>()` function instantiates with all available creation options for maximum flexibility. It calls `StaticConstructionObject` which allocates the object, calls its `ClassConstructor`, and performs any further initialization such as loading configuration or localization properties and instancing components.
+
+``` cpp
+template<class T>
+T* ConstructObject
+(
+  UClass *Class,
+  UObject *Outer = (UObject *)GetTransientPackage(),
+  FName Name = NAME_None,
+  EObjectFlags SetFlags = RF_NoFlags,
+  UObject const *Template = NULL,
+
+  // If true, copy transients from CDO instead of from Template archetype object.
+  bool bCopyTransientsFromClassDefaults false,
+
+  // Contains mappings of instanced objects and components to their templates.
+  // For instancing components owned by the new object.
+  struct FObjectInstancingGraph *InstanceGraph = NULL
+)
+```
+
+The `EObjectFlags` enumeration can be used to describe the spawned Object. It can be used to control the type of object being created (e.g. CDO, transient), its garbage collection behavior (e.g. part of root set, unreachable), and its lifetime phase (e.g. needs loading, being loaded, pending destruction).
+
+It's also possible to instantiate a `UObject` using a direct `new` operator invocation, which allows for passing constructor arguments.
+
+Hard-coded asset references are discouraged due to their brittle nature. To avoid looking-up assets on each constructor call (which involves searching), it is done once and cached through a `ConstructorStatics` struct, which is created once and then simply referenced by subsequent instantiations. The `ConstructorHelpers` namespace contains the `FObjectFinder` function which can be used to find an asset.
+
+``` cpp
+ATimelineTestActor::ATimelineTestActor()
+{
+  // One-time initialization
+  struct FConstructorStatics
+  {
+    ConstructorHelpers::FObjectFinder<UStaticMesh> Object0;
+    FConstructorStatics()
+      : Object0(TEXT("StaticMesh'/Game/Mesh/S_Health.S_Health'")) {}
+  };
+  static FConstructorStatics ConstructorStatics;
+
+  // Property initialization
+  StaticMesh = ConstructorStatics.Object0.Object;
+}
+```
+
+Similarly, the `ConstructorHelper::FClassFinder` can be used to find a reference to a particular `UClass`. Although it's usually possible and easier to just use the class's `StaticClass` function which yields the `UClass`, e.g. `USomeClass::StaticClass()`, unless it's a cross-module reference.
+
+``` cpp
+APylon::APylon(const class FObjectInitializer& ObjectInitializer)
+: Super(ObjectInitializer)
+{
+  // Structure to hold one-time initialization
+  static FClassFinder<UNavigationMeshBase> ClassFinder(
+    TEXT("class'Engine.NavigationMeshBase'"));
+
+  if (ClassFinder.Succeeded())
+  {
+    NavMeshClass = ClassFinder.Class;
+  }
+  else
+  {
+    NavMeshClass = nullptr;
+  }
+}
+```
+
+When an Actor is spawned, all of its components are cloned from the CDO, so they must be added to the object graph, so that they may be properly garbage collected, by keeping a reference to them within the class, which should be stored as a `UPROPERTY`.
+
+``` cpp
+UCLASS()
+class AWindPointSource : public AActor
+{
+  GENERATED_BODY()
+
+  public:
+  UPROPERTY()
+  UWindPointSourceComponent* WindPointSource;
+
+  UPROPERTY()
+  UDrawSphereComponent* DisplaySphere;
+};
+```
+
+It's then possible to create component sub-objects and attach them to the Actor's hierarchy. It's also possible to access and/or modify the parent components via `GetAttachParent`, `GetParentComponents`, `GetNumChildrenComponents`, `GetChildrenComponents`, and `GetChildComponent` on any `USceneComponent` including the root component.
+
+``` cpp
+AWindPointSource::AWindPointSource()
+{
+  // Create a new component named "WindPointSourceComponent0.
+  WindPointSource = CreateDefaultSubobject<UWindPointSourceComponent>(
+    TEXT("WindPointSourceComponent0"));
+
+  // Set our new component as the RootComponent of this actor,
+  // or attach it to the root if one already exists.
+  if (RootComponent == nullptr)
+  {
+    RootComponent = WindPointSource;
+  }
+  else
+  {
+    WindPointSource->AttachTo(RootComponent);
+  }
+
+  // Attach this component to the component we just created.
+  DisplaySphere = CreateDefaultSubobject<UDrawSphereComponent>(
+    TEXT("DrawSphereComponent0"));
+
+  DisplaySphere->AttachTo(RootComponent);
+
+  // Set some properties on the new component.
+  DisplaySphere->ShapeColor.R = 173;
+  DisplaySphere->ShapeColor.G = 239;
+  DisplaySphere->ShapeColor.B = 231;
+  DisplaySphere->ShapeColor.A = 255;
+  DisplaySphere->AlwaysLoadOnClient = false;
+  DisplaySphere->AlwaysLoadOnServer = false;
+  DisplaySphere->bAbsoluteScale = true;
+}
+```
+

@@ -2096,3 +2096,242 @@ The `ensureMsg()` macro is similar to `ensure()` but additionally takes a string
 
 The `ensureMsgf()` macro is simlar to `ensureMsg()` but also takes string formatting parameters.
 
+# Assets
+
+## Referencing ASsets
+
+A _hard_ asset reference is one that directly refers to the reference, causing it to load whenever the referrer is loaded. A _sort_ reference is an indirect reference by way of, for example, a string path to the object.
+
+A direct property asset reference is made by exposing the property via `UPROPERTY`and then associating it via Blueprint inheritance or an instance placed in the world.
+
+A construction-time asset reference is one that is explicitly "hard-coded" during the object's construction through the use of `ConstructionHelpers`, which finds objects and classes.
+
+``` cpp
+UPROPERTY()
+class UTexture2D* BarFillTexture;
+
+…
+
+AStrategyHUD::AStrategyHUD(const FObjectInitializer& ObjectInitializer)
+    : Super(ObjectInitializer)
+{
+    static ConstructorHelpers::FObjectFinder<UTexture2D> BarFillObj(TEXT("/Game/UI/HUD/BarFill"));
+
+    …
+
+    BarFillTexture = BarFillObj.Object;
+
+    …
+}
+```
+
+Both directy property references and construction-time references are hard references, which means that the references are loaded when the referrers are loaded. This can end up increasing the memory footprint even if the references aren't immediately needed.
+
+The `TSoftObjectPtr` type can be used to represent a soft reference to an asset. It stores a string path to the reference and methods to query its loaded status. The reference must be explicitly loaded using the synchronous functions `LoadObject<T>` or `StaticLoadObject`, or asynchronous `FStreamingManager`.
+
+There is also a `TSoftClassPtr` type variant that works the same way.
+
+``` cpp
+UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=Building)
+TSoftObjectPtr<UStaticMesh> BaseMesh;
+
+UStaticMesh *GetLazyLoadedMesh()
+{
+  // If it hasn't been loaded, force-load it synchronously with
+  // FStreamingManager.
+  if (BaseMesh.IsPending())
+  {
+    const FSoftObjectPath& AssetRef = BaseMesh.ToStringReference();
+    BaseMesh = Cast<UStaticMesh>(Streamable.SynchronousLoad(AssetRef));
+  }
+
+  // Return internal pointer.
+  return BaseMesh.Get();
+}
+```
+
+The `FSoftObjectPath` struct contains a string with the full name of an asset. In the editor it shows up as a `UObject` pointer property. It handles cooking and redirects.
+
+The `TSoftObjectPtr` templated type is essentially a `TWeakObjectPtr` to an `FSoftObjectPath` which restricts the specific class of object that is referred. If the class is already loaded, the `Get` function will return it, otherwise the `ToSoftObjectPath` function can be used to retrieve the path to it so it can be loaded explicitly.
+
+It's also possible to find or load objects by a string path.
+
+Given a string path to an already-loaded object, a pointer to it can be found with the `FindObject<T>` function.
+
+``` cpp
+AFunctionalTest* TestToRun = FindObject<AFunctionalTest>(TestsOuter, *TestName);
+```
+
+Given a string path, it's possible to load an object and obtain a pointer to it with the `LoadObject<T>` function.
+
+``` cpp
+GridTexture = LoadObject<UTexture2D>(
+    NULL,
+    TEXT("/Engine/EngineMaterials/DefaultWhiteGrid.DefaultWhiteGrid"),
+    NULL,
+    LOAD_None,
+    NULL);
+```
+
+There is also a `LoadClass<T>` variant which is essentially equivalent to loading it with `LoadObject` and verifying its `UClass`.
+
+``` cpp
+DefaultPreviewPawnClass = LoadClass<APawn>(NULL, *PreviewPawnName, NULL, LOAD_None, NULL);
+
+// Equivalent
+DefaultPreviewPawnClass = LoadObject<UClass>(NULL, *PreviewPawnName, NULL, LOAD_None, NULL);
+
+if (!DefaultPreviewPawnClass->IsA(APawn::StaticClass()))
+{
+    DefaultPreviewPawnClass = nullptr;
+}
+```
+
+## Asset Registry
+
+The asset registry stores metadata about assets and allows searching and querying those assets. The Editor uses it to display information in the Content Browser.
+
+A property must be amrked with the `AssetRegistrySearchable` property specifier in order to make it searchable through the asset registry.
+
+Asset registry queries return objects of type `FAssetData` which contains information about the object, including:
+
+* `ObjectPath` in the form `Package.GroupNames.AssetName`
+* `PackageName` of the package containing the asset
+* `PackagePath` of the package containing the asset
+* `GroupNames` containing the asset, comma delimited
+* `AssetName` without package or groups
+* `AssetClass`, its `UClass`
+* `TMap<FName, FString> TagsAndValues` map of properties that were marked `AssetRegistrySearchable`
+
+There are functions that can retrieve lists of assets based on certain properties, such as `GetAssetsByPackageName` or the more general `GetAllAssets`.
+
+The `GetAsset` function can be used to load the asset (if it isn't already) and return it.
+
+An `ObjectLibrary` contains a list of loaded objects or `FAssetData` objects for unloaded objects. This can be used to designate a directory as an asset source instead of having to manually maintain a master list.
+
+``` cpp
+// Create the ObjectLibrary if it doesn't already exist.
+if (!ObjectLibrary)
+{
+  ObjectLibrary = UObjectLibrary::CreateLibrary(BaseClass, false, GIsEditor);
+  ObjectLibrary->AddToRoot();
+}
+
+// Get asset information from assets at this path.
+ObjectLibrary->LoadAssetDataFromPath(TEXT("/Game/PathWithAllObjectsOfSameType");
+
+// Optionally load all of the assets.
+if (bFullyLoad)
+{
+  ObjectLibrary->LoadAssetsFromAssetData();
+}
+```
+
+The assets known to the `ObjectLibrary` can then be queried.
+
+``` cpp
+TArray<FAssetData> AssetDatas;
+ObjectLibrary->GetAssetDataList(AssetDatas);
+
+// Find first asset with property `TypeName` containing "FooType"
+for (int32 i = 0; i < AssetDatas.Num(); ++i)
+{
+  FAssetData& AssetData = AssetDatas[i];
+
+  const FString* FoundTypeNameString = AssetData.TagsAndValues.Find(
+    GET_MEMBER_NAME_CHECKED(UAssetObject, TypeName));
+
+  if (FoundTypeNameString && FoundTypeNameString->Contains(TEXT("FooType")))
+  {
+    return AssetData;
+  }
+}
+```
+
+Another way to access the asset registry is through the `FassetRegistryModule`. For example, a list of all assets of a specific class can be obtained.
+
+``` cpp
+// Load the AssetRegistry module.
+FAssetRegistryModule& AssetRegistryModule =
+  FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+
+const UClass* Class = UStaticMesh::StaticClass();
+
+// Get the assets of type UStaticMesh and add them to the AssetData array.
+TArray<FAssetData> AssetData;
+AssetRegistryModule.Get().GetAssetsByClass(Class, AssetData);
+```
+
+Asset registries have delegates that can be registered for when assets are discovered and created, renamed, or removed, among other events.
+
+The asset registry's `GetAssets` function can take a filter of type `FARFilter` which is capable of filtering by multiple criteria including:
+
+* PackageName
+* PackagePath
+* Collection
+* Class
+* Tag-Value pairs
+
+An asset satisfies a filter if it satisfies all of the components. Each individual component can have more than one element, and the component passes if _any_ element satisfies the filter [^farfilter].
+
+[^farfilter]: Think exterior AND, interior OR.
+
+``` cpp
+FAssetRegistryModule& AssetRegistryModule =
+  FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
+
+FARFilter Filter;
+Filter.Classes.Add(UStaticMesh::StaticClass());
+Filter.PackagePaths.Add("/Game/Meshes");
+
+TArray<FAssetData> AssetData;
+AssetRegistryModule.Get().GetAssets(Filter, AssetData);
+```
+
+The `FAssetData` type's `TagsAndValues` field is a `TMap` of the asset's property `FName`s to their `FString` stringified values.
+
+## Asynchronous Loading
+
+The `FStreamableManager` type can be used to asynchronously load an asset from disk. The `RequestAsyncLoad` function asynchronously loads a group of assets and invokes a delegate on completion.
+
+This can also be used to load `FAssetData` for assets by simply calling `ToStringReference` on the assets.
+
+It's a good idea to put an `FStreamManager` in a global singleton object which can be specified at `GameSingletonClassName` in `DefaultEngine.ini`.
+
+Note that the `FStreamableManager` maintains hard references to the loaded assets until the delegate is called, to prevent them from being garbage collected, but it releases those references after the delegate completes.
+
+``` cpp
+void UGameCheatManager::GrantItems()
+{
+  TArray<FSoftObjectPath> ItemsToStream;
+  FStreamableManager& Streamable = UGameGlobals::Get().StreamableManager;
+
+  // ItemList is an editable TArray<TSoftObjectPtr<UGameItem>>
+  // RequestAsyncLoad takes TArray<TSoftObjectPtr<T>>
+  for(int32 i = 0; i < ItemList.Num(); ++i)
+  {
+    ItemsToStream.AddUnique(ItemList[i].ToStringReference());
+  }
+
+  // Asynchronously load ItemsToStream, then invoke OnItemsLoaded
+  Streamable.RequestAsyncLoad(
+    ItemsToStream,
+    FStreamableDelegate::CreateUObject(this, &UGameCheatManager::OnItemsLoaded));
+}
+
+void UGameCheatManager::OnItemsLoaded()
+{
+  for(int32 i = 0; i < ItemList.Num(); ++i)
+  {
+    // Now the asset should be loaded, so TSoftObjectPtr should have
+    // the actual pointer. This may not be the case if it failed to load.
+    UGameItemData* ItemData = ItemList[i].Get();
+
+    if(ItemData)
+    {
+      MyCharacter->GrantItem(ItemData);
+    }
+  }
+}
+```
+

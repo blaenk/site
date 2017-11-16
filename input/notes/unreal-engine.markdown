@@ -896,7 +896,7 @@ Classes that should not be derived from should be marked `final`.
 
 # Actors
 
-An actor is an object that can be placed in a level. They support 3D transformation sand can be spawned and destroyed. The base class is `AActor`. Note that although actors support 3D transformations they don't actually store the Transform data. Instead, the Actor's root component's Transform data is used instead.
+An actor is an object that can be placed in a level. They support 3D transformations and can be spawned and destroyed. The base class is `AActor`. Note that although actors support 3D transformations they don't actually store the Transform data. Instead, the Actor's root component's Transform data is used instead.
 
 The `SpawnActor` function can be used to spawn an Actor.
 

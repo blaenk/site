@@ -47,7 +47,18 @@ ENV NAME World
 CMD ["python", "app.py"]
 ```
 
-A <span class="path">.dockerignore</span> file can be used exclude files and directories from a resulting image, similar to <span class="path">.gitignore</span>.
+A <span class="path">Dockerfile</span> must begin with a `FROM` instruction indicating the base image from which the image builds. Specifically, `FROM` can only be preceded by one or more `ARG` instructions which themselves declare arguments used in the `FROM` lines.
+
+Parser directives take the form `# directive=value` and must appear at the very top of the <span class="path">Dockerfile</span>.
+
+Environment variables can be expanded by referring to them as `$env_var` or `${env_var}`, with the latter format supporting certain standard Bash modifiers:
+
+* `${var:-word}` indicates to use `word` as the value if the variable isn't set.
+* `${var:+word}` indicates to use `word` as the value if the variable is set.
+
+Note that `word` in the previous examples can itself be another environment variable.
+
+A <span class="path">.dockerignore</span> file can be used exclude files and directories from a resulting image, similar to <span class="path">.gitignore</span>. This file can be made into a whitelist instead of a blacklist by starting with a `*` rule which excludes everything, then adding exceptions with the `!` prefix.
 
 # Building
 

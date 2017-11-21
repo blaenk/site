@@ -47,13 +47,21 @@ ENV NAME World
 CMD ["python", "app.py"]
 ```
 
+A <span class="path">.dockerignore</span> file can be used exclude files and directories from a resulting image, similar to <span class="path">.gitignore</span>.
+
 # Building
 
-A <span class="path">Dockerfile</span> can be built into a Docker image with the `docker build` command. Docker images are usually tagged with the `-t` parameter, which can be provided multiple times to facilitate readjusting the `latest` tag, for example.
+A <span class="path">Dockerfile</span> can be built into a Docker image with the `docker build` command. The image is built in a particular context, such as the current directory `.`, and the file named <span class="path">Dockerfile</span> at the root of that context is used by default, unless one is explicitly specified with the `-f` parameter.
+
+Docker images are usually tagged with the `-t` parameter, which can be provided multiple times to facilitate readjusting the `latest` tag, for example.
 
 ``` console
 $ docker build -t myimage .
 ```
+
+The instructions in the <span class="path">Dockerfile</span> are run sequentially _and independently_ by the Docker daemon, committing the result of each one to a new image if necessary, then outputting the ID of the resulting image.
+
+Note that since each instruction is run in isolation, a `RUN cd /tmp` command will not affect subsequent instructions.
 
 # Tags
 

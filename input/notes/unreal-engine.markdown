@@ -1619,7 +1619,7 @@ Arrays can be tested for equality using the `operator==` and `operator!=`, which
 
 The `Heapify` function can be used to structure the array as a [heap] using the element's `operator<` to determine the lesser element, or an overload exists which takes a lambda. If such a predicate is provided, it must be passed to each heap operational function.
 
-[heap]: https://www.blaenkdenum.com/notes/algorithms/#heaps
+[heap]: /notes/algorithms/#heaps
 
 The `HeapTop` function can be used to return the top element of the heap.
 

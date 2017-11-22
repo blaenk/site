@@ -324,6 +324,14 @@ RUN echo $CONT_IMG_VER
 
 Docker pre-defines a certain number of build-time variables, mainly relating to proxies, such as `HTTP_PROXY`.
 
+### ONBUILD
+
+``` dockerfile
+ONBUILD [INSTRUCTION]
+```
+
+The `ONBUILD` instruction can register any another instruction to trigger and execute when the image is used as a base for another build. The trigger executes in the context of the downstream build which is using this image as a base, as if it had been inserted immediately after the `FROM` instruction which references this image.
+
 # Building
 
 A <span class="path">Dockerfile</span> can be built into a Docker image with the `docker build` command. The image is built in a particular context, such as the current directory `.`, and the file named <span class="path">Dockerfile</span> at the root of that context is used by default, unless one is explicitly specified with the `-f` parameter.

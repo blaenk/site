@@ -148,6 +148,23 @@ It used to be conventional to combine multiple labels into a single `LABEL` inst
 
 An image's labels can be viewed with the `docker inspect` command.
 
+### EXPOSE
+
+``` dockerfile
+EXPOSE <port> [<port>/<protocol>…]
+```
+
+The `EXPOSE` function doesn't actually publish a port, but rather serves as documentation and to inform Docker that the container listens on the specified ports. If no protocol is specified, TCP is assumed.
+
+``` dockerfile
+# Assume TCP
+EXPOSE 80
+
+EXPOSE 127/UDP
+```
+
+Ports are actually published once the container is run with the `-p` argument to the `docker run` command, or the `-P` argument to publish all exposed ports and map them to higher-order ports.
+
 # Building
 
 A <span class="path">Dockerfile</span> can be built into a Docker image with the `docker build` command. The image is built in a particular context, such as the current directory `.`, and the file named <span class="path">Dockerfile</span> at the root of that context is used by default, unless one is explicitly specified with the `-f` parameter.

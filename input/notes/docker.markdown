@@ -109,6 +109,25 @@ When used to `apt-get update`, it should be combined with `apt-get install` in t
 
 Commands that use pipes and the `system()` shell form are considered successful as long as the final operation succeeds, regardless of the status of preceding operations. This can be overridden by prefixing `set -o pipefial &&` to the command.
 
+### CMD
+
+``` dockerfile
+# Exec form
+CMD ["executable","param1","param2"]
+
+# Shell form
+CMD command param1 param2
+
+# Default arguments for ENTRYPOINT
+CMD ["param1","param2"]
+```
+
+The `CMD` instruction's main purpose is to provide defaults for the container's executable and/or its arguments. When an executable is specified, it serves to set the command to be executed when running the image. If no executable is specified, then the image will also require an `ENTRYPOINT` instruction which does specify an executable. Any arguments specified by `CMD` are _defaults_ and are automatically overridden when the user specifies any arguments to `docker run`.
+
+There can only be one `CMD` instruction in a <span class="path">Dockerfile</span>, so only the final `CMD` instruction will take effect.
+
+Like `RUN`, the `CMD` instruction allows both `exec()` and `system()` forms.
+
 # Building
 
 A <span class="path">Dockerfile</span> can be built into a Docker image with the `docker build` command. The image is built in a particular context, such as the current directory `.`, and the file named <span class="path">Dockerfile</span> at the root of that context is used by default, unless one is explicitly specified with the `-f` parameter.

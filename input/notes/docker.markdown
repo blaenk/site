@@ -219,6 +219,23 @@ All new files and directories are created with a UID and GID or `0`.
 
 Carefully choose the granularity of `COPY` instructions so that the cache is only invalidated for certain files.
 
+### ENTRYPOINT
+
+``` dockerfile
+ENTRYPOINT ["executable", "param1", "param2"]
+ENTRYPOINT command param1 param2
+```
+
+The `ENTRYPOINT` instruction can be used to specify the command to run when the container is executed. Additional arguments given to the `docker run <image>` command are appended after _all_ elements of the `exec()` form, while the `system()` form completely prevents `CMD` or `docker run` arguments from being applied.
+
+Note that the shell form executes the command as a subcommand `sh -c`, so the specified executable will _not_ be the container's PID 1 and will not receive Unix signals, so will not receive the `SIGTERM` signal from the `docker stop` command. One way to remedy this is to run it with `exec`.
+
+The `ENTRYPOINT` instruction can be overridden with the `--entrypoint` argument to the `docker run` command, but only to set the binary to `exec()`.
+
+Only the final `ENTRYPOINT` instruction takes effect.
+
+It may be useful to specify common "base" arguments through `ENTRYPOINT` and define additional arguments through `CMD`, which are more likely to be changed, since arguments to `docker run` _append_ to those specified in `ENTRYPOINT` whereas they completely replace those specified in `CMD`.
+
 # Building
 
 A <span class="path">Dockerfile</span> can be built into a Docker image with the `docker build` command. The image is built in a particular context, such as the current directory `.`, and the file named <span class="path">Dockerfile</span> at the root of that context is used by default, unless one is explicitly specified with the `-f` parameter.

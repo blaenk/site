@@ -279,6 +279,51 @@ Environment variables can be expanded but only those explicitly set with the `EN
 
 Relative paths are relative to the previously-set `WORKDIR`, which can be confusing and difficult to track, so absolute paths are preferred.
 
+### ARG
+
+``` dockerfile
+ARG <name>[=<default value>]
+```
+
+The `ARG` instruction can define a variable that users pass at build-time with the `--build-arg <name>=<value>` argument to the `docker build` command.
+
+Note that these build-time variables should not be used for secrets since they are visible to any user of the image with the `docker history` command.
+
+The cache is invalidated when a build-time variable is given a different value from the previous build. All `RUN` instructions have an implicit dependency on preceding `ARG` variables, which may trigger cache invalidation.
+
+Environment variables defined with the `ENV` instruction always override an `ARG` declaration of the same name.
+
+An `ARG` declaration is scoped to its current build stage, and so goes out of scope at the end of it.
+
+The `ARG` instruction can be viewed as a directive to bring the command-line argument into scope, with an optional default value in case there is no command-line argument. This explains why the variable is empty unless the `ARG` declaration exists for it in the current scope, and why each build stage that requires access to the variable needs to explicitly declare it by repeating the `ARG` declaration.
+
+``` dockerfile
+FROM busybox
+ARG SETTINGS
+RUN ./run/setup ${SETTINGS}
+
+FROM busybox
+ARG SETTINGS
+RUN ./run/other ${SETTINGS}
+```
+
+Since environment variables are always persisted into the image, a build-time variable can be used to allow build-time overriding of environment variables that are persisted into the image.
+
+``` dockerfile
+FROM ubuntu
+
+# Allow build-time overriding with --build-arg=
+ARG CONT_IMG_VER
+
+# Create environment variable of the same name, seeded with the build-time
+# variable if any exists, or the default value "v1.0.0"
+ENV CONT_IMG_VER ${CONT_IMG_VER:-v1.0.0}
+
+RUN echo $CONT_IMG_VER
+```
+
+Docker pre-defines a certain number of build-time variables, mainly relating to proxies, such as `HTTP_PROXY`.
+
 # Building
 
 A <span class="path">Dockerfile</span> can be built into a Docker image with the `docker build` command. The image is built in a particular context, such as the current directory `.`, and the file named <span class="path">Dockerfile</span> at the root of that context is used by default, unless one is explicitly specified with the `-f` parameter.

@@ -378,6 +378,12 @@ The `--start-period` is a grace period from the container's time of initializati
 
 Only the final `HEALTHCHECK` takes effect.
 
+### SHELL
+
+The `SHELL` instruction can be used to specify the shell command to use for the `system()` form of commands. The default on Linux is `["/bin/sh", "-c"]` and on Windows is `["cmd", "/S", "/C"]`.
+
+The `SHELL` instruction can appear multiple times in the same <span class="path">Dockerfile</span> and affects all subsequent instructions.
+
 # Building
 
 A <span class="path">Dockerfile</span> can be built into a Docker image with the `docker build` command. The image is built in a particular context, such as the current directory `.`, and the file named <span class="path">Dockerfile</span> at the root of that context is used by default, unless one is explicitly specified with the `-f` parameter.

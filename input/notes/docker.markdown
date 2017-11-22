@@ -340,6 +340,44 @@ STOPSIGNAL signal
 
 The `STOPSIGNAL` instruction is used to specify the signal to send to the container to have it exit. This can be a number corresponding to the signal or the signal name such as `SIGKILL`.
 
+### HEALTHCHECK
+
+``` dockerfile
+HEALTHCHECK [OPTIONS] CMD <command>
+
+# Disable any inherited health checks
+HEALTHCHECK NONE
+```
+
+The `HEALTHCHECK` instruction tells Docker how to check that the container is still working. The command can be in `exec()` or `system()` form. The expected exit status of the health check command are:
+
+0. success: the container is healthy and usable
+1. unhealthy: the container isn't working correctly
+2. reserved; don't use this exit code
+
+The command's stdout and stderr are stored in the health status which can be queried with the `docker inspect` command.
+
+Containers with a health check specified gains a health status which begins as `starting` and transitions to `healthy` whenever a health check passes. After a certain number of consecutive failures it becomes `unhealthy`.
+
+The `HEALTHCHECK` instruction allows a set of options:
+
+| Option           | Default |
+| :--------------- | :------ |
+| `--interval`     | `30s`   |
+| `--timeout`      | `30s`   |
+| `--start-period` | `0s`    |
+| `--retries`      | `3`     |
+
+The first health check runs `--interval` seconds after the container is started and on every such interval after a health check completes.
+
+A health check is considered failed if it takes longer than `--timeout` seconds to complete.
+
+A container is considered `unhealthy` if it suffers `--retries` consecutive failures.
+
+The `--start-period` is a grace period from the container's time of initialization to allow it time to fully start up, during which health check failures are not counted toward the maximum number of retries, until the first health check success.
+
+Only the final `HEALTHCHECK` takes effect.
+
 # Building
 
 A <span class="path">Dockerfile</span> can be built into a Docker image with the `docker build` command. The image is built in a particular context, such as the current directory `.`, and the file named <span class="path">Dockerfile</span> at the root of that context is used by default, unless one is explicitly specified with the `-f` parameter.

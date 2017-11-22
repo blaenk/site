@@ -128,6 +128,26 @@ There can only be one `CMD` instruction in a <span class="path">Dockerfile</span
 
 Like `RUN`, the `CMD` instruction allows both `exec()` and `system()` forms.
 
+### LABEL
+
+``` dockerfile
+LABEL <key>=<value> <key>=<value> <key>=<value> …
+```
+
+The `LABEL` instruction adds key-value metadata pairs to an image, in a format similar to environment variables. Double quotes `"` can be used to add spaces, and backslash `\` can be used as line continuations to add newlines.
+
+``` dockerfile
+LABEL "com.example.vendor"="ACME Incorporated"
+LABEL com.example.label-with-value="foo"
+LABEL version="1.0"
+LABEL description="This text illustrates \
+that label-values can span multiple lines."
+```
+
+It used to be conventional to combine multiple labels into a single `LABEL` instruction, since each `LABEL` instruction resulted in a new layer prior to Docker 1.10.
+
+An image's labels can be viewed with the `docker inspect` command.
+
 # Building
 
 A <span class="path">Dockerfile</span> can be built into a Docker image with the `docker build` command. The image is built in a particular context, such as the current directory `.`, and the file named <span class="path">Dockerfile</span> at the root of that context is used by default, unless one is explicitly specified with the `-f` parameter.

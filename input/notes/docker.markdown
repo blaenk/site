@@ -90,6 +90,25 @@ ARG CODE_VERSION
 RUN echo ${CODE_VERSION} > image_version
 ```
 
+### RUN
+
+``` dockerfile
+RUN <command>
+RUN ["executable", "param1", "param2"]
+```
+
+The `RUN` instruction executes commands in a new layer on top of the current image, then commits the results, resulting in a committed image used for the next step.
+
+Commands can be executed in an `exec()` form with an explicit array or with a `system()` shell form, which uses `sh -c` on Linux by default and `cmd /S /C` on Windows. The default shell can be changed with the `SHELL` command. The `exec()` form takes a JSON array, so elements require double quotes `"`.
+
+A line continuation `\` can be used to continue a single `RUN` instruction, causing multiple commands to contribute to a single committed image, as opposed to generating a separate image for each command in the `RUN` as would be the case if a separate `RUN` instruction were specified for each command.
+
+When used to `apt-get update`, it should be combined with `apt-get install` in the same `RUN` statement to avoid [caching issues], since the `apt-get update` command would not have changed even if subsequent `apt-get install` commands did. This is a form of cache-busting, which can also be done by version pinning.
+
+[caching issues]: #image-cache
+
+Commands that use pipes and the `system()` shell form are considered successful as long as the final operation succeeds, regardless of the status of preceding operations. This can be overridden by prefixing `set -o pipefial &&` to the command.
+
 # Building
 
 A <span class="path">Dockerfile</span> can be built into a Docker image with the `docker build` command. The image is built in a particular context, such as the current directory `.`, and the file named <span class="path">Dockerfile</span> at the root of that context is used by default, unless one is explicitly specified with the `-f` parameter.

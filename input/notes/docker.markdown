@@ -165,6 +165,28 @@ EXPOSE 127/UDP
 
 Ports are actually published once the container is run with the `-p` argument to the `docker run` command, or the `-P` argument to publish all exposed ports and map them to higher-order ports.
 
+### ENV
+
+``` dockerfile
+ENV <key> <value>
+ENV <key>=<value> …
+```
+
+The `ENV` instruction sets an environment variable for use by all descendant instructions.
+
+One form uses a space to separate the key from the value and only supports a single key-value pair, while the second form uses an equal sign `=` to separate keys from values and so supports multiple key-value pairs in one instruction.
+
+An image's environment variables can be viewed with the `docker inspect` command and overridden with the `--env` argument to the `docker run` command.
+
+Note that it's also possible to set an environment variable for the duration of a `RUN` command through the shell's own functionality.
+
+The `ENV` instruction can be used to update the `PATH` environment variable, to facilitate for example:
+
+``` dockerfile
+ENV PATH /usr/local/nginx/bin:${PATH}
+CMD ["nginx"]
+```
+
 # Building
 
 A <span class="path">Dockerfile</span> can be built into a Docker image with the `docker build` command. The image is built in a particular context, such as the current directory `.`, and the file named <span class="path">Dockerfile</span> at the root of that context is used by default, unless one is explicitly specified with the `-f` parameter.

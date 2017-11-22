@@ -60,6 +60,36 @@ Note that `word` in the previous examples can itself be another environment vari
 
 A <span class="path">.dockerignore</span> file can be used exclude files and directories from a resulting image, similar to <span class="path">.gitignore</span>. This file can be made into a whitelist instead of a blacklist by starting with a `*` rule which excludes everything, then adding exceptions with the `!` prefix.
 
+## Instructions
+
+### FROM
+
+``` dockerfile
+FROM <image> [AS <name>]
+FROM <image>[:<tag>] [AS <name>]
+FROM <image>[@<digest>] [AS <name>]
+```
+
+The `FROM` instruction initializes a new build stage, setting the base image for subsequent instructions. It can appear multiple times in a single <span class="path">Dockerfile</span> to create multiple images or use one build stage as a dependency for another. Each `FROM` instruction clears state created by previous instructions.
+
+A build stage can be named by adding `AS name` to the `FROM` instruction, then the image built from that stage can be referred to by name in subsequent `FROM` or `COPY --from` instructions.
+
+The `ARG` instruction can be used before any `FROM` instructions to declare variables that can be expanded and used by `FROM` instructions. Note that an `ARG` is outside of a build stage, so it can't be used within one, i.e. after a `FROM`, unless explicitly requested by using the `ARG` instruction to refer to it.
+
+``` dockerfile
+ARG CODE_VERSION=latest
+FROM base:${CODE_VERSION}
+CMD /code/run-app
+
+FROM extras:${CODE_VERSION}
+CMD /code/run-extras
+
+FROM busybox:${CODE_VERSION}
+# Explicitly declare it within the build stage
+ARG CODE_VERSION
+RUN echo ${CODE_VERSION} > image_version
+```
+
 # Building
 
 A <span class="path">Dockerfile</span> can be built into a Docker image with the `docker build` command. The image is built in a particular context, such as the current directory `.`, and the file named <span class="path">Dockerfile</span> at the root of that context is used by default, unless one is explicitly specified with the `-f` parameter.

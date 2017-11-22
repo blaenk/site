@@ -390,9 +390,11 @@ The `SHELL` instruction can appear multiple times in the same <span class="path"
 
 # Building
 
-A <span class="path">Dockerfile</span> can be built into a Docker image with the `docker build` command. The image is built in a particular context, such as the current directory `.`, and the file named <span class="path">Dockerfile</span> at the root of that context is used by default, unless one is explicitly specified with the `-f` parameter.
+A <span class="path">Dockerfile</span> can be built into a Docker image with the `docker build` command. The image is built in a particular context, such as the current directory `.`, and the file named <span class="path">Dockerfile</span> at the root of that context is used by default, unless one is explicitly specified with the `-f` argument.
 
-Docker images are usually tagged with the `-t` parameter, which can be provided multiple times to facilitate readjusting the `latest` tag, for example.
+The entire recursive context is sent to the Docker daemon as the _build context_, potentially sending files that aren't necessary for building the image, unnecessarily increasing the image size. This can be remedied with a <span class="path">.dockerignore</span> file.
+
+Docker images are usually tagged with the `-t` argument, which can be provided multiple times to facilitate readjusting the `latest` tag, for example.
 
 ``` console
 $ docker build -t myimage .
@@ -414,7 +416,7 @@ On cache invalidation, all subsequent commands generate new images.
 
 # Tags
 
-Images can be tagged at build-time with the `-t` parameter to `build` or by using the `docker tag` command.
+Images can be tagged at build-time with the `-t` argument to `build` or by using the `docker tag` command.
 
 Tag names generally consist of three components: repository, name, and version.
 
@@ -444,13 +446,13 @@ username/repository:tag
 
 # Execution
 
-A container can be run with the `docker run` command. The `-p` parameter can be used to map a host port into an exposed container port.
+A container can be run with the `docker run` command. The `-p` argument can be used to map a host port into an exposed container port.
 
 ``` console
 $ docker run -p 4000:80 myimage
 ```
 
-The container is run in the foreground unless the `-d` parameter is passed to instruct it to run in detached mode.
+The container is run in the foreground unless the `-d` argument is passed to instruct it to run in detached mode.
 
 All containers running on the host can be listed with the `docker container ls` command.
 

@@ -247,6 +247,25 @@ The `VOLUME` instruction creates a mount point and marks it as holding externall
 
 Any data that already exists at the specified location is used to initialize the newly created volume. However, if any build steps change the data within the volume _after_ it has been declared, the changes are discarded.
 
+### USER
+
+``` dockerfile
+USER <user>[:<group>] or
+USER <UID>[:<GID>]
+```
+
+The `USER` instruction sets the user name (or UID) and optionally the user group (or GID) to use when running the image and any `RUN`, `CMD`, and `ENTRYPOINT` instructions that follow it.
+
+Note that if the user has not primary group then the `root` group is assumed.
+
+If root privileges aren't required, a user and group should be created and used. If privileges are required, use [`gosu`].
+
+``` dockerfile
+RUN groupadd -r postgres && useradd --no-log-init -r -g postgres postgres
+```
+
+[`gosu`]: https://github.com/tianon/gosu
+
 # Building
 
 A <span class="path">Dockerfile</span> can be built into a Docker image with the `docker build` command. The image is built in a particular context, such as the current directory `.`, and the file named <span class="path">Dockerfile</span> at the root of that context is used by default, unless one is explicitly specified with the `-f` parameter.

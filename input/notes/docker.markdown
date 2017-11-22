@@ -236,6 +236,17 @@ Only the final `ENTRYPOINT` instruction takes effect.
 
 It may be useful to specify common "base" arguments through `ENTRYPOINT` and define additional arguments through `CMD`, which are more likely to be changed, since arguments to `docker run` _append_ to those specified in `ENTRYPOINT` whereas they completely replace those specified in `CMD`.
 
+### VOLUME
+
+``` dockerfile
+VOLUME ["/data", …]
+VOLUME /var/log /var/db …
+```
+
+The `VOLUME` instruction creates a mount point and marks it as holding externally mounted volumes from the native host or other containers. The host directory is specified at run-time.
+
+Any data that already exists at the specified location is used to initialize the newly created volume. However, if any build steps change the data within the volume _after_ it has been declared, the changes are discarded.
+
 # Building
 
 A <span class="path">Dockerfile</span> can be built into a Docker image with the `docker build` command. The image is built in a particular context, such as the current directory `.`, and the file named <span class="path">Dockerfile</span> at the root of that context is used by default, unless one is explicitly specified with the `-f` parameter.

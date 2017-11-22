@@ -60,6 +60,10 @@ Note that `word` in the previous examples can itself be another environment vari
 
 A <span class="path">.dockerignore</span> file can be used exclude files and directories from a resulting image, similar to <span class="path">.gitignore</span>. This file can be made into a whitelist instead of a blacklist by starting with a `*` rule which excludes everything, then adding exceptions with the `!` prefix.
 
+## Best Practices
+
+Remember that most instructions add a new layer to the image, so it's necessary to cleanup artifacts that aren't needed before moving to the next layer.
+
 ## Instructions
 
 ### FROM

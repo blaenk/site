@@ -187,6 +187,17 @@ ENV PATH /usr/local/nginx/bin:${PATH}
 CMD ["nginx"]
 ```
 
+### ADD
+
+``` dockerfile
+ADD <src>… <dest>
+ADD ["<src>", … "<dest>"]
+```
+
+The `ADD` instruction copies files, directories, or remote file URLs from a source to a destination on the image's filesystem. Each source may contain patterns. The destination path is either absolute or relative to the `WORKDIR`.
+
+All new files and directories are created with a UID and GID or `0`.
+
 # Building
 
 A <span class="path">Dockerfile</span> can be built into a Docker image with the `docker build` command. The image is built in a particular context, such as the current directory `.`, and the file named <span class="path">Dockerfile</span> at the root of that context is used by default, unless one is explicitly specified with the `-f` parameter.

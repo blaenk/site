@@ -266,6 +266,19 @@ RUN groupadd -r postgres && useradd --no-log-init -r -g postgres postgres
 
 [`gosu`]: https://github.com/tianon/gosu
 
+### WORKDIR
+
+``` dockerfile
+WORKDIR /absolute/path
+WORKDIR relative/to/previous/workdir
+```
+
+The `WORKDIR` instruction sets the current directory for any `RUN`, `CMD`, `ENTRYPOINT`, `COPY`, and `ADD` instructions that follow. It is created if it doesn't exist, even if it's not used in any subsequent instructions.
+
+Environment variables can be expanded but only those explicitly set with the `ENV` instruction.
+
+Relative paths are relative to the previously-set `WORKDIR`, which can be confusing and difficult to track, so absolute paths are preferred.
+
 # Building
 
 A <span class="path">Dockerfile</span> can be built into a Docker image with the `docker build` command. The image is built in a particular context, such as the current directory `.`, and the file named <span class="path">Dockerfile</span> at the root of that context is used by default, unless one is explicitly specified with the `-f` parameter.

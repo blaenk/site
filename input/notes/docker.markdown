@@ -402,6 +402,16 @@ The instructions in the <span class="path">Dockerfile</span> are run sequentiall
 
 Note that since each instruction is run in isolation, a `RUN cd /tmp` command will not affect subsequent instructions.
 
+## Image Cache
+
+Each instruction is examined by Docker to determine if an existing image in the cache can be reused, in the following manner:
+
+1. Starting with the cached parent image, compare the next instruction against all images derived from that base image to see if any of them was built with the exact same instruction. Otherwise invalidate the cache.
+2. For `ADD` and `COPY`, checksums are calculated for all of the files and the cache is invalidated if there are any discrepancies.
+3. Cache checking doesn't check files from any other commands, such as `RUN apt-get -y update`, instead the command string itself is compared.
+
+On cache invalidation, all subsequent commands generate new images.
+
 # Tags
 
 Images can be tagged at build-time with the `-t` parameter to `build` or by using the `docker tag` command.

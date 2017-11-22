@@ -198,6 +198,27 @@ The `ADD` instruction copies files, directories, or remote file URLs from a sour
 
 All new files and directories are created with a UID and GID or `0`.
 
+### COPY
+
+``` dockerfile
+COPY <src>… <dest>
+COPY ["<src>", … "<dest>"]
+```
+
+The `COPY` instruction copies files or directories from the specified sources to the specified destination path on the container's filesystem. Each source may contain filename patterns. The destination path is either absolute or relative to the `WORKDIR`.
+
+If the destination doesn't exist, it is created along with any directories along its path.
+
+If a source is a directory, all of its contents (not the directory itself) are copied including the filesystem metadata.
+
+Sources must be descendants of the build's context. It's not possible to `COPY` something from an ancestor.
+
+All new files and directories are created with a UID and GID or `0`.
+
+`COPY` accepts an optional `--from=name|index` argument that specifies a previous build stage from which to source the applies, either by specifying the name given to the build stage with `AS <name>` or explicitly specifying the build stage index. If a build stage with the specified name isn't found, an image with the same name is attempted instead.
+
+Carefully choose the granularity of `COPY` instructions so that the cache is only invalidated for certain files.
+
 # Building
 
 A <span class="path">Dockerfile</span> can be built into a Docker image with the `docker build` command. The image is built in a particular context, such as the current directory `.`, and the file named <span class="path">Dockerfile</span> at the root of that context is used by default, unless one is explicitly specified with the `-f` parameter.

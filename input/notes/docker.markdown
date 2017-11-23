@@ -414,6 +414,35 @@ Each instruction is examined by Docker to determine if an existing image in the 
 
 On cache invalidation, all subsequent commands generate new images.
 
+## Multi-Stage Builds
+
+It can be useful to build artifacts within a container environment, but the build environment and other build artifacts can end up unnecessarily bloating the resulting image even though only the resulting binary may be needed.
+
+One way to accomplish this would be to create a separate "build" image then use something like `docker cp` to extract the resulting binary from it into the actual "production" image.
+
+The newer and more natural manner of accomplishing this is to use multi-stage builds, which simply consists of using multiple `FROM` instructions to begin new stages of the build and copying any necessary artifacts from previous build stages.
+
+``` dockerfile
+# First build stage builds the binary.
+# This brings in package source and build-dependencies which won't
+# be needed in the final image.
+FROM golang:1.7.3 AS builder
+WORKDIR /go/src/github.com/alexellis/href-counter/
+RUN go get -d -v golang.org/x/net/html
+COPY app.go .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app .
+
+# Create new build stage.
+# Copy only the built binary from the first stage, discarding source
+# and build-dependencies.
+FROM alpine:latest
+RUN apk --no-cache add ca-certificates
+WORKDIR /root/
+COPY --from=builder /go/src/github.com/alexellis/href-counter/app .
+
+CMD ["./app"]
+```
+
 # Tags
 
 Images can be tagged at build-time with the `-t` argument to `build` or by using the `docker tag` command.

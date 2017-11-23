@@ -618,3 +618,76 @@ The `docker_gwbridge` network is a local bridge network that is automatically cr
 An overlay network can be created on a manager node running in swarm mode, and the swarm automatically extends the overlay network to nodes that require it for a service.
 
 The Docker daemon runs an embedded DNS server that resolves container names of containers connected to the same user-defined network. If it's unable to resolve a name, it forwards it to any external DNS servers configured for the container. This embedded DNS server at `127.0.0.11` is listed in the container's <span class="path">resolv.conf</span> file.
+
+# Docker Compose
+
+Docker Compose is a tool that can be used to define and run multi-container Docker applications.
+
+The following compose file will:
+
+* pull the specified image
+* run 5 containers of that image as a service named `web`, limiting each to 10% CPU and 50 MB RAM
+* automatically restart failed containers
+* map host port 80 to `web`'s port 80
+* have `web`'s containers share port 80 through a load-balanced network named `webnet`
+* define `webnet` load-balanced overlay network
+
+``` yaml
+version: "3"
+services:
+  web:
+    # replace username/repo:tag with your name and image details
+    image: username/repo:tag
+    deploy:
+      replicas: 5
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 50M
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "80:80"
+    networks:
+      - webnet
+networks:
+  webnet:
+```
+
+This application can be run by first initializing the swarm:
+
+``` console
+$ docker swarm init
+```
+
+Then a _service stack_ can be instanced from the compose file which we name `getstartedlab`:
+
+``` console
+$ docker stack deploy -c docker-compose.yml getstartedlab
+```
+
+A single container running in a service is called a _task_, and each is given a unique numerically sequential ID, up to the number of replicas specified in the compose file.
+
+The number of replicas can be changed in the compose file and the service redeployed without first having to tear the stack down first or kill containers.
+
+Everything can be shut down as follows:
+
+``` console
+# Take down stack
+$ docker stack rm getstartedlab
+
+# Take down the swarm
+$ docker swarm leave --force
+```
+
+It's also possible to use the `docker-compose` program to simplify this process. The `-d` argument can be passed to the `up` sub-command to detach from it, in which case it can be stopped with `docker-compose stop`. The `down` sub-command can take a `--volumes` argument which causes it to also remove the volumes.
+
+``` console
+# Bring it up.
+$ docker-compose up
+
+# Tear it down.
+$ docker-compose down
+```
+
+The `docker-compose run <service> <cmd>` command can be used to run a command in the context of a service.

@@ -550,3 +550,46 @@ If a container generates non-persistent state data it should use a [tmpfs mount]
 
 [tmpfs mount]: https://docs.docker.com/engine/admin/volumes/tmpfs/
 
+# Networks
+
+Docker's installation creates three default networks: bridge, none, and host. A container can use the `--network` argument to specify which network to use.
+
+The `bridge` network represents the `docker0` network present in all Docker installations, which is used by containers by default. This network is visible on the host:
+
+``` console
+$ ip addr show
+
+docker0   Link encap:Ethernet  HWaddr 02:42:47:bc:3a:eb
+          inet addr:172.17.0.1  Bcast:0.0.0.0  Mask:255.255.0.0
+          inet6 addr: fe80::42:47ff:febc:3aeb/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:9001  Metric:1
+          RX packets:17 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:8 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:0
+          RX bytes:1100 (1.1 KB)  TX bytes:648 (648.0 B)
+
+```
+
+The `none` network uses a container-specific network stack which lacks a network interface.
+
+``` console
+$ docker attach nonenetcontainer
+
+root@0cb243cd1293:/# cat /etc/hosts
+127.0.0.1   localhost
+::1         localhost ip6-localhost ip6-loopback
+fe00::0     ip6-localnet
+ff00::0     ip6-mcastprefix
+ff02::1     ip6-allnodes
+ff02::2     ip6-allrouters
+
+root@0cb243cd1293:/# ip -4 addr
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue qlen 1
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+
+root@0cb243cd1293:/#
+```
+
+The `host` network adds a container on the host's network stack, so that there is no isolation between the host and the container in terms of the network, meaning that a container's server on port 80 is available on port 80 on the host machine.
+

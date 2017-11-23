@@ -516,3 +516,6 @@ $ docker push blaenk/get-started:part2
 Active processes can be listed with the `docker ps` command.
 
 Images in the local Docker image registry can be listed with the `docker images` command.
+
+The `docker attach` command can be used to attach to a container's stdout. It can then be detached with <kbd>CTRL</kbd> + <kbd>p</kbd> <kbd>CTRL</kbd> + <kbd>q</kbd>, otherwise the interrupt <kbd>CTRL</kbd> + <kbd>c</kbd> would propagate that signal to the running program, stopping the container.
+

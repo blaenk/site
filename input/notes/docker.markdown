@@ -593,3 +593,28 @@ root@0cb243cd1293:/#
 
 The `host` network adds a container on the host's network stack, so that there is no isolation between the host and the container in terms of the network, meaning that a container's server on port 80 is available on port 80 on the host machine.
 
+## User-Defined Networks
+
+Containers on the `bridge` network can communicate with each other through their IP addresses, although Docker doesn't support automatic service discovery. It's possible to use a user-defined network to allow containers to resolve to their IP address by container name.
+
+User-defined networks can be used to control which containers can communicate with each other and to enable automatic DNS resolution of container names to IP addresses. Any number of networks can be created and a container can connect to zero or more of them at any given time, and this connection or disconnection can occur at container run-time without restarting. When a container is connected to multiple networks, external connectivity is determined by the first non-internal network in lexicographical order.
+
+A bridged network can be created and a container can connect to it.
+
+The network isolates containers from external networks but containers can expose and publish ports to make a portion of the bridge network available externally.
+
+``` console
+$ docker network create --driver bridge isolated_nw
+
+1196a4c5af43a21ae38ef34515b6af19236a3fc48122cf585e3f3054d509679b
+
+$ docker run --network=isolated_nw -itd --name=container3 busybox
+
+8c1a0a5be480921d669a073393ade66a3fc49933f08bcc5515b37b8144f6d47c
+```
+
+The `docker_gwbridge` network is a local bridge network that is automatically created and used when initializing or joining a swarm or when none of a container's networks can provide external connectivity.
+
+An overlay network can be created on a manager node running in swarm mode, and the swarm automatically extends the overlay network to nodes that require it for a service.
+
+The Docker daemon runs an embedded DNS server that resolves container names of containers connected to the same user-defined network. If it's unable to resolve a name, it forwards it to any external DNS servers configured for the container. This embedded DNS server at `127.0.0.11` is listed in the container's <span class="path">resolv.conf</span> file.

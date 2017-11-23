@@ -519,3 +519,34 @@ Images in the local Docker image registry can be listed with the `docker images`
 
 The `docker attach` command can be used to attach to a container's stdout. It can then be detached with <kbd>CTRL</kbd> + <kbd>p</kbd> <kbd>CTRL</kbd> + <kbd>q</kbd>, otherwise the interrupt <kbd>CTRL</kbd> + <kbd>c</kbd> would propagate that signal to the running program, stopping the container.
 
+# Volumes
+
+Starting a container with a volume that doesn't exist causes Docker to create it. If the container's destination directory contains files and folders, they are copied into the volume before the volume is mounted.
+
+Volumes can be created and managed outside the scope of any container.
+
+``` console
+$ docker volume create my-vol
+$ docker volume ls
+
+local               my-vol
+
+$ docker volume inspect my-vol
+[
+    {
+        "Driver": "local",
+        "Labels": {},
+        "Mountpoint": "/var/lib/docker/volumes/my-vol/_data",
+        "Name": "my-vol",
+        "Options": {},
+        "Scope": "local"
+    }
+]
+
+$ docker volume rm my-vol
+```
+
+If a container generates non-persistent state data it should use a [tmpfs mount] to avoid storing data permanently and avoid writing into the container's writable layer, which has performance issues.
+
+[tmpfs mount]: https://docs.docker.com/engine/admin/volumes/tmpfs/
+

@@ -467,6 +467,182 @@ spec:
 
 The Kubelet periodically checks whether the mounted ConfigMap is fresh and updates it if it is not. This may take as much time as the Kubelet sync period + the TTL of the ConfigMaps cache in the Kubelet.
 
+# Secrets
+
+Objects of type `secret` can be used to hold sensitive information. It's safer and more flexible than putting them directly in a Pod definition. Secrets can be used in a Pod as files in a mounted volume or used by the Kubelet when pulling images for the Pod.
+
+A secret is only sent to a Node if a Pod on that Node requires it. It's not written to disk, but rather to tmpfs, and it's deleted once the Pod that depends on it is deleted.
+
+Kubernetes itself automatically creates secrets containing credentials for accessing the API, and automatically modifies Pods to use those secrets.
+
+Secrets can be created with the `create secret` sub-command. Secrets can be sourced from file contents with the `--from-file` argument.
+
+``` console
+$ echo -n "admin" > ./username.txt
+$ echo -n "1f2d1e2e67df" > ./password.txt
+$ kubectl create secret generic db-user-pass \
+    --from-file=./username.txt \
+    --from-file=./password.txt
+secret "db-user-pass" created
+```
+
+It's also possible to define secrets in definition files, although the secret values are treated as arbitrary data and must be Base64 encoded.
+
+``` yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysecret
+type: Opaque
+data:
+  username: YWRtaW4=
+  password: MWYyZDFlMmU2N2Rm
+```
+
+The Secret object can then be created with:
+
+``` console
+$ kubectl create -f ./secret.yaml
+secret "mysecret" created
+```
+
+Secrets can be mounted as data volumes or exposed as environment variables in a container by a Pod. Multiple Pods can reference the same secret.
+
+Mounting secrets as data volumes creates a file for each secret, Base64-decoded. Mounting secrets is accomplished by setting the `volumes.secret.secretName:` field to the name of the secret object, then adding a `volumeMounts:` for it for each Pod that needs the secret, with the `volumeMounts.readOnly:` field set to `true`. Each key in the secret's `data` map will become a file name under the volume's `mountPath:`.
+
+``` yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mypod
+spec:
+  containers:
+  - name: mypod
+    image: redis
+    volumeMounts:
+    - name: foo
+      mountPath: "/etc/foo"
+      readOnly: true
+  volumes:
+  - name: foo
+    secret:
+      secretName: mysecret
+```
+
+Specific secret keys can be projected to specific paths by using the `volumes.secret.items:` field (as with ConfigMap). If that field is used, only the specified keys are projected. The following example projects the `username` secret as a file at path <span class="path">/etc/foo/my-group/my-username</span>, without projecting the `password` secret. If none of the listed keys exist, the volume isn't created.
+
+``` yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mypod
+spec:
+  containers:
+  - name: mypod
+    image: redis
+    volumeMounts:
+    - name: foo
+      mountPath: "/etc/foo"
+      readOnly: true
+  volumes:
+  - name: foo
+    secret:
+      secretName: mysecret
+      items:
+      - key: username
+        path: my-group/my-username
+```
+
+By default, the file permissions for secrets are `0644`. It's possible to define a different default and/or a per-key permission. Note that JSON doesn't support octal notation, so it should be written in decimal. This also means it's possible that the permission may be displayed in decimal notation.
+
+``` yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mypod
+spec:
+  containers:
+  - name: mypod
+    image: redis
+    volumeMounts:
+    - name: foo
+      mountPath: "/etc/foo"
+  volumes:
+  - name: foo
+    secret:
+      secretName: mysecret
+      # 0400 in octal, written in decimal.
+      defaultMode: 256
+  # Or:
+  - name: permission-override
+    secret:
+      secretName: mysecret
+      items:
+      - key: username
+        path: my-group/my-username
+        # Override file permission for this secret.
+        # 0777 in octal, written in decimal.
+        mode: 511
+```
+
+As with [ConfigMaps], projected keys are automatically, eventually updated in up to the Kubelet's sync period + the TTL of the secrets cache in the Kubelet.
+
+[ConfigMaps]: #configmap
+
+Secrets can be used in environment variables in a Pod by using the `env.valueFrom.secretKeyRef:` field to reference the secret key. The environment variables will appear within the container as-named and Base64-decoded. References to non-existent keys prevent the Pod from starting.
+
+``` yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: secret-env-pod
+spec:
+  containers:
+  - name: mycontainer
+    image: redis
+    env:
+      - name: SECRET_USERNAME
+        valueFrom:
+          secretKeyRef:
+            name: mysecret
+            key: username
+      - name: SECRET_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: mysecret
+            key: password
+  restartPolicy: Never
+```
+
+The following example would expose SSH public and private keys at <span class="path">/etc/secret-volume/ssh-publickey</span> and <span class="path">/etc/secret-volume/ssh-privkey</span>.
+
+``` console
+$ kubectl create secret generic ssh-key-secret \
+    --from-file=ssh-privatekey=/path/to/.ssh/id_rsa \
+    --from-file=ssh-publickey=/path/to/.ssh/id_rsa.pub
+```
+
+``` yaml
+kind: Pod
+apiVersion: v1
+metadata:
+  name: secret-test-pod
+  labels:
+    name: secret-test
+spec:
+  volumes:
+  - name: secret-volume
+    secret:
+      secretName: ssh-key-secret
+  containers:
+  - name: ssh-test-container
+    image: mySshImage
+    volumeMounts:
+    - name: secret-volume
+      readOnly: true
+      mountPath: "/etc/secret-volume"
+```
+
 # Minikube
 
 Minikube is a light-weight Kubernetes implementation that creates a local virtual machine and deploys a simple cluster containing a single Node [^docker_compose].

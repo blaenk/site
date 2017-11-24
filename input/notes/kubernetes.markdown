@@ -33,3 +33,23 @@ A _Deployment Configuration_ instructs Kubernetes on how to create and update in
 
 Deployments can be created and managed with the `kubectl` command.
 
+# Pods
+
+A Pod is a group of one or more application containers. It includes shared storage (volumes), IP addresses, and information about how to run them.
+
+Kubernetes creates Pods to host an application instance from Deployment Configurations. A _Pod_ is an abstraction that represents a group of one or more application containers and some shared resources for those containers which may include:
+
+* Volumes: shared storage
+* Networking: unique cluster of IP addresses
+* Information about how to run each container, such as image version or ports to use
+
+A Pod models an application-specific "logical host" that can contain different application containers which are relatively tightly coupled, such as a Node.js app and a container that feeds the data to be published by the app.
+
+A Pod is the atomic unit in Kubernetes. Deployments create Pods with containers inside them, not containers directly. Pods are tied to the Node onto which they were scheduled and remain there until termination, depending on the restart policy, or deletion.
+
+Containers in a Pod share an IP address and port space, they're always co-located and co-scheduled, and they run in a shared context on the same Node.
+
+Containers should only be scheduled together in a single Pod if they're tightly coupled and need to share resources, such as a disk.
+
+![pods](https://d33wubrfki0l68.cloudfront.net/fe03f68d8ede9815184852ca2a4fd30325e5d15a/98064/docs/tutorials/kubernetes-basics/public/images/module_03_pods.svg)
+

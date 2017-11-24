@@ -165,6 +165,31 @@ The Service will load-balance traffic only to available Pods during the update. 
 
 ![rolling-update-4](https://d33wubrfki0l68.cloudfront.net/6d8bc1ebb4dc67051242bc828d3ae849dbeedb93/fbfa8/docs/tutorials/kubernetes-basics/public/images/module_06_rollingupdates4.svg)
 
+# Labels
+
+Labels are key-value pairs that can be attached to each object in Kubernetes. They can be listed with the `labels:` section in the `metadata:` section of a Pod definition:
+
+``` yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    ports:
+    - containerPort: 80
+```
+
+Pods can then be queried based on their labels:
+
+``` console
+$ kubectl get pods -l app=nginx
+```
+
 # Minikube
 
 Minikube is a light-weight Kubernetes implementation that creates a local virtual machine and deploys a simple cluster containing a single Node [^docker_compose].

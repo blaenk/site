@@ -691,3 +691,9 @@ $ docker-compose down
 ```
 
 The `docker-compose run <service> <cmd>` command can be used to run a command in the context of a service.
+
+# Swarms
+
+A Docker _swarm_ is a group of machines running Docker that are joined into a cluster. After joining a swarm, machines are referred to as _nodes_. Docker commands can continue to be entered, but they're executed on a cluster by a _swarm manager_. Only swarm managers can execute commands or authorize other machines to join the swarm as _workers_, which simply provide capacity and do not have authority to command other machines.
+
+Swarm managers can use various strategies to run containers, such as running it on the least utilized machine, which can be specified in the Compose file.

@@ -131,3 +131,50 @@ Minikube is a light-weight Kubernetes implementation that creates a local virtua
 
 The `start` command will start a virtual machine with a Kubernetes cluster.
 
+# kubectl
+
+The general structure of `kubectl` commands is:
+
+``` console
+$ kubectl :action :resource
+```
+
+The `--help` argument can be appended to most commands to get information about possible parameters.
+
+The `version` shows the client and server version information.
+
+The `cluster-info` command shows the master, dashboard, and other running applications.
+
+The `get` command lists resources. For example, the `get nodes` command shows all Nodes that can be used to host applications.
+
+The `describe` command shows detailed information about a resource.
+
+The `logs` command prints the logs from a container in a Pod.
+
+The `exec` command executes a command on a container in a Pod.
+
+The `run` command creates a new Deployment. It requires a Deployment name and application image location, which should include the full repository URL for images hosted outside of the official Docker registry.
+
+``` console
+$ kubectl run kubernetes-bootcamp \
+    --image=docker.io/jocatalin/kubernetes-bootcamp:v1 \
+    --port=8080
+```
+
+This has the effect of searching for a suitable Node where an instance of the application can run, scheduling it to run on that Node, then configuring the cluster to reschedule the instance on a new Node when needed.
+
+Deployments can be listed with the `get deployments` command.
+
+Pods running inside of Kubernetes run in a private isolated network. By default they're visible from other Pods and Services within the same cluster, but not outside of that network.
+
+The `proxy` command can be used to create a proxy through which it's possible to communicate with the cluster-wide private network.
+
+`kubectl` interacts with the application through an API endpoint. The API server also automatically creates an API endpoint for each Pod based on its name.
+
+The Pod name can be obtained with the following command:
+
+``` console
+export POD_NAME=$(kubectl get pods -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
+
+$ curl http://localhost:8001/api/v1/proxy/namespaces/default/pods/$POD_NAME/
+```

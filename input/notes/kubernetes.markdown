@@ -643,6 +643,29 @@ spec:
       mountPath: "/etc/secret-volume"
 ```
 
+# Management
+
+A Kubernetes object should be managed using only one technique, as mixing and matching techniques for the same object results in undefined behavior.
+
+Imperative commands operate on live objects through the `kubectl` command.
+
+``` console
+$ kubectl run nginx --image nginx
+```
+
+Imperative object configuration specifies the operation (e.g. create) and at least one file name containing the full object definition.
+
+``` console
+$ kubectl create -f ./nginx.yaml
+```
+
+Declarative object configuration operates on object configuration files stored locally, without explicitly defining the operations to be taken on the files. Instead, the operation (create, update, delete) is automatically detected per-object by `kubectl`. The `PATCH` API operation makes it possible to write only the observed differences to retain changes by other writers even if the changes aren't merged back to the object configuration file.
+
+``` console
+# The -R argument makes it recursive.
+$ kubectl apply -R -f configs/
+```
+
 # Minikube
 
 Minikube is a light-weight Kubernetes implementation that creates a local virtual machine and deploys a simple cluster containing a single Node [^docker_compose].

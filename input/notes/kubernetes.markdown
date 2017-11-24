@@ -33,6 +33,46 @@ A _Deployment Configuration_ instructs Kubernetes on how to create and update in
 
 Deployments can be created and managed with the `kubectl` command.
 
+## Deployment Definitions
+
+A Deployment object defines a Pod creation template and desired replica count. The Pods it manages are selected using a label selector, and it creates or deletes Pods as needed to meet the desired replica count.
+
+``` yaml
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  # Run 2 Pods matching the template.
+  replicas: 2
+  # Create Pods using Pod definition in this template.
+  template:
+    metadata:
+      # Unlike in Pod definitions, no name is necessary
+      # because a unique name is generated from the deployment
+      # name.
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.7.9
+        ports:
+        - containerPort: 80
+```
+
+This deployment can be created with:
+
+``` console
+$ kubectl create -f ./deployment.yaml
+```
+
+Changes can be applied by using the `apply` sub-command:
+
+``` console
+$ kubectl apply -f ./deployment-update.yaml
+```
+
 # Pods
 
 A Pod is a group of one or more application containers. It includes shared storage (volumes), IP addresses, and information about how to run them.

@@ -115,7 +115,7 @@ spec:
 This Pod can then be created:
 
 ``` console
-$ kubectl create -f pod-nginx.yaml
+$ kubectl create -f ./pod-nginx.yaml
 ```
 
 Volumes can be defined with the `volumes:` section, and mounted with the `volumeMounts:` section. Volume types include `EmptyDir` which creates a new directory that is tied to the Pod's lifetime but is otherwise persisted across failures and restarts, or `HostPath` which mounts an existing directory on the node's file system. See this example for a Redis Pod:

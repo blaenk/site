@@ -93,6 +93,11 @@ Containers should only be scheduled together in a single Pod if they're tightly 
 
 ![pods](https://d33wubrfki0l68.cloudfront.net/fe03f68d8ede9815184852ca2a4fd30325e5d15a/98064/docs/tutorials/kubernetes-basics/public/images/module_03_pods.svg)
 
+A [PodPreset] is an object that can be used to [inject][podpreset-injection] information like secrets, volume mounts, and environment variables into Pods at creation time.
+
+[PodPreset]: https://kubernetes.io/docs/concepts/workloads/pods/podpreset/
+[podpreset-injection]: https://kubernetes.io/docs/tasks/inject-data-application/podpreset/
+
 ## Pod Definitions
 
 A Pod definition declares the _desired state_ which Kubernetes aims to match.

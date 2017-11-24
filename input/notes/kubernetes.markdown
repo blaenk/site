@@ -53,6 +53,50 @@ Containers should only be scheduled together in a single Pod if they're tightly 
 
 ![pods](https://d33wubrfki0l68.cloudfront.net/fe03f68d8ede9815184852ca2a4fd30325e5d15a/98064/docs/tutorials/kubernetes-basics/public/images/module_03_pods.svg)
 
+## Pod Definitions
+
+A Pod definition declares the _desired state_ which Kubernetes aims to match.
+
+A Pod definition for an nginx web server may look like this:
+
+``` yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.7.9
+    ports:
+    - containerPort: 80
+```
+
+This Pod can then be created:
+
+``` console
+$ kubectl create -f pod-nginx.yaml
+```
+
+Volumes can be defined with the `volumes:` section, and mounted with the `volumeMounts:` section. Volume types include `EmptyDir` which creates a new directory that is tied to the Pod's lifetime but is otherwise persisted across failures and restarts, or `HostPath` which mounts an existing directory on the node's file system. See this example for a Redis Pod:
+
+``` yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: redis
+spec:
+  containers:
+  - name: redis
+    image: redis
+    volumeMounts:
+    - name: redis-persistent-storage
+      mountPath: /data/redis
+  volumes:
+  - name: redis-persistent-storage
+    emptyDir: {}
+```
+
 # Nodes
 
 A Node is a worker machine in Kubernetes. Multiple Pods can run on a single Node.

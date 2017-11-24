@@ -53,3 +53,14 @@ Containers should only be scheduled together in a single Pod if they're tightly 
 
 ![pods](https://d33wubrfki0l68.cloudfront.net/fe03f68d8ede9815184852ca2a4fd30325e5d15a/98064/docs/tutorials/kubernetes-basics/public/images/module_03_pods.svg)
 
+# Nodes
+
+A Node is a worker machine in Kubernetes. Multiple Pods can run on a single Node.
+
+A Node can have multiple Pods. The Kubernetes master automatically handles scheduling Pods across the Nodes in the cluster based on the available resources on each Node. Each Node runs at least:
+
+* Kubelet: a process responsible for communicating between the master and the Nodes in the cluster. It manages the Pods and the containers running on the machine.
+* Container runtime: Such as Docker, responsible for pulling the container image from a registry, then unpacking and running it.
+
+![node](https://d33wubrfki0l68.cloudfront.net/5cb72d407cbe2755e581b6de757e0d81760d5b86/a9df9/docs/tutorials/kubernetes-basics/public/images/module_03_nodes.svg)
+

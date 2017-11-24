@@ -623,7 +623,7 @@ The Docker daemon runs an embedded DNS server that resolves container names of c
 
 Docker Compose is a tool that can be used to define and run multi-container Docker applications.
 
-The following compose file will:
+The following Compose file will:
 
 * pull the specified image
 * run 5 containers of that image as a service named `web`, limiting each to 10% CPU and 50 MB RAM
@@ -660,15 +660,15 @@ This application can be run by first initializing the swarm:
 $ docker swarm init
 ```
 
-Then a _service stack_ can be instanced from the compose file which we name `getstartedlab`:
+Then a _service stack_ can be instanced from the Compose file which we name `getstartedlab`:
 
 ``` console
 $ docker stack deploy -c docker-compose.yml getstartedlab
 ```
 
-A single container running in a service is called a _task_, and each is given a unique numerically sequential ID, up to the number of replicas specified in the compose file.
+A single container running in a service is called a _task_, and each is given a unique numerically sequential ID, up to the number of replicas specified in the Compose file.
 
-The number of replicas can be changed in the compose file and the service redeployed without first having to tear the stack down first or kill containers.
+The number of replicas can be changed in the Compose file and the service redeployed without first having to tear the stack down first or kill containers.
 
 Everything can be shut down as follows:
 

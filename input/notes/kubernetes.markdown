@@ -121,3 +121,13 @@ The Service will load-balance traffic only to available Pods during the update. 
 
 ![rolling-update-4](https://d33wubrfki0l68.cloudfront.net/6d8bc1ebb4dc67051242bc828d3ae849dbeedb93/fbfa8/docs/tutorials/kubernetes-basics/public/images/module_06_rollingupdates4.svg)
 
+# Minikube
+
+Minikube is a light-weight Kubernetes implementation that creates a local virtual machine and deploys a simple cluster containing a single Node [^docker_compose].
+
+[^docker_compose]: This makes Kubernetes usable even in a local development environment, similar to what [Docker Compose] would achieve.
+
+[Docker Compose]: /notes/docker#docker-compose
+
+The `start` command will start a virtual machine with a Kubernetes cluster.
+

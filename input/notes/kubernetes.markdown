@@ -257,6 +257,71 @@ Pods can then be queried based on their labels:
 $ kubectl get pods -l app=nginx
 ```
 
+# Health Checking
+
+The Kubelet agent is in charge of health checking.
+
+The simplest form is a process-level health check, where the Kubelet continuously asks the Docker daemon if the container process is still running, and restarts it if not. This health check is on by default for every container that runs in Kubernetes.
+
+Kubernetes also supports application-level health checks, which can detect issues such as Deadlocks [^deadlocks]. There are three kinds of application health checks:
+
+[^deadlocks]: Which would otherwise appear as healthy to process-level health checks, since the process is still running.
+
+1. HTTP Health Checks: The Kubelet calls a web hook where a response code between 200 and 399 is considered success, and failure otherwise.
+2. Container Exec: The Kubelet executes a command whose exit status determines the application's health: 0 is success, failure otherwise.
+3. TCP Socket: The Kubelet attempts to open a socket to the container. If the connection is established, it's considered healthy, failure otherwise.
+
+If the Kubelet discovers a failure, the container is restarted.
+
+Health checks are configured in the `livenessProbe` section of the container configuration. It's also possible to specify an `initialDelaySeconds` setting to declare a grace period to allow for proper container initialization.
+
+This is an example HTTP Health Check:
+
+``` yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-with-http-healthcheck
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    livenessProbe:
+      # HTTP health check.
+      httpGet:
+        path: /_status/healthz
+        port: 80
+      # Initialization grace period.
+      initialDelaySeconds: 30
+      # Timeout before considering failure.
+      timeoutSeconds: 1
+    ports:
+    - containerPort: 80
+```
+
+Here is an example of a TCP Socket health check:
+
+``` yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-with-tcp-socket-healthcheck
+spec:
+  containers:
+  - name: redis
+    image: redis
+    livenessProbe:
+      # TCP Socket health check.
+      tcpSocket:
+        port: 6379
+      # Initialization grace period.
+      initialDelaySeconds: 30
+      # Timeout before considering failure.
+      timeoutSeconds: 1
+    ports:
+    - containerPort: 6379
+```
+
 # Minikube
 
 Minikube is a light-weight Kubernetes implementation that creates a local virtual machine and deploys a simple cluster containing a single Node [^docker_compose].

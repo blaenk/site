@@ -416,9 +416,31 @@ It's also possible to use the `envFrom:` section to define all of a ConfigMap's 
 
 It's also possible to populate a Volume with data stored in a ConfigMap by referencing the ConfigMap with the `volumes.configMap:` section.
 
-This can be further controlled by specifying the `volumes.configMap.items:` section to explicitly specify the path for specific ConfigMap items.
+The following Pod definition results in files <span class="path">/etc/config/special.level</span> and <span class="path">/etc/config/special.type</span>.
 
-The following Pod definition results in files <span class="path">/etc/config/keys</span> and <span class="path">/etc/config/special.type</span>.
+``` yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dapi-test-pod
+spec:
+  containers:
+    - name: test-container
+      image: gcr.io/google_containers/busybox
+      command: [ "/bin/sh", "-c", "ls /etc/config/" ]
+      volumeMounts:
+      - name: config-volume
+        mountPath: /etc/config
+  volumes:
+    - name: config-volume
+      configMap:
+        name: special-config
+  restartPolicy: Never
+```
+
+This can be further controlled by specifying the `volumes.configMap.items:` section to only project specific items at specific paths, that is, only the specified keys are projected.
+
+The following Pod definition results in the file <span class="path">/etc/config/special.type</span>.
 
 ``` yaml
 apiVersion: v1

@@ -322,6 +322,124 @@ spec:
     - containerPort: 6379
 ```
 
+# ConfigMap
+
+A ConfigMap decouples configuration artifacts from the image content in order to keep containerized applications portable. The data can be consumed in Pods or they may provide the configurations for system components such as controllers.
+
+A ConfigMap can be created with the `create configmap` command from directories, files, or literal values:
+
+``` console
+$ kubectl create configmap :map-name :data-source
+```
+
+ConfigMaps can be created from literal key-value pairs with the `--from-literal` argument.
+
+A ConfigMap can be created from a directory by passing a directory to the `--from-file` argument, in which case all of the files are combined. Otherwise a single file may be passed. The `--from-file` argument may be passed multiple times.
+
+It's also possible to specify a different key to appear under the resulting `data:` section instead of the file name itself, by using the form `--from-file=:key=:path`.
+
+``` console
+$ ls config/dir/
+game.properties
+ui.properties
+
+$ kubectl create configmap game-config --from-file=config/dir/
+
+$ kubectl describe configmaps game-config
+Name:           game-config
+Namespace:      default
+Labels:         <none>
+Annotations:    <none>
+
+Data
+====
+game.properties:        158 bytes
+ui.properties:          83 bytes
+```
+
+The contents of the files are nested under the ConfigMap's `data:` section:
+
+``` yaml
+apiVersion: v1
+data:
+  game.properties: |
+    enemies=aliens
+    lives=3
+    enemies.cheat=true
+    enemies.cheat.level=noGoodRotten
+    secret.code.passphrase=UUDDLRLRBABAS
+    secret.code.allowed=true
+    secret.code.lives=30
+  ui.properties: |
+    color.good=purple
+    color.bad=yellow
+    allow.textmode=true
+    how.nice.to.look=fairlyNice
+kind: ConfigMap
+metadata:
+  creationTimestamp: 2016-02-18T18:52:05Z
+  name: game-config
+  namespace: default
+  resourceVersion: "516"
+  selfLink: /api/v1/namespaces/default/configmaps/game-config-2
+  uid: b4952dc3-d670-11e5-8cd0-68f728db1985
+```
+
+ConfigMaps may be referenced from Pod definitions with the `valueFrom.configMapKeyRef:` section. For example, given a ConfigMap named <span class="path">special-config</span> with a key `special.how` set to `very`, this Pod would use that key's value to set the `SPECIAL_LEVEL_KEY` environment variable:
+
+``` yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dapi-test-pod
+spec:
+  containers:
+    - name: test-container
+      image: gcr.io/google_containers/busybox
+      command: [ "/bin/sh", "-c", "env" ]
+      env:
+        # Define the environment variable
+        - name: SPECIAL_LEVEL_KEY
+          valueFrom:
+            configMapKeyRef:
+              name: special-config
+              key: special.how
+  restartPolicy: Never
+```
+
+It's also possible to use the `envFrom:` section to define all of a ConfigMap's data as Pod environment variables. It's also possible to expand such environment variables with the `$(VAR_NAME)` substitution syntax.
+
+It's also possible to populate a Volume with data stored in a ConfigMap by referencing the ConfigMap with the `volumes.configMap:` section.
+
+This can be further controlled by specifying the `volumes.configMap.items:` section to explicitly specify the path for specific ConfigMap items.
+
+The following Pod definition results in files <span class="path">/etc/config/keys</span> and <span class="path">/etc/config/special.type</span>.
+
+``` yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dapi-test-pod
+spec:
+  containers:
+    - name: test-container
+      image: gcr.io/google_containers/busybox
+      command: [ "/bin/sh", "-c", "ls /etc/config/" ]
+      volumeMounts:
+      - name: config-volume
+        mountPath: /etc/config
+  volumes:
+    - name: config-volume
+      configMap:
+        name: special-config
+        items:
+        - key: special.level
+          path: keys
+  restartPolicy: Never
+```
+
+The Kubelet periodically checks whether the mounted ConfigMap is fresh and updates it if it is not. This may take as much time as the Kubelet sync period + the TTL of the ConfigMaps cache in the Kubelet.
+
 # Minikube
 
 Minikube is a light-weight Kubernetes implementation that creates a local virtual machine and deploys a simple cluster containing a single Node [^docker_compose].

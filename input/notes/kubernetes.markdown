@@ -131,6 +131,15 @@ Minikube is a light-weight Kubernetes implementation that creates a local virtua
 
 The `start` command will start a virtual machine with a Kubernetes cluster.
 
+Instead of building a Docker image on the host and pushing it to a registry, the image can be built using the Docker installation on Minikube's VM, so that the images are automatically present. To accomplish this it's necessary to load the Minikube's Docker daemon environment:
+
+``` console
+$ eval $(minikube docker-env)
+
+# Can be undone:
+$ eval $(minikube docker-env -u)
+```
+
 # kubectl
 
 The `kubectl`'s context determines which cluster it interacts with. Available contexts are shown in <span class="path">~/.kube/config</span>. The context can be set with the `config use-context :context` command.

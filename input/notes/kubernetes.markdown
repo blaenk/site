@@ -205,6 +205,33 @@ The Service will load-balance traffic only to available Pods during the update. 
 
 ![rolling-update-4](https://d33wubrfki0l68.cloudfront.net/6d8bc1ebb4dc67051242bc828d3ae849dbeedb93/fbfa8/docs/tutorials/kubernetes-basics/public/images/module_06_rollingupdates4.svg)
 
+## Service Definitions
+
+This service balances across the Pods in a hypothetical nginx Deployment.
+
+``` yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  ports:
+  - port: 8000
+    # The container on each Pod to connect to.
+    targetPort: 80
+    protocol: TCP
+  # Label selector to identify the set of pods to load-balance
+  # traffic to.
+  selector:
+    app: nginx
+```
+
+This service can be created with:
+
+``` console
+$ kubectl create -f ./service.yaml
+```
+
 # Labels
 
 Labels are key-value pairs that can be attached to each object in Kubernetes. They can be listed with the `labels:` section in the `metadata:` section of a Pod definition:

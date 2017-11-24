@@ -150,7 +150,7 @@ A Node can have multiple Pods. The Kubernetes master automatically handles sched
 
 # Services
 
-A Service is an abstraction layer which defines a logical set of Pods and enables external traffic exposure, load balancing, and Service discovery for those Pods.
+A Service is an abstraction layer which defines a logical set of Pods and enables external traffic exposure, load balancing, and Service discovery for those Pods. They provide a way to refer to a set of Pods, selected by labels, with a single static IP address.
 
 Pods have a lifecycle. When a Node dies, the Pods running on it are lost. A _Replication Controller_ may dynamically drive the cluster back to the desired state by creating new Pods to keep the application running.
 

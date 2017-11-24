@@ -64,3 +64,60 @@ A Node can have multiple Pods. The Kubernetes master automatically handles sched
 
 ![node](https://d33wubrfki0l68.cloudfront.net/5cb72d407cbe2755e581b6de757e0d81760d5b86/a9df9/docs/tutorials/kubernetes-basics/public/images/module_03_nodes.svg)
 
+# Services
+
+A Service is an abstraction layer which defines a logical set of Pods and enables external traffic exposure, load balancing, and Service discovery for those Pods.
+
+Pods have a lifecycle. When a Node dies, the Pods running on it are lost. A _Replication Controller_ may dynamically drive the cluster back to the desired state by creating new Pods to keep the application running.
+
+Each Pod in a cluster has a unique IP address, even those on the same Node, so there needs to be a way of automatically reconciling changes among Pods.
+
+A _Service_ is an abstraction that defines a logical set of Pods and a policy by which to access them. Services enable loose coupling between dependent Pods. A Service can be defined using YAML or JSON, like all Kubernetes objects. The Pods targeted by a Service are usually determined by a _LabelSelector_.
+
+![services](https://d33wubrfki0l68.cloudfront.net/cc38b0f3c0fd94e66495e3a4198f2096cdecd3d5/ace10/docs/tutorials/kubernetes-basics/public/images/module_04_services.svg)
+
+The different unique IP addresses of each Pod are not exposed outside of the cluster without a Service. There are different types of Services which can be specified via `type` in the ServiceSpec:
+
+* `ClusterIP` (default): Exposes the Service on an internal IP in the cluster, making it reachable only from within the cluster.
+* `NodePort`: Exposes the Service on the same port of each selected Node in the cluster using NAT, making it accessible from outside the cluster using `ip:port`. This is a supserset of `ClusterIP`.
+* `LoadBalancer`: Creates an external load balanced in the current cloud (if supported) and assigns a fixed external IP address to the Service. Superset of `NodePort`.
+* `ExternalName`: Exposes the Service using an arbitrary name as specified by `externalName` by returning a CNAME record with the name. No proxy is used.
+
+A Service may not define `selector` in the spec, which means the corresponding Endpoints object isn't created, allowing manually mapping a Service to specific endpoints.
+
+Services handle discovery and routing among dependent Pods. Services match the set of dependent Pods using labels and selectors, a grouping primitive that allows logical operation on objects in Kubernetes. Labels are key-value pairs attached to objects that can be used to:
+
+* designate objects for development, test, and production
+* embed version tags
+* classify an object using tags
+
+Labels can be attached at object creation or later, and can be modified at any time.
+
+![labels](https://d33wubrfki0l68.cloudfront.net/b964c59cdc1979dd4e1904c25f43745564ef6bee/f3351/docs/tutorials/kubernetes-basics/public/images/module_04_labels.svg)
+
+Note that Services can be created when a Deployment is created by using the `--expose` argument with `kubectl`.
+
+A Service can handle scaling while remaining accessible in the same manner. Services have an integrated load-balancer that distributes network traffic to all Pods of an exposed Deployment. Services continuously monitor the running Pods' endpoints to ensure that the traffic is only sent to available Pods.
+
+![service-pre-scale](https://d33wubrfki0l68.cloudfront.net/043eb67914e9474e30a303553d5a4c6c7301f378/0d8f6/docs/tutorials/kubernetes-basics/public/images/module_05_scaling1.svg)
+
+![service-post-scale](https://d33wubrfki0l68.cloudfront.net/30f75140a581110443397192d70a4cdb37df7bfc/b5f56/docs/tutorials/kubernetes-basics/public/images/module_05_scaling2.svg)
+
+Rolling Updates allow Deployments' updates to occur with zero downtime by incrementally updating Pod instances, then scheduling those new Pods on Nodes with available resources. By default, only one Pod can be unavailable and only one new Pod can be created, that is, Pods are updated one by one.
+
+In Kubernetes, updates are versioned and any Deployment update can be reverted to a previous version.
+
+The Service will load-balance traffic only to available Pods during the update. Rolling updates allow:
+
+* Promote an application from one environment to another, via container image updates.
+* Rollback to previous versions.
+* Continuous Integration and Continuous Delivery of applications with zero downtime.
+
+![rolling-update-1](https://d33wubrfki0l68.cloudfront.net/30f75140a581110443397192d70a4cdb37df7bfc/fa906/docs/tutorials/kubernetes-basics/public/images/module_06_rollingupdates1.svg)
+
+![rolling-update-2](https://d33wubrfki0l68.cloudfront.net/678bcc3281bfcc588e87c73ffdc73c7a8380aca9/703a2/docs/tutorials/kubernetes-basics/public/images/module_06_rollingupdates2.svg)
+
+![rolling-update-3](https://d33wubrfki0l68.cloudfront.net/9b57c000ea41aca21842da9e1d596cf22f1b9561/91786/docs/tutorials/kubernetes-basics/public/images/module_06_rollingupdates3.svg)
+
+![rolling-update-4](https://d33wubrfki0l68.cloudfront.net/6d8bc1ebb4dc67051242bc828d3ae849dbeedb93/fbfa8/docs/tutorials/kubernetes-basics/public/images/module_06_rollingupdates4.svg)
+

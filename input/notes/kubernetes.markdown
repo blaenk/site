@@ -133,6 +133,8 @@ The `start` command will start a virtual machine with a Kubernetes cluster.
 
 # kubectl
 
+The `kubectl`'s context determines which cluster it interacts with. Available contexts are shown in <span class="path">~/.kube/config</span>. The context can be set with the `config use-context :context` command.
+
 The general structure of `kubectl` commands is:
 
 ``` console

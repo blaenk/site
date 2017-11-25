@@ -666,6 +666,54 @@ Declarative object configuration operates on object configuration files stored l
 $ kubectl apply -R -f configs/
 ```
 
+## Imperative Commands
+
+There are commands for creating the most common object types.
+
+* `run` creates a new Deployment object to run Containers in one or more Pods.
+* `expose` creates a new Service object to load-balance traffic across Pods.
+* `autoscale` creates a new Autoscaler object to automatically horizontally scale a controller (such as a Deployment).
+
+There are more general creation commands driven by the object type.
+
+``` console
+$ kubectl create :type [:subtype] :instancename
+```
+
+The `--edit` argument allows editing the object before it's actually created.
+
+``` console
+# Create and save the configuration.
+$ kubectl create service clusterip my-svc \
+    --clusterip="None" -o yaml --dry-run > /tmp/srv.yaml
+
+# Edit the configuration before creating it.
+$ kubectl create --edit -f /tmp/srv.yaml
+```
+
+There are commands for updating objects with common ways.
+
+* `scale` horizontally scales a controller to add or remove Pods by updating the replica count of the controller
+* `annotate` adds or removes an annotation from an object
+* `label` adds or removes a label from an object
+
+The more general `set` command can set an aspect of an object.
+
+The `edit` command directly edits a raw configuration of a live object by opening its configuration in an editor.
+
+Objects can be deleted with the `delete` command:
+
+``` console
+$ kubectl delete :type/:name
+$ kubectl delete deployment/nginx
+```
+
+Objects can be expected with certain commands:
+
+* `get` prints basic information about any matching objects
+* `describe` prints aggregated detailed information about any matching objects
+* `logs` prints the stdout and stderr of a container in a Pod
+
 # Minikube
 
 Minikube is a light-weight Kubernetes implementation that creates a local virtual machine and deploys a simple cluster containing a single Node [^docker_compose].

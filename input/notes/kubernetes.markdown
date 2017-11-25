@@ -714,6 +714,47 @@ Objects can be expected with certain commands:
 * `describe` prints aggregated detailed information about any matching objects
 * `logs` prints the stdout and stderr of a container in a Pod
 
+## Imperative Object Configuration
+
+The `create -f` command can be used to create an object from a local or remote configuration file.
+
+``` console
+$ kubectl create -f :filename|:url
+```
+
+The `--edit` argument can be used to edit a configuration before it's created.
+
+Live objects can be updated according to a configuration file with the `replace -f` command.
+
+Note however that `replace` drops all parts of the spec not specified in the configuration file. For this reason, it shouldn't be used with objects whose specs are partially managed by the cluster such as Services of type `LoadBalancer`, where the `externalIPs` field is managed separate from the configuration file. Such independently managed fields must be copied to the configuration file to prevent being dropped by `replace`. This can also occur when an object is updated by changing some field. Multiple writers to the same object can be accommodated with the `kubectl apply` command.
+
+``` console
+$ kubectl replace -f :filename|:url
+```
+
+An object described by a configuration file can be deleted with the `delete -f` command.
+
+``` console
+$ kubectl delete -f :filename|:url
+```
+
+An object described by a configuration file can be viewed with the `get -f` command.
+
+``` console
+$ kubectl get -f :filename|:url -o yaml
+```
+
+Objects created with imperative commands can be migrated to imperative object configuration by:
+
+1. Exporting the live object to a local object configuration file:
+
+    ``` console
+    $ kubectl get :kind/:name -o yaml --export > :kind_:name.yaml
+    ```
+
+2. Removing the status field from the configuration file.
+3. Using the `replace -f` command for any future updates.
+
 # Minikube
 
 Minikube is a light-weight Kubernetes implementation that creates a local virtual machine and deploys a simple cluster containing a single Node [^docker_compose].

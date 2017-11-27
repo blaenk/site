@@ -159,7 +159,7 @@ code {
   .kp { color: $solar-green }  // Keyword.Pseudo
   .kr { color: $solar-green }  // Keyword.Reserved
   .kt { color: $solar-yellow } // Keyword.Type
-  .l { color: $base1 }         // Literal
+  .l { color: inherit }        // Literal
   .ld { color: $base1 }        // Literal.Date
   .m { color: $solar-orange }  // Literal.Number
   .mf { color: $solar-orange } // Literal.Number.Float
@@ -183,7 +183,7 @@ code {
   .nx { color: inherit }       // Name.Other
   .o { color: $base1 }         // Operator
   .ow { color: $solar-cyan }   // Operator.Word
-  .p { color: $base1 }         // Punctuation
+  .p { color: inherit }        // Punctuation
   .py { color: $base1 }        // Name.Property
   .s { color: $solar-cyan }    // Literal.String
   .s1 { color: $solar-cyan }   // Literal.String.Single

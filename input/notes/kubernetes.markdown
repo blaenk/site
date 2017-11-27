@@ -755,6 +755,146 @@ Objects created with imperative commands can be migrated to imperative object co
 2. Removing the status field from the configuration file.
 3. Using the `replace -f` command for any future updates.
 
+## Declarative Object Configuration
+
+An _object configuration file_ is the file that defines the configuration for a Kubernetes object. They are usually stored in source control.
+
+A _live object configuration_ consists of the live configuration values of an object as observed by the Kubernetes cluster, and are usually stored in cluster storage such as etcd.
+
+A _declarative configuration writer_ is a person or sowftware component that makes updates to a live object.
+
+The `kubectl apply` command creates all objects defined by configuration files in a specified directory, except for those that already exist.
+
+This command also sets an annotation on each object that contains the contents of the object configuration that was used to create the object at <span class="path">kubectl.kubernetes.io/last-applied-configuration</span>.
+
+``` console
+# Made recursive with -R.
+$ kubectl apply -R -f directory/
+```
+
+The `apply` command can also be used to update all objects defined in a directory, whether they exist or not. This modifies the live configuration by:
+
+* clearing all fields removed from the configuration file; those present in `last-applied-configuration` and missing from the configuration file
+* setting all fields appearing in the configuration file; those present in the configuration file whose values don't match the live configuration
+
+The merge process is determined based on the field type:
+
+* primitives such as string, integer, or boolean: replace
+* maps (aka objects): merge elements or subfields
+* list: depends on the field's `patchStrategy` internal tag, or basic replacement if it's missing
+
+Updates to map or list fields usually doesn't replace the entire field, but instead individual sub-elements are updated.
+
+List merging can be accomplished by replacing the entire list, merging individual complex elements, or merging a list of primitive elements.
+
+Replacing a list is done as any other primitive field would be replaced.
+
+Merging a list of complex elements such as maps is done by looking at an internal special tag on each field named `patchMergeKey`, then using the key in that field as the key for that map element when performing the merge.
+
+Merging lists of primitive elements is no longer supported since Kubernetes 1.5.
+
+Note that any fields updated directly in the live configuration through e.g. `kubectl scale` can be retained after an `apply` update as a natural consequence of the above, unless it's a field that was removed or changed in the configuration file. However, this does not apply when mixing with `create` and `replace` commands, since they do not retain the `last-applied-configuration` annotation.
+
+Since certain fields are defaulted by the API server, it's recommended to explicitly specify them in the configuration file. This is because some fields may be defaulted based on the values of other fields.
+
+It's recommended to explicitly define Selectors and PodTemplate labels on workers, such as Deployment, StatefulSet, Job, DaemonSet, ReplicaSet, and ReplicationController, as well as the Deployment rollout strategy.
+
+The following example fails because the API server defaults the strategy type to `RollingUpdate`, which causes it to also default the `rollingUpdate:` map which the `RollingUpdate` strategy requires. However, when the strategy type is changed to `Recreate` it is incorrect to keep the `rollingUpdate:` map, but it will remain since it's not explicitly removed.
+
+``` yaml
+# last-applied-configuration
+spec:
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.7.9
+        ports:
+        - containerPort: 80
+
+# configuration file
+spec:
+  strategy:
+    type: Recreate # updated value
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.7.9
+        ports:
+        - containerPort: 80
+
+# live configuration
+spec:
+  strategy:
+    type: RollingUpdate # defaulted value
+    rollingUpdate: # defaulted value derived from type
+      maxSurge : 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.7.9
+        ports:
+        - containerPort: 80
+
+# result after merge - ERROR!
+spec:
+  strategy:
+    type: Recreate # updated value: incompatible with rollingUpdate
+    rollingUpdate: # defaulted value: incompatible with "type: Recreate"
+      maxSurge : 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.7.9
+        ports:
+        - containerPort: 80
+```
+
+It's possible to clear server-defaulted fields or fields set by other writers by adding the field to the configuration file to match the live object, applying it, thereby updating the annotation to include the field, then deleting the field from the configuration and re-applying it, removing the field from the live object and annotation.
+
+The recommended way to delete objects is to use the imperative `delete -f` command.
+
+``` console
+$ kubectl delete -f :filename
+```
+
+There is an experimental `apply --prune` command that queries the API server for all objects matching a set of labels and attempts to match the returned live object configurations against the configuration files and deletes any objects that match the query but don't have a configuration file in the directory.
+
+``` console
+$ kubectl apply -f directory/ --prune -l :labels
+```
+
+The `apply` command updates the live configuration by sending a [patch request] to the API, which defines updates scoped to specific fields of the live configuration, computed using the configuration file, live configuration, and the `last-applied-configuration` annotation.
+
+[patch request]: https://github.com/kubernetes/community/blob/master/contributors/devel/api-conventions.md?ts=2#patch-operations
+
+It's possible to migrate from imperative object configuration to declarative object configuration by:
+
+1. Setting the `last-applied-configuration` annotation by reloading the configuration:
+
+    ``` console
+    $ kubectl replace --save-config -f :kind_:name.yaml
+    ```
+
+2. Use `kubectl apply` from then on.
+
 # Minikube
 
 Minikube is a light-weight Kubernetes implementation that creates a local virtual machine and deploys a simple cluster containing a single Node [^docker_compose].

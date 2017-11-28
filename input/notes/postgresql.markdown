@@ -284,6 +284,22 @@ Expressions can be written in the `SELECT` output list.
 
 The `AS` option can be provided to rename an output column.
 
+The general syntax of the `SELECT` command is:
+
+``` postgresql
+[WITH with_queries]
+SELECT select_list
+FROM table_expression [sort_specification];
+```
+
+The table expression can be omitted entirely to simply compute values, and more generally the `SELECT` list can make calculations from columns.
+
+``` postgresql
+SELECT 3 * 4;
+
+SELECT a, b + c FROM table1;
+```
+
 ## Scalar Subqueries
 
 A _scalar subquery_ is an ordinary parenthesized `SELECT` query that returns exactly _one_ row with _one_ column. It would be an error if it returned more than one row or column, but returning nothing at all is interpreted as being `NULL`.

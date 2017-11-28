@@ -1011,6 +1011,8 @@ CREATE TABLE circles (
 );
 ```
 
+# Data Manipulation
+
 # Privileges
 
 Each created object is assigned an owner, which is usually the role that executed the creation statement. For most object kinds, the initial configuration is such that only the owner or a superuser can do anything with the object unless another role is granted _privilege_. The right to modify or destroy the object is always the privilege of the owner _only_.

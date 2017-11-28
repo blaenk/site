@@ -1051,6 +1051,26 @@ INSERT INTO products (product_no, name, price)
 
 Note that bulk loading can be more efficient when done with the `COPY` command.
 
+## Updating
+
+Updating requires the name of the table and column to update, the new value of that column, and which row(s) to update specified as conditions. If the row condition is omitted, then the update applies to all rows in the table. The new column value can be any scalar expression.
+
+It is not an error to attempt an update that does not match any rows.
+
+``` postgresql
+UPDATE products
+SET price = 10
+WHERE price = 5;
+```
+
+More than one column can be updated by listing more than one assignment in the `SET` clause.
+
+``` postgresql
+UPDATE mytable
+SET a = 5, b = 3, c = 1
+WHERE a > 0;
+```
+
 # Privileges
 
 Each created object is assigned an owner, which is usually the role that executed the creation statement. For most object kinds, the initial configuration is such that only the owner or a superuser can do anything with the object unless another role is granted _privilege_. The right to modify or destroy the object is always the privilege of the owner _only_.

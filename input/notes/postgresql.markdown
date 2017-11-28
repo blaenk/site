@@ -414,6 +414,18 @@ This is essentially a flipped left outer join.
 * For each row `R2` of `T2`:
     * If no row `R1` of `T1` satisfied the join condition with `R2`, add concatenated row to joined table from `R2` with `NULL` values in columns of `T1`
 
+## Full Outer Join
+
+Perform an inner join. Then for each row in `T1` that does not satisfy the join condition with any row in `T2`, a joined row is added with `NULL` values in columns of `T2`. Also for each row of `T2` that does not satisfy the join condition with any row in `T1`, a joined row is added with `NULL` values in the columns of `T1`. This results in at least $N \cdot M$ rows.
+
+This is essentially an inner join followed by the post-inner join parts of left outer join and right outer join.
+
+* Inner join
+* For each row `R1` of `T1`:
+    * If no row `R2` of `T2` satisfied the join condition with `R1`, add concatenated row to joined table from `R1` with `NULL` values in columns of `T2`
+* For each row `R2` of `T2`:
+    * If no row `R1` of `T1` satisfied the join condition with `R2`, add concatenated row to joined table from `R2` with `NULL` values in columns of `T1`
+
 ## Scalar Subqueries
 
 A _scalar subquery_ is an ordinary parenthesized `SELECT` query that returns exactly _one_ row with _one_ column. It would be an error if it returned more than one row or column, but returning nothing at all is interpreted as being `NULL`.

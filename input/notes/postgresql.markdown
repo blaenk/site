@@ -359,6 +359,35 @@ FROM T1 CROSS JOIN T2 INNER JOIN T3 ON condition;
 FROM T1, T2 INNER JOIN T3 ON condition;
 ```
 
+## Qualified Joins
+
+``` postgresql
+T1 { [INNER] | { LEFT | RIGHT | FULL } [OUTER] } JOIN T2
+  ON boolean_expression
+
+T1 { [INNER] | { LEFT | RIGHT | FULL } [OUTER] } JOIN T2
+  USING ( join column list )
+
+T1 NATURAL { [INNER] | { LEFT | RIGHT | FULL } [OUTER] } JOIN T2
+```
+
+The `LEFT`, `RIGHT`, and `FULL` keywords imply an outer join.
+
+The join condition determines which rows from the two source tables are considered to match, and is specified in the `ON` or `USING` clause, or implicitly via `NATURAL`.
+
+The `ON` clause takes an arbitrary boolean expression, even those which do not directly relate columns on either table, such as testing a left table's column against a constant. Such a boolean expression is tested _before_ the join, whereas a condition on a `WHERE` clause would be tested _after_ the join. This distinction matters for outer joins.
+
+The `USING` clause is a shorthand for the common situations where both sides of the join use the same name for the joining column(s). The following clauses are equivalent.
+
+``` postgresql
+ON T1.a = T2.a AND T1.b = T2.b;
+USING (a, b);
+```
+
+The `ON` clause produces all columns from `T1` followed by those in `T2`, while `USING` produces one output column for each of the listed column pairs in listed order followed by the remaining columns in `T1` and the remaining columns in `T2`.
+
+The `NATURAL` clause is a shorthand equivalent to `USING` on all column names that appear in both input tables. If there are no common column names, then `NATURAL` behaves like a `CROSS JOIN`. Note that the use of `NATURAL` is risky as future changes to either table can manifest a new matching column name.
+
 ## Scalar Subqueries
 
 A _scalar subquery_ is an ordinary parenthesized `SELECT` query that returns exactly _one_ row with _one_ column. It would be an error if it returned more than one row or column, but returning nothing at all is interpreted as being `NULL`.

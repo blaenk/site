@@ -316,6 +316,8 @@ Note that with respect to table inheritance, if a table reference names a table 
 FROM table_references…
 ```
 
+## Joins
+
 A _joined table_ is one derived from two other (real or derived) tables via a _join_. All join types can be chained together or nested. Parentheses can be used to control join order, otherwise they nest left-to-right.
 
 The general syntax of a joined table is:
@@ -326,7 +328,7 @@ T1 join_type T2 [ join_condition ]
 
 Assume that `T1` has $N$ rows and `T2` has $M$ rows.
 
-## Cross Join
+### Cross Join
 
 ``` postgresql
 T1 CROSS JOIN T2
@@ -359,7 +361,7 @@ FROM T1 CROSS JOIN T2 INNER JOIN T3 ON condition;
 FROM T1, T2 INNER JOIN T3 ON condition;
 ```
 
-## Qualified Joins
+### Qualified Joins
 
 ``` postgresql
 T1 { [INNER] | { LEFT | RIGHT | FULL } [OUTER] } JOIN T2
@@ -388,7 +390,7 @@ The `ON` clause produces all columns from `T1` followed by those in `T2`, while 
 
 The `NATURAL` clause is a shorthand equivalent to `USING` on all column names that appear in both input tables. If there are no common column names, then `NATURAL` behaves like a `CROSS JOIN`. Note that the use of `NATURAL` is risky as future changes to either table can manifest a new matching column name.
 
-## Inner Joins
+### Inner Joins
 
 For each row `R1` of `T1`, the joined table has a row for each row in `T2` that satisfies the join condition with `R1`.
 
@@ -396,7 +398,7 @@ For each row `R1` of `T1`, the joined table has a row for each row in `T2` that 
     * For each row `R2` of `T2`:
         * If `R1` satisfies the join condition with `R2`, add concatenated row from `R1` and `R2` to joined table
 
-## Left Outer Join
+### Left Outer Join
 
 Perform an inner join. Then for each row in `T1` that does not satisfy the join condition with any row in `T2`, a joined row is added with `NULL` values in columns of `T2`. This means that the joined table always has at least one row for each row in `T1`, i.e. at least $N$ rows.
 
@@ -404,7 +406,7 @@ Perform an inner join. Then for each row in `T1` that does not satisfy the join 
 * For each row `R1` of `T1`:
     * If no row `R2` of `T2` satisfied the join condition with `R1`, add concatenated row to joined table from `R1` with `NULL` values in columns of `T2`
 
-## Right Outer Join
+### Right Outer Join
 
 Perform an inner join. Then for each row in `T2` that does not satisfy the join condition with any row in `T2`, a joined row is added with `NULL` values in columns of `T2`. This means that the joined table always has at least one row for each row in `T2`, i.e. at least $M$ rows.
 
@@ -414,7 +416,7 @@ This is essentially a flipped left outer join.
 * For each row `R2` of `T2`:
     * If no row `R1` of `T1` satisfied the join condition with `R2`, add concatenated row to joined table from `R2` with `NULL` values in columns of `T1`
 
-## Full Outer Join
+### Full Outer Join
 
 Perform an inner join. Then for each row in `T1` that does not satisfy the join condition with any row in `T2`, a joined row is added with `NULL` values in columns of `T2`. Also for each row of `T2` that does not satisfy the join condition with any row in `T1`, a joined row is added with `NULL` values in the columns of `T1`. This results in at least $N \cdot M$ rows.
 

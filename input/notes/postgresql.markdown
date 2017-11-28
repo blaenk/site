@@ -388,6 +388,14 @@ The `ON` clause produces all columns from `T1` followed by those in `T2`, while 
 
 The `NATURAL` clause is a shorthand equivalent to `USING` on all column names that appear in both input tables. If there are no common column names, then `NATURAL` behaves like a `CROSS JOIN`. Note that the use of `NATURAL` is risky as future changes to either table can manifest a new matching column name.
 
+## Inner Joins
+
+For each row `R1` of `T1`, the joined table has a row for each row in `T2` that satisfies the join condition with `R1`.
+
+* For each row `R1` of `T1`:
+    * For each row `R2` of `T2`:
+        * If `R1` satisfies the join condition with `R2`, add concatenated row from `R1` and `R2` to joined table
+
 ## Scalar Subqueries
 
 A _scalar subquery_ is an ordinary parenthesized `SELECT` query that returns exactly _one_ row with _one_ column. It would be an error if it returned more than one row or column, but returning nothing at all is interpreted as being `NULL`.

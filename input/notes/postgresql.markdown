@@ -300,6 +300,32 @@ SELECT 3 * 4;
 SELECT a, b + c FROM table1;
 ```
 
+## Table Expressions
+
+A _table expression_ computes a table. Table expressions can be as simple as `some_table` which reads just one table, or more complex constructs of base tables, joins, and subqueries.
+
+The optional `WHERE`, `GROUP BY`, and `HAVING` clauses in the table expression specify a pipeline of transformations performed on the table derived in the `FROM` clause, each producing a virtual table that provides the rows that are passed to the `SELECT` list to compute the output rows of the query.
+
+The `FROM` clause derives a table from one or more other tables specified in a comma-separate table reference list. A table reference can be a table name or a derived table such as a subquery, `JOIN` construct, or complex combinations of each.
+
+When more than one table reference is listed in the `FROM` clause, the tables are cross-joined (Cartesian product of their rows).
+
+Note that with respect to table inheritance, if a table reference names a table that is the parent of an inheritance hierarchy, all rows of that table and its descendants are produced, unless the `ONLY` keyword precedes the table name. Remember that an asterisk `*` following the table name explicitly requests the default behavior of including all descendant tables.
+
+``` postgresql
+FROM table_references…
+```
+
+A _joined table_ is one derived from two other (real or derived) tables via a _join_. All join types can be chained together or nested. Parentheses can be used to control join order, otherwise they nest left-to-right.
+
+The general syntax of a joined table is:
+
+``` postgresql
+T1 join_type T2 [ join_condition ]
+```
+
+Assume that `T1` has $N$ rows and `T2` has $M$ rows.
+
 ## Scalar Subqueries
 
 A _scalar subquery_ is an ordinary parenthesized `SELECT` query that returns exactly _one_ row with _one_ column. It would be an error if it returned more than one row or column, but returning nothing at all is interpreted as being `NULL`.

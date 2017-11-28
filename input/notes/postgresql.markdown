@@ -326,6 +326,39 @@ T1 join_type T2 [ join_condition ]
 
 Assume that `T1` has $N$ rows and `T2` has $M$ rows.
 
+## Cross Join
+
+``` postgresql
+T1 CROSS JOIN T2
+```
+
+For every possible combination of rows from `T1` and `T2` (Cartesian product), the joined table will contain a row consisting of all columns in `T1` followed by all columns in `T2`. The joined table will have $N \cdot M$ rows.
+
+* For each row `R1` of `T1`:
+    * For each row `R2` of `T2`:
+        * Add row concatenation from `R1` and `R2` to joined table
+
+Note that the following are equivalent:
+
+``` postgresql
+-- These are all equivalent:
+FROM T1 CROSS JOIN T2
+
+FROM T1 INNER JOIN T2 ON TRUE
+
+FROM T1, T2
+```
+
+Note that the latter equivalence doesn't necessarily hold when more than two tables appear since `JOIN` binds more tightly than comma.
+
+``` postgresql
+-- This condition can reference T1
+FROM T1 CROSS JOIN T2 INNER JOIN T3 ON condition;
+
+-- This condition cannot reference T1
+FROM T1, T2 INNER JOIN T3 ON condition;
+```
+
 ## Scalar Subqueries
 
 A _scalar subquery_ is an ordinary parenthesized `SELECT` query that returns exactly _one_ row with _one_ column. It would be an error if it returned more than one row or column, but returning nothing at all is interpreted as being `NULL`.

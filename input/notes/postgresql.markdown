@@ -1071,6 +1071,55 @@ SET a = 5, b = 3, c = 1
 WHERE a > 0;
 ```
 
+## Deleting
+
+Note that omitting a condition in a `DELETE` statement makes it apply to _all rows in the table_.
+
+``` postgresql
+DELETE FROM products WHERE price = 10;
+
+-- DELETES ALL ROWS
+DELETE FROM products;
+```
+
+## Returning Modified Rows
+
+The `INSERT`, `UPDATE`, and `DELETE` commands have an optional `RETURNING` clause that can return data from rows that are manipulated by those commands, thereby avoiding an additional query. The allowed contents of the `RETURNING` clause are the same as `SELECT`'s output list.
+
+If the table has triggers, the data available to `RETURNING` is the row as modified by those triggers.This makes `RETURNING` useful for inspecting columns computed by triggers.
+
+The `RETURNING` clause can be useful when paired with the `INSERT` command to access computed default values, such as a `serial` column's unique row identifier.
+
+``` postgresql
+CREATE TABLE users (
+  firstname text,
+  lastname text,
+  id serial primary key
+);
+
+-- Get the inserted row's default-computed id.
+INSERT INTO users (firstname, lastname)
+VALUES ('Joe', 'Cool')
+RETURNING id;
+```
+
+The `RETURNING` clause can be useful when paired with the `UPDATE` command to retrieve the new computed content of a modified row.
+
+``` postgresql
+-- Get the modified rows' newly computed prices.
+UPDATE products SET price = price * 1.10
+WHERE price <= 9.99
+RETURNING name, price AS new_price;
+```
+
+The `RETURNING` clause can be useful when paired with the `DELETE` command to obtain the content of the deleted row.
+
+``` postgresql
+DELETE FROM products
+WHERE obsoletion_date = 'today'
+RETURNING *;
+```
+
 # Privileges
 
 Each created object is assigned an owner, which is usually the role that executed the creation statement. For most object kinds, the initial configuration is such that only the owner or a superuser can do anything with the object unless another role is granted _privilege_. The right to modify or destroy the object is always the privilege of the owner _only_.

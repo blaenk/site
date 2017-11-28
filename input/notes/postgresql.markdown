@@ -396,6 +396,14 @@ For each row `R1` of `T1`, the joined table has a row for each row in `T2` that 
     * For each row `R2` of `T2`:
         * If `R1` satisfies the join condition with `R2`, add concatenated row from `R1` and `R2` to joined table
 
+## Left Outer Join
+
+Perform an inner join. Then for each row in `T1` that does not satisfy the join condition with any row in `T2`, a joined row is added with `NULL` values in columns of `T2`. This means that the joined table always has at least one row for each row in `T1`, i.e. at least $N$ rows.
+
+* Inner join
+* For each row `R1` of `T1`:
+    * If no row `R2` of `T2` satisfied the join condition with `R1`, add concatenated row to joined table from `R1` with `NULL` values in columns of `T2`
+
 ## Scalar Subqueries
 
 A _scalar subquery_ is an ordinary parenthesized `SELECT` query that returns exactly _one_ row with _one_ column. It would be an error if it returned more than one row or column, but returning nothing at all is interpreted as being `NULL`.

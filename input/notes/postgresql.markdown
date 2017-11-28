@@ -1013,6 +1013,44 @@ CREATE TABLE circles (
 
 # Data Manipulation
 
+## Insertion
+
+The `INSERT INTO … VALUES` command lists the values in the order in which the columns appear in the table, unless the columns are explicitly listed.
+
+``` postgresql
+INSERT INTO products VALUES (1, 'Cheese', 9.99);
+
+-- Or:
+INSERT INTO products (product_no, name, price)
+VALUES (1, 'Cheese', 9.99);
+```
+
+Any columns that aren't given values are filled with their default values. It's also possible to explicitly request default values with the `DEFAULT` value.
+
+``` postgresql
+INSERT INTO products (product_no, name, price)
+VALUES (1, 'Cheese', DEFAULT);
+```
+
+Multiple rows can be inserted by listing multiple row tuples.
+
+``` postgresql
+INSERT INTO products (product_no, name, price)
+VALUES (1, 'Cheese', 9.99),
+       (2, 'Bread', 1.99);
+```
+
+The result of a query (no rows, one row, or many rows) can be inserted into a table.
+
+``` postgresql
+INSERT INTO products (product_no, name, price)
+  SELECT product_no, name, price,
+  FROM new_products
+  WHERE release_date = 'today';
+```
+
+Note that bulk loading can be more efficient when done with the `COPY` command.
+
 # Privileges
 
 Each created object is assigned an owner, which is usually the role that executed the creation statement. For most object kinds, the initial configuration is such that only the owner or a superuser can do anything with the object unless another role is granted _privilege_. The right to modify or destroy the object is always the privilege of the owner _only_.

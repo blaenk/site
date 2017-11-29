@@ -461,6 +461,23 @@ This is essentially an inner join followed by the post-inner join parts of left 
 * For each row `R2` of `T2`:
     * If no row `R1` of `T1` satisfied the join condition with `R2`, add concatenated row to joined table from `R2` with `NULL` values in columns of `T1`
 
+## Derived Table Subqueries
+
+Subqueries specifying a derived table must be within parentheses and must be assigned a table alias name.
+
+``` postgresql
+FROM (SELECT * FROM table1) AS alias_name
+
+-- Equivalent:
+FROM table1 AS alias_name
+```
+
+A subquery can be a raw `VALUES` list. Assigning names to the columns of a `VALUES` list is optional but good practice.
+
+``` postgresql
+FROM (VALUES ('anne', 'smith'), ('bob', 'jones'), ('joe', 'blow')) AS names(first, last)
+```
+
 ## Scalar Subqueries
 
 A _scalar subquery_ is an ordinary parenthesized `SELECT` query that returns exactly _one_ row with _one_ column. It would be an error if it returned more than one row or column, but returning nothing at all is interpreted as being `NULL`.

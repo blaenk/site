@@ -575,6 +575,84 @@ After processing the `FROM` clause, each row of the derived virtual table is che
 WHERE search_condition
 ```
 
+## GROUP BY and HAVING Clauses
+
+After passing the `WHERE` filter, the derived input table may be subject to grouping via the `GROUP BY` clause and elimination of rows via the `HAVING` clause.
+
+Strict SQL limits `GROUP BY` to columns of the source table but PostgreSQL extends it to columns in the `SELECT` list, as well as grouping by value expressions.
+
+``` postgresql
+SELECT select_list FROM … [WHERE …]
+  GROUP BY grouping_column_reference [, grouping_column_reference]…
+```
+
+The `GROUP BY` clause groups together those rows in a table that have the same values in all of the listed columns, combining each set of rows having column values into one _group row_ that represents all rows in the group. Generally if a table is grouped, columns not listed in the `GROUP BY` clause cannot be referenced except in aggregate expressions.
+
+``` postgresql
+SELECT x, sum(y) FROM test1 GROUP BY x;
+
+-- Calculate the total sales of each product:
+SELECT product_id, p.name, (sum(s.units) * p.price) AS sales
+  FROM products p LEFT JOIN sales s USING (product_id)
+  GROUP BY product_id, p.name, p.price;
+```
+
+Grouping without aggregate expressions effectively calculates the set of distinct values in a column, which can also be achieved using the `DISTINCT` clause.
+
+If a query contains aggregate function calls but no `GROUP BY` clause, the result is a single group row (or none if eliminated by `HAVING`). The same is true with the mere presence of a `HAVING` clause.
+
+The `HAVING` clause can be used to eliminate groups from the result. Expressions in the `HAVING` clause may refer to both grouped and ungrouped expressions (which would involve aggregate functions).
+
+``` postgresql
+SELECT select_list
+FROM … [WHERE …]
+GROUP BY …
+HAVING boolean_expression
+```
+
+The `GROUPING SETS` syntax can be used to group into separate sets and aggregates computed for each group. Each sublist of `GROUPING SETS` can specify zero or more columns or expressions and they're interpreted as in `GROUP BY`. An empty grouping set means that all rows are formed into a single group, as in the case with aggregate functions with no `GROUP BY` clause.
+
+References to grouping columns or expressions are replaced by `NULL` values in result rows for grouping sets in which those columns do not appear.
+
+``` postgresql
+SELECT brand, size, sum(sales)
+FROM items_sold
+GROUP BY GROUPING SETS ((brand), (size), ());
+```
+
+The `ROLLUP` clause is a shorthand representing the given list of expressions and all prefixes of the list including the empty list.
+
+``` postgresql
+ROLLUP ( e1, e2, e3, … )
+
+-- Equivalent
+GROUPING SETS (
+  ( e1, e2, e3, … ),
+  …
+  ( e1, e2 ),
+  ( e1 ),
+  ( )
+)
+```
+
+The `CUBE` clause is a shorthand representing the given list and all of its possible subsets (the power set).
+
+``` postgresql
+CUBE ( a, b, c )
+
+-- Equivalent
+GROUPING SETS (
+  ( a, b, c ),
+  ( a, b    ),
+  ( a,    c ),
+  ( a       ),
+  (    b, c ),
+  (    b    ),
+  (       c ),
+  (         )
+)
+```
+
 # Value Expressions
 
 A value expression is one of:

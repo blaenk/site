@@ -515,6 +515,38 @@ The `ROWS FROM` syntax can be used to combine table functions. The `WITH ORDINAL
 ROWS FROM(function_call [, …]) [WITH ORDINALITY] [[AS] table_alias [(column_alias [, …])]]
 ```
 
+## Lateral Subqueries
+
+Subqueries in a `FROM` clause preceded by the keyword `LATERAL` can reference columns provided by preceding `FROM` items. Otherwise, each subquery is evaluated independently and is therefore unable to cross-reference any other `FROM` item.
+
+`LATERAL` is primarily useful when the cross-referenced column is necessary for computing the row(s) to be joined.
+
+It's often useful to `LEFT JOIN` to a `LATERAL` subquery so that source rows appear in the result even if the `LATERAL` subquery produces no rows for them.
+
+``` postgresql
+-- Find manufacturers with no products
+SELECT m.name
+FROM manufacturers m LEFT JOIN LATERAL get_product_names(m.id) pname ON true
+WHERE pname IS NULL;
+```
+
+Table functions can also be `LATERAL`, but for arguments it's optional since they can already contain references to columns provided by preceding `FROM` items.
+
+A `LATERAL` item can appear at top level in the `FROM` list or within a `JOIN` tree, in which case it can also refer to any items that are on the left-hand side of the `JOIN` that it's on the right-hand side of.
+
+Evaluation of `FROM` items containing `LATERAL` cross-references proceeds like so:
+
+* for each row of the `FROM` item providing the cross-referenced column(s), or set of rows of multiple `FROM` items:
+    * evaluate the `LATERAL` item using that row or row set's values of the columns
+    * resulting row(s) are joined as usual with the rows they were computed from
+
+``` postgresql
+SELECT * FROM foo, LATERAL (SELECT * FROM bar WHERE bar.id = foo.bar_id) ss;
+
+-- Equivalent
+SELECT * FROM foo, bar WHERE bar.id = foo.bar_id;
+```
+
 ## Scalar Subqueries
 
 A _scalar subquery_ is an ordinary parenthesized `SELECT` query that returns exactly _one_ row with _one_ column. It would be an error if it returned more than one row or column, but returning nothing at all is interpreted as being `NULL`.

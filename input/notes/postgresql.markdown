@@ -282,8 +282,6 @@ Inheritance in PostgreSQL is similar to the concept with the same name from obje
 
 Expressions can be written in the `SELECT` output list.
 
-The `AS` option can be provided to rename an output column.
-
 The general syntax of the `SELECT` command is:
 
 ``` postgresql
@@ -314,6 +312,41 @@ Note that with respect to table inheritance, if a table reference names a table 
 
 ``` postgresql
 FROM table_references…
+```
+
+## Table and Column Aliases
+
+Temporary _table aliases_ can be given to tables and complex table references. The alias _becomes_ the new name throughout the rest of the query; it's not longer possible to refer to the table by the original name.
+
+``` postgresql
+FROM table_reference AS alias;
+FROM table_reference alias;
+
+SELECT *
+FROM some_very_long_table_name s JOIN another_fairly_long_name a ON s.id = a.num;
+```
+
+Table aliases are necessary when joining a table to itself or a subquery.
+
+``` postgresql
+SELECT *
+FROM people AS mother JOIN people AS child ON mother.id = child.mother_id;
+```
+
+Table columns can also be given aliases. Only the specified columns are renamed.
+
+``` postgresql
+FROM table_reference [AS] alias (column1 [, column2 [, …]])
+```
+
+Note that applying an alias to the output of a `JOIN` clause hides the original names _within_ the `JOIN`.
+
+``` postgresql
+-- Valid
+SELECT a.* FROM my_table AS a JOIN your_table AS b ON …
+
+-- Invalid; names comprising join C are hidden
+SELECT a.* FROM (my_table AS a JOIN your_table AS b ON …) AS c
 ```
 
 ## Joins

@@ -567,7 +567,7 @@ SELECT
 FROM states;
 ```
 
-## Where Clause
+## WHERE Clause
 
 After processing the `FROM` clause, each row of the derived virtual table is checked against the search condition of the `WHERE` clause, which is any value expression that returns a value of type boolean, and if it fails the condition the row is discarded.
 

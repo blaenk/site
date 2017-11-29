@@ -431,6 +431,15 @@ For each row `R1` of `T1`, the joined table has a row for each row in `T2` that 
     * For each row `R2` of `T2`:
         * If `R1` satisfies the join condition with `R2`, add concatenated row from `R1` and `R2` to joined table
 
+The join condition of an inner join can be written either in the `WHERE` clause or in the `JOIN` clause.
+
+``` postgresql
+FROM a, b WHERE a.id = b.id AND b.val > 5;
+
+-- Equivalent
+FROM a INNER JOIN b ON (a.id = b.id) WHERE b.val > 5;
+```
+
 ### Left Outer Join
 
 Perform an inner join. Then for each row in `T1` that does not satisfy the join condition with any row in `T2`, a joined row is added with `NULL` values in columns of `T2`. This means that the joined table always has at least one row for each row in `T1`, i.e. at least $N$ rows.

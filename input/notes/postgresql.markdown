@@ -690,6 +690,27 @@ query1 INTERSECT [ALL] query2
 query1 EXCEPT [ALL] query2
 ```
 
+## Sorting Rows
+
+After a query has produced an output table (i.e. the `SELECT` list has been processed), it can optionally be sorted with the `ORDER BY` clause. The sort expression(s) can be any expression that would be valid in the query's `SELECT` list. If more than one expression is specified, the later values are used to sort rows that are equal according to preceding values. Each expression can have its own ordering independent of the others'. The "smaller" value is defined in terms of the less-than operator `<`.
+
+The `NULLS FIRST` and `NULLS LAST` options are used to determine whether `NULL`s appear before or after non-`NULL` values in the sort ordering. The default is for `NULL`s to be treated as larger than any non-`NULL` value, i.e. `NULLS FIRST` for `DESC` ordering and `NULLS LAST` otherwise.
+
+``` postgresql
+SELECT select_list
+  FROM table_expression
+  ORDER BY sort_expression1 [ASC | DESC] [NULLS { FIRST | LAST }]
+           [, sort_expression2 [ASC | DESC] [NULLS { FIRST | LAST }] …]
+```
+
+The sort expression can be the column label or a number of an output column.
+
+``` postgresql
+SELECT a + b AS sum, c FROM table1 ORDER BY sum;
+
+SELECT a, max(b) FROM table1 GROUP BY a ORDER BY 1;
+```
+
 # Value Expressions
 
 A value expression is one of:

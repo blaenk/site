@@ -478,6 +478,43 @@ A subquery can be a raw `VALUES` list. Assigning names to the columns of a `VALU
 FROM (VALUES ('anne', 'smith'), ('bob', 'jones'), ('joe', 'blow')) AS names(first, last)
 ```
 
+## Table Functions
+
+Table functions produce a set of rows made up of either base or composite data types. They are used like a table, view, or subquery in the `FROM` clause.
+
+``` postgresql
+CREATE TABLE foo (fooid int, foosubid int, fooname text);
+
+CREATE FUNCTION getfoo(int) RETURNS SETOF foo AS $$
+  SELECT * FROM foo WHERE fooid = $1;
+$$ LANGUAGE SQL;
+
+SELECT * FROM getfoo(1) AS t1;
+
+SELECT * FROM foo
+  WHERE foosubid IN (SELECT foosubid
+                     FROM getfoo(foo.fooid) z
+                     WHERE z.fooid = foo.fooid);
+
+CREATE VIEW vw_getfoo AS SELECT * FROM getfoo(1);
+
+SELECT * FROM vw_getfoo;
+```
+
+If the table function is declared as returning the pseudotype `record`, the expected row structure can be specified when the function is called.
+
+``` postgresql
+function_call [AS] alias (column_definition [, … ])
+function_call AS [alias] (column_definition [, … ])
+ROWS FROM(… function_call AS (column_definition [, …]) [, …])
+```
+
+The `ROWS FROM` syntax can be used to combine table functions. The `WITH ORDINALITY` clause can be used to add a column of type `bigint` to the function result columns, starting with 1.
+
+``` postgresql
+ROWS FROM(function_call [, …]) [WITH ORDINALITY] [[AS] table_alias [(column_alias [, …])]]
+```
+
 ## Scalar Subqueries
 
 A _scalar subquery_ is an ordinary parenthesized `SELECT` query that returns exactly _one_ row with _one_ column. It would be an error if it returned more than one row or column, but returning nothing at all is interpreted as being `NULL`.

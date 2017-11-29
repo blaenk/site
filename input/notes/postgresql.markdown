@@ -653,6 +653,10 @@ GROUPING SETS (
 )
 ```
 
+## Window Function Processing
+
+Window functions are evaluated after any grouping, aggregation and `HAVING` filtering is performed, so that if a query has any aggregates, `GROUP BY`, or `HAVING`, then the rows seen by the window functions are the group rows and not the original table rows.
+
 # Value Expressions
 
 A value expression is one of:

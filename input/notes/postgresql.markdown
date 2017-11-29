@@ -676,6 +676,20 @@ GROUPING SETS (
 
 Window functions are evaluated after any grouping, aggregation and `HAVING` filtering is performed, so that if a query has any aggregates, `GROUP BY`, or `HAVING`, then the rows seen by the window functions are the group rows and not the original table rows.
 
+## Combining Queries
+
+The results of two queries can be combined with set operations union, intersection, and difference. These operations can be nested and chained. Each operation removes duplicates unless `ALL` is specified.
+
+In order to compute a union, intersection, or difference of two queries, the queries must be _union compatible_, meaning they return the same number of columns and the corresponding columns have compatible data types.
+
+``` postgresql
+query1 UNION [ALL] query2
+query1 INTERSECT [ALL] query2
+
+-- Set difference
+query1 EXCEPT [ALL] query2
+```
+
 # Value Expressions
 
 A value expression is one of:

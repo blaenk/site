@@ -290,6 +290,25 @@ SELECT select_list
 FROM table_expression [sort_specification];
 ```
 
+## SELECT Lists
+
+The table expression is passed on as an intermediate table for processing by the `SELECT` list, which determines which columns of the intermediate table are output.
+
+Entries in a `SELECT` list can be given names for subsequent processing, such as in a `GROUP BY` clause. If no name is given, the default column name is given, which is the column name for column references, the function name for function calls, or a generated generic name for complex expressions.
+
+``` postgresql
+SELECT a AS value, b + c AS sum FROM …
+```
+
+After processing the `SELECT` list, it's possible to eliminate duplicate rows in the result table with the `DISTINCT` keyword. The opposite is `ALL` which explicitly requests the default behavior of retaining all rows.
+
+Two rows are considered distinct if they differ in at least one column value. `NULL` values are considered equal for this particular comparison. It's also possible to specify arbitrary value expression(s) with `DISTINCT ON`, so that a set of rows for which all expressions are equal are considered duplicates, and only the first row of such a set is retained. Note however that `DISTINCT ON` is considered bad practice due to the potentially indeterminate nature of its results, and `FROM` and `GROUP BY` can be used instead.
+
+``` postgresql
+SELECT DISTINCT select_list …
+SELECT DISTINCT ON (expression [, expression …]) select_list …
+```
+
 The table expression can be omitted entirely to simply compute values, and more generally the `SELECT` list can make calculations from columns.
 
 ``` postgresql

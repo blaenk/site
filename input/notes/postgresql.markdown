@@ -711,6 +711,21 @@ SELECT a + b AS sum, c FROM table1 ORDER BY sum;
 SELECT a, max(b) FROM table1 GROUP BY a ORDER BY 1;
 ```
 
+## LIMIT and OFFSET
+
+A query's results can be limited to a certain maximum number of rows with `LIMIT`. It's important to use an `ORDER BY` clause since the returned rows will be unpredictable.
+
+``` postgresql
+SELECT select_list
+  FROM table_expression
+  [ ORDER BY … ]
+  [ LIMIT { number | ALL } ] [ OFFSET number ]
+```
+
+The `OFFSET` clause can be used to skip a specified number of rows before beginning to return rows. An `OFFSET` is processed before any `LIMIT`.
+
+Note that the rows skipped by an `OFFSET` clause still have to be computed by the server, so a large `OFFSET` may be inefficient.
+
 # Value Expressions
 
 A value expression is one of:

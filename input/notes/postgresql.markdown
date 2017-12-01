@@ -762,6 +762,83 @@ The `VALUES` command followed by expression lists is treated syntactically equiv
 
 The `WITH` syntax can be used to write auxiliary statements, often referred to as _Common Table Expressions_ (CTEs), for use in a larger query. Common Table Expressions can be thought of as defining temporary tables that exist just for one query. Each auxiliary statement in a `WITH` clause can be a `SELECT`, `INSERT`, `UPDATE`, or `DELETE`. The `WITH` clause is attached to a primary statement that can also be any one of those.
 
+### SELECT in WITH
+
+The basic value of `SELECT` in `WITH` is to decompose complex queries into simpler parts.
+
+`WITH` queries are evaluated only once per execution of the parent query even if they're referred to more than once by the parent query or sibling `WITH` queries. Expensive calculations and queries that are needed in multiple places can be placed within a `WITH` query to avoid redundant work.
+
+The following query displays per-product sales totals in only the top sales regions. Writing it without `WITH` would have necessitated two levels of nested sub-`SELECT`s.
+
+``` postgresql
+WITH regional_sales AS (
+    SELECT region, SUM(amount) AS total_sales
+    FROM orders
+    GROUP BY region
+  ), top_regions AS (
+    SELECT region
+    FROM regional_sales
+    WHERE total_sales > (SELECT SUM(total_sales)/10 FROM regional_sales)
+  )
+SELECT region,
+       product,
+       SUM(quantity) AS product_units,
+       SUM(amount) AS product_sales
+FROM orders
+WHERE region IN (SELECT region FROM top_regions)
+GROUP BY region, product;
+```
+
+The `RECURSIVE` modifier allows a `WITH` query to refer to its own output. A recursive `WITH`'s general form is a non-recursive term (base case), then a `UNION`, then a recursive term. They're usually used to deal with hierarchically-structured data.
+
+``` postgresql
+WITH RECURSIVE t(n) AS (
+    VALUES (1)
+  UNION ALL
+    SELECT n+1 FROM t WHERE n < 100
+)
+SELECT sum(n) FROM t;
+```
+
+A recursive query is evaluated as follows. Note that the process more closely describes iteration, not recursion.
+
+1. Evaluate the non-recursive term. For `UNION` (not `UNION ALL`), discard duplicate rows. Include the remaining rows in the result of the recursive query and also add them to a temporary _working table_.
+2. As long as the working table is not empty, repeat these steps:
+    a. Evaluate the recursive term, substituting the current contents of the working table for the recursive self-reference. Discard `UNION` duplicates. Include remaining rows in the result of the recursive query and add them to a temporary _intermediate table_.
+    b. Replace the contents of the working table with those of the intermediate table, then empty the intermediate table.
+
+Sometimes it may be necessary to maintain an array of visited values in order to ensure termination of the recursive query. A query can be tested for termination by adding a `LIMIT` to the parent query in some cases.
+
+``` postgresql
+-- Can loop if there are cycles in the graph.
+-- UNION would take care of duplicates if it weren't for the
+-- depth computed column.
+WITH RECURSIVE search_graph(id, link, data, depth) AS (
+    SELECT g.id, g.link, g.data, 1
+    FROM graph g
+  UNION ALL
+    SELECT g.id, g.link, g.data, sg.depth + 1
+    FROM graph g, search_graph sg
+    WHERE g.id = sg.link
+)
+SELECT * FROM search_graph;
+
+-- Keeps track of the path and whether it's a cycle.
+WITH RECURSIVE search_graph(id, link, data, depth, path, cycle) AS (
+    SELECT g.id, g.link, g.data, 1,
+      ARRAY[g.id], -- Path only consists of starter node.
+      false        -- Can't possibly be a cycle yet.
+    FROM graph g
+  UNION ALL
+    SELECT g.id, g.link, g.data, sg.depth + 1,
+      path || g.id,    -- Append node to path.
+      g.id = ANY(path) -- It's a cycle if node has been visited.
+    FROM graph g, search_graph sg
+    WHERE g.id = sg.link AND NOT cycle
+)
+SELECT * FROM search_graph;
+```
+
 # Value Expressions
 
 A value expression is one of:

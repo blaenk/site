@@ -1181,6 +1181,32 @@ The output of `money` is locale-sensitive as dictated by `lc_monetary`. When res
 
 Dividing one `money` value by another cancels out the currency units, resulting in a `double precision` value.
 
+## Character Types
+
+| Name                                 | Size                       |
+| :---------                           | :-------                   |
+| `character varying(n)`, `varchar(n)` | variable-length with limit |
+| `character(n)`, `char(n)`            | fixed-length, blank padded |
+| `text`                               | variable unlimited length  |
+
+An attempt to store a longer string into a column of max or fixed-length types results in an error unless the excess characters are spaces, in which case it is truncated to the maximum length [^sql_standard_requirement].
+
+[^sql_standard_requirement]: This is required by the SQL standard.
+
+Strings of shorter length are space-padded in `character(n)` columns, and displayed as such. However, trailing spaces are treated as semantically insignificant and disregarded when comparing two values of type `character`.
+
+Explicitly casting a value to `character varying(n)` or `character(n)` causes an over-length value to be truncated to `n` characters without raising an error [^sql_standard_requirement].
+
+A type of `character` without specifying the length is equivalent to `character(1)`.
+
+Specifying a type of `character varying` without a length specifier makes the type accept strings of any size, similar to `text`.
+
+Long strings are compressed by the system automatically. Very long strings are stored in background tables so that they don't interfere with rapid access to shorter column values.
+
+The longest possible `character` string is about 1 GB.
+
+Although `character(n)` may have performance advantages in other databases, there is no performance difference between all string types in PostgreSQL, although in practice `character(n)` is usually the slowest because of its additional storage costs.
+
 ## Type Casts
 
 PostgreSQL supports two equivalent syntaxes for type casts. The `CAST` syntax conforms to the SQL standard, whereas the `::` is historical PostgreSQL syntax.

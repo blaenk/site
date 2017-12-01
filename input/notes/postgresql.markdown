@@ -839,6 +839,46 @@ WITH RECURSIVE search_graph(id, link, data, depth, path, cycle) AS (
 SELECT * FROM search_graph;
 ```
 
+### Data-Modifying Statements in WITH
+
+Data-modifying statements can be used in `WITH` to perform multiple operations in the same query. For this purpose, data-modifying statements in `WITH` usually have `RETURNING` clauses.
+
+Note that data-modifying statements in `WITH` are executed exactly once and always to completion, regardless of whether the primary query reads any of the output, unlike `SELECT` in `WITH` which is executed only as far as the primary query demands output.
+
+Sub-statements in `WITH` are executed concurrently with each other and with the main query, so the order in which updates incurred by data-modifying statements in `WITH` actually occur is unpredictable. All statements are executed with the same snapshot, so they _do not_ see each other's effects on the target tables, so `RETURNING` is the only way to communicate changes between different `WITH` sub-statements and the main query.
+
+``` postgresql
+-- Returns `products` unaffected by UPDATE.
+WITH t AS (
+  UPDATE products SET price = price * 1.05
+  RETURNING *
+)
+SELECT * FROM products;
+
+-- Returns `products` affected by UPDATE.
+WITH t AS (
+  UPDATE products SET price = price * 1.05
+  RETURNING *
+)
+SELECT * FROM t;
+```
+
+The following query moves rows from the `products` to `products_log`.
+
+Note that data-modifying statements are only allowed in `WITH` clauses that are attached to the top-level statement, which is why the CTE is attached to the `INSERT` statement and not the sub-`SELECT`.
+
+``` postgresql
+WITH moved_rows AS (
+  DELETE FROM products
+  WHERE
+      "date" >= '2010-10-01' AND
+      "date" < '2010-11-01'
+  RETURNING *
+)
+INSERT INTO products_log
+SELECT * FROM moved_rows;
+```
+
 # Value Expressions
 
 A value expression is one of:

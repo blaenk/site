@@ -758,6 +758,10 @@ FROM (VALUES (1, 'one'),
 
 The `VALUES` command followed by expression lists is treated syntactically equivalent to a `SELECT` statement and can appear anywhere a `SELECT` can. It can be used as part of a `UNION` and can have a sort specification attached. It's most commonly used as a data source in an `INSERT` command and as a subquery.
 
+## Common Table Expressions
+
+The `WITH` syntax can be used to write auxiliary statements, often referred to as _Common Table Expressions_ (CTEs), for use in a larger query. Common Table Expressions can be thought of as defining temporary tables that exist just for one query. Each auxiliary statement in a `WITH` clause can be a `SELECT`, `INSERT`, `UPDATE`, or `DELETE`. The `WITH` clause is attached to a primary statement that can also be any one of those.
+
 # Value Expressions
 
 A value expression is one of:

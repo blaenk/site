@@ -1169,6 +1169,18 @@ CREATE TABLE tablename (
 ALTER SEQUENCE tablename_colname_seq OWNED BY tablename.colname;
 ```
 
+## Monetary Types
+
+| Name       | Size     |
+| :--------- | :------- |
+| `money`    | 8 bytes  |
+
+The `money` type stores a currency amount with a fixed fractional precision. Input is accepted as integer or floating-point literals as well as typical currency formatting such as `$1,000.00`.
+
+The output of `money` is locale-sensitive as dictated by `lc_monetary`. When restoring a dump into a new database, care should be taken to ensure that the `lc_monetary` setting is the same.
+
+Dividing one `money` value by another cancels out the currency units, resulting in a `double precision` value.
+
 ## Type Casts
 
 PostgreSQL supports two equivalent syntaxes for type casts. The `CAST` syntax conforms to the SQL standard, whereas the `::` is historical PostgreSQL syntax.

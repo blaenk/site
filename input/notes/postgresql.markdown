@@ -1106,6 +1106,25 @@ Numeric types of two, four, and eight-byte integers and four and eight-byte floa
 
 Attempts to store values outside of the allowed range for an integer type results in an error.
 
+## Arbitrary Precision Types
+
+| Name       | Size     |
+| :--------- | :------- |
+| `numeric`  | variable |
+| `decimal`  | variable |
+
+The `numeric` and `decimal` types are equivalent.
+
+The `numeric` type can store very large numbers, and is recommended for monetary amounts and other exact quantities. The _scale_ of a `numeric` is the count of decimal digits in the fractional part, and its _precision_ is the total count of significant digits in the whole number (i.e. _both_ sides of the decimal point).
+
+The `numeric`'s maximum precision and scale can be set when specifying a column type as `NUMERIC(precision, scale)`, and the scale may be omitted and defaulted to zero. Omitting both the maximum precision and scale implies a `numeric` that can store values of any precision and scale up to the implementation's limit. For portability reasons, always specify the precision and scale.
+
+Note that the precision and scale are maximums, not fixed sizes; the values are not stored with leading or trailing zeroes, so `numeric` is more similar to `varchar(n)` than to `char(n)`.
+
+If the value to be stored is greater than the column's declared scale, it is rounded to the specified scale (fractional digits), and if the number of digits to the left of the decimal point exceeds the precision minus the scale, an error is raised. The `numeric` type rounds ties away from zero.
+
+The `numeric` type allows the special value `NaN` which must be single-quoted. Unlike other `NaN` implementations which don't consider it to be equal to any other numeric value including `NaN` itself, PostgreSQL treats `NaN` as equal to itself and greater than all non-`NaN` values in order to allow them to be sorted and used in tree-based indexes.
+
 ## Type Casts
 
 PostgreSQL supports two equivalent syntaxes for type casts. The `CAST` syntax conforms to the SQL standard, whereas the `::` is historical PostgreSQL syntax.

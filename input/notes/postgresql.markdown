@@ -1092,6 +1092,20 @@ FROM households;
 
 Type names are not keywords in the syntax, except where required by the SQL standard for special cases.
 
+Each data type has an external representation determined by its input and output functions, and some input and output functions are not invertible, so the result of an output function may lose accuracy compared to the original input.
+
+## Integer Types
+
+| Name       | Size    |
+| :--------- | :------ |
+| `smallint` | 2 bytes |
+| `integer`  | 4 bytes |
+| `bigint`   | 8 bytes |
+
+Numeric types of two, four, and eight-byte integers and four and eight-byte floating-point numbers, and selectable-precision decimals.
+
+Attempts to store values outside of the allowed range for an integer type results in an error.
+
 ## Type Casts
 
 PostgreSQL supports two equivalent syntaxes for type casts. The `CAST` syntax conforms to the SQL standard, whereas the `::` is historical PostgreSQL syntax.

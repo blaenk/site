@@ -1125,6 +1125,17 @@ If the value to be stored is greater than the column's declared scale, it is rou
 
 The `numeric` type allows the special value `NaN` which must be single-quoted. Unlike other `NaN` implementations which don't consider it to be equal to any other numeric value including `NaN` itself, PostgreSQL treats `NaN` as equal to itself and greater than all non-`NaN` values in order to allow them to be sorted and used in tree-based indexes.
 
+## Floating-Point Types
+
+| Name               | Size     |
+| :---------         | :------- |
+| `real`             | 4 bytes  |
+| `double precision` | 8 bytes  |
+
+The `real` and `double precision` types are IEEE 754 Binary Floating-Point numbers. Even though IEEE 754 specifies that `NaN` should nto compare equal to any other floating-point value including `NaN` itself, PostgreSQL treats `NaN` as equal to itself and greater than all non-`NaN` values in order to allow them to be sorted and used in tree-based indexes.
+
+The SQL standard notation `float` and `float(p)` can be used to specify inexact numeric types, where `p` specifies the minimum acceptable precision in _binary_ digits.
+
 ## Type Casts
 
 PostgreSQL supports two equivalent syntaxes for type casts. The `CAST` syntax conforms to the SQL standard, whereas the `::` is historical PostgreSQL syntax.

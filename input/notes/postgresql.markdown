@@ -726,6 +726,38 @@ The `OFFSET` clause can be used to skip a specified number of rows before beginn
 
 Note that the rows skipped by an `OFFSET` clause still have to be computed by the server, so a large `OFFSET` may be inefficient.
 
+## VALUES Lists
+
+The `VALUES` syntax can be used to generate a "constant table" that can be used in a query without actually having to create and populate an on-table disk.
+
+``` postgresql
+VALUES ( expression [, …] ) [, …]
+```
+
+Each parenthesized list of expressions generates a row in the table, so each list must have the same number of elements, and corresponding elements must have compatible data types. The data type assigned to each data type is determined using the rules for `UNION`.
+
+``` postgresql
+VALUES (1, 'one'), (2, 'two'), (3, 'three');
+
+-- Effectively equivalent to:
+  SELECT 1 AS column1, 'one' AS column2
+UNION ALL
+  SELECT 2, 'two'
+UNION ALL
+  SELECT 3, 'three';
+```
+
+PostgreSQL assigns the column names `column1`, `column2`, etc., although column names aren't specified by the SQL standard so it's a good practice to name them explicitly.
+
+``` postgresql
+SELECT *
+FROM (VALUES (1, 'one'),
+             (2, 'two'),
+             (3, 'three')) AS t (num, letter);
+```
+
+The `VALUES` command followed by expression lists is treated syntactically equivalent to a `SELECT` statement and can appear anywhere a `SELECT` can. It can be used as part of a `UNION` and can have a sort specification attached. It's most commonly used as a data source in an `INSERT` command and as a subquery.
+
 # Value Expressions
 
 A value expression is one of:

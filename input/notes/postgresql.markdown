@@ -1136,6 +1136,39 @@ The `real` and `double precision` types are IEEE 754 Binary Floating-Point numbe
 
 The SQL standard notation `float` and `float(p)` can be used to specify inexact numeric types, where `p` specifies the minimum acceptable precision in _binary_ digits.
 
+## Serial Types
+
+| Name          | Size     | Column Type |
+| :---------    | :------- | :---------- |
+| `smallserial` | 2 bytes  | `smallint`  |
+| `serial`      | 4 bytes  | `integer`   |
+| `bigserial`   | 8 bytes  | `bigint`    |
+
+The `serial` types aren't true types but rather a notational convenience for creating unique identifier columns similar to other databases' `AUTO_INCREMENT`.
+
+Since these types are implemented using sequences, there may be gaps in the sequence of values which appear in the column even if no rows are ever deleted, for example, if an inserting transaction is rolled back.
+
+In order to insert the next value of the sequence into a `serial` column, simply specify that the column should be assigned its default value, either by excluding the column or through the use of `DEFAULT`.
+
+The use of a `SERIAL` "type" essentially creates an integer column with its default values assigned from a sequence generator, with a `NOT NULL` constraint. The sequence is marked as "owned by" the column so that it is dropped if the column or table is dropped.
+
+It may also be preferable to add `UNIQUE` and `PRIMARY KEY` constraints to prevent duplicates from being inserted accidentally.
+
+``` postgresql
+CREATE TABLE tablename (
+  colname SERIAL
+);
+
+-- Equivalent to this:
+CREATE SEQUENCE tablename_colname_seq;
+
+CREATE TABLE tablename (
+  colname integer NOT NULL DEFAULT nextval('tablename_colname_seq')
+);
+
+ALTER SEQUENCE tablename_colname_seq OWNED BY tablename.colname;
+```
+
 ## Type Casts
 
 PostgreSQL supports two equivalent syntaxes for type casts. The `CAST` syntax conforms to the SQL standard, whereas the `::` is historical PostgreSQL syntax.

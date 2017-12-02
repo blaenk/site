@@ -1207,6 +1207,37 @@ The longest possible `character` string is about 1 GB.
 
 Although `character(n)` may have performance advantages in other databases, there is no performance difference between all string types in PostgreSQL, although in practice `character(n)` is usually the slowest because of its additional storage costs.
 
+## Binary Data Types
+
+| Name       | Size                          |
+| :--------- | :-------                      |
+| `bytea`    | 1-4 bytes + the binary string |
+
+A `bytea` binary string is a sequence of bytes, and is an appropriate type for storing data as "raw bytes."
+
+The SQL standard defines a binary string type `BLOB` or `BINARY LARGE OBJECT` which has an input format different from `bytea` but the provided functions and operators are mostly the same.
+
+Two external formats for input and output are supported: PostgreSQL's historical "escape" format and "hex" format. Both are always accepted on input.
+
+The "hex" format encodes binary data as two hexadecimal digits per byte, with the most significant nibble first, with the entire string preceded by the sequence `\x` as a way of distinguishing it from escape format. The hex digits can be upper or lowercase, with optional whitespace between digit pairs. It tends to be faster to convert than escape format, so its use is preferred.
+
+``` postgresql
+SELECT E'\\xDEADBEEF';
+```
+
+The "escape" format represents a binary string as a sequence of ASCII characters, converting those bytes that cannot be represented as ASCII into special escape sequences. All octet values _can_ be escaped, but certain octet values _must_ be escaped. To escape an octet, convert it to its three-digit octal value and precede it by a backslash (or two if necessary).
+
+The reason that multiple backslashes may be required is that an input string written as a string literal must pass through two parse phases in PostgreSQL. The first backslash of each pair is interpreted as an escape character by the string-literal parser and is consumed, leaving the second backslash to be recognized by the `bytea` input function as starting either a three digit octal value or escaping another backslash. For example, `E'\\001` becomes `\001` after passing through the escape string parser, which is then sent to the `bytea` input function where it's converted to a single octet with a decimal value of 1.
+
+The use of this format is discouraged.
+
+``` postgresql
+SELECT E'\\000'::bytea;
+SELECT E'\''::bytea;
+SELECT E'\\\\'::bytea;
+SELECT E'\\001'::bytea;
+```
+
 ## Type Casts
 
 PostgreSQL supports two equivalent syntaxes for type casts. The `CAST` syntax conforms to the SQL standard, whereas the `::` is historical PostgreSQL syntax.

@@ -1238,6 +1238,124 @@ SELECT E'\\\\'::bytea;
 SELECT E'\\001'::bytea;
 ```
 
+## Date and Time Types
+
+| Name                                  | Size     | Description    |
+| :---------                            | :------- | :----------    |
+| `timestamp [(p)] [without time zone]` | 8 bytes  | date, time     |
+| `timestamp [(p)] with time zone`      | 8 bytes  | date, time, tz |
+| `date`                                | 4 bytes  | date           |
+| `time [(p)] [without time zone]`      | 8 bytes  | time           |
+| `time [(p)] with time zone`           | 12 bytes | time, tz       |
+| `interval [fields] [(p)]`             | 16 bytes | time interval  |
+
+The SQL standard requires that writing just `timestamp` be equivalent to `timestamp without time zone`. As a PostgreSQL extension, the type `timestampz` is accepted as an abbreviation for `timestamp with timezone`.
+
+The `time`, `timestamp`, and `interval` types accept an optional precision value `p` that specifies the number of fractional digits retained in the "seconds" field.
+
+The `interval` type can restrict the set of stored fields by writing one of the following phrases:
+
+* `YEAR`
+* `MONTH`
+* `DAY`
+* `HOUR`
+* `MINUTE`
+* `SECOND`
+* `YEAR TO MONTH`
+* `DAY TO HOUR`
+* `DAY TO MINUTE`
+* `DAY TO SECOND`
+* `HOUR TO MINUTE`
+* `HOUR TO SECOND`
+* `MINUTE TO SECOND`
+
+Of course, if the precision parameter is also specified then the `SECOND` field must be included.
+
+Date and time input is accepted in almost any reasonable format including [ISO 8601], SQL-compatible, traditional POSTGRES, etc. Any date or time literal input needs to be enclosed in single quotes, like text strings.
+
+[ISO 8601]: https://en.wikipedia.org/wiki/ISO_8601
+
+``` postgresql
+type [(p)] 'value'
+```
+
+Valid inputs for time types consist of the time of day followed by an optional time zone. A time zone is ignored if it's input to a type without a time zone. A date is ignored unless specifying a time zone name that involves a daylight-savings rule such as `America/Los_Angeles`, in which case specifying the date is required in order to determine whether standard or daylight-savings time applies.
+
+Valid input for the time stamp types consists of the concatenation of date and time followed by an optional time zone and an optional `AD` or `BC`.
+
+Remember that PostgreSQL never examines the content of a literal string _before_ determining its type, so supplying a `TIMESTAMP` literal string with a time zone won't actually create a `TIMESTAMP WITH TIME ZONE` unless that type is explicitly state.
+
+For a `TIMESTAMP WITH TIME ZONE`, the actual value that is internally stored is always in UTC. When such a value is output, it's always converted from UTC to the current `timezone` and displayed as local time in that zone. To see the time in another time zone either change `timezone` or use the `AT TIME ZONE` phrase. Similarly, conversion between `TIMESTAMP` and `TIMESTAMP WITH TIME ZONE` normally assumes that the `TIMESTAMP` should be taken as `timezone` local time, but a different one can be specified for the conversion using `AT TIME ZONE`.
+
+Certain special values like `now` are notational shorthands that are converted to ordinary date/time values as soon as they're read.
+
+| Input String | Valid Types                 | Description                        |
+| :--          | :--                         | :--                                |
+| `epoch`      | `date`, `timestamp`         | 1970-01-01 00:00:00+00             |
+| `infinity`   | `date`, `timestamp`         | later than all other time stamps   |
+| `-infinity`  | `date`, `timestamp`         | earlier than all other time stamps |
+| `now`        | `date`, `time`, `timestamp` | current transaction's start time   |
+| `today`      | `date`, `timestamp`         | midnight today                     |
+| `tomorrow`   | `date`, `timestamp`         | midnight tomorrow                  |
+| `yesterday`  | `date`, `timestamp`         | midnight yesterday                 |
+| `allballs`   | `time`                      | 00:00:00.00 UTC                    |
+
+The current time for the corresponding date type can be obtained with:
+
+* `CURRENT_DATE`
+* `CURRENT_TIME`
+* `CURRENT_TIMESTAMP`
+* `LOCALTIME`
+* `LOCALTIMESTAMP`
+
+There are a variety of output styles such as `ISO` for ISO 8601. Note however that although ISO 8601 specifies separating date and time with a `T`, PostgreSQL does so with a space on output for readability and consistency with [RFC 3339].
+
+[RFC 3339]: https://www.ietf.org/rfc/rfc3339.txt
+
+The use of `TIME WITH TIME ZONE` is discouraged because time zones in the real world have little meaning unless associated with a date as well since the offset can vary through the year with daylight-saving time boundaries. Instead date/time types that contain both date and time should be used when using time zones. Otherwise, PostgreSQL assumes the local time zone for any type containing only either date or time.
+
+Time zones can be specified in one of three ways. The difference between abbreviations and full names is that abbreviations represent a specific offset from UTC, whereas many full names imply a local daylight-savings time rule.
+
+* Full IANA time zone name such as `America/Los_Angeles`. This can imply a set of daylight savings transition-date rules.
+* Abbreviation such as `PST`. This only defines an offset from UTC.
+* POSIX-style time zone specifications of the form `STDoffset` or `STDoffsetDST` where `STD` is a zone abbreviation, `offset` is a numeric offset in hours west from UTC, and `DST` is an optional daylight savings zone abbreviation assumed to be one hour ahead of the given offset. Such as `EST5EDT`.
+
+    Note that in POSIX time zone names, positive offsets are used for locations _west_ of Greenwich, whereas everywhere else PostgreSQL follows ISO 8601 convention of positive timezone offsets being _east_ of Greenwich.
+
+Interval values are written as follows, where `quantity` is a number, `unit` is a `microsecond`, `millisecond`, `second`, `minute`, `hour`, `day`, `week`, `month`, `year`, `decade`, `century`, `millenium`, or abbreviations or plurals of them, and `direction` is `ago` or empty. The `ago` direction negates all fields.
+
+Internally interval values are stored as months, days, and seconds.
+
+``` postgresql
+[@] quantity unit [quantity unit…] [direction]
+```
+
+Quantities of days, hours, minutes, and seconds can be specified without explicit unit markings.
+
+``` postgresql
+'1 12:59:10'
+
+-- Equivalent to:
+'1 day 12 hours 59 min 10 sec'
+```
+
+Fields to the right of the least significant field allowed by the `fields` specification are silently discarded.
+
+``` postgresql
+-- Drops the seconds field, but not day field.
+INTERVAL '1 day 2:03:04' HOUR TO MINUTE
+```
+
+Intervals can also be written as ISO 8601 time intervals.
+
+``` postgresql
+-- Format with designators:
+P quantity unit [ quantity unit …] [ T [ quantity unit …]]
+
+-- Alternative format:
+P [ years-months-days ] [ T hours:minutes:seconds ]
+```
+
 ## Type Casts
 
 PostgreSQL supports two equivalent syntaxes for type casts. The `CAST` syntax conforms to the SQL standard, whereas the `::` is historical PostgreSQL syntax.

@@ -2994,3 +2994,15 @@ UFUNCTION()
 void OnRep_Flag();
 ```
 
+## Network Roles
+
+One of three network roles is assumed by any replicated actor, each denoting the level of ownership the connection has over the actor:
+
+`ROLE_SimulatedProxy` is assumed by the version of a replicated actor that exists on all other clients, purely for simulation purposes. In other words, it locally simulates the state of the object on the server, and has no authority to change the state of that object or call a function that executes remotely.
+
+`ROLE_AutonomousProxy` is assumed by the version of a replicated actor that exists on the owning client. This can be used to send and receive direct RPCs to and from the server.
+
+`ROLE_Authority` is assumed by any replicated actor that exists on the server. It can call functions on any object to execute on the server, or on `ROLE_SimulatedProxy` and `ROLE_AutonomousProxy`. It also automatically replicates any changes to properties marked `Replicated`. This role can be checked for with the `AActor::HasAuthority` function.
+
+For example, a client A's actor exists on the server with a `ROLE_Authority` role, on client A with a `ROLE_AutonomousProxy` role, and on all other clients with a `ROLE_SimulatedProxy` role.
+

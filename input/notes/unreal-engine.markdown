@@ -2932,3 +2932,65 @@ Each Actor has a floating-point `NetPriority` property that specifies the ratio 
 
 By default, `AActor::GetNetPriority` prevents starvation by multiplying its `NetPriority` by the time since the Actor was last replicated.
 
+## Replicated Properties
+
+`UProperty`s can be marked for network replication, so that when the server changes the variable, the Engine detects and replicates the change to all clients, each of which can optionally receive a callback function when the variable changes via replication. If a client changes the variable locally, it stays that way until overwritten by a server replication.
+
+A property can be marked for replication with the `Replicated` property specifier.
+
+``` cpp
+UPROPERTY(Replicated)
+float Health;
+```
+
+When the UHT encounters this property specifier, it automatically adds a declaration for the `GetLifetimeReplicatedPropers` function. A definition for this function must be provided which specifies all of the properties that should be replicated via the `DOREPLIFETIME` macro, which will cause the property to replicate whenever it is changed.
+
+``` cpp
+virtual void AMyActor::GetLifetimeReplicatedPropers(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+  Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+  DOREPLIFETIME(AMyActor, Health);
+}
+```
+
+This must be done unconditionally, since the function is only called once for the first instance, and uses the result of that call as the replication layout of the class, _not_ that particular instance. Conditions can be added via the `DOREPLIFETIME_CONDITION` macro, which takes the same first two parameters as `DOREPLIFETIME` and an additional third parameter of `ELifetimeCondition` enumeration type.
+
+``` cpp
+/** Secondary condition to check before considering the replication of a lifetime property. */
+enum ELifetimeCondition
+{
+  // This property has no condition, and will send anytime it changes
+  COND_None = 0,
+  // This property will only attempt to send on the initial bunch
+  COND_InitialOnly = 1,
+  // This property will only send to the actor's owner
+  COND_OwnerOnly = 2,
+  // This property send to every connection EXCEPT the owner
+  COND_SkipOwner = 3,
+  // This property will only send to simulated actors
+  COND_SimulatedOnly = 4,
+  // This property will only send to autonomous actors
+  COND_AutonomousOnly = 5,
+  // This property will send to simulated OR bRepPhysics actors
+  COND_SimulatedOrPhysics = 6,
+  // This property will send on the initial packet, or to the actors owner
+  COND_InitialOrOwner = 7,
+  // This property has no particular condition, but wants the ability to toggle on/off via SetCustomIsActiveOverride
+  COND_Custom = 8,
+  COND_Max = 9,
+};
+```
+
+A PlayerController only exists on the owning-client and serves as the communication channel with the server.
+
+A callback can be registered to invoke when a property value is updated via the `ReplicatedUsing` property specifier. The function takes no arguments and is called once the property has the new value. Property replication callbacks aren't automatically called on the server.
+
+``` cpp
+UPROPERTY(ReplicatedUsing = OnRep_Flag)
+uint32 bFlag;
+
+UFUNCTION()
+void OnRep_Flag();
+```
+

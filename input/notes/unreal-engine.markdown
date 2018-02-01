@@ -3157,3 +3157,16 @@ void AReplicatedActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 }
 ```
 
+## Dedicated Server
+
+The dedicated server build is only possible when building the Engine from source.
+
+Certain code paths that are purely graphical in nature can be skipped on the server by testing if it's running on the dedicated server:
+
+``` cpp
+if (GEngine->GetNetMode(GetWorld()) != NM_DedicatedServer)
+{
+  // Code for non-dedicated servers.
+}
+```
+

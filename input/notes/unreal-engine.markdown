@@ -630,7 +630,7 @@ The `Reliable` function specifier indicates that the function should be replicat
 
 [^reliable_tcp]: As if it's done via TCP or some other reliability protocol over UDP.
 
-The `Unrealiable` function specifier indicates that the function should be replicated over the network without any guarantees.
+The `Unreliable` function specifier indicates that the function should be replicated over the network without any guarantees.
 
 The `Sserver` function specifier indicates that the function is only executed on the server. A native implementation can be defined as with `BlueprintNativeEvent`,
 

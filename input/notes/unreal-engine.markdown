@@ -3170,3 +3170,23 @@ if (GEngine->GetNetMode(GetWorld()) != NM_DedicatedServer)
 }
 ```
 
+## Server Travel
+
+Seamless travel is a non-blocking operation compared to non-seamless travel.
+
+The `UEngine::Browse` function is like a hard reset when loading a new map. It performs a non-seamless travel which results in the server disconnecting the current clients before traveling to the destination map.
+
+The `UWorld::ServerTravel` function is only for the server to jump to a new world, resulting in all of the clients following by calling `APlayerController::ClientTravel` for all connected clients.
+
+The `APlayerController::ClientTravel` function, travels to a new server when called from a client, or when called from a server instructs the client to travel to the new map while remaining connected to the current server.
+
+Seamless travel can be enabled through the `AGameModeBase::bUseSeamlessTravel` property.
+
+Seamless travel requires a transition map specified through the `UGameMapsSettings::TransitionMap` property. When empty (the default), an empty map is created for the transition map. A transition map is necessary because there must always be a world loaded, so it serves as an intermediate map while the new map finishes loading, and for this reason it should be small.
+
+Seamless travel is achieved by marking all actors that will persist to the next loaded map. The following persist automatically:
+
+* `GameMode` (server) and any Actors added via `AGameModeBase::GetSeamlessTravelActorList`
+* Controllers with a valid `PlayerState` (server)
+* Local PlayerControllers (server and client) and any Actors added via `APlayerController::GetSeamlessTravelActorList`
+

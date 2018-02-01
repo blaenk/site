@@ -2893,3 +2893,12 @@ Network replication code requires the `UnrealNetwork.h` header.
 
 The frequency of an Actor's replication is determined by the `AActor::NetUpdateFrequency` property, which specifies the maximum number of times per second that the Actor should attempt to update itself, while the `AActor::MinNetUpdateFrequency` property can be set to specify the minimum number of times per second that the Actor should attempt to update itself. These values are consulted to determine the Adaptive Network Update Frequency.
 
+## Client-Server Connection Process
+
+1. Client sends connection request
+2. Server accepts and sends the current map
+3. Server waits for client to load map
+4. Server calls `AGameModeBase::PreLogin`, which may reject connection
+5. Server calls `AGameModeBase::Login`, which calls `APlayerController::BeginPlay`. _Not yet_ RPC safe.
+6. Server calls `AGameModeBase::PostLogin`. RPC safe.
+

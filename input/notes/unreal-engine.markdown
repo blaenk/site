@@ -3006,3 +3006,34 @@ One of three network roles is assumed by any replicated actor, each denoting the
 
 For example, a client A's actor exists on the server with a `ROLE_Authority` role, on client A with a `ROLE_AutonomousProxy` role, and on all other clients with a `ROLE_SimulatedProxy` role.
 
+## Remote Procedure Calls
+
+`UFunction`s can also be marked to execute on a remote machine, in which case they are referred to as Remote Procedure Calls (RPCs). RPCs are called locally but executed remotely. For example, a function marked `Server` that is called on a client causes that function to be invoked on the server, and vice versa. An owning client can invoke an RPC on the server instance of the client's actor.
+
+RPCs are `Unreliable` by default. To make an RPC reliable, it must have the `Reliable` property specifier in the `UFUNCTION` macro.
+
+A validation function can be defined for an RPC call through the use of the `WithValidation` function specifier. This is required for RPCs of type `Server`.
+
+There are three types of RPCs.
+
+A `Client` RPC should be called from the server, to be executed on the actor's owning client, i.e. the client instance with `ROLE_AutonomousProxy`. If a client or non-owning client executes a `Client` RPC, it is only executed locally.
+
+A `Server` RPC should be called from the owning client, to be executed on the server. If a non-owning client executes a `Server` RPC, the function is dropped and not executed. RPCs of type `Server` also require the `WithValidation` parameter.
+
+A `NetMultiCast` RPC can be called from the server in order to execute on both the server and all connected clients, even those with `ROLE_SimulatedProxy`. If a client or non-owning client executes a `NetMultiCast` RPC, it is only executed locally.
+
+A convention is to prepend RPC function names with the type of RPC it is, e.g. `ServerFireWeapon()`.
+
+The UHT detects RPC declarations and adds declarations for the implementation and optionally the validation function, which must then be defined by the user.
+
+``` cpp
+UFUNCTION(Client, WithValidation)
+void SomeCall();
+
+// Generates:
+// Implementation function.
+void SomeCall_Implementation();
+// Validation function.
+bool SomeCall_Validate();
+```
+

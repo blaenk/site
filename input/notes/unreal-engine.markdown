@@ -280,12 +280,6 @@ Custom behavior can be defined by overriding the `UObject::Serialize` function, 
 
 When a `UClass`'s CDO is changed, the engine attempts to apply those changes to future instances when they are loaded as long as the instance's copy of the member that was changed in the CDO has the previous CDO's value (i.e. the previous default), otherwise it's assumed that the instance explicitly requested a non-default value for a reason.
 
-## Network Replication
-
-`UProperty`s can marked for network replication. A common flow is for the server to change a variable, then for the Engine to detect and replicate the change to all clients, each of which can optionally receive a callback function when the variable changes via replication.
-
-`UFunction`s can also be marked to execute on a remote machine. For example, a function marked `Server` that is called on a client causes that function to be invoked on the server, and vice versa.
-
 ## Gameplay Modules
 
 Each game is modular just like the engine is. Each gameplay module is a collection of related classes usually resulting in shared libraries (just like engine modules). At the very least, each gameplay module must have a header file, implementation file, and build file.
@@ -2892,3 +2886,10 @@ The engine can be added as a submodule of the game repository, in which case the
 > For users which mount the engine through a Git submodule (where the engine is in a subdirectory of the project), this field can be manually edited to be a relative path.
 
 It seems that Epic's own [internal workflow](https://answers.unrealengine.com/questions/43614/uproject-files-engineassociation-saves-a-guid-whic.html) is to embed the game directly within the engine source tree.
+
+# Network Replication
+
+Network replication code requires the `UnrealNetwork.h` header.
+
+The frequency of an Actor's replication is determined by the `AActor::NetUpdateFrequency` property, which specifies the maximum number of times per second that the Actor should attempt to update itself, while the `AActor::MinNetUpdateFrequency` property can be set to specify the minimum number of times per second that the Actor should attempt to update itself. These values are consulted to determine the Adaptive Network Update Frequency.
+

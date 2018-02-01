@@ -3190,3 +3190,12 @@ Seamless travel is achieved by marking all actors that will persist to the next 
 * Controllers with a valid `PlayerState` (server)
 * Local PlayerControllers (server and client) and any Actors added via `APlayerController::GetSeamlessTravelActorList`
 
+## Online Beacons
+
+Online Beacons are a type of Actor that provide a lightweight way to communicate with a server via RPCs without committing to a regular game connection.
+
+The `AOnlineBeaconHost` class uses its own `UNetDriver` to listen for incoming Online Beacon connections. On each connection it performs a lookup on its registered `AOnlineBeaconHostObject` instances to find the one that matches the incoming client, then hands off the connection to it.
+
+The `AOnlineBeaconHostObject` class should be derived in order to pair with a derived `AOnlineBeaconClient` class. This pairing is made by matching on the return value of the `AOnlineBeaconClient::GetBeaconType` function with the value of `AOnlineBeaconHostObject::BeaconTypeName` property. When the server finds a match, it instructs the `AOnlineBeaconHostObject` to spawn a local copy of the `AOnlineBeaconClient` via the virtual function `AOnlineBeaconHostObject::SpawnBeaconActor` function which by default uses the `AOnlineBeaconHostObject::ClientBeaconActorClass` property to determine the class of the actor to spawn, so it should be set to the paired `AOnlineBeaconClient` class.
+
+The `AOnlineBeaconClient` class connects to hosts and invokes RPCs. One is spawned on the client and another is spawned on the server by the appropriate `AOnlineBeaconHostObject` class registered with the server's `AOnlineBeaconHost`. The virtual functions `OnConnected` and `OnFailure` can be overridden to perform RPCs when connected or handle failures to connect.

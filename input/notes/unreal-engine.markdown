@@ -2902,3 +2902,33 @@ The frequency of an Actor's replication is determined by the `AActor::NetUpdateF
 5. Server calls `AGameModeBase::Login`, which calls `APlayerController::BeginPlay`. _Not yet_ RPC safe.
 6. Server calls `AGameModeBase::PostLogin`. RPC safe.
 
+## Network Relevance
+
+An Actor is replicated to a client when it's considered _network relevant_ to that client. By default this is determined by the distance of an Actor to a client through the `AActor::NetCullDistanceSquared` function, within the `AActor::IsNetRelevantFor` function.
+
+An Actor that wishes to replicate must set its `bReplicates` member variable to true in its constructor.
+
+The `bAlwaysRelevant` member variable can be set to force the Actor to always be relevant to all clients, so that it is always replicated.
+
+The `bNetUseOwnerRelevancy` property can be set to make the Actor use its owner's relevancy.
+
+The `bOnlyRelevantToOwner` member variable can be set on an Actor whose owner is a PlayerController or a Pawn controlled by a PlayerController to specify that the Actor should only replicate to the player represented by the owning Pawn or PlayerController. This is set to `true` for PlayerControllers by default, which is why each client only receives updates for the PlayerControllers that it owns.
+
+The `bNetLoadOnClient` member variable can be set on an Actor to cause it to load from a level file on a network client. This should be done for Actors placed in a map that should exist on a client.
+
+The `bTearOff` member variable can be set by the Server and causes all clients to take authoritative control of their locally replicated versions of the Actor, so that changes to properties and RPCs will no longer be replicated over the network, essentially as if it were a locally spawned Actor.
+
+The `bReplicateMovement` member variable can be set to allow the Actor to be moved and automatically have its position updated on clients. This is on by default on Pawns.
+
+The default network relevancy uses a distance test, but it can be overridden:
+
+``` cpp
+bool AActor::IsNetRelevantFor(const AActor* RealViewer,
+                              const AActor* ViewTarget,
+                              const FVector& SrcLocation);
+```
+
+Each Actor has a floating-point `NetPriority` property that specifies the ratio that determines the level of bandwidth that it receives relative to other Actors, such that an Actor with a priority of `2.0` will be updated exactly twice as frequently as an Actor with priority `1.0`.
+
+By default, `AActor::GetNetPriority` prevents starvation by multiplying its `NetPriority` by the time since the Actor was last replicated.
+

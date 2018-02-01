@@ -3037,3 +3037,15 @@ void SomeCall_Implementation();
 bool SomeCall_Validate();
 ```
 
+## Replicated State
+
+GameState can be used to replicate game-related information to all players. PlayerState can be used to share player-related information to all players.
+
+Only the server may spawn actors. Actors spawned on a client will only exist on that client.
+
+Event-based replication should be used to replicate a lot of state to clients with a single method call which effects those changes locally instead of literally replicating various changes to the data. By extension, this should also be done so that clients may spawn certain local-only objects locally.
+
+All replicated properties are replicated reliably, whereas functions may be reliable or unreliable.
+
+Actor components and sub-objects should call `SetReplicates(true)` to have them replicate.
+

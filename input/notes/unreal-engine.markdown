@@ -3049,3 +3049,111 @@ All replicated properties are replicated reliably, whereas functions may be reli
 
 Actor components and sub-objects should call `SetReplicates(true)` to have them replicate.
 
+## Custom Object Replication
+
+A custom `UObject` subclass may be replicated by overriding `UObject::IsSupportedForNetworking` to return `true` and implementing `UObject::GetLifetimeReplicatedProps`.
+
+``` cpp
+#pragma once
+#include "Core.h"
+#include "ReplicatedSubobject.generated.h"
+
+UCLASS()
+class UReplicatedSubobject : public UObject
+{
+  GENERATED_UCLASS_BODY()
+
+public:
+  UPROPERTY(Replicated)
+  uint32 bReplicatedFlag:1;
+
+  virtual bool IsSupportedForNetworking() const override
+  {
+    return true;
+  }
+};
+```
+
+``` cpp
+#include "UnrealNetwork.h"
+
+UReplicatedSubobject::UReplicatedSubobject()
+{
+}
+
+void UReplicatedSubobject::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+  Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+  DOREPLIFETIME(UReplicatedSubobject, bReplicatedFlag);
+}
+```
+
+An Actor that wishes to replicate this object as a sub-object should then store it as a property and implement `AActor::ReplicateSubobjects`.
+
+``` cpp
+#pragma once
+#include "Core.h"
+#include "ReplicatedSubobject.h"
+#include "AReplicatedActor.generated.h"
+
+UCLASS()
+class AReplicatedActor : public AActor
+{
+  GENERATED_UCLASS_BODY()
+
+public:
+  virtual void PostInitializeComponents() override;
+  virtual bool ReplicateSubobjects(class UActorChannel *Channel,
+                                   class FOutBunch *Bunch,
+                                   FReplicationFlags *RepFlags) override;
+
+  // A Replicated Subobject
+  UPROPERTY(Replicated)
+  UReplicatedSubobject* Subobject;
+};
+```
+
+``` cpp
+#include "ReplicatedActor.h"
+#include "UnrealNetwork.h"
+#include "Engine/ActorChannel.h"
+
+AReplicatedActor::AReplicatedActor()
+{
+  bReplicates = true;
+}
+
+void AReplicatedActor::PostInitializeComponents()
+{
+  Super::PostInitializeComponents();
+
+  if (HasAuthority())
+  {
+    // Object's Outer must be this Actor.
+    Subobject = NewObject<UReplicatedObject>(this);
+  }
+}
+
+bool AReplicatedActor::ReplicateSubobjects(UActorChannel *Channel,
+                                           FOutBunch *Bunch,
+                                           FReplicationFlags *RepFlags)
+{
+  bool WroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
+
+  if (Subobject)
+  {
+    WroteSomething |= Channel->ReplicateSubobject(Subobject, *Bunch, *RepFlags);
+  }
+
+  return WroteSomething;
+}
+
+void AReplicatedActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+  Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+  DOREPLIFETIME(AReplicatedActor, Subobject);
+}
+```
+

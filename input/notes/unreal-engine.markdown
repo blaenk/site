@@ -2943,10 +2943,10 @@ UPROPERTY(Replicated)
 float Health;
 ```
 
-When the UHT encounters this property specifier, it automatically adds a declaration for the `GetLifetimeReplicatedPropers` function. A definition for this function must be provided which specifies all of the properties that should be replicated via the `DOREPLIFETIME` macro, which will cause the property to replicate whenever it is changed.
+When the UHT encounters this property specifier, it automatically adds a declaration for the `GetLifetimeReplicatedProps` function. A definition for this function must be provided which specifies all of the properties that should be replicated via the `DOREPLIFETIME` macro, which will cause the property to replicate whenever it is changed.
 
 ``` cpp
-virtual void AMyActor::GetLifetimeReplicatedPropers(TArray<FLifetimeProperty>& OutLifetimeProps) const
+virtual void AMyActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
   Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 

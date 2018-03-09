@@ -1521,6 +1521,16 @@ The `uuid` type stores Universally Unique Identifiers (UUID) as per RFC 4122.
 
 While PostgreSQL supports storage and comparison of UUIDs, it doesn't support generating UUIDs because no single algorithm is well suited for every application. The `uuid-ossp` module implements standard algorithms, and the `pgcrypto` module provides a generation function for random UUIDs.
 
+## XML Type
+
+The `xml` type can store XML data, with the advantage over plain `text` being that it can check the input values for well-formedness and support functions and type-safe operations. The function `xmlparse()` can be used to parse character data into an `xml` value. The reverse can be achieved with the `xmlserialize()` function.
+
+When using the normal text mode of communication between client and server, since PostgreSQL converts all character data passed between the client and server and vice versa to the character encoding of the receiving end, the encoding declarations contained in the XML data could become invalid, and so they are ignored. It is therefore the responsibility of the client to convert documents to the current client encoding before sending them, or to adjust the client encoding.
+
+When using the binary mode of communication between client and server, no encoding conversion is performed, so the encoding declaration in the XML data is observed and assumed to be UTF-8 if missing.
+
+Since there is no universally useful comparison function for arbitrary XML data, there are no comparison operators defined for the `xml` type, meaning that it's not possible to retrieve rows by comparing an `xml` column against a search value. Consequently this means that it's not possible to create an index directly on a column of type `xml`. Alternatively it's possible to index an XPath expression.
+
 ## Type Casts
 
 PostgreSQL supports two equivalent syntaxes for type casts. The `CAST` syntax conforms to the SQL standard, whereas the `::` is historical PostgreSQL syntax.

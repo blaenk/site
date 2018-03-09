@@ -1531,6 +1531,77 @@ When using the binary mode of communication between client and server, no encodi
 
 Since there is no universally useful comparison function for arbitrary XML data, there are no comparison operators defined for the `xml` type, meaning that it's not possible to retrieve rows by comparing an `xml` column against a search value. Consequently this means that it's not possible to create an index directly on a column of type `xml`. Alternatively it's possible to index an XPath expression.
 
+## JSON Types
+
+The `json` type stores an exact copy of the input text, which processing functions must reparse on each call. The `jsonb` type stores a decomposed binary format which is slightly slower to input but significantly faster to process, as no reparsing is necessary on each call. The `jsonb` type also supports indexing. The `jsonb` type is generally preferred over `json`.
+
+Since the `json` type stores the input text verbatim, key order is preserved and duplicate keys are unaffected, and only the final occurrence takes effect when it is actually parsed. Since the `jsonb` type performs the parsing upfront, key order is not preserved, and only the final occurrence of a duplicate key is preserved.
+
+The process of converting JSON input into `jsonb` necessitates mapping values of primitive types onto native PostgreSQL types. As a result, there are additional constraints on what constitutes valid `jsonb`.
+
+| JSON      | PostgreSQL | Notes                             |
+| :--       | :--        | :--                               |
+| `string`  | `text`     | `\u0000` disallowed               |
+| `number`  | `numeric`  | `NaN` and `infinity` disallowed   |
+| `boolean` | `boolean`  | only lowercase `true` and `false` |
+| `null`    | N/A        | SQL `NULL` is a different concept |
+
+On input, object keys must always be quoted strings.
+
+``` postgresql
+SELECT '{"bar": "baz", "balance": 7.77, "active": false}'::json;
+```
+
+Updating JSON documents requires a row-level lock on the whole row, so their size should be minimized to decrease lock contention among updating transactions.
+
+The `jsonb` type supports a _containment test_ operation which tests whether one `jsonb` document has contains another one. Generally, the contained object must match the containing object as to structure and data contents, possibly after discarding some non-matching array elements or object key/value pairs from the containing object. The exception is that an array may contain a primitive value.
+
+``` postgresql
+-- Scalar value identity:
+SELECT '"foo"'::jsonb @> '"foo"'::jsonb;
+
+-- Arrays:
+SELECT '[1, 2, 3]'::jsonb @> '[1, 3]'::jsonb;
+
+-- Order is irrelevant:
+SELECT '[1, 2, 3]'::jsonb @> '[3, 1]'::jsonb;
+
+-- Duplicate elements are irrelevant:
+SELECT '[1, 2, 3]'::jsonb @> '[1, 2, 2]'::jsonb;
+
+-- Array may contain a primitive value:
+SELECT '["foo", "bar"]'::jsonb @> '"bar"'::jsonb;
+
+-- Objects:
+SELECT '{"product": "PostgreSQL", "version": 9.4, "jsonb": true}'::jsonb
+         @> '{"version": 9.4}'::jsonb;
+
+-- It must match the structure:
+SELECT '[1, 2, [1, 3]]'::jsonb @> '[1, 3]'::jsonb;  -- yields false
+
+-- But with a layer of nesting, it is contained:
+SELECT '[1, 2, [1, 3]]'::jsonb @> '[[1, 3]]'::jsonb;
+
+-- Similarly, containment is not reported here:
+SELECT '{"foo": {"bar": "baz"}}'::jsonb @> '{"bar": "baz"}'::jsonb;  -- yields false
+
+-- A top-level key and an empty object is contained:
+SELECT '{"foo": {"bar": "baz"}}'::jsonb @> '{"foo": {}}'::jsonb;
+```
+
+The _existence_ operator is a variation of containment, testing whether a string appears as an object key or array element at the top level of the `jsonb` value.
+
+``` postgresql
+SELECT '"foo"'::jsonb ? 'foo';
+
+SELECT '["foo", "bar", "baz"]'::jsonb ? 'bar';
+
+SELECT '{"foo": "bar"}'::jsonb ? 'foo';
+
+-- As with containment, existence must match at the top level:
+SELECT '{"foo": {"bar": "baz"}}'::jsonb ? 'bar'; -- yields false
+```
+
 ## Type Casts
 
 PostgreSQL supports two equivalent syntaxes for type casts. The `CAST` syntax conforms to the SQL standard, whereas the `::` is historical PostgreSQL syntax.

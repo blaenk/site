@@ -1466,6 +1466,22 @@ Circles are represented by a center point and radius.
     x , y   , r
 ```
 
+## Network Address Types
+
+PostgreSQL supports data types to store IPv4, IPv6, and MAC addresses. These types are preferred over plain text types because of their additional input error checking and specialized operators and functions.
+
+| Name       | Size          | Description                      |
+| :--------- | :-------      | :----------                      |
+| `cidr`     | 7 or 19 bytes | IPv4 and IPv6 networks           |
+| `inet`     | 7 or 19 bytes | IPv4 and IPv6 hosts and networks |
+| `macaddr`  | 6 bytes       | MAC addresses                    |
+
+IPv4 addresses sort before IPv6, even those IPv4 addresses encapsulated or mapped to IPv6 addresses.
+
+The input format for type `inet` is `address/y` where `y` is the number of bits in the netmask, and if missing, is assumed to be 32 for IPv4 and 128 for IPv6 so that it represents a single host.
+
+The `cidr` type _only_ accepts network addresses, not hosts. In other words, `inet` accepts values with non-zero bits to the right of the netmask, while `cidr` does not.
+
 ## Type Casts
 
 PostgreSQL supports two equivalent syntaxes for type casts. The `CAST` syntax conforms to the SQL standard, whereas the `::` is historical PostgreSQL syntax.

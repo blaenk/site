@@ -1380,6 +1380,25 @@ The values for `false` can be:
 * `'off'`
 * `'0'`
 
+## Enumerated Types
+
+Enumerated types are created with the `CREATE TYPE` command. Enumerated types can be used in table and function definitions like any other type. Enum labels (the values) are case-sensitive, with significant white space.
+
+The order of values in an enumerated type is the order in which they were listed when created.
+
+``` postgresql
+CREATE TYPE mood AS ENUM ('sad', 'ok', 'happy');
+
+CREATE TABLE person (
+  name text,
+  current_mood mood
+);
+
+INSERT INTO person VALUES ('Moe', 'happy');
+
+SELECT * FROM person WHERE current_mood = 'happy';
+```
+
 ## Type Casts
 
 PostgreSQL supports two equivalent syntaxes for type casts. The `CAST` syntax conforms to the SQL standard, whereas the `::` is historical PostgreSQL syntax.

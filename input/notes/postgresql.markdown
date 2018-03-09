@@ -1399,6 +1399,73 @@ INSERT INTO person VALUES ('Moe', 'happy');
 SELECT * FROM person WHERE current_mood = 'happy';
 ```
 
+## Geometric Types
+
+Points are two-dimensional points specified as a comma-delimited point with optional parentheses.
+
+``` postgresql
+( x , y )
+  x , y
+```
+
+Lines are represented by the linear equation $Ax + By + C = 0$ where $A$ and $B$ are not both zero. Lines are specified as comma-delimited values of $A$, $B$, and $C$, or as a sequence of two Points.
+
+``` postgresql
+{ A, B, C }
+
+[ ( x1 , y1 ) , ( x2 , y2 ) ]
+( ( x1 , y1 ) , ( x2 , y2 ) )
+  ( x1 , y1 ) , ( x2 , y2 )
+    x1 , y1   ,   x2 , y2
+```
+
+Line Segments (`lseg`) are represented by a pair of Points defining its endpoints.
+
+``` postgresql
+[ ( x1 , y1 ) , ( x2 , y2 ) ]
+( ( x1 , y1 ) , ( x2 , y2 ) )
+  ( x1 , y1 ) , ( x2 , y2 )
+    x1 , y1   ,   x2 , y2
+```
+
+Boxes are represented by a pair of Points defining its opposite corners.
+
+``` postgresql
+( ( x1 , y1 ) , ( x2 , y2 ) )
+  ( x1 , y1 ) , ( x2 , y2 )
+    x1 , y1   ,   x2 , y2
+```
+
+Paths are represented by lists of connected points. Paths can be open (first and last points are considered not connected) or closed (first and last points are considered connected).
+
+Open paths are denoted by square brackets `[]`, while open paths are denoted by parentheses `()`. Omitting the outermost parentheses implies a closed path.
+
+``` postgresql
+[ ( x1 , y1 ) , ... , ( xn , yn ) ]
+( ( x1 , y1 ) , ... , ( xn , yn ) )
+  ( x1 , y1 ) , ... , ( xn , yn )
+  ( x1 , y1   , ... ,   xn , yn )
+    x1 , y1   , ... ,   xn , yn
+```
+
+Polygons are represented by lists of points denoting its vertices.
+
+``` postgresql
+( ( x1 , y1 ) , ... , ( xn , yn ) )
+  ( x1 , y1 ) , ... , ( xn , yn )
+  ( x1 , y1   , ... ,   xn , yn )
+    x1 , y1   , ... ,   xn , yn
+```
+
+Circles are represented by a center point and radius.
+
+``` postgresql
+< ( x , y ) , r >
+( ( x , y ) , r )
+  ( x , y ) , r
+    x , y   , r
+```
+
 ## Type Casts
 
 PostgreSQL supports two equivalent syntaxes for type casts. The `CAST` syntax conforms to the SQL standard, whereas the `::` is historical PostgreSQL syntax.

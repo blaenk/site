@@ -1356,6 +1356,30 @@ P quantity unit [ quantity unit …] [ T [ quantity unit …]]
 P [ years-months-days ] [ T hours:minutes:seconds ]
 ```
 
+## Boolean Type
+
+In SQL the `boolean` type can be `true`, `false`, or `unknown` represented by `null`.
+
+The values for `true` can be:
+
+* `TRUE`
+* `'t'`
+* `'true'`
+* `'y'`
+* `'yes'`
+* `'on'`
+* `'1'`
+
+The values for `false` can be:
+
+* `FALSE`
+* `'f'`
+* `'false`
+* `'n'`
+* `'no`
+* `'off'`
+* `'0'`
+
 ## Type Casts
 
 PostgreSQL supports two equivalent syntaxes for type casts. The `CAST` syntax conforms to the SQL standard, whereas the `::` is historical PostgreSQL syntax.

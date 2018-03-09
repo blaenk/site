@@ -1492,6 +1492,29 @@ Writing `bit` without a length `(n)` implies a length of 1, i.e. `bit(1)`.
 
 Writing `bit varying` without a length `(n)` implies an unlimited length.
 
+## Text Search Types
+
+A `tsvector` is a sorted list of distinct lexemes: words that have been normalized to merge different variants of the same word. Note that this normalization is _not_ performed by `tsvector`, but can be done by functions such as `to_tsvector()`.
+
+Integer positions can be attached to lexemes. Positions normally indicate the source word's location in the document, which can then be used for proximity ranking.
+
+Lexemes can further be labeled with a weight of `A` through `D`, where `D` is the default weight. Weights typically reflect the document structure, such as to distinguish between title and body words.
+
+A `tsquery` stores lexemes that are to be searched for. The contained lexemes can be combined using Boolean operators and the phrase search (FOLLOWED BY) operators `<->` and its variant `<N>` which takes the distance `N` between the two lexemes being searched for. The `<->` operator is equivalent to `<1>`.
+
+As with `tsvector`, the `tsquery` type expects and does _not_ perform normalization of words, but can be done by functions such as `to_tsquery()`.
+
+Lexemes in a `tsquery` can be labeled with one or more weight letters, restricting them to only matching on lexemes in the `tsvector` with one of those weights.
+
+Lexemes can be labeled with `*` to specify prefix matching, so that the query matches any word in the `tsvector` beginning with that lexeme.
+
+``` postgresql
+-- 'postgraduate' is stemmed to 'postgradu'
+-- 'postgres' is stemmed to `postgr`
+-- 'postgr' matches the beginning of 'postgradu'
+SELECT to_tsvector('postgraduate') @@ to_tsquery('postgres:*');
+```
+
 ## Type Casts
 
 PostgreSQL supports two equivalent syntaxes for type casts. The `CAST` syntax conforms to the SQL standard, whereas the `::` is historical PostgreSQL syntax.

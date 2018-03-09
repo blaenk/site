@@ -1482,6 +1482,16 @@ The input format for type `inet` is `address/y` where `y` is the number of bits 
 
 The `cidr` type _only_ accepts network addresses, not hosts. In other words, `inet` accepts values with non-zero bits to the right of the netmask, while `cidr` does not.
 
+## Bit String Types
+
+Bit strings are binary strings that can be used to store or visualize bit masks. The two bit string types are `bit(n)` and `bit varying(n)`.
+
+The `bit` type data must match the length `n` exactly; it cannot be shorter or longer. `bit varying` type data can be shorter than `n`, but not longer.
+
+Writing `bit` without a length `(n)` implies a length of 1, i.e. `bit(1)`.
+
+Writing `bit varying` without a length `(n)` implies an unlimited length.
+
 ## Type Casts
 
 PostgreSQL supports two equivalent syntaxes for type casts. The `CAST` syntax conforms to the SQL standard, whereas the `::` is historical PostgreSQL syntax.

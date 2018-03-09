@@ -1515,6 +1515,12 @@ Lexemes can be labeled with `*` to specify prefix matching, so that the query ma
 SELECT to_tsvector('postgraduate') @@ to_tsquery('postgres:*');
 ```
 
+## UUID Type
+
+The `uuid` type stores Universally Unique Identifiers (UUID) as per RFC 4122.
+
+While PostgreSQL supports storage and comparison of UUIDs, it doesn't support generating UUIDs because no single algorithm is well suited for every application. The `uuid-ossp` module implements standard algorithms, and the `pgcrypto` module provides a generation function for random UUIDs.
+
 ## Type Casts
 
 PostgreSQL supports two equivalent syntaxes for type casts. The `CAST` syntax conforms to the SQL standard, whereas the `::` is historical PostgreSQL syntax.

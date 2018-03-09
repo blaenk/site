@@ -5,6 +5,8 @@ excerpt = "The Ruby Programming Language"
 comments = false
 ---
 
+<toc />
+
 The `rbconfig` package contains constants with information about the local Ruby installation, particularly in the `RbConfig::CONFIG` hash.
 
 | Term        | Contents                                  |

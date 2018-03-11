@@ -1659,9 +1659,95 @@ SELECT ARRAY(SELECT oid FROM pg_proc WHERE proname LIKE 'bytea%');
 -- {2011, 1954, …}
 ```
 
-## Row Constructors
+PostgreSQL allows columns of a table to be defined as variable-length multidimensional arrays of any built-in or user-defined base type, enum type, or composite type.
 
-A row constructor is an expression that builds a "row", or _composite value_. This consists of parenthesizing the fields and using a `ROW` prefix. The prefix is optional if there's more than one field. The type of this row is anonymous unless cast to a named composite type: either the row type of a table or one created with `CREATE TYPE AS`.
+Although it's possible to specify the exact size of an array, the current implementation ignores any size limits. The current implementation also does not enforce the declared number of dimensions. Arrays of a given type are all considered to be the same type, regardless of dimension or size. Specifying the dimensions and their size in `CREATE TABLE` is pure documentation.
+
+``` postgresql
+CREATE TABLE sal_emp (
+  name           text,
+  pay_by_quarter integer[],
+  schedule       text[][]
+);
+```
+
+It's also possible to use the SQL standard syntax specifying the type followed by `ARRAY`.
+
+``` postgresql
+pay_by_quarter integer ARRAY[4],
+```
+
+Array values can be input as literal constants by enclosing the comma delimited values in curly braces `{}`.
+
+Note, however, that the `ARRAY` constructor syntax is often easier to work with than the array-literal syntax, since element values can be written the same way they would be written when not members of an array.
+
+``` postgresql
+'{ val1 , val2 , … }'
+```
+
+By default, such arrays are one-based unless the array subscript ranges are explicitly written before the array contents.
+
+``` postgresql
+'[1:1][-2:-1][3:5]={{{1,2,3},{4,5,6}}}'
+```
+
+A particular element can be set to `NULL`.
+
+Although an array's size and dimension are ignored, literal constant inputs must have uniform extents for each dimension.
+
+``` postgresql
+INSERT INTO sal_emp
+  VALUES ('Bill',
+    '{10000, 10000, 10000, 10000}',
+    '{{"meeting", "lunch"}, {"meeting"}}');
+
+-- ERROR: multidimensional arrays must have array expressions with matching dimensions
+```
+
+It's possible to access arbitrary rectangular slices of an array or subarrays using the `lower:upper` syntax for one or more dimensions. If any dimension is written as a slice then all dimensions are treated as slices. A dimension with a single number and no colon is treated as being `1:n`, so to obtain a single element, it must be repeated as `n:n`. It's a good practice to use explicit slices on every dimension if even a single slice is used.
+
+``` postgresql
+SELECT schedule[1:2][1:1] FROM sal_emp WHERE name = 'Bill';
+```
+
+If a slice bound is omitted, it's assumed to be the corresponding extent of the array.
+
+A subscript expression returns `NULL` if either the array itself or any of the subscript expressions are `NULL`, or if the subscript is outside of the array bounds.
+
+A slice expression yields `NULL` if either the array itself or any of the subscript expressions are `NULL`. However, when slicing completely outside of the array bounds, a slice expression yields an empty, zero-dimensional array instead of `NULL`. If a slice only partially overlaps the array bounds, it is silently reduced to just the overlapping region instead of returning `NULL`.
+
+An array's dimensions can be obtained as text with the `array_dims()` function or as integers with the `array_lower()` and `array_upper()` functions.
+
+The `array_length()` function returns the length of the specified array dimension.
+
+The `cardinality()` function returns the total number of elements in an array across all dimensions.
+
+Array values can be replaced/overwritten completely, or a single element or slice can be updated.
+
+Arrays can be enlarged by assigning past array bounds. Any previously non-existent elements in between are filled with `NULL`.
+
+Subscripted slice assignment allows the creation of an array that does not use one-based subscripts, e.g. assigning to `somearray[-2:7]` would create an array with subscript values from -2 to 7.
+
+The concatenation operator `||` can be used to concatenate two arrays, resulting in a new array. The concatenation operator can also be used to push a single element at the beginning or end of an array of one dimension higher than the element. The array's lower-bound remains the same.
+
+The functions `array_prepend()`, `array_append()`, and `array_cat()` can also be used to construct new arrays.
+
+The `ANY` operator can be used to test if any element in an array satisfies the given condition:
+
+``` postgresql
+SELECT * FROM sal_emp WHERE 10000 = ANY (pay_by_quarter);
+```
+
+The `ALL` operator can be used to test if all elements in an array satisfy the given condition:
+
+``` postgresql
+SELECT * FROM sal_emp WHERE 10000 = ALL (pay_by_quarter);
+```
+
+The `&&` operator checks whether the left operand overlaps with the right operand.
+
+The `array_position()` and `array_positions()` functions return the subscript of the first occurrence or all occurrences, respectively.
+
 
 ``` postgresql
 SELECT ROW(1, 2.5, 'this is a test');

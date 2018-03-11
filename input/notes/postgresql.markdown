@@ -1948,6 +1948,10 @@ Most OID alias types also create dependencies, so that if a constant of one of t
 
 A tuple identifier (tid; row identifier) is a pair of (block number, tuple index within block) which identifies the physical location of a row within its table.
 
+## Pseudo-Types
+
+A pseudo-type cannot be used as a column data type, but can otherwise be used to declare a function's argument or result type. For example, there is `any`, `anyarray`, `anynonarary`, `anyenum`, `anyrange`, `record` for an unspecified row type, etc.
+
 # Collation Expressions
 
 _Collation_ refers to the set of rules that determine how data is compared and sorted. The collation of a particular expression can be overridden using a `COLLATE` clause.

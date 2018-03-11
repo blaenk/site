@@ -1748,14 +1748,84 @@ The `&&` operator checks whether the left operand overlaps with the right operan
 
 The `array_position()` and `array_positions()` functions return the subscript of the first occurrence or all occurrences, respectively.
 
+## Composite Types
+
+A _composite type_ represents the structure of a row: essentially a list of field names and their data types. A column of a table can be declared to be of composite type.
+
+The syntax `CREATE TYPE … AS` to create a composite type is similar to `CREATE TABLE` except that only field names and their types can be specified, not constraints. The `AS` component is crucial to differentiate it from a typical `CREATE TYPE` command.
+
+``` postgresql
+CREATE TYPE complex AS (
+  r double precision,
+  i double precision
+);
+
+CREATE TYPE inventory_item AS (
+  name        text,
+  supplier_id integer,
+  price       numeric
+);
+```
+
+Whenever a table is created, a composite type is also automatically created with the same name as the table, to represent its row type. However, since no constraints are associated with a composite type, any constraints associated with a table definition _do not_ apply to values of the composite type outside of the table.
+
+Composite values can be constructed via literal constants, with each field value optionally (or necessarily, if it contains commas or parentheses) enclosed in double quotes. A field can be given a `NULL` value by omitting its value position in the list of values.
+
+Interior whitespace is considered to be part of the field, and may or may not be significant depending on the field's type.
+
+``` postgresql
+'(val1,val2,…)'
+
+'("fuzzy dice",42,1.99)'
+
+-- Final field receives NULL
+'("fuzzy dice",42,1.99,)'
+
+-- Final field receives empty string
+'("fuzzy dice",42,1.99,"")'
+```
+
+A row constructor is an expression that builds a "row", or _composite value_. This consists of parenthesizing the fields and using a `ROW` prefix. The prefix is optional if there's more than one field. The type of this row is anonymous unless cast to a named composite type: either the row type of a table or one created with `CREATE TYPE … AS`.
 
 ``` postgresql
 SELECT ROW(1, 2.5, 'this is a test');
 ```
 
-Row constructors are typically used for storing values in composite-type table columns or passing composite arguments to functions.
+Row constructors are typically used for storing values in composite-type table columns or passing composite arguments to functions. They may be preferable to composite type literal constants as they don't require multiple levels of quoting. In fact, the `ROW` keyword is optional as long as there is more than one field in the expression.
+
+``` postgresql
+ROW('fuzzy dice',42,1.99,NULL)
+
+-- Equivalent:
+('fuzzy dice',42,1.99,NULL)
+```
 
 Rows can be compared and tested for being `NULL`.
+
+The dot operator can be used to access a field of a composite column. The column name should be enclosed in parentheses to prevent the parser from assuming that it is a table name.
+
+``` postgresql
+-- Incorrect; assumes `item` is a table name.
+SELECT item.name FROM on_hand WHERE item.price > 9.99;
+
+-- Correct
+SELECT (item).name FROM on_hand WHERE (item).price > 9.99;
+
+-- Qualified table name
+SELECT (on_hand.item).name FROM on_hand WHERE (on_hand.item).price > 9.99;
+
+SELECT (my_func(…)).field FROM …;
+```
+
+It's possible to overwrite an entire composite column value or update an individual field of a composite column. It's not necessary to enclose the column name in parentheses right after the `SET`, but it is necessary on the right-hand side of the equal sign.
+
+``` postgresql
+INSERT INTO mytab (complex_col) VALUES((1.1,2.2));
+UPDATE mytab SET complex_col = ROW(1.1,2.2) WHERE …;
+
+INSERT INTO mytab (complex_col.r, complex_col.i) VALUES(1.1, 2.2);
+UPDATE mytab SET complex_col.r = (complex_col).r + 1 WHERE …;
+```
 
 The `.*` syntax may be used to expand an element row expression into fields of the row being constructed. In other words, if table `t` has fields `f1` and `f2`, this is possible:
 
@@ -1767,6 +1837,53 @@ SELECT ROW(t.f1, t.f2, 42) FROM t;
 
 -- To get a row whose first field is itself a row:
 SELECT ROW(t, 42) FROM t;
+```
+
+In PostgreSQL, a reference to a table name in a query is effectively a reference to the composite value of the table's current row.
+
+``` postgresql
+SELECT c FROM inventory_item c;
+-- => ("fuzzy dice",42,1.99)
+```
+
+Selecting all fields of a composite-valued expression with `.*` expands to field-selecting all fields. If the composite-valued expression is a function call yielding a composite value, then the function will be called once for each field.
+
+``` postgresql
+SELECT (myfunc(x)).* FROM some_table;
+SELECT (myfunc(x)).a, (myfunc(x)).b, (myfunc(x)).c FROM some_table;
+
+-- To call `myfunc()` once only.
+-- `OFFSET 0` prevents optimizer from flattening sub-select
+-- to the traditional naive expansion.
+SELECT (m).* FROM (SELECT myfunc(x) AS m FROM some_table OFFSET 0) ss;
+```
+
+This expansion only applies at the top level of a `SELECT `output list, a `RETURNING` list on `INSERT`, `UPDATE`, or `DELETE`, a `VALUES` clause, or a row constructor. In all other contexts, attaching `.*` to a composite value doesn't change anything.
+
+``` postgresql
+-- Equivalent:
+SELECT somefunc(c.*) FROM inventory_item c;
+SELECT somefunc(c) FROM inventory_item c;
+
+-- Equivalent:
+SELECT * FROM inventory_item c ORDER BY c;
+SELECT * FROM inventory_item c ORDER BY c.*;
+SELECT * FROM inventory_item c ORDER BY ROW(c.*);
+```
+
+Field selection is also possible through _functional notation_, where `field(table)` is equivalent to `table.field`.
+
+``` postgresql
+SELECT c.name FROM inventory_item c WHERE c.price > 1000;
+SELECT name(c) FROM inventory_item c WHERE price(c) > 1000;
+```
+
+The reverse of functional notation is also possible: a function that accepts a single argument of composite type can be called with either notation. This can be used to implement computed fields. Care should be taken to avoid giving a function with a single composite-type argument the same name as any of that composite type's fields. In that case, function interpretation can be forced by schema-qualifying the function name.
+
+``` postgresql
+SELECT somefunc(c) FROM inventory_item c;
+SELECT somefunc(c.*) FROM inventory_item c;
+SELECT c.somefunc FROM inventory_item c;
 ```
 
 # Collation Expressions

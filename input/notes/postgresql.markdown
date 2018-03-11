@@ -1931,6 +1931,23 @@ CREATE TABLE reservation (
 );
 ```
 
+## Object Identifier Types
+
+Object identifiers (OIDs) of type `oid` are used internally by PostgreSQL as primary keys for various system tables. There are several alias types for `oid`, such as `regrole`, which don't provide any operations of their own except for specialized input and output routines which are able to accept and display symbolic names for system objects rather than the raw numeric value, which allows for simplified lookup of OID values.
+
+``` postgresql
+-- Raw OID lookup:
+SELECT * FROM pg_attribute
+  WHERE attrelid = (SELECT oid FROM pg_class WHERE relname = 'mytable');
+
+-- Symbolic lookup through regclass alias type:
+SELECT * FROM pg_attribute WHERE attrelid = 'mytable'::regclass;
+```
+
+Most OID alias types also create dependencies, so that if a constant of one of those types appears in a stored expression (e.g. column default expression, or view), a dependency is created on the referenced object. Specifically, if a column has a default expression of `nextval('my_seq'::regclass)`, PostgreSQL recognizes that the default expression depends on the sequence `my_seq`, preventing it from being dropped without first removing the default expression.
+
+A tuple identifier (tid; row identifier) is a pair of (block number, tuple index within block) which identifies the physical location of a row within its table.
+
 # Collation Expressions
 
 _Collation_ refers to the set of rules that determine how data is compared and sorted. The collation of a particular expression can be overridden using a `COLLATE` clause.

@@ -1886,6 +1886,51 @@ SELECT somefunc(c.*) FROM inventory_item c;
 SELECT c.somefunc FROM inventory_item c;
 ```
 
+## Range Types
+
+| Name        | Description          |
+| :---------  | :----------          |
+| `int4range` | integer              |
+| `int8range` | bigint               |
+| `numrange`  | numeric              |
+| `tsrange`   | timestamp without tz |
+| `tstzrange` | timestamp with tz    |
+| `daterange` | date                 |
+
+Range types represent a range of values of some element type, known as the range's subtype, e.g. ranges of timestamps. The subtype must have a total order. There are some built-in range types, and others can be created with `CREATE TYPE`.
+
+``` postgresql
+-- Containment
+SELECT int4range(10, 20) @> 3;
+
+-- Overlaps
+SELECT numrange(11.1, 22.2) && numrange(20.0, 30.0);
+
+-- Extract the upper bound
+SELECT upper(int8range(15, 25));
+
+-- Compute the intersection
+SELECT int4range(10, 20) * int4range(15, 25);
+
+-- Is the range empty?
+SELECT isempty(numrange(1, 5));
+```
+
+Each range type has a constructor function with the same name as the range type, which makes it unnecessary to perform extra quoting of the bound values. A three-argument constructor form exists which takes the type of bounds to use for the range, e.g. `"[)"`. Using `NULL` for either range bound causes that side to be unbounded.
+
+A _discrete range_ is one whose element type has a well-defined step, a clear idea of a next or previous value, such as with integer or date dates and unlike with _continuous ranges_ between numeric or timestamp types.
+
+A discrete range type should have a _canonicalization_ function that is aware of the desired step size for the element type, and handles the conversion of equivalent values of the range type to have identical representations. The built-in discrete range types all use a canonical form of range type `[)`. For example, `(1, 14]` would be represented as its canonical form `[2, 15)`.
+
+Constraints on ranges can be created, typically in the form of exclusion constraints such as "non-overlapping."
+
+``` postgresql
+CREATE TABLE reservation (
+  during tsrange,
+  EXCLUDE USING GIST (during WITH &&)
+);
+```
+
 # Collation Expressions
 
 _Collation_ refers to the set of rules that determine how data is compared and sorted. The collation of a particular expression can be overridden using a `COLLATE` clause.

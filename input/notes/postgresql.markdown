@@ -1971,6 +1971,46 @@ SQL uses a three-valued logic system with `true`, `false`, and `null`.
 | F    | T     |
 | NULL | NULL  |
 
+## Comparison Operators
+
+There are two "not equal" comparison operators, `<>` and `!=`, with the `!=` operator being converted to `<>` in the parser stage, so it's not possible to implement each one to do different things.
+
+Ordinary comparison operators yield `NULL` when either input is `NULL`. This can be interpreted as, `NULL` represents an unknown value, and the comparison result of two unknown values, or a known and unknown value, is unknown.
+
+However, comparison predicates effectively act as though `NULL` were a normal data value rather than "unknown". The `IS DISTINCT` predicate for example returns `false` if both inputs are `NULL` and `true` when only one is. Likewise, `IS NOT DISTINCT FROM` returns `true` when both inputs are `NULL` and false when only one is.
+
+For `IS NULL`, if the expression is row-valued, the result is `true` when the row expression is itself `NULL` or when _all_ of the row's fields are `NULL`, while `IS NOT NULL` yields `true` when the row expression is itself non-`NULL` and _all_ of the row's fields are non-null. This means that a row-valued expression with a mix of `NULL` and non-`NULL` fields returns `false` for both tests. For this reason, it may be preferable in certain cases to use `IS DISTINCT FROM NULL`, which would only check if the row value itself is `NULL` without checking its fields.
+
+The `IS UNKNOWN` predicates are effectively the same as `IS NULL`, treating a `NULL` input as logical "unknown," except that the input expression _must_ be of Boolean type.
+
+``` postgresql
+-- inclusive: a >= x AND a <= y
+a BETWEEN x AND y
+
+-- negation: a < x OR a > y
+a NOT BETWEEN x AND y
+
+-- as above, after sorting the comparison values
+a BETWEEN SYMMETRIC x AND y
+a NOT BETWEEN SYMMETRIC x AND y
+
+-- not equal (treats null as ordinary value)
+a IS DISTINCT FROM b
+a IS NOT DISTINCT FROM b
+
+expr IS NULL
+exprt IS NOT NULL
+
+bool_expr IS TRUE
+bool_expr IS NOT TRUE
+
+bool_expr IS FALSE
+bool_expr IS NOT FALSE
+
+bool_expr IS UNKNOWN
+bool_expr IS NOT UNKNOWN
+```
+
 # Collation Expressions
 
 _Collation_ refers to the set of rules that determine how data is compared and sorted. The collation of a particular expression can be overridden using a `COLLATE` clause.

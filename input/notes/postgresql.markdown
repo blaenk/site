@@ -1952,6 +1952,25 @@ A tuple identifier (tid; row identifier) is a pair of (block number, tuple index
 
 A pseudo-type cannot be used as a column data type, but can otherwise be used to declare a function's argument or result type. For example, there is `any`, `anyarray`, `anynonarary`, `anyenum`, `anyrange`, `record` for an unspecified row type, etc.
 
+# Functions and Operators
+
+SQL uses a three-valued logic system with `true`, `false`, and `null`.
+
+| a    | b    | a AND b | a OR b |
+| :--  | :--  | :--     | :--    |
+| T    | T    | T       | T      |
+| T    | F    | F       | T      |
+| T    | NULL | NULL    | T      |
+| F    | F    | F       | F      |
+| F    | NULL | F       | NULL   |
+| NULL | NULL | NULL    | NULL   |
+
+| a    | NOT a |
+| :--  | :--   |
+| T    | F     |
+| F    | T     |
+| NULL | NULL  |
+
 # Collation Expressions
 
 _Collation_ refers to the set of rules that determine how data is compared and sorted. The collation of a particular expression can be overridden using a `COLLATE` clause.

@@ -197,3 +197,26 @@ while and for loops may have an optional trailing `else` clause which executes w
 
 The `pass` statement can be used to perform no action, as an explicit placeholder, for the body of a compound statement. Classes and functions should use a docstring instead.
 
+# Iterators
+
+An iterator is some object `i` on which the built-in `next()` can be called to return the next item or raise a `StopIteration` exception. The `next()` built in also takes an optional default value to return when the iterator has no more items.
+
+Classes can define the `__next__` method to allow instances to be iterators.
+
+Iterators are built by implicitly (in the case of a for loop) or explicitly calling the built-in `iter()`, which itself calls a special method `__iter__` to actually obtain an iterator.
+
+``` python
+for x in c:
+  f(x)
+
+# Equivalent:
+_temp_iterator = iter(c)
+
+while True:
+  try: x = next(_temp_iterator)
+  except StopIteration: break
+  f(x)
+```
+
+The built-in `range(x)` returns an object yielding consecutive integers from `[0, x)`. The `range(x,y)` form yields consecutive integers from `[x, y)`. The `range(x,y,s)` form accepts a stride `s`.
+

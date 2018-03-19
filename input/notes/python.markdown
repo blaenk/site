@@ -178,3 +178,22 @@ The ternary operator takes the form of `… if … else …`.
 
 Use `//` for truncating division, with mnemonic "extra `/` to chop/truncate the decimal". To avoid truncation, use `/` and ensure that at least one operand is not an integer, such as by multiplying an operand by `1.0`.
 
+# Control Structures
+
+Containers should not be modified while being iterated over, unless rebinding an item at an existing index or key.
+
+A for loop's target can have multiple identifiers as in an unpacking assignment, but the iterator's items must be iterables with exactly as many items as there are identifiers, or one of the identifiers may be preceded by an asterisk `*` to absorb all items that were not assigned to other targets.
+
+Note a for loo's control variable remains bound to the last value that the loop statement set.
+
+``` python
+for x in [1, 2, 3]:
+  f(x)
+
+assert x == 3
+```
+
+while and for loops may have an optional trailing `else` clause which executes when the loop terminates naturally and not prematurely.
+
+The `pass` statement can be used to perform no action, as an explicit placeholder, for the body of a compound statement. Classes and functions should use a docstring instead.
+

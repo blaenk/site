@@ -220,3 +220,52 @@ while True:
 
 The built-in `range(x)` returns an object yielding consecutive integers from `[0, x)`. The `range(x,y)` form yields consecutive integers from `[x, y)`. The `range(x,y,s)` form accepts a stride `s`.
 
+# Comprehensions
+
+## List Comprehensions
+
+A list comprehension is equivalent to a for loop that builds a list by repeated calls to the `append` method and has the form:
+
+``` python
+[ expr for target in iterable lc-clauses ]
+```
+
+where `lc-clauses` is one of:
+
+``` python
+for target in iterable
+
+if expression
+```
+
+For example:
+
+``` python
+incremented = [x + 1 for x in sequence]
+
+flattened = [x for sublist in listoflists for x in sublist]
+
+evens = [x for x in sequence if x % 2 == 0]
+```
+
+Note that lists shouldn't be built if they're only going to be used for iteration, in which case generator expressions should be used instead.
+
+Note that only in v2, and only for list comprehensions, the target variables remain bound to their last value outside of the list comprehension.
+
+## Set Comprehensions
+
+Set comprehensions have the same syntax and semantics as list comprehensions, except that they use curly braces `{}` instead, and the order of the items is irrelevant.
+
+``` python
+s = {n//2 for n in range(10)}
+#   {0, 1, 2, 3, 4}
+```
+
+## Dictionary Comprehensions
+
+Dictionary comprehensions have the same syntax as set comprehensions except that a key/value pair is specified with two expressions separated by a colon `:`.
+
+``` python
+d = {n : n//2 for n in range(5)}
+#   {0: 0, 1: 0, 2: 1, 3: 1, 4: 2}
+```

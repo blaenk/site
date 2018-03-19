@@ -163,3 +163,18 @@ When the `del` target is an identifier, it is unconditionally unbound. Otherwise
 
 Unbinding a slicing is conventionally equivalent to assigning an empty sequence to that slicing, but a given container can specify other behavior.
 
+# Expressions
+
+Comparisons can be chained, implying logical `and`.
+
+``` python
+a < b <= c < d
+
+# Equivalent:
+a < b and b <= c and c < d
+```
+
+The ternary operator takes the form of `… if … else …`.
+
+Use `//` for truncating division, with mnemonic "extra `/` to chop/truncate the decimal". To avoid truncation, use `/` and ensure that at least one operand is not an integer, such as by multiplying an operand by `1.0`.
+

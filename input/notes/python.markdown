@@ -13,3 +13,153 @@ By convention, an identifier starting with a single leading underscore `_` indic
 
 Note that although a set literal is expressed as `{a, b}`, the literal `{}` denotes an empty _dictionary_, not an empty set. An empty set has no literal syntax, but can be expressed as `set()`.
 
+# Data Types
+
+The built-in `type(obj)` returns the type object that is the type of `obj`. The built-in `isinstance(obj, type)` is `True` if `obj` has type `type`.
+
+## Numbers
+
+Python 3.6 added support for single underscores between digits or after any base specifier.
+
+## Strings
+
+The items of a string are strings; there is no character type in Python.
+
+Escape sequences work in both single and double-quoted strings, unlike other languages where single-quoted strings are treated literally. String lines can be continued with a backslash `\` continuation, but necessary newlines must be included explicitly. On the other hand, triple-quoted strings preserve line breaks.
+
+By convention, single-quoted strings are preferred.
+
+Raw string literals are possible by preceding the string literal with an `r` or `R`. Unicode literals can be specified by name with the `\N{name}` syntax, such as `\N{Copyright Sign}`.
+
+Multiple, adjacent string literals of any kind are concatenated by the compiler into a single string object.
+
+Since strings are immutable, attempting to rebind or delete an item or slice of a string raises an exception.
+
+## Tuples
+
+Tuple parentheses are optional unless the context would make the commas ambiguous, such as in function calls, or to denote empty or nested tuples. A tuple of one item requires a comma after the single item. The built-in `tuple()` creates a tuple with an item for each item in the provided iterable.
+
+Tuple objects are immutable, so attempting to rebind or delete an item or slice of a tuple raises an exception. Individual tuple items may be mutable.
+
+## Sequences
+
+Sequences are ordered containers that are accessible by indexing and slicing.
+
+The built-in `len()` function returns the number of items in a container.
+
+A sequence can be repeated by multiplying it with an integer. If the integer is zero or less, the container is emptied.
+
+The `in` operator tests to check whether an object equals any item in the given sequence or iterable. The converse is `not in`. In dictionaries, `in` tests for key presence, while in strings it tests for substring presence.
+
+Negative indexing starts from the end of the sequence of length $L$, i.e. `-1` is the last element, at index $L - 1$.
+
+A slicing of `[i:j]` is exclusive: it excludes the upper bound. When the upper bound is less than or equal to the lower bound, the slicing is an empty subsequence. When a bound is omitted, the extent is implied: `0` for the lower bound, sequence length $L$ for the upper bound. Omitting both bounds takes a slicing of the entire sequence, which is often used to make shallow copies.
+
+A slicing can include a _stride_ denoting the distance between successive indices, in the form `[i:j:k]`. For example, `[::2]` would include all even indices of the original sequence, while `[::-1]` would contain the sequence elements in reverse, in which case the lower and upper bound should be flipped, which makes sense if thought of as "from" and "to" indicators.
+
+## Lists
+
+The built-in `list()` creates a list with an item for each item in the provided iterable.
+
+Lists may be heterogeneous.
+
+A list slice can be assigned an iterable. If the slice includes a stride, then the assignment must have as many items as there are in the slice, otherwise the assignment may be of any length, which can end up making the list longer or shorter.
+
+Assigning an empty list `[]` to a slice removes that slice from the list, so that `L[i:j] = []` is equivalent to `del L[i:j]`, which is also equivalent to repeating zero times with `L[i:j] *= 0`.
+
+Assigning to an empty slice `[i:i]` inserts the target items at that position, before the element previously at that index.
+
+Assigning to a complete slice `[:]` replaces the contents of the list (it's _not_ a simple rebinding).
+
+`count(x)` returns the number of items in the list that are equal to `x`.
+
+`index(x)` returns the index of the first occurrence of an item in the list equal to `x`, or raises an exception if there is none.
+
+`append(x)` appends `x` to the end of the list.
+
+`extend(s)` appends the items of iterable `s` to the end of the list. Equivalent to list `+=`.
+
+`insert(i,x)` inserts `x` before the element previously at `i`.
+
+`pop(i=-1)` returns and removes the value at index `i`, which is the last element by default.
+
+`sort(key=None,reverse=False)` sorts the list in-place in a stable manner.
+
+The built-in `sorted()` produces a sorted list from any input iterable.
+
+## Sets
+
+There are `set`s and `frozenset`s. Instances of `set` are mutable, but not hashable, while instance of `frozenset` are immutable, but hashable, so they can be stored within a set.
+
+Sets can be created with the builtin `set` or `frozenset` and a given iterable, or with set literal syntax `{a, b}`.
+
+The `in` operator checks for set membership.
+
+## Dictionaries
+
+The built-in `dict()` creates a dictionary from the iterable of key/value pairs, and if a key appears multiple times, only the last occurrence takes effect. Additionally, named arguments can be passed to explicitly specify key/value pairs, and they override any previous duplicate key occurrences.
+
+The `dict.fromkeys()` function can also be used to construct a dictionary from an iterable of keys and a value to associate with each.
+
+Indexing with a non-existent key raises an exception, however, assignment to a non-existent key is valid.
+
+Removing a non-existent key entry with `del` raises an exception.
+
+`get(k[, x])` returns the value associated with key `k` or the default value `x`.
+
+`items()` returns an iterable `dict_items` instance.
+
+`keys()` returns an iterable `dict_keys` instance.
+
+`values()` returns an iterable `dict_values` instance.
+
+`pop(k,[, x])` is similar to the same method for lists. It removes and returns the value associated with key `k`, or `x` if there is none.
+
+`popitem()` removes and returns an arbitrary key/value pair.
+
+`setdefault(k[, x])` returns the value associated with key `k` if any, and if there is none, establishes a key-value pair with `x` as the value.
+
+`update(d)` merges the entries of dictionary `d` into the dictionary. It can also accept an iterable of key/value pairs, as well as named arguments.
+
+## Callables
+
+Classes that supply a special method named `__call__` are callable.
+
+## Booleans
+
+Any nonzero number or nonempty container is `True`, while zero of any numeric type, `None`, and empty containers are `False`.
+
+The `bool` type is a subclass of `int`.
+
+## Variables
+
+Variables or other references have no intrinsic type, but rather the object to which a reference is bound has a type; a given reference may bound to objects of various types.
+
+A global variable is an attribute of a module object. A local variable is local to a function.
+
+An object's attribute is accessed through a period `.`, while an object's item is accessed through brackets `[]`. Callable attributes are also known as methods. Plain assignment to an object attribute is a request to create or rebind the attribute with that name, while plain assignment to an item in a container is a request to the container to create or rebind the item at that index or key.
+
+Functions and callables are first-class objects; they can be bound to variables.
+
+Assigning to `object[start:stop:stride]` is equivalent to `obj[slice(start,stop,stride)]`.
+
+An unpacking assignment is one where the right-hand side is an iterable with exactly as many items as there are references on the left-hand side. One of the multiple left-hand side targets can be a starred target preceded by an asterisk `*` which is bound to a list of all items that were not bound to the other targets.
+
+``` python
+a, b, c = [1, 2, 3]
+
+a, b = b, a
+
+first, *middle, last = ["John", "Smith", "Quincy", "Doe"]
+```
+
+Augmented assignment works by first checking if the left-hand side is an object with a special in-place version of the augmented operator, in which case it is called, otherwise it applies the corresponding unaugmented binary operator to the left and right objects, then rebinds the target reference to the operator's result. So `x+=y` uses `__iadd__` if it exists, otherwise it works as `x=x+y`.
+
+Augmented assignment (e.g. `+=`) generally cannot create new references.
+
+The `del` statement unbinds references, rather than actually delete objects, which instead is a natural consequence of garbage collection. It can take one or more target references separated by commas `,`, and each target can be a variable, attribute, indexing, or slicing. Each target must be bound at the time `del` executes.
+
+When the `del` target is an identifier, it is unconditionally unbound. Otherwise, it's a request to an object to unbind one or more of its attributes or items, a request which the object may refuse.
+
+Unbinding a slicing is conventionally equivalent to assigning an empty sequence to that slicing, but a given container can specify other behavior.
+

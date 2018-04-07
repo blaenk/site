@@ -367,3 +367,5 @@ In summary, object method lookup searches the following:
 6. modules included in the superclass
 7. repeat 4-6 up to `Object` and `BasicObject`
 
+The `super` keyword can be used inside the body of a method definition to jump to the next-highest definition in the lookup path. When called without arguments, it forwards the arguments that were passed to the method from which it is called. When called with an explicit empty argument list, it sends no arguments to the higher-up method even if some were passed to the current method. When called with explicit, specific arguments, it sends those arguments to the higher-up method.
+

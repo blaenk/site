@@ -280,3 +280,113 @@ Generator expressions (aka genexps) are similar to list comprehensions except th
 sum(x*x for x in range(10))
 ```
 
+# Functions
+
+A function always returns a result value or `None` if none was provided.
+
+Python computes a default value for a parameter exactly once, not each time the function is called, which means that the same object gets bound to the parameter whenever one isn't supplied by the caller. For example, if an empty list were used as a default parameter value and then appended to, the list would grow across calls.
+
+``` python
+def f(x, y=[]):
+  y.append(x)
+  return y, id(y)
+
+print(f(23)) #=> ([23], 123)
+print(f(42)) #=> ([23, 42], 123)
+```
+
+To prevent this from happening, an idiom is to set the default parameter value to `None`, then test for it within the function to determine whether to set the actual default value:
+
+``` python
+def f(x, y=None):
+  if y is None: y = []
+  y.append(x)
+  return y, id(y)
+
+print(f(23)) #=> ([23], 123)
+print(f(42)) #=> ([42], 456)
+```
+
+One circumstance in which it may be desirable may be for caching, but that may be better done through memoization.
+
+Functions may take parameters of the form `*args` or `**kwargs` (or `**kwds`) at the end of the parameter list. The `*args` form causes arguments to be collected into a possibly empty tuple. The `**kwds` form causes arguments to be collected into a dictionary.
+
+Iterables can be expanded so that each item binds as an argument to a function parameter using the same `*seq` and `**dct` syntax, but `seq` must have the right number of items to correspond to arguments, and `dct` must have the right identifier strings as its keys. In Python 3, a function call may have zero or more of each form.
+
+Python 3 supports optionally specifying parameters that must correspond to named arguments of the form `ident=expr`, which are known as keyword-only parameters. Such parameters, if present, must appear after `*args` (if any) and before `**kwargs` (if any). If there is no `*args` form, then keyword-only parameters must follow a null parameter consisting solely of an asterisk `*`. The parameter may be a simple identifier, in which case its presence at the call-site is mandatory, or in the form `ident=default` in which case it takes the default value when it is omitted at the call-site.
+
+Note that keyword-only parameters cannot be matched with a positional argument, but must instead match a named argument.
+
+``` python
+# No *args parameter, so mark keyword-only parameters
+# with a null parameter '*'
+def f(a, *, b, c=56):
+  # b and c are keyword-only
+```
+
+Named arguments can be passed for readability purposes because positional parameters can be matched by named arguments in the absence of matching positional arguments.
+
+``` python
+def divide(divisor, dividend):
+  return dividend // divisor
+
+print(divide(dividend=94, divisor=12))
+```
+
+Arguments can be passed as positional arguments even when the parameters are named.
+
+The `def` statement sets certain attributes of a function object, including the `__name__` which refers to the function's name as a string, and `__defaults__` which refers to the tuple of default values for optional parameters.
+
+The `__doc__` attribute corresponds to a function's documentation string (docstring) which is usually bound to the first statement of a function body if it's a string literal. Since docstrings typically span many lines, they're often specified with triple-quoted strings.
+
+By convention, the first line of a docstring should be a concise, single-line summary of the entity's purpose. If it's multiline, then the summary line and more in-depth documentation are separated by an empty line.
+
+Function objects may have arbitrary attributes bound.
+
+``` python
+def counter():
+  counter.count += 1
+  return counter.count
+
+counter.count = 0
+```
+
+Python 3 allows every parameter in a `def` clause to be annotated with an arbitrary expression of the form `ident:expr`, such that the expression's value becomes its annotation. The return value of a function can likewise be annotated with the form `->expr` following the parameter list's closing parenthesis `)`, which annotates the name `'return'`.
+
+``` python-console
+>>> def f(a: 'foo', b)->'bar': pass
+>>> f.__annotations__
+{'a': 'foo', 'return': 'bar'}
+```
+
+If a function needs to bind or rebind a global variable instead of a local variable, then the first statement of the function must be a `global` statement listing the comma `,` delimited identifiers corresponding to global variables. This is only necessary if the function rebinds a global variable, not if it simply uses a global variable.
+
+Without the `global` statement below, `_count` would be an uninitialized local variable.
+
+``` python
+_count = 0
+
+def counter():
+  global _count
+  _count += 1
+  return _count
+```
+
+A nested function may access, but not rebind, local variables of an outer function, also known as free variables of the nested function. Alternatively a free variable can be bound to a nested function's parameter's default value. A nested function that does access values from an outer scope is known as a closure.
+
+Python 3 has the `nonlocal` keyword which acts similar to `global`, allowing a nested function to refer to a name in the namespace of some outer function and causing an error if the name is not found.
+
+``` python
+def make_counter():
+  count = 0
+  def counter():
+    nonlocal count
+    count += 1
+    return count
+  return counter
+```
+
+Python 2 could simulate this by storing the variable in a mutable object, such as a single-element list.
+
+Recursion has a limit and Python raises `RecursionLimitExceeded` if it is reached.
+

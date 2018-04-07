@@ -355,6 +355,15 @@ Modules are searched in reverse order of inclusion, i.e. the most recently mixed
 
 Classes can call instance methods of `Class`, and `new` is one such method. Since `Class` derives from the class `Module`, class objects have access to `Module`'s instance methods, which includes the `attr_accessor` family of methods.
 
-# Value of self
+If an object's method-lookup path includes more than one method with the same name, the first one to be encountered is the one that is executed.
 
-When no explicit receiver is named, `self` is implied. In a class definition body, `self` is the class object itself.
+In summary, object method lookup searches the following:
+
+1. prepended modules, in reverse order of prepending
+2. its class
+3. included modules, in reverse order of inclusion
+4. modules prepended to the superclass
+5. its class' superclass
+6. modules included in the superclass
+7. repeat 4-6 up to `Object` and `BasicObject`
+

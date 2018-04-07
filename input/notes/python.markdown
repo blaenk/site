@@ -390,3 +390,11 @@ Python 2 could simulate this by storing the variable in a mutable object, such a
 
 Recursion has a limit and Python raises `RecursionLimitExceeded` if it is reached.
 
+## Lambdas
+
+Lambda expressions take the form:
+
+``` python
+lambda params: expr
+```
+

@@ -288,6 +288,38 @@ In singleton method definitions, `self` is the object on which the singleton met
 
 Instance variables belong to whatever object is the current object `self` at that point in the program.
 
+# Variables
+
+Constants declared inside of a class can be referred to from within instance or class methods, as well as externally through a double colon `::`, such as `Math::PI`.
+
+In fact, constants have a kind of global visibility or reachability, in that as long as the path to the constant is known, it can be accessed.
+
+Constants are identified relative to the point of execution. If the constant being referred to is ambiguous or shadowed by a local constant, the correct one can specified by using the absolute path to the constant, which begins with a double colon `::`.
+
+It's possible to reassign to constants, except that doing so emits a warning when running with the `-w` command-line argument. This is permitted in part because program files can be reloaded, so then many file loading operations would fail if they included constant assignments and this weren't permitted.
+
+Class variables are shared between a class and instances of that class, without being visible to other objects. More specifically, class variables are class-hierarchy-scoped variables, meaning that class variables are shared between the class, its instances, and its subclasses and their instances.
+
+An alternative to class variables is to create an instance variable belonging to the class object and wrapping it in accessor methods. This has the added benefit that subclass objects get their own version of the pseudo-class variable.
+
+``` ruby
+class Test
+  def self.total_count
+    @total_count ||= 0
+  end
+
+  def self.total_count=(n)
+    @total_count = n
+  end
+
+  def some_method
+    self.class.total_count += 1
+  end
+end
+
+# Accessible through: Test.total_count
+```
+
 # Method Lookup
 
 Objects follow a lookup hierarchy to find methods, starting with the class, the inheritance hierarchy, and finally any singleton methods.

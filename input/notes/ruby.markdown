@@ -122,7 +122,7 @@ Variable arguments can't be placed to the left of default arguments, as it would
 
 # Truthiness
 
-The only false objects are the `nil` object and `false`.
+The only false objects are the `nil` object and `false`. Everything else, including zero and empty strings, are truthy.
 
 # Objects
 

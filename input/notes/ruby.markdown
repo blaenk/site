@@ -234,6 +234,8 @@ end
 
 `Object` is a generic object class which contains many introspection methods. The `BasicObject` class is even more bare-bones, and the `Object` class derives from it.
 
+The `Kernel` module is mixed into `Object` and defines most of Ruby's fundamental methods.
+
 Class objects are the only object with the power to spawn new instances. Every class, such as `Object`, is an instance of the `Class` class.
 
 This can be illustrated explicitly by instantiating a class object via `Class.new` and using that class object to create instances of that class:

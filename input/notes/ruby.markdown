@@ -438,3 +438,30 @@ n = n + 1 until n == 10
 a += 1 until true
 ```
 
+# Iterators
+
+An iterator is a method that expects a code block, which it can then execute through the `yield` keyword. A code block isn't an argument, it's part of the method's syntax. The code block can take parameters and the `yield` keyword can pass arguments to it. The code block can return a value back to the yielding function, which is set as the result of the `yield` statement.
+
+Blocks have direct access to existing variables, but block parameters shadow existing ones. To ensure that a variable is local to the block, to prevent it from clobbering any existing variables, the block parameter list supports a semicolon-delimited syntax to specify any block-local variable names, known as reserved names.
+
+``` ruby
+x = "original"
+
+3.times do |i; x|
+  # Doesn't clobber the outer-scope x
+  x = i
+end
+```
+
+`loop` is an iterator that performs an unconditional loop of its code block.
+
+``` ruby
+def my_loop
+  while true
+    yield
+  end
+end
+
+my_loop { puts "iteration" }
+```
+

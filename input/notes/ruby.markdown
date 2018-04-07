@@ -369,3 +369,5 @@ In summary, object method lookup searches the following:
 
 The `super` keyword can be used inside the body of a method definition to jump to the next-highest definition in the lookup path. When called without arguments, it forwards the arguments that were passed to the method from which it is called. When called with an explicit empty argument list, it sends no arguments to the higher-up method even if some were passed to the current method. When called with explicit, specific arguments, it sends those arguments to the higher-up method.
 
+When a method isn't found, a method named `method_missing` defined in the `Kernel` module is invoked on the object, which can be overridden to define custom behavior. The first argument is the name of the missing method as a symbol, and the rest of the arguments are the arguments that were passed to the method.
+

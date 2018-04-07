@@ -266,6 +266,8 @@ Note the curiosity that `Class` is itself an instance of `Class`, and `Object` i
 
 Class methods can be invoked by using the dot operator on the class name or by using it without an explicit receiver at the top-level of a class definition, where `self` is implicitly the class object.
 
+Class objects have their own method, state, and identity, and don't share any of these things with instances of itself.
+
 # Method Lookup
 
 Objects follow a lookup hierarchy to find methods, starting with the class, the inheritance hierarchy, and finally any singleton methods.

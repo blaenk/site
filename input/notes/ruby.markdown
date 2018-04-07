@@ -465,3 +465,54 @@ end
 my_loop { puts "iteration" }
 ```
 
+# Exceptions
+
+An exception is an instance of `Exception`. Raising an exception causes the program to proceed to a `rescue` clause or terminates if there is none.
+
+Rescuing an exception takes the form `begin … rescue … end`. The `rescue` clause can take an exception class to match on. A method or code block is implicitly surrounded by `begin` and `end`, so `rescue` may be used anywhere, although the rescue scope may be narrowed with an explicit `begin`-`end` block.
+
+``` ruby
+begin
+  result = 100 / n
+rescue ZeroDivisionError
+  puts "Divided by zero"
+# Catch-all
+rescue
+  puts "Something went wrong"
+end
+```
+
+Raising an exception is done with the `raise` keyword and the name of the exception to raise, and an optional second argument for a message string. If only a message string is provided, then Ruby assumes a `RuntimeError`.
+
+``` ruby
+def f(x)
+  raise ArgumentError, "Need number under 10" unless x < 10
+end
+```
+
+The `rescue` clause can capture the raised exception object to a variable using the `=>` operator. Exception objects respond to `backtrace`, `message`, and contain other useful information. The `rescue` clause can optionally re-raise the exception that was rescued, which can be accomplished with `raise` without any arguments, in which case the rescued exception is implied.
+
+``` ruby
+begin f(20)
+rescue ArgumentError => e
+  puts e.backtrace
+end
+```
+
+The `ensure` clause can be used to specify code that executes unconditionally after the block body and any rescue clauses. Note that the following example is contrived, since realistically this same functionality would be accomplished through code blocks.
+
+``` ruby
+fh = File.open(path)
+
+begin
+  line = fh.gets
+rescue SomeError
+  raise
+ensure
+  # Close the handle no matter what
+  fh.close
+end
+```
+
+Custom exception classes can be created by inheriting from `Exception` or a descendant of it.
+

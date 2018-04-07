@@ -516,3 +516,43 @@ end
 
 Custom exception classes can be created by inheriting from `Exception` or a descendant of it.
 
+# Built-Ins
+
+Unary operators `+` and `-` can be implemented for a class by defining methods `+@` and `-@` respectively.
+
+Defining the `!` method provides both unary `!` and keyword `not`.
+
+Conventionally, methods ending in `!` are considered "dangerous" relative to the non-bang method, meaning for example that they permanently modify the receiver. This notation should only be used when there's an equivalent non-bang method.
+
+There are built-in conversion methods beginning with `to_` such as:
+
+* `to_s`: to string
+* `to_sym`: to symbol
+* `to_a`: to array
+* `to_i`: to integer
+* `to_f`: to float
+
+When an object is interpolated into a string, its `to_s` method is called.
+
+The `to_a` method provides an array-like representation of an object.
+
+A bare list is a series of identifiers or literal objects separated by commas. It's only valid in certain contexts such as array brackets, such that an array is constructed from the bare list. The star operator `*` more or less unwraps the brackets from the bare list allowing it to be embedded in, for example, another pair of brackets.
+
+``` ruby
+array = [1, 2, 3]
+
+assert([*array] == array)
+
+def f(a, b)
+end
+
+args = [1, 2]
+
+assert(f(*args) == f(1, 2))
+```
+
+Converting strings with no reasonable integer equivalent to integers with `to_i` always results in `0`. If the string begins with digits, the following nondigits are ignored. The `to_f` method is similar. The `Integer` and `Float` methods are stricter versions of the conversion functions.
+
+The `to_str` function should be defined and used when an object needs to become a string, usually because they are string-like, compared to `to_s` which simply provides a string _representation_ of the object. For example, `String#+` uses `to_str` for converting the object to a string for the purpose of string concatenation, if it's defined.
+
+Similarly, objects can act as arrays if they define `to_ary`, to facilitate operations where the object must behave like an array, such as in array concatenation.

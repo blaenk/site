@@ -55,7 +55,9 @@ The interpreter considers a bareword identifier to potentially be a local variab
 2. if an equal sign `=` follows, it's local variable being assigned too
 3. assume a method call
 
-## Variables
+By convention, methods are referred to by class name and method name separated by a hash `#`, while class methods are separated by a double colon `::`.
+
+## Variable Naming
 
 The Ruby variable naming convention is to use snake case as opposed to camel case.
 
@@ -69,7 +71,7 @@ Global variables start with a dollar sign `$` and can consist of characters such
 
 Constants begin with an uppercase letter.
 
-## Methods
+## Method Naming
 
 Methods follow local variable conventions but they can optionally end with characters `?`, `!`, and `=`.
 

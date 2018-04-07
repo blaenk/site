@@ -216,6 +216,8 @@ end
 
 A protected method can be called as long as `self` is an instance of the same class or an ancestor or descendant.
 
+Subclasses inherit the method-access rules of their superclasses, but they can set up new rules which take precedence.
+
 # Inheritance
 
 The syntax for inheritance uses a less-than sign `<`:

@@ -163,6 +163,8 @@ When the `del` target is an identifier, it is unconditionally unbound. Otherwise
 
 Unbinding a slicing is conventionally equivalent to assigning an empty sequence to that slicing, but a given container can specify other behavior.
 
+Global variables are attributes of the module object.
+
 # Expressions
 
 Comparisons can be chained, implying logical `and`.

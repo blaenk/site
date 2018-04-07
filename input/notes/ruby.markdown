@@ -351,6 +351,8 @@ Modules are sometimes used to introduce a new namespace. Classes defined within 
 
 Objects follow a lookup hierarchy to find methods, starting with the class, the inheritance hierarchy, and finally any singleton methods.
 
+Modules are searched in reverse order of inclusion, i.e. the most recently mixed-in module is searched first. Re-including a module doesn't do anything, and so doesn't affect the inclusion order.
+
 Classes can call instance methods of `Class`, and `new` is one such method. Since `Class` derives from the class `Module`, class objects have access to `Module`'s instance methods, which includes the `attr_accessor` family of methods.
 
 # Value of self

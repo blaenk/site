@@ -144,6 +144,8 @@ Most objects are referred to via references except for the following primitives:
 * `false`
 * `nil`
 
+Note that symbols may contain spaces if they're surrounded with double quotes and preceded by a colon: `:"with spaces"`.
+
 ## References
 
 Objects can be duplicated using the `dup` method. An object can be frozen with the `freeze` method, which prevents it from mutating. The `clone` method is like `dup` in that it duplicates the object, but it also keeps the object frozen if it already was frozen. Freezing is shallow, such that for example, object elements of an array can still be mutated even if the array itself can't.

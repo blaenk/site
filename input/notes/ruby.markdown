@@ -379,3 +379,49 @@ Code blocks can be written in curly braces `{}` or enclosed with the keywords `d
 
 The `next` keyword skips the current iteration of a loop, similar to `continue` in other languages.
 
+## Conditionals
+
+`if` and `case` expressions evaluate to their chosen branch, and if they don't succeed anywhere then they return `nil`.
+
+An `if` clause can be used on a single line in the form `if … then … end`
+
+Conditional modifiers are placed after a statement.
+
+``` ruby
+puts "Big number" if x > 100
+```
+
+The allocation of new variables happens when the parser sees assignment to a new variable, even if it's within a conditional block. This means that a variable may be brought into existence even if the conditional block that assigns a value to it is never executed.
+
+``` ruby
+if false
+  x = 1
+end
+
+p x #=> nil
+p y #=> Fatal error: y is unknown
+```
+
+A `case` statement's `when` clause works by delegating to the argument's case equality method `===` ("threequal" operator), so that `case a when b` is expanded to `a.===(b)`.
+
+A `case` statement's `when` clause can have more than one match separated by commas `,` that act like a Boolean OR operator.
+
+``` ruby
+case answer
+when "y", "yes"
+  puts "Confirmed"
+  exit
+end
+```
+
+A `case` statement can omit an argument expression in order to behave similar to an `if` statement.
+
+``` ruby
+case
+when a == b
+  …
+when c == d
+  …
+end
+```
+

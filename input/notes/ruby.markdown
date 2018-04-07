@@ -166,6 +166,8 @@ end
 str.say_it #=> "this is a test"
 ```
 
+Singleton methods defined on a class object are called _class methods_. Class methods are accessible through the class object, but not through individual instances.
+
 Classes can be reopened to make additions or changes:
 
 ``` ruby

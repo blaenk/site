@@ -398,3 +398,43 @@ Lambda expressions take the form:
 lambda params: expr
 ```
 
+## Generators
+
+A generator is a function (aka generator function) that contains one or more `yield` expressions. Calling a generator doesn't execute the function, but instead returns a special iterator object known as a _generator object_ which wraps the function body, its parameters and local variables, and the current point of execution.
+
+Calling `next()` on a generator object causes the function body to execute from the current point up until the next `yield`, at which point the point of execution is saved. Calling `next()` again causes it to continue execution where it left off.
+
+When the function body ends or executes a `return` statement, the iterator raises a `StopIteration` exception.
+
+In Python 3, `return` statements can take an argument which is passed as an argument to the resulting `StopIteration`.
+
+`yield` expressions take the form:
+
+``` python
+yield expr
+
+# Equivalent to `yield None`
+yield
+```
+
+When `send(value)` is called on a generator object, the value of the overall `yield` expression becomes that passed value, so that simply calling `next()` implies a value of `None`.
+
+Generator functions are easy ways to build iterators, which are then often used to loop on with a `for` loop.
+
+``` python
+def updown(n):
+  for x in range(1, n): yield x
+  for x in range(n, 0, -1): yield x
+
+for i in updown(3): print i
+```
+
+In Python 3, `yield from` can be used to yield values from an iterable expression. This also facilitates the use of generators as coroutines.
+
+``` python
+def updown(n):
+  yield from range(1, n)
+  yield from range(n, 0, -1)
+
+for i in updown(3): print i
+```

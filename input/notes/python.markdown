@@ -271,3 +271,12 @@ Dictionary comprehensions have the same syntax as set comprehensions except that
 d = {n : n//2 for n in range(5)}
 #   {0: 0, 1: 0, 2: 1, 3: 1, 4: 2}
 ```
+
+## Generator Expressions
+
+Generator expressions (aka genexps) are similar to list comprehensions except that they they're surrounded in parentheses and construct generator objects, which can be omitted if passed directly as a function argument.
+
+``` python
+sum(x*x for x in range(10))
+```
+

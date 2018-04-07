@@ -320,6 +320,33 @@ end
 # Accessible through: Test.total_count
 ```
 
+# Modules
+
+Modules aren't instantiated, but they can be _mixed in_ to classes or objects to add to them their functionality, using the `include` or `prepend` method, which causes instances of that class to have access to instance methods defined in the module.
+
+``` ruby
+module MyModule
+  def hello
+    puts "Hello"
+  end
+end
+
+class MyClass
+  include MyModule
+end
+
+c = MyClass.new
+c.hello
+```
+
+The difference between inheriting from a class and mixing in a module is that more than one module can be mixed in. Multiple behaviors can be defined in separate modules and mixed in at will. Following this, most class names are nouns, whereas modules tend to be adjectives.
+
+The difference between `include` and `prepend` is that `prepend` causes the object to look in that module before it looks in the class.
+
+The `Class` class is a subclass of the `Module` class, meaning that every class object is also a module object. This also means that modules are the more basic structure, and classes are a specialization.
+
+Modules are sometimes used to introduce a new namespace. Classes defined within a module are accessed with the double-colon `::` constant lookup token syntax, since classes are constants after all.
+
 # Method Lookup
 
 Objects follow a lookup hierarchy to find methods, starting with the class, the inheritance hierarchy, and finally any singleton methods.

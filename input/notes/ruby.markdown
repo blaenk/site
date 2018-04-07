@@ -191,6 +191,29 @@ The `attr_reader` class method creates getter for an instance variable of the sa
 
 Shortcut (compound) assignment operators are expanded into the non-compound equivalent, so that `+=` can be used on any object that has a `+` method defined, since `x += y` is expanded into `x = x.+(y)`.
 
+The `private` method takes a list of methods to make private, or if none are provided, acts as a switch so that all subsequent methods are treated as private unless `public` or `protected` is called.
+
+A private method is one that can't be called _with_ an explicit receiver. Whether a private method can be called or not is determined by the object that is `self` at the time it is called. It means that an instance of that class can send the message to itself, which is enforced by Ruby by forbidding an explicit receiver on that method, such that the only time that the method can be called without a receiver is when a private method can be called.
+
+However, setter methods cannot be called without omitting the receiver, so it would not be possible to call a private method, but Ruby makes an exception for private setter methods, allowing the receiver to be specified as long as it is `self`.
+
+Top-level methods are stored as private instance methods of the `Object` class. Since they're private methods, they must be called without an explicit receiver, and since they're methods of `Object`, they can be called from anywhere because `Object` lies in the method lookup path of every class except for `BasicObject`.
+
+``` ruby
+def talk
+  puts "hello"
+end
+
+# Equivalent
+class Object
+  private
+
+  def talk
+    puts "hello"
+  end
+end
+```
+
 # Inheritance
 
 The syntax for inheritance uses a less-than sign `<`:

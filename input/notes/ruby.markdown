@@ -425,3 +425,16 @@ when c == d
 end
 ```
 
+## Loops
+
+`until` is to `while` as `unless` is to `if`.
+
+There are `while` and `until` modifiers, but they don't behave as post-positioned (do-while) loops.
+
+``` ruby
+n = n + 1 until n == 10
+
+# Won't execute, because `until` is treated as if at the beginning.
+a += 1 until true
+```
+

@@ -373,3 +373,9 @@ When a method isn't found, a method named `method_missing` defined in the `Kerne
 
 Singleton methods reside in an object's singleton class.
 
+# Control Structures
+
+Code blocks can be written in curly braces `{}` or enclosed with the keywords `do` and `end`.
+
+The `next` keyword skips the current iteration of a loop, similar to `continue` in other languages.
+

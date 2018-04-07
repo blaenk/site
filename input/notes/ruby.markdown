@@ -371,3 +371,5 @@ The `super` keyword can be used inside the body of a method definition to jump t
 
 When a method isn't found, a method named `method_missing` defined in the `Kernel` module is invoked on the object, which can be overridden to define custom behavior. The first argument is the name of the missing method as a symbol, and the rest of the arguments are the arguments that were passed to the method.
 
+Singleton methods reside in an object's singleton class.
+

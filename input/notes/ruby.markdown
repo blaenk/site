@@ -189,6 +189,8 @@ Attributes are not a language construct, but rather they are a high level concep
 
 The `attr_reader` class method creates getter for an instance variable of the same name. The `attr_writer` class method creates a setter for an instance variable of the same name. The `attr_accessor` class method creates both a getter and a setter. There is also an `attr` class method that creates a reader and takes a second argument denoting whether to also create writer.
 
+Shortcut (compound) assignment operators are expanded into the non-compound equivalent, so that `+=` can be used on any object that has a `+` method defined, since `x += y` is expanded into `x = x.+(y)`.
+
 # Inheritance
 
 The syntax for inheritance uses a less-than sign `<`:

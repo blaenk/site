@@ -268,6 +268,26 @@ Class methods can be invoked by using the dot operator on the class name or by u
 
 Class objects have their own method, state, and identity, and don't share any of these things with instances of itself.
 
+# Value of self
+
+When no explicit receiver is named, `self` is implied. In a class definition body, `self` is the class object itself.
+
+If a method and local variable are given the same name, and the bare identifier (sans `self`) is used, the variable takes precedence, but the method can be forced by explicitly specifying `self` or explicitly specifying an argument list. Note, however, that when the method name ends with an equal sign `=`, the `self` can't be omitted, because Ruby always interprets `ident = val` as an assignment to a local variable.
+
+In the top-level, `self` is `main`, a built-in top-level default object. `main` cannot be referred to directly within a program, since Ruby interprets it as a regular variable or method name. It can be accessed by assigning `self` to a variable at the top-level.
+
+In a class or module definition, `self` is the class or module object.
+
+In top-level method definitions, `self` is whatever object is `self` when the method is called. Top-level methods are available as private methods to all objects.
+
+In instance method definitions in a class, `self` is the instance responding to the method.
+
+In instance method definitions in a module, `self` is an individual object extended by the module or an instance of the class that mixes in the module.
+
+In singleton method definitions, `self` is the object on which the singleton method is defined.
+
+Instance variables belong to whatever object is the current object `self` at that point in the program.
+
 # Method Lookup
 
 Objects follow a lookup hierarchy to find methods, starting with the class, the inheritance hierarchy, and finally any singleton methods.

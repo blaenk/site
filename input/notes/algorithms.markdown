@@ -98,11 +98,11 @@ A faster-growing function $f(n)$ _dominates_ a slower-growing one $g(n)$, i.e. $
 | Name         | Complexity | Examples |
 | :-------     | :--------- | :----------------- |
 | Constant     | $1$        | adding two numbers |
-| Logarithmic  | $\log n$   | binary search |
-| Linear       | $n$        | incrementing each element in an array |
-| Linearithmic | $n \log n$ | QuickSort and MergeSort |
-| Quadratic    | $n^2$      | looking at all/most pairs of an array |
-| Cubic        | $c^n$      | looking at all/most triples of an array |
+| Logarithmic  | $\log n$   | branching; binary search |
+| Linear       | $n$        | scanning; incrementing each element in an array |
+| Linearithmic | $n \log n$ | branching and scanning at each level; QuickSort and MergeSort |
+| Quadratic    | $n^2$      | looking at all/most pairs of an array; InsertionSort |
+| Cubic        | $n^3$      | looking at all/most triples of an array; matrix multiplication |
 | Exponential  | $c^n$      | looking at all subsets of an array |
 | Factorial    | $n!$       | looking at all permutations or orderings of n items |
 

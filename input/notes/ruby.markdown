@@ -214,6 +214,8 @@ class Object
 end
 ```
 
+A protected method can be called as long as `self` is an instance of the same class or an ancestor or descendant.
+
 # Inheritance
 
 The syntax for inheritance uses a less-than sign `<`:

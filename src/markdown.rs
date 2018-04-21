@@ -47,43 +47,43 @@ pub struct Markdown {
 impl Handle<Item> for Markdown {
     fn handle(&self, item: &mut Item) -> diecast::Result<()> {
         use regex::Regex;
-        use hoedown::Render;
         use sha1;
 
-        let mut hash = sha1::Sha1::new();
-        hash.update(item.body.as_bytes());
+        let rendered = {
+            let mut hash = sha1::Sha1::new();
+            hash.update(item.body.as_bytes());
 
-        let pattern = Regex::new(r"(?m)^\*\[(?P<abbr>[^]]+)\]: (?P<full>.+)$").unwrap();
+            let pattern = Regex::new(r"(?m)^\*\[(?P<abbr>[^]]+)\]: (?P<full>.+)$").unwrap();
 
-        let clean = pattern.replace_all(&item.body, "");
+            let clean = pattern.replace_all(&item.body, "");
 
-        let document =
-            hoedown::Markdown::new(&clean)
-            .extensions({
-                use hoedown::*;
+            let document =
+                hoedown::Markdown::new(&clean)
+                .extensions({
+                    use hoedown::*;
 
-                AUTOLINK |
-                FENCED_CODE |
-                FOOTNOTES |
-                MATH |
-                MATH_EXPLICIT |
-                SPACE_HEADERS |
-                STRIKETHROUGH |
-                SUPERSCRIPT |
-                TABLES
-            });
+                    AUTOLINK |
+                    FENCED_CODE |
+                    FOOTNOTES |
+                    MATH |
+                    MATH_EXPLICIT |
+                    SPACE_HEADERS |
+                    STRIKETHROUGH |
+                    SUPERSCRIPT |
+                    TABLES
+                });
 
-        let enabled = clean.contains("<toc");
+            let toc_enabled = clean.contains("<toc");
 
-        let mut renderer =
-            self::renderer::Renderer::new(enabled, self.context.clone());
+            let mut renderer =
+                self::renderer::Renderer::new(toc_enabled, self.context.clone());
 
-        let buf = renderer.render(&document);
+            let buf = document.render(&mut renderer);
 
-        let pattern = Regex::new(r"<p><toc[^>]*/></p>").unwrap();
+            let pattern = Regex::new(r"<p><toc[^>]*/></p>").unwrap();
 
-        let rendered =
-            pattern.replace(&buf.to_str().unwrap(), &renderer.toc[..]);
+            pattern.replace(&buf.to_str().unwrap(), &renderer.toc[..]).into_owned()
+        };
 
         item.body = rendered;
 
@@ -106,7 +106,7 @@ mod renderer {
     pub struct Pass;
     impl Render for Pass {
         fn link(&mut self, output: &mut Buffer, content: Option<&Buffer>, _link: Option<&Buffer>, _title: Option<&Buffer>) -> bool {
-            content.map(|c| output.pipe(c));
+            content.map(|c| output.write(c));
             true
         }
     }
@@ -128,21 +128,24 @@ mod renderer {
                 TABLES
             });
 
-        let output = String::from(Pass.render_inline(&doc).to_str().unwrap());
+        doc.render_inline(&mut Pass).to_str().unwrap()
+            .chars()
+            .filter_map(|c| {
+                if c.is_whitespace() {
+                    return Some('-');
+                }
 
-        output.chars()
-        .filter(|&c|
-            c.is_alphabetic() || c.is_digit(10) ||
-            c == '_' || c == '-' || c == '.' || c == ' '
-        )
-        .map(|c| {
-            let c = c.to_lowercase().next().unwrap();
+                let is_sluggish =
+                    c.is_alphabetic() || c.is_digit(10) || c == '_' || c == '-' || c == '.';
 
-            if c.is_whitespace() { '-' }
-            else { c }
-        })
-        .skip_while(|c| !c.is_alphabetic())
-        .collect()
+                if is_sluggish {
+                    c.to_lowercase().next()
+                } else {
+                    None
+                }
+            })
+            .skip_while(|c| !c.is_alphabetic())
+            .collect()
     }
 
     pub struct Renderer {
@@ -241,7 +244,7 @@ mod renderer {
                 self.toc_align = Align::Right;
             }
 
-            output.pipe(text);
+            output.write(text).unwrap();
 
             true
         }
@@ -250,18 +253,15 @@ mod renderer {
             if code.is_none() { return; }
 
             let code = code.unwrap();
-
-            if lang.is_none() { return; }
-
-            let lang = lang.unwrap();
+            let lang = String::from(lang.map_or("text", |l| {
+                if l.is_empty() {
+                    "text"
+                } else {
+                    l.to_str().unwrap_or("text")
+                }
+            }));
 
             use std::io::Write;
-
-            let lang = if lang.is_empty() {
-                "text"
-            } else {
-                lang.to_str().unwrap()
-            };
 
             write!(output,
 r#"<figure class="codeblock">
@@ -269,7 +269,7 @@ r#"<figure class="codeblock">
 <code class="highlight language-{}">"#, lang).unwrap();
 
             if lang == "text" {
-                output.pipe(code);
+                output.write(code).unwrap();
             } else {
                 use sha1;
                 use std::fs::File;

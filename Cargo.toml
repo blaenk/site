@@ -15,7 +15,6 @@ time = "*"
 log = "*"
 env_logger = "*"
 rustc-serialize = "*"
-hoedown = "*"
 regex = "*"
 chrono = "*"
 rss = "*"
@@ -24,6 +23,7 @@ sha1 = "*"
 
 futures-cpupool = "*"
 
+hoedown = { path = "../../hoedown" }
 diecast = { path = "../diecast" }
 diecast-tags = { path = "../tags" }
 diecast-date = { path = "../date" }

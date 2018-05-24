@@ -869,3 +869,63 @@ Naive resolvers may incur many redundant queries. A common optimization is to de
 
 [DataLoader]: https://github.com/facebook/dataloader
 [join-monster]: https://github.com/stems/join-monster
+
+## Pagination
+
+A suggested way to implement pagination is to use cursors at an additional level of indirection representing the edge between a type and its list of associated items. The edge would return the item itself within a `node` field as well as a `cursor` field. The plural field can contain cumulative information such as `totalCount`, as well as a `pageInfo` field which can contain information about the `startCursor` and `endCursor` on that page, as well as whether it `hasNextPage` to avoid the final query.
+
+This is known as a [Relay Cursor Connection].
+
+[Relay Cursor Connection]: http://graphql.org/learn/pagination/#complete-connection-model
+
+``` graphql
+{
+  hero {
+    name
+    friendsConnection(first:2 after:"Y3Vyc29yMQ==") {
+      totalCount
+      edges {
+        node {
+          name
+        }
+        cursor
+      }
+      pageInfo {
+        endCursor
+        hasNextPage
+      }
+    }
+  }
+}
+```
+
+``` json
+{
+  "data": {
+    "hero": {
+      "name": "R2-D2",
+      "friendsConnection": {
+        "totalCount": 3,
+        "edges": [
+          {
+            "node": {
+              "name": "Han Solo"
+            },
+            "cursor": "Y3Vyc29yMg=="
+          },
+          {
+            "node": {
+              "name": "Leia Organa"
+            },
+            "cursor": "Y3Vyc29yMw=="
+          }
+        ],
+        "pageInfo": {
+          "endCursor": "Y3Vyc29yMw==",
+          "hasNextPage": false
+        }
+      }
+    }
+  }
+}
+```

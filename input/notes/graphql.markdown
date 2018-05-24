@@ -931,3 +931,70 @@ This is known as a [Relay Cursor Connection].
   }
 }
 ```
+
+# GraphQL.js
+
+A minimal GraphQL servers looks like this.
+
+``` javascript
+var { graphql, buildSchema } = require('graphql');
+
+// Construct a schema, using GraphQL schema language
+var schema = buildSchema(`
+  type Query {
+    hello: String
+  }
+`);
+
+// The root provides a resolver function for each API endpoint
+var root = {
+  hello: () => {
+    return 'Hello world!';
+  },
+};
+
+// Run the GraphQL query '{ hello }' and print out the response
+graphql(schema, '{ hello }', root).then((response) => {
+  console.log(response);
+});
+```
+
+It's possible and straightforward to define an object type resolver as an instance of an ES6 class such that its instance methods and properties are resolvers.
+
+``` graphql
+type RandomDie {
+  numSides: Int!
+  rollOnce: Int!
+  roll(numRolls: Int!): [Int]
+}
+
+type Query {
+  getDie(numSides: Int): RandomDie
+}
+```
+
+``` javascript
+class RandomDie {
+  constructor(numSides) {
+    this.numSides = numSides;
+  }
+
+  rollOnce() {
+    return 1 + Math.floor(Math.random() * this.numSides);
+  }
+
+  roll({numRolls}) {
+    var output = [];
+    for (var i = 0; i < numRolls; i++) {
+      output.push(this.rollOnce());
+    }
+    return output;
+  }
+}
+
+var root = {
+  getDie: function ({numSides}) {
+    return new RandomDie(numSides || 6);
+  }
+}
+```

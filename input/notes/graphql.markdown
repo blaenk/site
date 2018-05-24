@@ -597,6 +597,8 @@ According to [the standard](https://facebook.github.io/graphql/October2016/#sec-
 
 Input types are used as query parameters, whereas output types are obtained after query execution.
 
+Naming input types with an `Input` suffix is a common convention due to the common practice of having regular output object types and a corresponding input type.
+
 ``` graphql
 input ReviewInput {
   stars: Int!

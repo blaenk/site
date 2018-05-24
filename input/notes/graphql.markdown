@@ -876,7 +876,7 @@ A suggested way to implement pagination is to use cursors at an additional level
 
 This is known as a [Relay Cursor Connection].
 
-[Relay Cursor Connection]: http://graphql.org/learn/pagination/#complete-connection-model
+[Relay Cursor Connection]: https://facebook.github.io/relay/graphql/connections.htm
 
 ``` graphql
 {

@@ -856,3 +856,16 @@ A type's documentation can be obtained with the `description` field.
   }
 }
 ```
+
+# Best Practices
+
+## Versioning
+
+GraphQL doesn't really need to be versioned because clients only request what they request, and new types and fields without breaking existing clients.
+
+## Batching
+
+Naive resolvers may incur many redundant queries. A common optimization is to debounce and batch them into single requests by using something like [DataLoader] or [join-monster].
+
+[DataLoader]: https://github.com/facebook/dataloader
+[join-monster]: https://github.com/stems/join-monster

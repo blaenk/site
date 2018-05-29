@@ -621,3 +621,21 @@ When getting an attribute from a class with the syntax `C.name`, the lookup proc
 
 2. Otherwise delegate lookup to `C`'s base classes and restart the lookup process there.
 
+## Instance Attribute Lookup
+
+When getting an attribute from an instance with the syntax `c.name` on an instance of class `C`, the lookup process is:
+
+1. If `name` is found in the class `C` or one of its ancestor classes as per [class attribute lookup] is the name of an overriding descriptor `v` that defines `__get__` and `__set__`, the value is the result of:
+
+    ``` python
+    type(v).__get__(v, c, C)
+    ```
+
+2. Otherwise if `name` is a key in the instance attribute `__dict__`, then return the associated value.
+
+3. Otherwise `c.name` delegates the lookup to `c`'s class as per [class attribute lookup].
+
+[class attribute lookup]: #class-attribute-lookup
+
+If the lookup doesn't find an attribute, Python raises an `AttributeError` exception. However, if the class defines or inherits `__getattr__`, Python instead calls `C.__getattr__(c, 'name')` instead of raising the exception, which itself may return a value or raise an exception.
+

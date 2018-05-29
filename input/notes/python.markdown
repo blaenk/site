@@ -438,3 +438,92 @@ def updown(n):
 
 for i in updown(3): print i
 ```
+
+# Classes
+
+Instantiating a class involves calling the class object as if it were a function. _Dunder methods_ (double underscore names) are methods that are surrounded by two underscores `__`, and are special methods that Python implicitly calls for various operations.
+
+When an instance can't looks up and can't find an attribute within itself, it implicitly delegates to its class.
+
+Classes are objects (values) handled like other objects.
+
+A class' name is bound (or rebound) to the class object after the `class` statement finishes executing. The class body executes immediately and the class object does not exist until it finishes. The statement doesn't create any instance of the new class, but defines the set of attributes shared by all instances when they're created.
+
+``` python
+class ClassName(base-classes):
+  statements
+```
+
+Optional base classes may be specified whose values must be class objects.
+
+In Python 3, the base class list can include a named argument `metaclass=…` to set the class' metaclass. In Python 2, omitting base classes creates an old-style class, unless the `__metaclass__` attribute is defined, otherwise a new-style class can be created by specifying an explicit base class of at least `object`, which is already implicit in Python 3 (i.e. all classes are new-style classes), but may be explicitly specified for backward-compatibility.
+
+The built-in function `issubclass(C1, C2)` returns `True` if `C1` extends `C2`.
+
+An attribute of a class can itself be another class, so `class` statements may be nested.
+
+Attributes of a class object are typically specified by binding a value to an identifier within the class body, but they may also be bound outside of the class body. All instances share all of the class attributes.
+
+``` python
+class C:
+  x = 1
+
+C.y = 2
+
+assert C.x == 1
+assert C.y == 2
+```
+
+In statements directly within the class body, class attributes must use a simple, unqualified name, but in statements within methods of a class body, class attributes must use a fully qualified name.
+
+``` python
+class C:
+  x = 25
+  y = x + 1
+
+  def method(self):
+    print(C.x)
+```
+
+The `class` statement implicitly sets some class attributes.
+
+| Name        | Purpose                                             |
+| :---        | :------                                             |
+| `__name__`  | class name as a string                              |
+| `__bases__` | tuple of class objects of bases                     |
+| `__dict__`  | dict object used to hold attributes (its namespace) |
+
+Methods require an explicit first parameter referring to the instance object, conventionally named `self`.
+
+``` python
+class C:
+  def hello(self):
+    print('Hello')
+```
+
+Identifiers within a class body prefixed with two underscores such as `__ident`  are implicitly prefixed with `__classname` by the Python compiler, into `__classname__ident`. This simulates "private" names for attributes, methods, and global variables.
+
+Identifiers prefixed with a single underscore `_` are meant to be private to the scope that bound them, whether or not it's a class, and these identifiers aren't manipulated by the Python compiler.
+
+A descriptor is an object whose class supplies a special method name `__get__`. When descriptors are used as class attributes on a class, they control the semantics of accessing and setting attributes on instances of that class. When accessing an instance attribute, Python gets its value by calling `__get__` on the descriptor.
+
+``` python
+class Const:
+  def __init__(self, value): self.value = value
+  def __set__(self, *_): pass
+  def __get__(self, *_): return self.value
+
+class C:
+  c = Const(23)
+
+x = X()
+
+assert x.c == 23
+x.c = 1
+assert x.c == 23
+```
+
+An overriding descriptor (aka data descriptor) is a descriptor that also defines `__set__`. A descriptor that only defines `__get__` (as above) is known as a nonoverriding descriptor (aka nondata descriptor). When assigning to an instance attribute, Python sets its value by calling `__set__` on the descriptor.
+
+Note that descriptors are _class_ attributes which affect the behavior of _instance_ attributes.
+

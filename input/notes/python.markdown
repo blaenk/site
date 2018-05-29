@@ -830,3 +830,27 @@ c = C()
 assert C.astatic() == c.astatic()
 ```
 
+## Class Methods
+
+A class method can be called on a class or instance, and Python binds its first parameter to the class on which the method is being called, or the class of the instance on which the method is being called, and is conventionally named `cls`.
+
+Class methods can easily be overridden in subclasses when necessary.
+
+A class method can be created by calling the built-in type `classmethod()` and binding its result to a class attribute, or by using it as a decorator `@classmethod`.
+
+``` python
+class B:
+  def aclassmethod(cls):
+    return 'class method for ' + cls.__name__
+
+  aclassmethod = classmethod(aclassmethod)
+
+class C(B): pass
+
+b = B()
+c = C()
+
+assert B.aclassmethod() == b.aclassmethod()
+assert C.aclassmethod() == c.aclassmethod()
+```
+

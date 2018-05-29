@@ -605,3 +605,19 @@ class Singleton:
 
 Methods are also attributes. Special dunder-name attributes cannot be unbound.
 
+## Class Attribute Lookup
+
+When getting an attribute from a class with the syntax `C.name`, the lookup process is:
+
+1. If `name` is a key in the `__dict__`, get its associated value.
+
+    Then if the value is a descriptor which defines `__get__`, the returned value of `C.name` is the result of calling:
+
+    ``` python
+    type(v).__get__(v, None, C)
+    ```
+
+    Otherwise the value is the one obtained from the `__dict__`.
+
+2. Otherwise delegate lookup to `C`'s base classes and restart the lookup process there.
+

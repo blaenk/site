@@ -854,3 +854,92 @@ assert B.aclassmethod() == b.aclassmethod()
 assert C.aclassmethod() == c.aclassmethod()
 ```
 
+## Properties
+
+A property is an instance attribute that is accessed and set with normal syntax which invoke methods which add behavior to the corresponding operation. Properties make it safe to expose public data attributes as part of the class' public interface. Use properties instead of creating explicit getters such as `get_this`.
+
+Properties are created with the `property()` built-in type, binding its result to a class attribute, or using it as a decorator `@property()`.
+
+``` python
+attrib = property(fget=None, fset=None, fdel=None, doc=None)
+```
+
+The parameters to `property()` are optional. If a parameter is missing, the corresponding operation is forbidden and raises an exception when attempted.
+
+| Name   | Purpose            |
+| :--    | :--                |
+| `fget` | `x.attrib`         |
+| `fset` | `x.attrib = value` |
+| `fdel` | `del x.attrib`     |
+| `doc`  | docstring          |
+
+Properties can implement behavior similar to `__getattr__`, `__setattr__`, and `__delattr__` but are faster and simpler.
+
+``` python
+class Rectangle:
+  def __init__(self, width, height):
+    self.width, self.height = width, height
+
+  def get_area(self):
+    return self.width * self.height
+
+  area = property(get_area, doc='area of rectangle')
+
+rect = Rectangle(2, 3)
+
+# This invokes the get_area() method.
+assert rect.area == 6
+```
+
+When using `property()` as a decorator, the getter should have the name of the desired property. To create setters and deleters, the method should still have the same name as the property but the decorator used should be named after the property with a `.setter` or `.deleter` suffix.
+
+``` python
+class Rectangle:
+  def __init__(self, width, height):
+    self.width, self.height = width, height
+
+  @property
+  def area(self):
+    '''area of the rectangle'''
+    return self.width * self.height
+
+  @area.setter
+  def area(self, value):
+    scale = math.sqrt(value / self.area)
+    self.width *= scale
+    self.height *= scale
+```
+
+Note that with respect to inheritance, the actual methods invoked by a property access are those defined in which the property itself is defined.
+
+In the following example, even though the property is invoked through an instance of subclass `B` which overrides the method ultimately invoked by accessed the property, the property itself is defined in subclass `B`, so that is the method that is invoked.
+
+This is because the property constructor receives the function object of `f`, which happens when `B`'s class statement executes, so `B.f` is saved. So even though `C` later redefines `f`, accessing property `g` simply invokes the function object `B.f` that it had already saved at the property creation time.
+
+``` python
+class B:
+  def f(self): return 1
+  g = property(f)
+
+class C(B):
+  def f(self): return 2
+
+c = C()
+assert c.g == 1
+```
+
+This can be explicitly worked around by adding an indirection through a method which invokes the actual underlying property function, thereby undergoing attribute lookup which may account for an overridden function.
+
+``` python
+class B:
+  def f(self): return 1
+  def _f_getter(self): return self.f()
+  g = property(_f_getter)
+
+class C(b):
+  def f(self): return 2
+
+c = C()
+assert c.g == 2
+```
+

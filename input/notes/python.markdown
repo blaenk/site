@@ -808,3 +808,25 @@ Explicitly calling superclass methods through function objects can still be usef
 
 Inheritance doesn't provide a way to delete or hide a base class' attributes noninvasively. Workarounds include overriding a method and raising an exception, hiding attributes and defining `__getattr__` for selective delegation, or overriding `__getattribute__`.
 
+## Static Methods
+
+A static method can be called on a class _or_ any instance of the class without special behavior with regard to the first parameter `self`.
+
+A static method can be created by calling the built-in type `staticmethod()` and binding its result to a class attribute, or by using it as a decorator `@staticmethod`.
+
+``` python
+class C:
+  def astatic():
+    return 'static method'
+
+  astatic = staticmethod(astatic)
+
+  # Or:
+  @staticmethod
+  def other():
+    return 'static method'
+
+c = C()
+assert C.astatic() == c.astatic()
+```
+

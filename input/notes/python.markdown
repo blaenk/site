@@ -717,3 +717,94 @@ def make_adder_as_callable_instance(augend):
 
   return Adder(augend)
 ```
+
+## Inheritance
+
+When an attribute is not a key in a class' `__dict__`, attribute lookup implicitly proceeds on each class object in the `__bases__` tuple in method resolution order (MRO).
+
+In method resolution order, each ancestor class is visited in left-to-right, depth-first order. In the presence of multiple inheritance, MRO causes only the right-most occurrence of a given class to remain.
+
+A built-in read-only attribute called `__mro__` is a tuple of the types used for method resolution, in MRO.
+
+A subclass method definition can delegate to a superclass' definition using a function object (unbound method in Python 2).
+
+``` python
+class Base:
+  def greet(self, name): print('Welcome', name)
+
+class Sub:
+  def greet(self, name):
+    print('Well Met and', end=' ')
+    Base.greet(self, name)
+
+x = Sub()
+x.greet('Alex')
+```
+
+Method delegation is also common with `__init__` in order for base classes to perform their initialization. A base class' `__init__` should never be called if that's the only thing in the subclass' definition, since that would already occur by inheriting the base class definition.
+
+``` python
+def Base:
+  def __init__(self):
+    self.attr = 1
+
+class Derived:
+  def __init__(self):
+    Base.__init__(self)
+    self.attr = 2
+```
+
+Using explicit superclass method delegation can end up calling the same method multiple times in the case of multiple inheritance.
+
+``` python
+class A:
+  def met(self): print('A.met')
+
+class B(A):
+  def met(self):
+    print('B.met')
+    A.met(self)
+    # super(B, self).met()
+
+class C(A):
+  def met(self):
+    print('C.met')
+    A.met(self)
+    # super(C, self).met()
+
+class D(B, C):
+  # NOTE
+  # This calls A.met() twice through B and C's met()
+  def met(self):
+    print('D.met')
+    B.met(self)
+    C.met(self)
+    # super(D, self).met()
+```
+
+Multiple calls to the same method due to multiple inheritance can be avoided by using the `super()` built-in. In Python 2, `super(class, obj)` returns a special superobject of `obj` such that attribute lookup on it begins _after_ the class `class` in `obj`'s MRO. In Python 3, `super()` with no arguments works the same way.
+
+``` python
+class A:
+  def met(self): print('A.met')
+
+class B(A):
+  def met(self):
+    print('B.met')
+    super(B, self).met()
+
+class C(A):
+  def met(self):
+    print('C.met')
+    super(C, self).met()
+
+class D(B, C):
+  def met(self):
+    print('D.met')
+    super(D, self).met()
+```
+
+Explicitly calling superclass methods through function objects can still be useful when calling methods with different and incompatible signatures but same name.
+
+Inheritance doesn't provide a way to delete or hide a base class' attributes noninvasively. Workarounds include overriding a method and raising an exception, hiding attributes and defining `__getattr__` for selective delegation, or overriding `__getattribute__`.
+

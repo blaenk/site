@@ -527,3 +527,81 @@ An overriding descriptor (aka data descriptor) is a descriptor that also defines
 
 Note that descriptors are _class_ attributes which affect the behavior of _instance_ attributes.
 
+## Instances
+
+The built-in function `isinstance(i, C)` returns `True` if `i` is an instance of class `C`.
+
+Calling the class object implicitly calls the `__init__` method on the new instance to perform per-instance initialization. Its main purpose is to bind and create the attributes of a newly created instance.
+
+An instance object can be given an arbitrary binding outside of the class body.
+
+``` python
+class C: pass
+
+c = C()
+c.x = 1
+
+assert c.x == 1
+```
+
+The special method `__setattr__` intercepts every attempt to bind an attribute.
+
+When attempting to bind to an attribute whose name corresponds to an overriding descriptor, the descriptor's `__set__` method is invoked.
+
+``` python
+# Where C.x is an overriding descriptor:
+c = C()
+c.x = 1
+
+# Equivalent to:
+# Note this uses type(x) to account for subclass.
+type(c).x.__set__(c, 1)
+```
+
+Creating an instance implicitly creates two instance attributes.
+
+| Name        | Purpose                            |
+| :--         | :--                                |
+| `__class__` | class object it's an instance of   |
+| `__dict__`  | instance's attribute namespace map |
+
+There is no difference between instance attributes created by assigning to attributes directly from those created through the `__dict__` map.
+
+``` python
+x.a = 1
+x.__dict__['b'] = 1
+
+assert x.a == x.b
+```
+
+When a class object is called, Python first calls the `__new__` class and uses the return value as the newly created instance, on which it then calls `__init__` _only_ when the instance returned by `__new__` is indeed an instance or instance of a subclass of the class object on which `__new__` was called.
+
+``` python
+# Calling a class object:
+instance = C(*args, **kwds)
+
+# Equivalent to:
+instance = C.__new__(C, *args, **kwds)
+
+# Note this uses type(x) to account for subclass.
+if isinstance(instance, C):
+  type(instance).__init__(instance, *args, **kwds)
+```
+
+The base definition of `object.__new__` simply creates a new, uninitialized instance of the class it receives as its first argument.
+
+A definition of `__new__` may choose to return an existing instance instead of returning a new one. For example, this `Singleton` class causes any derived classes to have only one instance by overriding the `__new__` method to only ever create a new instance if one hasn't been created yet.
+
+``` python
+class Singleton:
+  _singletons = {}
+
+  def __new__(cls, *args, **kwds):
+    if cls not in cls._singletons:
+      cls._singletons[cls] = super(Singleton, cls).__new__(cls)
+
+    return cls._singletons[cls]
+```
+
+Methods are also attributes. Special dunder-name attributes cannot be unbound.
+

@@ -643,3 +643,77 @@ If the lookup doesn't find an attribute, Python raises an `AttributeError` excep
 
 The aforementioned lookup processes only refer to getting the value of an attribute. Setting an attribute only affects the `__dict__` entry for the attribute in a class or instance. It involves no lookup process.
 
+## Bound and Unbound Methods
+
+A function object's `__get__` method returns either an unbound method object in Python 2 or the function object itself in Python 3, or a bound method object that wraps the function. An unbound method object is one that is not associated with any particular instance; it's only available in Python 2.
+
+A bound method is obtained when a method attribute reference is on an instance, and an unbound method (function objects in Python 3) is obtained when the method attribute reference is on a class.
+
+Unbound methods can be used to access overridden methods, although `super()` should be preferred. Unbound methods can also be used for higher-order functions.
+
+When instance attribute lookup finds a function attribute that's an attribute in the instance's class, the lookup calls the function's `__get__` method which creates and returns a bound method that wraps the function. Note that this doesn't occur when the attribute lookup finds a function object in the `__dict__`, since Python doesn't treat the function as a descriptor, so doesn't call its `__get__` method. This also applies to built-in functions since they're not descriptors.
+
+``` python
+func.__get__(c, C)
+```
+
+A bound method has three read-only attributes in addition to those of the function object it wraps.
+
+| Name       | Purpose                            |
+| :---       | :---                               |
+| `im_class` | class object supplying the method  |
+| `im_func`  | wrapped function                   |
+| `im_self`  | instance used to obtain the method |
+
+Calls to a bound method do not explicitly supply the first parameter `self`, as that is obtained from the `im_self` attribute.
+
+In the following example, the lookup process is:
+
+1. check if `name` is an overriding descriptor (defines `__set__`)
+2. check if `name` is in `c.__dict__`
+3. notice that `f` is a descriptor, so calls `f.__get__(c, C)` thereby creating a bound method object with:
+
+    * `im_func` set to `f`
+    * `im_class` set to `C`
+    * `im_self` set to `x`
+
+4. calls bound method object with `arg` as the only argument
+5. bound method object calls `im_func` with arguments `im_self` and `arg`
+6. equivalent to calling:
+
+    ``` python
+    x.__class__.__dict__['name'](x, arg)
+    ```
+
+``` python
+def f(a, b): pass
+
+class C:
+  name = f
+
+c = C()
+
+c.name(1, 2)
+```
+
+Bound method objects can be used wherever a callable object can, and is a flexible alternative to a closure.
+
+``` python
+def make_adder_as_closure(augend):
+  def add(addend, _augend=augend): return addend + _augend
+  return add
+
+def make_adder_as_bound_method(augend):
+  class Adder:
+    def __init__(self, augend): self.augend = augend
+    def add(self, addend): return addend + self.augend
+
+  return Adder(augend).add
+
+def make_adder_as_callable_instance(augend):
+  class Adder:
+    def __init__(self, augend): self.augend = augend
+    def __call__(self, addend): return addend + self.augend
+
+  return Adder(augend)
+```

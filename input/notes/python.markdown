@@ -675,7 +675,7 @@ In the following example, the lookup process is:
 
     * `im_func` set to `f`
     * `im_class` set to `C`
-    * `im_self` set to `x`
+    * `im_self` set to `c`
 
 4. calls bound method object with `arg` as the only argument
 5. bound method object calls `im_func` with arguments `im_self` and `arg`

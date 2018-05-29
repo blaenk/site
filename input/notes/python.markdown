@@ -639,3 +639,7 @@ When getting an attribute from an instance with the syntax `c.name` on an instan
 
 If the lookup doesn't find an attribute, Python raises an `AttributeError` exception. However, if the class defines or inherits `__getattr__`, Python instead calls `C.__getattr__(c, 'name')` instead of raising the exception, which itself may return a value or raise an exception.
 
+## Attribute Bind Lookup
+
+The aforementioned lookup processes only refer to getting the value of an attribute. Setting an attribute only affects the `__dict__` entry for the attribute in a class or instance. It involves no lookup process.
+

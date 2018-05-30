@@ -1113,3 +1113,9 @@ This is implicitly invoked for `for i in x` to obtain an iterator on `x`, as wel
 
 If absent, Python creates an iterator object that wraps the object and yields each contained item by indexing `x[i]` until `IndexError` is raised.
 
+### \_\_len\_\_
+
+This is used to obtain the length of a container.
+
+This is implicitly called when `__nonzero__` or `__bool__` are absent in a Boolean context.
+

@@ -992,3 +992,11 @@ class listNoAppend(list):
     return list.__getattribute__(self, name)
 ```
 
+### \_\_del\_\_
+
+Python calls `__del__` on an instance just before garbage collection to let it finalize itself. It has no direct connection to the `del` keyword. If absent, Python performs no finalization. Python doesn't implicitly call `__del__` on superclasses.
+
+It is not a good choice for timely, guaranteed finalization. Instead a `try`/`finally` pair should be used, or the `with` statement.
+
+Classes defining `__del__` cannot have cyclic references.
+

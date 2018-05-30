@@ -1107,3 +1107,9 @@ This is implicitly invoked for `del x[k]`.
 
 This is implicitly invoked for `x[k]`.
 
+### \_\_iter\_\_
+
+This is implicitly invoked for `for i in x` to obtain an iterator on `x`, as well as by explicitly invoking `iter()`.
+
+If absent, Python creates an iterator object that wraps the object and yields each contained item by indexing `x[i]` until `IndexError` is raised.
+

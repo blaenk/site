@@ -1039,3 +1039,9 @@ If `__hash__` is absent but `__eq__` is present, calling `hash()` raises an exce
 
 Usually `__hash__` is defined only for immutable objects that also define `__eq__`.
 
+### \_\_bool\_\_ and \_\_nonzero\_\_
+
+When evaluating an object in a boolean context, Python 2 calls `__nonzero__`, otherwise Python calls `__len__` instead if present, or assumes the object to be `True` if `__len__` is not present.
+
+In Python 3, this special method is `__bool__`.
+

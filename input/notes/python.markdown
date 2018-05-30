@@ -603,6 +603,8 @@ class Singleton(object):
     return cls._singletons[cls]
 ```
 
+Generally, `__new__` should only be used for initialization when an object is immutable, since its instances cannot be changed in `__init__`. Otherwise, initialization should only occur in `__init__`.
+
 Methods are also attributes. Special dunder-name attributes cannot be unbound.
 
 ## Class Attribute Lookup

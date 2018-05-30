@@ -641,6 +641,23 @@ When getting an attribute from an instance with the syntax `c.name` on an instan
 
 If the lookup doesn't find an attribute, Python raises an `AttributeError` exception. However, if the class defines or inherits `__getattr__`, Python instead calls `C.__getattr__(c, 'name')` instead of raising the exception, which itself may return a value or raise an exception.
 
+Note that implicit uses of special methods _always_ rely on the class-level binding of that special method, if any.
+
+``` python
+def fake_get_item(idx): return idx
+
+class MyClass(object): pass
+
+n = MyClass()
+n.__getitem__ = fake_get_item
+
+# This raises TypeError because MyClass is not indexable,
+# despite the per-instance binding of __getitem__, since
+# implicit uses of special methods always rely on the
+# class-level binding if any, and there is none.
+idx = n[0]
+```
+
 ## Attribute Bind Lookup
 
 The aforementioned lookup processes only refer to getting the value of an attribute. Setting an attribute only affects the `__dict__` entry for the attribute in a class or instance. It involves no lookup process.

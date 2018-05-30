@@ -1151,3 +1151,61 @@ There are other ABcs which extend the previous ones, such as `Iterator` which ex
 
 The numerical tower in `numbers` supplies ABCs for various kinds of numbers, such as `Complex`, `Real`, and `Rational`.
 
+## Numeric Special Methods
+
+There are `i`-prefixed special methods which operate "in place" with compound assignment operators, and `r`-prefixed special methods which operate "in reverse" (RHS on LHS, when the LHS doesn't have the corresponding definition).
+
+The numeric special methods are:
+
+| Name            | Operation                |
+| :--             | :--                      |
+| `__abs__`       | `abs(x)`                 |
+| `__invert__`    | `~x`                     |
+| `__neg__`       | `-x`                     |
+| `__pos__`       | `+x`                     |
+| `__add__`       | `x + y`                  |
+| `__radd__`      | `y + x`                  |
+| `__iadd__`      | `x += y`                 |
+| `__mod__`       | `x % y`                  |
+| `__rmod__`      | `y % x`                  |
+| `__imod__`      | `x %= y`                 |
+| `__mul__`       | `x * y`                  |
+| `__rmul__`      | `y * x`                  |
+| `__imul__`      | `x *= y`                 |
+| `__sub__`       | `x - y`                  |
+| `__rsub__`      | `y - x`                  |
+| `__isub__`      | `x -= y`                 |
+| `__div__`       | `x / y`                  |
+| `__rdiv__`      | `y / x`                  |
+| `__idiv__`      | `x /= y`                 |
+| `__truediv__`   | `x / y`                  |
+| `__itruediv__`  | `x /= y`                 |
+| `__floordiv__`  | `x // y`                 |
+| `__ifloordiv__` | `x //= y`                |
+| `__and__`       | `x & y`                  |
+| `__rand__`      | `y & x`                  |
+| `__iand__`      | `x &= y`                 |
+| `__lshift__`    | `x << y`                 |
+| `__rlshift__`   | `y << x`                 |
+| `__ilshift__`   | `x <<= y`                |
+| `__rshift__`    | `x >> y`                 |
+| `__rrshift__`   | `y >> x`                 |
+| `__irshift__`   | `x >>= y`                |
+| `__or__`        | `x | y`                  |
+| `__ror__`       | `y | x`                  |
+| `__ior__`       | `x |= y`                 |
+| `__xor__`       | `x ^ y`                  |
+| `__rxor__`      | `y ^ x`                  |
+| `__ixor__`      | `x ^= y`                 |
+| `__complex__`   | `complex(x)`             |
+| `__float__`     | `float(x)`               |
+| `__int__`       | `int(x)`                 |
+| `__long__`      | `long(x)`                |
+| `__divmod__`    | `divmod(x, y)`           |
+| `__rdivmod__`   | `divmod(y, x)`           |
+| `__hex__`       | `hex(x)`                 |
+| `__oct__`       | `oct(x)`                 |
+| `__index__`     | exact mapping to integer |
+| `__pow__`       | `x ** y` and `pow(x, y)` |
+| `__rpow__`      | `y ** x` and `pow(y, x)` |
+| `__ipow__`      | `x **= y`                |

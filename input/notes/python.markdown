@@ -1004,3 +1004,20 @@ Classes defining `__del__` cannot have cyclic references.
 
 Python calls `__delattr__` on every request to unbind an attribute. If absent, Python simply delegates to deleting the corresponding entry in the `__dict__`.
 
+### Comparisons
+
+The comparison methods correspond to comparison and equality operators:
+
+| Method   | Operator |
+| :--      | :--      |
+| `__eq__` | `==`     |
+| `__ge__` | `>=`     |
+| `__gt__` | `>`      |
+| `__le__` | `<=`     |
+| `__lt__` | `<`      |
+| `__ne__` | `!=`     |
+
+Python has default implementations of each in terms of the others, so only a few need to be implemented.
+
+The best practice is to define only one inequality method such as `__lt__` and `__eq__`, then decorate the class with `functools.total_ordering` to avoid boilerplate and possible logical contradictions.
+

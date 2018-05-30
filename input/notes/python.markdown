@@ -962,3 +962,12 @@ c = C()
 assert c.g == 2
 ```
 
+## Slots
+
+An instance's `__dict__` can be removed in place of specific, predefined attributes specified in the `__slots__` sequence (tuple or list). That is, a class will have no` __dict__` if it defines a `__slots__` attribute, and any attempt to bind an attribute not in `__slots__` will raise an exception. This saves memory and may be considered a micro-optimization.
+
+``` python
+class OptimizedRectangle(Rectangle):
+  __slots__ = 'width', 'height'
+```
+

@@ -195,7 +195,7 @@ for x in [1, 2, 3]:
 assert x == 3
 ```
 
-while and for loops may have an optional trailing `else` clause which executes when the loop terminates naturally and not prematurely.
+`while` and for loops may have an optional trailing `else` clause which executes when the loop terminates naturally and not prematurely, which can be thought of as an `else` on the loop condition, i.e. when the loop condition is no longer `True`, but doesn't apply to other kinds of terminations such as exceptions or breaking since they _don't_ pertain to the loop condition.
 
 The `pass` statement can be used to perform no action, as an explicit placeholder, for the body of a compound statement. Classes and functions should use a docstring instead.
 

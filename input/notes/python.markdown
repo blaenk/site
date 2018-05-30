@@ -1065,3 +1065,31 @@ This method returns an informal, potentially-approximate, concise, human-readabl
 
 If absent, Python calls `__repr__` instead.
 
+## Collection Special Methods
+
+A sequence with $L$ items should accept any integer key $K$ such that $-L \le K \lt L$. A negative index $-K$ which is $-L \le K \lt 0$ should be equivalent to $K + L$.
+
+Keying with an invalid type should raise `TypeError` and keying with an out-of-range index should raise `IndexError`. The `for` statement relies on this for sequences that don't define `__iter__`.
+
+Slicing into a container with `[i:j]` or `[i:j:k]` invokes the object's item-access special method with the key set to a slice object which has attributes `start`, `stop`, and `step`, where each attribute is `None` if it is omitted in the slice syntax.
+
+The `indices()` method of slice objects takes an argument corresponding to the collection's length and returns a tuple of non-negative indices suitable as `start`, `stop`, and `step` for a loop indexing each item in the slice by passing it to `range()`.
+
+``` python
+def __getitem__(self, index):
+  # Create new instance representing the slice
+  if isinstance(index, slice):
+    return self.__clase__(self[x] for x in range(*self.indices(len(self))))
+
+  # TypeError if not an integral number
+  if not isinstance(index, numbers.Integral): raise TypeError
+
+  # Offset negative index
+  if index < 0: index += len(self)
+
+  # IndexError if not within bounds
+  if not (0 <= index < len(self)): raise IndexError
+
+  # Index is now an integral number within bounds
+```
+

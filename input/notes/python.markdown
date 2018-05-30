@@ -1123,3 +1123,31 @@ This is implicitly called when `__nonzero__` or `__bool__` are absent in a Boole
 
 This is invoked for every request to bind an item or slice.
 
+## Abstract Base Classes
+
+Abstract base classes cannot be directly instantiated.
+
+One common practice is to avoid extending concrete classes. If two classes share behavior, an abstract base class should instead be created which contains the common behavior.
+
+The `abc` module contains class `ABC` which sets `ABCMeta` to the metaclass when it is subclassed, making the subclass an abstract base class.
+
+An abstract base class `C` is given the `register()` class method which takes an existing class `X` as argument, making it a _virtual subclass_ of the abstract base class `C` so that `issubclass(X, C)` returns `True` but abstract base class `C` doesn't appear in `X.__mro__` and so virtual subclass `X` does not inherit any of `C`'s methods or other attributes.
+
+It's also possible to subclass an abstract base class normally so that it appears within the subclass' `__mro__` and so inherits all of its methods and attributes.
+
+The `abc` module also supplies decorator `@abstractmethod`. Abstract methods and properties can have implementations. A non-virtual subclass `X` of an abstract base class `C` can only be instantiated if it overrides every abstract method and property of `C`.
+
+The `collections.abc` modules contains many ABCs for collections, such as:
+
+| ABC         | Purpose                   |
+| :--         | :--                       |
+| `Callable`  | class with `__call__`     |
+| `Container` | class with `__contains__` |
+| `Hashable`  | class with `__hash__`     |
+| `Iterable`  | class with `__iter__`     |
+| `Sized`     | class with `__len__`      |
+
+There are other ABcs which extend the previous ones, such as `Iterator` which extends `Iterable` but adds `__next__`, and further ones which extend those, such as `ItemsView`.
+
+The numerical tower in `numbers` supplies ABCs for various kinds of numbers, such as `Complex`, `Real`, and `Rational`.
+

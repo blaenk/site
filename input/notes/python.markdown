@@ -1119,3 +1119,7 @@ This is used to obtain the length of a container.
 
 This is implicitly called when `__nonzero__` or `__bool__` are absent in a Boolean context.
 
+### \_\_setitem\_\_
+
+This is invoked for every request to bind an item or slice.
+

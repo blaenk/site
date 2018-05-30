@@ -1099,3 +1099,7 @@ This is implicitly invoked for `k in x`.
 
 If absent, Python does a linear scan of the sequence for membership.
 
+### \_\_delitem\_\_
+
+This is implicitly invoked for `del x[k]`.
+

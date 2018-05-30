@@ -1227,3 +1227,8 @@ def hasnt(): pass
 
 The `functools.wrap` decorator can be used to more efficiently wrap a function, adopting its name and docstring.
 
+# Metaclasses
+
+Any object including a class object, has a type. Further, types and classes are first-class objects.
+
+The type of a class object is that class' metaclass. An object's behavior is mostly determined by the type of the object, and a class' behavior is mostly determined by the class' metaclass.

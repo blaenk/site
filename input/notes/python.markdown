@@ -1103,3 +1103,7 @@ If absent, Python does a linear scan of the sequence for membership.
 
 This is implicitly invoked for `del x[k]`.
 
+### \_\_getitem\_\_
+
+This is implicitly invoked for `x[k]`.
+

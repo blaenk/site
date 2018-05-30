@@ -1053,3 +1053,9 @@ This method returns a complete, exact string representation of an object. Ideall
 eval(repr(x)) == x
 ```
 
+### \_\_setattr\_\_
+
+This is called on _every_ request to bind an attribute.
+
+Care must be taken to avoid recursion by modifying the `__dict__` directly, or it can delegate to the superclass' implementation.
+

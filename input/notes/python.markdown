@@ -1029,3 +1029,13 @@ class listNoAppend(list):
     return list.__getattribute__(self, name)
 ```
 
+### \_\_hash\_\_
+
+The `__hash__` method is invoked in contexts that require an object's hash value such as when keying a dictionary. It must return an `int` such that if two objects are considered equal via `__eq__`, their hash must be equal as well.
+
+If `__hash__` is absent as well as `__eq__`, then it delegates to `id()`.
+
+If `__hash__` is absent but `__eq__` is present, calling `hash()` raises an exception.
+
+Usually `__hash__` is defined only for immutable objects that also define `__eq__`.
+

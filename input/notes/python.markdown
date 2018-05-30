@@ -1209,3 +1209,21 @@ The numeric special methods are:
 | `__pow__`       | `x ** y` and `pow(x, y)` |
 | `__rpow__`      | `y ** x` and `pow(y, x)` |
 | `__ipow__`      | `x **= y`                |
+
+# Decorators
+
+A decorator precedes a `def` or `class` statement, which it then evaluates and binds the result to an internal temporary name.
+
+``` python
+def showdoc(f):
+  if f.__doc__: print('{}: {}'.format(f.__name__, f.__doc__))
+  else: print('{}: No docstring'.format(f.__name__))
+  return f
+
+@showdoc
+def has(): '''a docstring'''
+def hasnt(): pass
+```
+
+The `functools.wrap` decorator can be used to more efficiently wrap a function, adopting its name and docstring.
+

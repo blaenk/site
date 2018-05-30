@@ -973,25 +973,6 @@ class OptimizedRectangle(Rectangle):
 
 ## Object Special Methods
 
-## \_\_getattribute\_\_
-
-All references to instance attributes go through `__getattribute__`, which can be overridden to for example hide inherited class attributes.
-
-The difference between `__getattr__` and `__getattribute__` is that `__getattr__` is only called during [instance attribute lookup] as a fallback when the attribute can't be found via `__getattribute__` [^method_missing], whereas `__getattribute__` is called _before_ performing the lookup, on every access.
-
-[instance attribute lookup]: #instance-attribute-lookup
-[^method_missing]: Similar to Ruby's [`method_missing`] but for attributes in general.
-[`method_missing`]: https://ruby-doc.org/core/BasicObject.html#method-i-method_missing
-
-In the following example which extends `list` and prevents accessing (and therefore calling) the `append` method attribute.
-
-``` python
-class listNoAppend(list):
-  def __getattribute__(self, name):
-    if name == 'append': raise AttributeError(name)
-    return list.__getattribute__(self, name)
-```
-
 ### \_\_del\_\_
 
 Python calls `__del__` on an instance just before garbage collection to let it finalize itself. It has no direct connection to the `del` keyword. If absent, Python performs no finalization. Python doesn't implicitly call `__del__` on superclasses.
@@ -1024,4 +1005,27 @@ The best practice is to define only one inequality method such as `__lt__` and `
 ### \_\_getattr\_\_
 
 When an attribute can't be found normally, Python calls `__getattr__` to obtain the attribute's value. It should raise `AttributeError` if there is no suitable value for that attribute.
+
+### \_\_getattribute\_\_
+
+Python calls `__getattribute__` on every request to access an attribute. It must get and return the attribute value or return `AttributeError`.
+
+The usual lookup semantics of checking `__dict__`, `__slots__`, the class attributes, or `__getattr__` are all defined within `__getattribute__`. So if a class overrides `__getattribute__`, it must implement _all_ of the attribute access semantics that it wants to offer, but this can often be achieved by delegating to the superclass implementation.
+
+The difference between `__getattr__` and `__getattribute__` is that `__getattr__` is only called during [instance attribute lookup] as a fallback when the attribute can't be found via `__getattribute__` [^method_missing], whereas `__getattribute__` is called _before_ performing the lookup, on every access.
+
+[instance attribute lookup]: #instance-attribute-lookup
+[^method_missing]: Similar to Ruby's [`method_missing`] but for attributes in general.
+[`method_missing`]: https://ruby-doc.org/core/BasicObject.html#method-i-method_missing
+
+Note that overriding `__getattribute__` can slow attribute accesses since it's invoked on every attribute access.
+
+In the following example which extends `list` and prevents accessing (and therefore calling) the `append` method attribute.
+
+``` python
+class listNoAppend(list):
+  def __getattribute__(self, name):
+    if name == 'append': raise AttributeError(name)
+    return list.__getattribute__(self, name)
+```
 

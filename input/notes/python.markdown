@@ -465,7 +465,7 @@ An attribute of a class can itself be another class, so `class` statements may b
 Attributes of a class object are typically specified by binding a value to an identifier within the class body, but they may also be bound outside of the class body. All instances share all of the class attributes.
 
 ``` python
-class C:
+class C(object):
   x = 1
 
 C.y = 2
@@ -477,7 +477,7 @@ assert C.y == 2
 In statements directly within the class body, class attributes must use a simple, unqualified name, but in statements within methods of a class body, class attributes must use a fully qualified name.
 
 ``` python
-class C:
+class C(object):
   x = 25
   y = x + 1
 
@@ -496,7 +496,7 @@ The `class` statement implicitly sets some class attributes.
 Methods require an explicit first parameter referring to the instance object, conventionally named `self`.
 
 ``` python
-class C:
+class C(object):
   def hello(self):
     print('Hello')
 ```
@@ -508,12 +508,12 @@ Identifiers prefixed with a single underscore `_` are meant to be private to the
 A descriptor is an object whose class supplies a special method name `__get__`. When descriptors are used as class attributes on a class, they control the semantics of accessing and setting attributes on instances of that class. When accessing an instance attribute, Python gets its value by calling `__get__` on the descriptor.
 
 ``` python
-class Const:
+class Const(object):
   def __init__(self, value): self.value = value
   def __set__(self, *_): pass
   def __get__(self, *_): return self.value
 
-class C:
+class C(object):
   c = Const(23)
 
 x = X()
@@ -536,7 +536,7 @@ Calling the class object implicitly calls the `__init__` method on the new insta
 An instance object can be given an arbitrary binding outside of the class body.
 
 ``` python
-class C: pass
+class C(object): pass
 
 c = C()
 c.x = 1
@@ -593,7 +593,7 @@ The base definition of `object.__new__` simply creates a new, uninitialized inst
 A definition of `__new__` may choose to return an existing instance instead of returning a new one. For example, this `Singleton` class causes any derived classes to have only one instance by overriding the `__new__` method to only ever create a new instance if one hasn't been created yet.
 
 ``` python
-class Singleton:
+class Singleton(object):
   _singletons = {}
 
   def __new__(cls, *args, **kwds):
@@ -688,7 +688,7 @@ In the following example, the lookup process is:
 ``` python
 def f(a, b): pass
 
-class C:
+class C(object):
   name = f
 
 c = C()
@@ -729,10 +729,10 @@ A built-in read-only attribute called `__mro__` is a tuple of the types used for
 A subclass method definition can delegate to a superclass' definition using a function object (unbound method in Python 2).
 
 ``` python
-class Base:
+class Base(object):
   def greet(self, name): print('Welcome', name)
 
-class Sub:
+class Sub(object):
   def greet(self, name):
     print('Well Met and', end=' ')
     Base.greet(self, name)
@@ -748,7 +748,7 @@ def Base:
   def __init__(self):
     self.attr = 1
 
-class Derived:
+class Derived(object):
   def __init__(self):
     Base.__init__(self)
     self.attr = 2
@@ -757,7 +757,7 @@ class Derived:
 Using explicit superclass method delegation can end up calling the same method multiple times in the case of multiple inheritance.
 
 ``` python
-class A:
+class A(object):
   def met(self): print('A.met')
 
 class B(A):
@@ -785,7 +785,7 @@ class D(B, C):
 Multiple calls to the same method due to multiple inheritance can be avoided by using the `super()` built-in. In Python 2, `super(class, obj)` returns a special superobject of `obj` such that attribute lookup on it begins _after_ the class `class` in `obj`'s MRO. In Python 3, `super()` with no arguments works the same way.
 
 ``` python
-class A:
+class A(object):
   def met(self): print('A.met')
 
 class B(A):
@@ -815,7 +815,7 @@ A static method can be called on a class _or_ any instance of the class without 
 A static method can be created by calling the built-in type `staticmethod()` and binding its result to a class attribute, or by using it as a decorator `@staticmethod`.
 
 ``` python
-class C:
+class C(object):
   def astatic():
     return 'static method'
 
@@ -839,7 +839,7 @@ Class methods can easily be overridden in subclasses when necessary.
 A class method can be created by calling the built-in type `classmethod()` and binding its result to a class attribute, or by using it as a decorator `@classmethod`.
 
 ``` python
-class B:
+class B(object):
   def aclassmethod(cls):
     return 'class method for ' + cls.__name__
 
@@ -876,7 +876,7 @@ The parameters to `property()` are optional. If a parameter is missing, the corr
 Properties can implement behavior similar to `__getattr__`, `__setattr__`, and `__delattr__` but are faster and simpler.
 
 ``` python
-class Rectangle:
+class Rectangle(object):
   def __init__(self, width, height):
     self.width, self.height = width, height
 
@@ -894,7 +894,7 @@ assert rect.area == 6
 When using `property()` as a decorator, the getter should have the name of the desired property. To create setters and deleters, the method should still have the same name as the property but the decorator used should be named after the property with a `.setter` or `.deleter` suffix.
 
 ``` python
-class Rectangle:
+class Rectangle(object):
   def __init__(self, width, height):
     self.width, self.height = width, height
 
@@ -917,7 +917,7 @@ In the following example, even though the property is invoked through an instanc
 This is because the property constructor receives the function object of `f`, which happens when `B`'s class statement executes, so `B.f` is saved. So even though `C` later redefines `f`, accessing property `g` simply invokes the function object `B.f` that it had already saved at the property creation time.
 
 ``` python
-class B:
+class B(object):
   def f(self): return 1
   g = property(f)
 
@@ -931,7 +931,7 @@ assert c.g == 1
 This can be explicitly worked around by adding an indirection through a method which invokes the actual underlying property function, thereby undergoing attribute lookup which may account for an overridden function.
 
 ``` python
-class B:
+class B(object):
   def f(self): return 1
   def _f_getter(self): return self.f()
   g = property(_f_getter)

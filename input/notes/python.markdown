@@ -1093,3 +1093,9 @@ def __getitem__(self, index):
   # Index is now an integral number within bounds
 ```
 
+### \_\_contains\_\_
+
+This is implicitly invoked for `k in x`.
+
+If absent, Python does a linear scan of the sequence for membership.
+

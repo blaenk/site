@@ -1059,3 +1059,9 @@ This is called on _every_ request to bind an attribute.
 
 Care must be taken to avoid recursion by modifying the `__dict__` directly, or it can delegate to the superclass' implementation.
 
+### \_\_str\_\_
+
+This method returns an informal, potentially-approximate, concise, human-readable string representation of an object.
+
+If absent, Python calls `__repr__` instead.
+

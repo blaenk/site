@@ -1000,3 +1000,7 @@ It is not a good choice for timely, guaranteed finalization. Instead a `try`/`fi
 
 Classes defining `__del__` cannot have cyclic references.
 
+### \_\_delattr\_\_
+
+Python calls `__delattr__` on every request to unbind an attribute. If absent, Python simply delegates to deleting the corresponding entry in the `__dict__`.
+

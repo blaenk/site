@@ -1021,3 +1021,7 @@ Python has default implementations of each in terms of the others, so only a few
 
 The best practice is to define only one inequality method such as `__lt__` and `__eq__`, then decorate the class with `functools.total_ordering` to avoid boilerplate and possible logical contradictions.
 
+### \_\_getattr\_\_
+
+When an attribute can't be found normally, Python calls `__getattr__` to obtain the attribute's value. It should raise `AttributeError` if there is no suitable value for that attribute.
+

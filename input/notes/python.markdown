@@ -1045,3 +1045,11 @@ When evaluating an object in a boolean context, Python 2 calls `__nonzero__`, ot
 
 In Python 3, this special method is `__bool__`.
 
+### \_\_repr\_\_
+
+This method returns a complete, exact string representation of an object. Ideally, it would evaluate such that:
+
+``` python
+eval(repr(x)) == x
+```
+

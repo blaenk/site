@@ -1331,3 +1331,59 @@ In Python 3, it's possible to raise one exception caused by another one that it 
 raise new_exception from cause_exception
 ```
 
+## Context Managers
+
+The `with` statement takes a context manager and an optional name to bind it to.
+
+``` python
+with expr [as binding]:
+  statements
+
+# Equivalent to:
+_normal_exit = True
+_manager = expr
+
+binding = _manager.__enter__()
+
+try:
+  statements
+except:
+  _normal_exit = False
+
+  # NOTE
+  # Only propagate the exception if __exit__ returns False
+  if not _manager.__exit__(*sys.exc_info()): raise
+finally:
+  if _normal_exit:
+    _manager.__exit__(None, None, None)
+```
+
+Context manager classes are those that define `__enter__` and `__exit__` [^raii].
+
+[^raii]: This is similar to C++ Resource Acquisition Is Initialization (RAII), which is facilitated through constructors and destructors.
+
+The `__exit__` method must accept three arguments: `None` if the body completes without propagating exceptions, and otherwise the type, instance, and traceback of the exception. It can stop exception propagation by returning `True`.
+
+``` python
+class tag(object):
+  def __init__(self, tagname): self.tagname = tagname
+  def __enter__(self):
+    print('<{}>'.format(self.tagname), end='')
+
+  def __exit__(self, exception_type, exception_instance, exception_backtrace):
+    print('</{}>'.format(self.tagname))
+
+with tag('sometag'):
+  print('tag body')
+```
+
+The `@contextmanager` decorator from `contextlib` turns a generator function into a factory of context manager objects.
+
+``` python
+@contextlib.contextmanager
+def tag(tagname):
+  print('<{}>'.format(tagname), end='')
+  try: yield
+  finally: print('</{}>'.format(tagname))
+```
+

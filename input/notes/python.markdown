@@ -1512,3 +1512,11 @@ Once a module source file is found, Python 3 compiles it to <span class="path">\
 
 Once the bytecode is obtained by compilation or reading <span class="path">\_\_pycache\_\_</span>, it executes the module body to initialize the module object.
 
+## Main Program
+
+The top-level script is known as the main program and it executes like any other module except that Python keeps its bytecode in memory without saving it to disk, and its module name is always `'__main__'`. Therefore, code can test to see if it's running as the main program by comparing `__name__` to `'__main__'`.
+
+The file used as the main program should not be loaded again, otherwise its body executes once more in a separate module object with a different `__name__`.
+
+By convention, if a module is only ever meant to be imported, it should automatically run unit tests when run as the main program.
+

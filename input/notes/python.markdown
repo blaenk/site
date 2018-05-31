@@ -1455,3 +1455,28 @@ The `import` statement sets certain module attributes before the body executes, 
 | `__name__` | module name                                            |
 | `__file__` | filename from which module was loaded                  |
 
+## Module Loading
+
+A module's body executes immediately when it is first imported, and the module object is already created once it begins executing, and an entry in `sys.modules` is already bound to it. Then the module's namespace (considered global within it) is populated as the module body executes.
+
+Module-loading operations are implemented in the built-in function `__import__`. This function can be explicitly called by importing `importlib` and calling its `import_module()` method.
+
+If `__import__` finds an existing entry for the given module name in `sys.modules`, it returns its value regardless of its type. This can be leveraged to set an entry to a class instance which defines `__getattr__` and `__setattr__` behavior.
+
+``` python
+class TT(object):
+  def __getattr__(self, name): return 1
+
+import sys
+sys.modules[__name__] = TT()
+
+# Other file:
+import thatmodule.someattr
+
+assert thatmodule.someattr == 1
+```
+
+To import a module, `__import__` first checks if it's built-in by checking the `sys.builtin_module_names` tuple, and if it is, it also looks for it in platform-specific locations. Then it checks the `sys.modules` dictionary with the module name to see if there's an existing module object for that name, and if not, it creates a new entry with an empty module object with the `__name__` of the module, then loads and initializes the module, allowing the slow import process to be cached for subsequent imports.
+
+Python allows circular imports, but they should be avoided. When a module `b`  cyclically imports the module `a` that imported it, the `import` statement finds an existing entry for `a` in `sys.modules` and simply binds to the existing module object, but since execution of `a`'s module body is blocked pending execution of `b`'s module body, the module object for `a` will only be partially populated, which can lead to errors or bugs when `b` tries to access its attributes.
+

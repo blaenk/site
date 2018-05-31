@@ -1232,3 +1232,16 @@ The `functools.wrap` decorator can be used to more efficiently wrap a function, 
 Any object including a class object, has a type. Further, types and classes are first-class objects.
 
 The type of a class object is that class' metaclass. An object's behavior is mostly determined by the type of the object, and a class' behavior is mostly determined by the class' metaclass.
+
+## Python 2 Metaclass Determination
+
+In Python 2, to execute a `class` statement, it collects the base classes into a tuple, then executes the class body and stores the names in a temporary dictionary, then determines the metaclass to use for the new class object being created.
+
+If `__metaclass__` is a key in the dictionary, the metaclass is set to its corresponding value, so the metaclass can be set by binding a class attribute with that name.
+
+If the `__metaclass__` binding is missing and the base class tuple is not empty, the metaclass is the leaf-most metaclass among all of the metaclass of the base classes. Python raises an exception if no metaclass of a base class `issubclass` of all others. With new-style classes that inherit from `object` gets the same metaclass as `object`, and `type(object)` is `type`, so the metaclass would be `type`. This means that being a new-style class means having `type` as the metaclass.
+
+If the class has no base classes but the module has a global variable `__metaclass__` then that is used as the metaclass. This can be used to set a default metaclass throughout a module by setting it equal to `type`.
+
+Otherwise if not explicitly specified, inherited, or defined as a module global variable, it defaults to `types.ClassType` making it an old-style legacy class.
+

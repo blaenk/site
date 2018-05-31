@@ -1387,3 +1387,13 @@ def tag(tagname):
   finally: print('</{}>'.format(tagname))
 ```
 
+## Exceptions in Generators
+
+A `yield` statement is allowed inside of `try` and `finally` statements.
+
+Generator objects have methods `throw()` and `close()`.
+
+When the `throw()` method is called, it's as if the `yield` statement at which the generator is suspended were replaced with a `raise` statement (keeping the same arguments) and then the generator resumed.
+
+When the `close()` method is called, it's like calling `throw(GeneratorExit())`. The generator's `close()` method should re-raise the `GeneratorExit` exception after cleaning up.
+

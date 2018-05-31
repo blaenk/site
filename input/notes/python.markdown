@@ -1314,3 +1314,20 @@ In Python 3, each exception instance holds its own traceback object. An exceptio
 
 A function can be assigned to `sys.excepthook` which is called when terminating the program due to an unhandled exception.
 
+## Raising Exceptions
+
+The `raise` statement can be used to raise an exception explicitly.
+
+``` python
+raise [expr]
+```
+
+Only exception handlers, or a function that a handler calls either directly or indirectly, can raise an exception without an expression, which has the effect of re-raising the exception when the handler would have otherwise concealed it from higher levels of the call stack.
+
+In Python 3, it's possible to raise one exception caused by another one that it wraps by using a special form of the `raise` statement:
+
+``` python
+# Raise new_exception wrapping cause_exception
+raise new_exception from cause_exception
+```
+

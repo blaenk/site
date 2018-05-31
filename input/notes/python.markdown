@@ -1283,3 +1283,34 @@ metaclass.__init__(classobject, classname, baseclasses, classdict)
 A custom metaclass can be created by inheriting from `type` and overriding its methods. This can be more optimal than overriding `__new__`, `__init__`, or `__getattribute__` in a class since the work can be done upfront at class creation time. It can also be used to define custom behavior that various classes pick up.
 
 A common practice for creating a metaclass is to assign it to an empty class which other classes inherit from.
+
+# Exceptions
+
+Python uses exceptions to indicate special situations that are not errors nor abnormal, such as the `StopIeration` exception raised when an iterator has no more items.
+
+The `try` statement can be used to capture exceptions. The `except` clause can optionally specify a class or tuple of classes which the exception must match any of, and can optionally specify a name to which the exception instance is bound. A final, optional `else` clause can be specified which only executes when the `try` clause finishes normally without propagating an exception.
+
+Use of a "bare `except`" with no expression should be avoided as it is too broad and catches any exception.
+
+``` python
+try:
+  statements
+except [exception_class_or_tuple_of_classes [as binding]]:
+  statements
+[else: statements]
+
+# Example:
+try: 1/0
+except ZeroDivisionError: print('divided by zero')
+```
+
+A `finally` clause can be used which executes regardless of the outcome of the `try` clause. It is generally preferred to create a context manager and use the `with` statement to manage assured finalization, rather than using `finally` in an ad hoc manner.
+
+Avoid using `break` or `return` statements within `finally` clauses because they stop exception propagation.
+
+If the expression is provided, it must be an instance of a class inheriting from `BaseException`. Note that most exception classes extend `Exception`, but `KeyboardInterrupt`, `GeneratorExit`, and `SystemExit` directly extend `BaseException`, so `except Exception as e` will not catch those.
+
+In Python 3, each exception instance holds its own traceback object. An exception can be created with a specific traceback with the `with_traceback()` method. Python 3 remembers which exception it's handling as the context of any one raised during handling.
+
+A function can be assigned to `sys.excepthook` which is called when terminating the program due to an unhandled exception.
+

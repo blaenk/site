@@ -1530,3 +1530,13 @@ The `reload()` function is not recursive, so modules imported by the reloaded mo
 
 Python built-in objects are attributes of preloaded module `builtins`. When a module is loaded, it automatically gets an attribute `__builtins__` which refers either to the `builtins` module or its dictionary. When a variable is accessed and not found in the local or global namespace of the current module, Python looks for the identifier in the current module's `__builtins__` before raising `NameError`.
 
+## Packages
+
+A package is simply a module containing other modules, which may themselves be subpackages. Its module body is in <span class="path">package/\_\_init\_\_.py</span> and must exist even if it's empty, unless it is a namespace package, to indicate that it is a package. The package's module body is loaded when first importing the package or any of its modules.
+
+A package's `__file__` attribute is set to the path of its <span class="path">\_\_init\_\_.py</span> file. The `__package__` attribute is set to the name of the package.
+
+The <span class="path">\_\_init\_\_.py</span> file optionally set a global variable `__all__` as a list of modules to expose if the package's modules are imported with a wildcard `from package import *`. If it's not set, the package's modules aren't imported, only names bound in the package's module body that don't begin with an underscore `_`.
+
+A convention is to store common functionality in a `common` module within a package.
+

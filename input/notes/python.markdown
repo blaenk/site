@@ -1480,3 +1480,35 @@ To import a module, `__import__` first checks if it's built-in by checking the `
 
 Python allows circular imports, but they should be avoided. When a module `b`  cyclically imports the module `a` that imported it, the `import` statement finds an existing entry for `a` in `sys.modules` and simply binds to the existing module object, but since execution of `a`'s module body is blocked pending execution of `b`'s module body, the module object for `a` will only be partially populated, which can lead to errors or bugs when `b` tries to access its attributes.
 
+## File System Loading
+
+If the module is not built-in, the file system is searched for its corresponding file, as controlled by the `sys.paths` list, which is initialized at program startup and specifies the order of paths to search for the module. An empty string in `sys.path` refers to the current directory.
+
+A text file with the <span class="path">.pth</span> extension in `PYTHONHOME` has its contents added to `sys.path`. Such files may contain `import` statements.
+
+Python considers files with the following extensions in this order:
+
+1. <span class="path">.pyd</span> and <span class="path">.dll</span> or <span class="path">.so</span>
+
+    Extension modules.
+
+2. <span class="path">.py</span>
+
+    Python source modules.
+
+3. <span class="path">.pyc</span> or <span class="path">.pyo</span>
+
+    Bytecode-compiled modules
+
+4. <span class="path">\_\_pycache\_\_/&lt;tag&gt;.pyc</span>
+
+    In Python 3, bytecode-compiled modules.
+
+5. <span class="path">module_name/\_\_init\_\_.py</span>
+
+    Module representing the directory name.
+
+Once a module source file is found, Python 3 compiles it to <span class="path">\_\_pycache\_\_/module_name.&lt;tag&gt;.pyc</span> unless it already exists, is newer than the source file, and is compiled with the same version of Python.
+
+Once the bytecode is obtained by compilation or reading <span class="path">\_\_pycache\_\_</span>, it executes the module body to initialize the module object.
+

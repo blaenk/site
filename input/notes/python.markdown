@@ -1245,3 +1245,20 @@ If the class has no base classes but the module has a global variable `__metacla
 
 Otherwise if not explicitly specified, inherited, or defined as a module global variable, it defaults to `types.ClassType` making it an old-style legacy class.
 
+## Python 3 Metaclass Determination
+
+In Python 3 the `class` statement can take optional named arguments after the base classes. One named argument is `metaclass` which can be used to specify the metaclass directly.
+
+If a non-`type` metaclass is present, then other named arguments are also allowed, in which case they're passed on to the `__prepare__` method of the metaclass, which determines how and whether to use them, and must return a mapping which is used as the dictionary in which it executes the class body.
+
+If `__prepare__` is absent then an empty dictionary is used.
+
+``` python
+class MC:
+  def __prepare__(classname, *classbases, **kwargs): return {}
+
+class C(onebase, anotherbase, metaclass=MC, foo='bar'): pass
+```
+
+If the `metaclass` named argument is missing then it determines the metaclass by inheritance or it defaults to `type`.
+

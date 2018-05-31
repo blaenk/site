@@ -1555,3 +1555,10 @@ from .X import attr
 
 In Python 3, importing a module for which a directory of the same name exists directly within a `sys.paths` member, causes the package to be considered a namespace package, which is similar to a package except `__file__` is not set and `__path__` is a list of all directories that make up the package.
 
+# Virtual Environments
+
+Going forward, the suggested package manager and virtual environment manager to use is [Pipenv].
+
+[Pipenv]: https://docs.pipenv.org/
+
+Since virtualenvs can be stored anywhere, it's easy to test multiple versions of the same project with multiple versions of Python. Furthermore, it may be a good idea to store virtualenvs outside of the source tree to avoid having to ignore them.

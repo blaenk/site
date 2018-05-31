@@ -1262,3 +1262,19 @@ class C(onebase, anotherbase, metaclass=MC, foo='bar'): pass
 
 If the `metaclass` named argument is missing then it determines the metaclass by inheritance or it defaults to `type`.
 
+## Metaclass Class Creation
+
+Python calls the metaclass with three arguments: class name, tuple of base classes, dictionary in which the class body finished executing. The call returns the class object which Python binds to the class name.
+
+After creating a class object, its relationship to its metaclass is the same as that between an object and its type (class object). As noted in [class attribute lookup], special methods are always looked up only on the class, not on the instance. This is why instantiating a class actually calls `__call__` on the metaclass, regardless of whether or not the class itself, an individual instance of the metaclass, defines `__call__`.
+
+Essentially, creating a class object is done by instantiating the metaclass.
+
+``` python
+classobject = metaclass.__new__(metaclass, classname, baseclasses, classdict)
+
+metaclass.__init__(classobject, classname, baseclasses, classdict)
+```
+
+[class attribute lookup]: #class-attribute-lookup
+

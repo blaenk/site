@@ -1407,3 +1407,23 @@ assert condition[, expr]
 
 The `__debug__` built-in variable is `True` unless Python is run with the optimize flag `-O`. If Python encounters an `if __debug__` condition when the `-O` flag is passed, it generates no code.
 
+# Modules
+
+Each Python source file is a module. Modules can be grouped together into a package.
+
+A module may have a docstring if its first statement is a string literal.
+
+Modules explicitly specify dependencies upon other modules by using `import` or `from` statements.
+
+Modules are objects like any other, so one can be passed as an argument to a function, returned from a function, and bound to a variable, item in a container, or attribute of an object. Modules can also be keys or values in a dictionary like `sys.modules` is, or members of a set.
+
+Global variables are not global to all modules, they are attributes of a single module object.
+
+The module body's top-level should only be used for binding the module's attributes with `def`, `class`, or binding attributes.
+
+Since modules are objects, module attributes can be bound from outside the body through a reference.
+
+Extension modules are those created in other languages for use in Python.
+
+By convention, the names of variables which should be considered private to the module should be preceded with a single underscore `_`.
+

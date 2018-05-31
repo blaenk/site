@@ -1427,3 +1427,31 @@ Extension modules are those created in other languages for use in Python.
 
 By convention, the names of variables which should be considered private to the module should be preceded with a single underscore `_`.
 
+## Importing
+
+The `import` statement can be used to import a separate module and bind it to an attribute in the current module. The module can be one nested within multiple modules.
+
+``` python
+import modulename [as binding][, …]
+import one.two.three [as binding][, …]
+```
+
+The `from` statement can import specific attributes from a module into the current namespace. Parentheses can optionally be added around all of the attribute specifiers in order to split them over multiple lines.
+
+If an asterisk `*` is given in the attribute position, all attributes of the imported module are bound as global variables in the importing module. If the imported module has an attribute `__all__`, then it is used to control exactly which attributes are exposed and bound like this, otherwise all attributes that don't begin with an underscore `_` are bound.
+
+``` python
+from modulename import attribute [as binding][, …]
+from modulename import *
+from modulename import (one, two as dos,
+                        three as tres, four)
+```
+
+The `import` statement sets certain module attributes before the body executes, such as:
+
+| Name       | Purpose                                                |
+| :--        | :--                                                    |
+| `__dict__` | module namespace. available externally, not internally |
+| `__name__` | module name                                            |
+| `__file__` | filename from which module was loaded                  |
+

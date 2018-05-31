@@ -1526,3 +1526,7 @@ A module can be reloaded by passing the module _object_ (not name) to the `impor
 
 The `reload()` function is not recursive, so modules imported by the reloaded module are themselves not reloaded.
 
+## Python Built-Ins
+
+Python built-in objects are attributes of preloaded module `builtins`. When a module is loaded, it automatically gets an attribute `__builtins__` which refers either to the `builtins` module or its dictionary. When a variable is accessed and not found in the local or global namespace of the current module, Python looks for the identifier in the current module's `__builtins__` before raising `NameError`.
+

@@ -1520,3 +1520,9 @@ The file used as the main program should not be loaded again, otherwise its body
 
 By convention, if a module is only ever meant to be imported, it should automatically run unit tests when run as the main program.
 
+## Reloading Modules
+
+A module can be reloaded by passing the module _object_ (not name) to the `importlib.reload()` function. This affects code that references the module attributes through a reference to the module, but it has no effect on existing references bound to previous values of module attributes.
+
+The `reload()` function is not recursive, so modules imported by the reloaded module are themselves not reloaded.
+

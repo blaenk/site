@@ -1540,3 +1540,14 @@ The <span class="path">\_\_init\_\_.py</span> file optionally set a global varia
 
 A convention is to store common functionality in a `common` module within a package.
 
+## Absolute and Relative Imports
+
+A module in a package can import a sibling module with a relative import. Each preceding dot corresponds ascending an extra level in the directory hierarchy.
+
+``` python
+from . import sibling
+
+# Import attr on module or object named X in the current package
+from .X import attr
+```
+

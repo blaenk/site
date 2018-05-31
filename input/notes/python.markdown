@@ -1551,3 +1551,7 @@ from . import sibling
 from .X import attr
 ```
 
+## Namespace Packages
+
+In Python 3, importing a module for which a directory of the same name exists directly within a `sys.paths` member, causes the package to be considered a namespace package, which is similar to a package except `__file__` is not set and `__path__` is a list of all directories that make up the package.
+

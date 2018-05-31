@@ -263,6 +263,7 @@ article {
         background-color: #efefef;
         margin: 30px auto 20px;
         height: 1px;
+        overflow: visible;
 
         &:after {
           content: "\00A7";

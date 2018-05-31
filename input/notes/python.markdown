@@ -1397,3 +1397,13 @@ When the `throw()` method is called, it's as if the `yield` statement at which t
 
 When the `close()` method is called, it's like calling `throw(GeneratorExit())`. The generator's `close()` method should re-raise the `GeneratorExit` exception after cleaning up.
 
+## Assertions
+
+The `assert` statement can be used to assert that program invariants hold, or otherwise an `AssertionError` is instantiated with the given expression as argument and then raised. When Python is run with the optimize flag `-O` the `assert` statements are considered no-ops which generate no code.
+
+``` python
+assert condition[, expr]
+```
+
+The `__debug__` built-in variable is `True` unless Python is run with the optimize flag `-O`. If Python encounters an `if __debug__` condition when the `-O` flag is passed, it generates no code.
+

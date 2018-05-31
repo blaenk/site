@@ -1278,3 +1278,8 @@ metaclass.__init__(classobject, classname, baseclasses, classdict)
 
 [class attribute lookup]: #class-attribute-lookup
 
+## Defining Metaclasses
+
+A custom metaclass can be created by inheriting from `type` and overriding its methods. This can be more optimal than overriding `__new__`, `__init__`, or `__getattribute__` in a class since the work can be done upfront at class creation time. It can also be used to define custom behavior that various classes pick up.
+
+A common practice for creating a metaclass is to assign it to an empty class which other classes inherit from.

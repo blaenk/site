@@ -11,7 +11,12 @@ The first consists of restricting its usage to a specific subset of the language
 
 The other approach, perhaps an extreme, is for people to become "language lawyers," poring over the language specification for every minute detail.
 
-I try to take a pragmatic approach. I do appreciate C++'s advantage in striking a balance between speed and abstraction, I do limit my use of it to a certain subset of the language, and I do try to learn as much about the language short of actually reading the specification to lower the probability that the language may catch me off guard.
+I guess I became a language lawyer myself after [asking a question] on StackOverflow that was given the [language lawyer tag].
+
+[asking a question]: https://stackoverflow.com/questions/33849718/how-is-this-lambda-with-an-empty-capture-list-able-to-refer-to-reaching-scope-na
+[language lawyer tag]: https://stackoverflow.com/review/suggested-edits/15111866
+
+In general, though, I try to take a pragmatic approach. I do appreciate C++'s advantage in striking a balance between speed and abstraction, I do limit my use of it to a certain subset of the language, and I do try to learn as much about the language short of actually reading the specification to lower the probability that the language may catch me off guard.
 
 To that end, these are non-exhaustive notes about C++---particularly the trickier bits---including C++11 and C++14 changes.
 

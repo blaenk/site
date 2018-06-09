@@ -1249,7 +1249,7 @@ SELECT E'\\001'::bytea;
 | `time [(p)] with time zone`           | 12 bytes | time, tz       |
 | `interval [fields] [(p)]`             | 16 bytes | time interval  |
 
-The SQL standard requires that writing just `timestamp` be equivalent to `timestamp without time zone`. As a PostgreSQL extension, the type `timestampz` is accepted as an abbreviation for `timestamp with timezone`.
+The SQL standard requires that writing just `timestamp` be equivalent to `timestamp without time zone`. As a PostgreSQL extension, the type `timestampz` is accepted as an abbreviation for `timestamp with time zone`.
 
 The `time`, `timestamp`, and `interval` types accept an optional precision value `p` that specifies the number of fractional digits retained in the "seconds" field.
 

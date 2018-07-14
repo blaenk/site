@@ -103,4 +103,29 @@ Simplicity refers to the ease of understanding the system, achieved by removing 
 
 Evolvability refers to the ease of making changes in the future, such as to adapt to unanticipated use cases.
 
-#  Data Models and Query Languages
+# Data Models and Query Languages
+
+Applications are typically built by layering data models, where each layer is represented in terms of the next-lower layer. For example:
+
+1. data structures, objects, and APIs
+2. JSON, database tables, graph model
+3. bytes in memory, disk, or network
+4. electrical currents, pulses of light, magnetic fields
+
+Each data model embodies assumptions about how it's used, facilitating certain use cases while not supporting others. As a result, it often determines what the software above it can do, so the choice of data model is application specific.
+
+The use of traditional relational databases alongside non-relational (NoSQL) databases is sometimes called _polyglot persistence_.
+
+There is an impedance mismatch between the relational model and mainstream object-oriented programming due to the perceived awkward translation layer between objects and tables, rows, and columns.
+
+Data normalization has many benefits:
+
+* consistent style and spelling of the data
+* avoiding ambiguity between duplicates
+* ease of updating
+* localization support
+* better search
+
+Document stores like MongoDB, RethinkDB, CouchDB, and Espresso typically store self-contained denormalized JSON documents instead of storing normalized data and then joining the disparate data in queries as in traditional relational databases. In this case, JSON has better locality than multi-table schemas.
+
+Normalizing data requires many-to-one relationships which aren't as natural to express in the document model. If the document store doesn't support joins, they have to be emulated in application code with multiple queries to the database. The intermediary results may not even fit in memory before they're filtered, so special care needs to be taken. It's possible that the initial data model fits well in a join-free document model, but eventually becomes more interconnected.

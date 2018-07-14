@@ -6,7 +6,13 @@ comments = false
 
 <toc />
 
-Software can be considered to be reliable when it continues to work correctly even when things go wrong. The things that can go wrong are _faults_, so a system that anticipates faults and can cope with them are known as fault-tolerant or resilient.
+# System Principles
+
+## Reliability
+
+Software can be considered to be reliable when it continues to work correctly even when things go wrong. The things that can go wrong are _faults_, so a system that anticipates faults and can cope with them is known as fault-tolerant or resilient. Faults can be caused by hardware, software, or humans.
+
+## Scalability
 
 Scalability is a system's ability to cope with increased load. In other words, if a system grows a particular way, what options are available to cope with that growth.
 

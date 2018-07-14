@@ -59,3 +59,46 @@ A shared nothing architecture is one in which load is distributed across multipl
 Elastic systems are ones that can automatically add computing resources when they detect a load increase, instead of manually.
 
 It's important to avoid premature optimization for scaling to some hypothetical future load, since, if the assumptions for common operations and load parameters end up being wrong, the time will be wasted or counter-productive. Quicker iteration should be emphasized.
+
+## Maintainability
+
+Maintainability refers to making it easier to work on the system in the future.
+
+Three design principles to keep in mind for software systems are operability, simplicity, and evolvability.
+
+### Operability
+
+Operability refers to the ease of keeping a system running smoothly.
+
+An operations team may be responsible for:
+
+* monitoring system health and restoration
+* identifying causes of problems
+* keeping software up to date, e.g. security patches
+* taking note of how different systems affect each other, to prevent problems before they cause damage
+* anticipating future problems, e.g. capacity planning
+* establishing best practices, e.g. for deployment and configuration management
+* performing maintenance tasks, e.g. moving application to another platform
+* definite operations processes
+* preserving system knowledge
+
+Good operability is facilitated by:
+
+* visibility into system internals and runtime behavior
+* automation and standard tool integration
+* avoiding machine dependencies, allowing any to be taken down
+* documenting
+* straightforward operational model, e.g. "If I do x, y will happen"
+* good defaults, but freedom to override
+* sensible self-healing with option for manual control of system state
+* minimize surprises through predictable behavior
+
+### Simplicity
+
+Simplicity refers to the ease of understanding the system, achieved by removing as much complexity as possible.
+
+### Evolvability
+
+Evolvability refers to the ease of making changes in the future, such as to adapt to unanticipated use cases.
+
+#  Data Models and Query Languages

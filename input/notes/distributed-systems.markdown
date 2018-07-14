@@ -137,3 +137,10 @@ The network model as standardized by the Conference on Data Systems Languages (C
 The links between models aren't foreign keys, but more like data pointers. Accessing a record requires following an _access path_ from a root record. A query was performed by moving a cursor through the database, iterating over lists of records and following access paths. The application had to keep track of the relationships when a record had multiple parents.
 
 Adding access paths required going through handwritten database query code and rewriting it to handle the new access paths.
+
+## Relational Model
+
+The relational model typical has a query optimizer that transparently decides the order and manner in which to execute a query, such as which indexes are used, effectively automatically constructing the "access path" that would be manually constructed in the network model.
+
+Even though query optimizers are complicated, incurring many years of research and development, they only have to be written once and then all applications using the database can benefit from it.
+

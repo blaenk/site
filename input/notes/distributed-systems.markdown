@@ -144,3 +144,15 @@ The relational model typical has a query optimizer that transparently decides th
 
 Even though query optimizers are complicated, incurring many years of research and development, they only have to be written once and then all applications using the database can benefit from it.
 
+## Document Model
+
+Document databases are more like the hierarchical model in the sense that they store nested records (one-to-many) within their parent record rather than in a separate table. Representing many-to-one or many-to-many relationships can be done through a unique identifier known as a _document reference_---similar to a foreign key in the relational model---which is resolved at read-time by using a join or follow-up queries.
+
+The document model claims better schema flexibility, better performance due to locality, and a closer match to the application data structures.
+
+The document model can be a good fit if an application's data has a document-like structure where the entire tree is loaded at once.
+
+A limitation of the document model is the inability to refer directly to a nested item within a document. Instead, it is referred by saying for example "the second item in the list of positions for user 251."
+
+Another limitation of the document model is when the application data uses many-to-many relationships. Joins may be reduced by denormalized but that increases the complexity of keeping the denormalized data consistent. Joins can be emulated in application code through multiple requests but that increases application complexity and is often slower than a join performed by the database. Overall these issues can lead to more complexity and decreased performance.
+

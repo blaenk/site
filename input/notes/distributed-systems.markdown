@@ -180,3 +180,11 @@ Updating a document also often requires rewriting the entire document, unless th
 
 A common guideline to mitigate these issues is to strive to keep documents small, and avoid writes that increase document size.
 
+### Data Model Convergence
+
+There appears to be a convergence of document and relational models towards each other.
+
+Most relational databases support schema-on-read data types such as XML or JSON.
+
+Some document databases now support relational-like joins, such as RethinkDB, and certain MongoDB drivers which automatically resolve database references by performing a client-side join.
+

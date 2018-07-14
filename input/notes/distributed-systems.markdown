@@ -170,3 +170,13 @@ Most relational databases can perform `ALTER TABLE` statements in a few millisec
 
 A schema-on-read approach is useful when dealing with heterogeneous data, such as when the structure of the data is determined by external systems which are subject to change at any time.
 
+### Data Locality
+
+Since a document is usually stored as a self-contained document, it has storage locality, so an application that routinely requires access to the entire document will benefit compared to looking-up multiple indexes and joining multiple tables.
+
+Reading an entire document can be wasteful if only a portion of it needs to be accessed, so the data locality may be a moot point.
+
+Updating a document also often requires rewriting the entire document, unless the modification doesn't change the encoded size of the document.
+
+A common guideline to mitigate these issues is to strive to keep documents small, and avoid writes that increase document size.
+

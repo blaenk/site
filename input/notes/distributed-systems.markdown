@@ -309,3 +309,49 @@ MATCH
 RETURN person.name
 ```
 
+### Triple-Store Queries
+
+The Turtle triple-store format, a subset of Notation3, can be used to describe a triple-store graph.
+
+Vertices are named with the syntax `_:someName` and are only for identification purposes within the format, but don't exist otherwise.
+
+``` turtle
+@prefix : <urn:example:>.
+_:lucy     a       :Person.
+_:lucy     :name   "Lucy".
+_:lucy     :bornIn _:idaho.
+_:idaho    a       :Location.
+_:idaho    :name   "Idaho".
+_:idaho    :type   "state".
+_:idaho    :within _:usa.
+_:usa      a       :Location.
+_:usa      :name   "United States".
+_:usa      :type   "country".
+_:usa      :within _:namerica.
+_:namerica a       :Location.
+_:namerica :name   "North America".
+_:namerica :type   "continent".
+```
+
+The same data can be written more concisely by writing multiple relationships for a given subject on the same line.
+
+``` turtle
+@prefix : <urn:example:>.
+_:lucy     a :Person;   :name "Lucy";          :bornIn _:idaho.
+_:idaho    a :Location; :name "Idaho";         :type "state";   :within _:usa.
+_:usa      a :Location; :name "United States"; :type "country"; :within _:namerica.
+_:namerica a :Location; :name "North America"; :type "continent".
+```
+
+The SPARQL query language for triple-stores using the RDF data model.
+
+``` sparql
+PREFIX : <urn:example:>
+
+SELECT ?personName WHERE {
+  ?person :name ?personName.
+  ?person :bornIn  / :within* / :name "United States".
+  ?person :livesIn / :within* / :name "Europe".
+}
+```
+

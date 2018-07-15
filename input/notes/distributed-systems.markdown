@@ -164,6 +164,23 @@ Graphs aren't limited to homogeneous data. At Facebook for example, vertices can
 
 Graphs are amenable to evolvability because they don't have a schema specifying which record types can be nested within which other record type.
 
+### Property Graph Model
+
+In the property graph model, each vertex consists of:
+
+* unique identifier
+* set of outgoing edges
+* set of incoming edges
+* collection of key-value pair properties
+
+Each edge consists of:
+
+* unique identifier
+* vertex at which the edge starts (tail vertex)
+* vertex at which the edge ends (head vertex)
+* label describing the relationship
+* collection of key-value pair properties
+
 ## Schema-on-Read vs Schema-on-Write
 
 Document databases are sometimes considered _schemaless_ but the truth is that although it's not an explicit schema enforced by the database upfront, there _is_ an implicit schema assumed by readers of the data. A more accurate term may therefore be _schema-on-read_, whereas _schema-on-write_ might refer to an explicit, upfront schema that is used to ensure that writes conform to it. Schema-on-read is similar to dynamic type checking performed at run-time whereas schema-on-write is similar to static type checking performed at compile-time.

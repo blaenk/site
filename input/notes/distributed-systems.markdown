@@ -414,3 +414,55 @@ migrated(Name, BornIn, LivingIn) :- name(Person, Name),
 
 Datalog is less convenient for simple queries, but scales better with the data's complexity.
 
+#### SQL Graph Queries
+
+SQL can also be used to graphs represented in relational databases, but the number of joins that will be necessary to traverse a path in a graph is not known upfront. Therefore in order to achieve these arbitrarily repeated queries, recursive common table expressions are required using the `WITH RECURSIVE` directive.
+
+The length and complexity of the graph traversal emphasizes how certain data models are better suited for different use cases. Graph models naturally match graph traversal operations, whereas relational models don't, so the same operation is much more awkward in a relational model.
+
+``` postgresql
+WITH RECURSIVE
+
+  -- in_usa is the set of vertex IDs of all locations within the United States
+  -- 1. find vertex whose `name` property is `"United States"` and make it the first element in `in_usa`
+  -- 2. follow all incoming `within` edges from vertices in `in_usa` and add them to the same `in_usa` set, until all incoming `within` edges have been visited
+  in_usa(vertex_id) AS (
+      SELECT vertex_id FROM vertices WHERE properties->>'name' = 'United States'
+    UNION
+      SELECT edges.tail_vertex FROM edges
+        JOIN in_usa ON edges.head_vertex = in_usa.vertex_id
+        WHERE edges.label = 'within'
+  ),
+
+  -- in_europe is the set of vertex IDs of all locations within Europe
+  -- 3. do the same steps 1-2 with the vertex whose name property is `"Europe"`
+  in_europe(vertex_id) AS (
+      SELECT vertex_id FROM vertices WHERE properties->>'name' = 'Europe'
+    UNION
+      SELECT edges.tail_vertex FROM edges
+        JOIN in_europe ON edges.head_vertex = in_europe.vertex_id
+        WHERE edges.label = 'within'
+  ),
+
+  -- born_in_usa is the set of vertex IDs of all people born in the US
+  -- 4. for each vertex in `in_usa`, follow incoming `born_in` edges to find all people born anywhere within the United States
+  born_in_usa(vertex_id) AS (
+    SELECT edges.tail_vertex FROM edges
+      JOIN in_usa ON edges.head_vertex = in_usa.vertex_id
+      WHERE edges.label = 'born_in'
+  ),
+
+  -- lives_in_europe is the set of vertex IDs of all people living in Europe
+  -- 5. for each vertex in `in_europe`, follow incoming `lives_in` edges to find all people who live anywhere in Europe
+  lives_in_europe(vertex_id) AS (
+    SELECT edges.tail_vertex FROM edges
+      JOIN in_europe ON edges.head_vertex = in_europe.vertex_id
+      WHERE edges.label = 'lives_in'
+  )
+
+-- 6. intersect the people born in the USA with the set of people living in Europe by joining them to find those born in the USA and living in Europe
+SELECT vertices.properties->>'name'
+FROM vertices
+JOIN born_in_usa     ON vertices.vertex_id = born_in_usa.vertex_id
+JOIN lives_in_europe ON vertices.vertex_id = lives_in_europe.vertex_id;
+```

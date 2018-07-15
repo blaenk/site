@@ -282,3 +282,30 @@ db.observations.aggregate([
 ]);
 ```
 
+### Graph Queries
+
+#### Property Graph Queries
+
+The Cypher Query Language is a declarative query language for property graphs created for the Neo4j graph database.
+
+This example creates a graph, first defining the vertices then the edges.
+
+```
+CREATE
+  (NAmerica:Location {name:'North America', type:'continent'}),
+  (USA:Location      {name:'United States', type:'country'  }),
+  (Idaho:Location    {name:'Idaho',         type:'state'    }),
+  (Lucy:Person       {name:'Lucy' }),
+  (Idaho) -[:WITHIN]->  (USA)  -[:WITHIN]-> (NAmerica),
+  (Lucy)  -[:BORN_IN]-> (Idaho)
+```
+
+This example is a query that finds people who emigrated from the USA to Europe. First, it finds a person that has an outgoing `BORN_IN` edge to a vertex and from that vertex there is a chain of zero or more `WITHIN` edges eventually leading to a `Location` vertex whose `name` property is `"United States"`. Second, the person found in the first step must also have an outgoing `LIVES_IN` edge to a vertex which has a chain of zero or more outgoing `WITHIN`edges leading to a `Location` vertex whose name property is `"Europe"`. Finally, for such a person, return the `name` property.
+
+```
+MATCH
+  (person) -[:BORN_IN]->  () -[:WITHIN*0..]-> (us:Location {name:'United States'}),
+  (person) -[:LIVES_IN]-> () -[:WITHIN*0..]-> (eu:Location {name:'Europe'})
+RETURN person.name
+```
+

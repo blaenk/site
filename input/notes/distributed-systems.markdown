@@ -227,3 +227,9 @@ Most relational databases support schema-on-read data types such as XML or JSON.
 
 Some document databases now support relational-like joins, such as RethinkDB, and certain MongoDB drivers which automatically resolve database references by performing a client-side join.
 
+## Query Languages
+
+### Structured Query Language
+
+SQL is a declarative query language, which specifies what data to get rather than how to get it, which gives the query optimizer the flexibility to determine the best way to obtain that data while taking performance into account.
+

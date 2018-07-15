@@ -156,6 +156,14 @@ A limitation of the document model is the inability to refer directly to a neste
 
 Another limitation of the document model is when the application data uses many-to-many relationships. Joins may be reduced by denormalized but that increases the complexity of keeping the denormalized data consistent. Joins can be emulated in application code through multiple requests but that increases application complexity and is often slower than a join performed by the database. Overall these issues can lead to more complexity and decreased performance.
 
+## Graph Model
+
+When many-to-many relationships are very common in data, where anything is potentially related to anything, it can be useful to model the data as a graph.
+
+Graphs aren't limited to homogeneous data. At Facebook for example, vertices can represent people, locations, events, and comments, whereas edges can represent friendship and who commented on which post.
+
+Graphs are amenable to evolvability because they don't have a schema specifying which record types can be nested within which other record type.
+
 ## Schema-on-Read vs Schema-on-Write
 
 Document databases are sometimes considered _schemaless_ but the truth is that although it's not an explicit schema enforced by the database upfront, there _is_ an implicit schema assumed by readers of the data. A more accurate term may therefore be _schema-on-read_, whereas _schema-on-write_ might refer to an explicit, upfront schema that is used to ensure that writes conform to it. Schema-on-read is similar to dynamic type checking performed at run-time whereas schema-on-write is similar to static type checking performed at compile-time.

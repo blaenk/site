@@ -233,3 +233,52 @@ Some document databases now support relational-like joins, such as RethinkDB, an
 
 SQL is a declarative query language, which specifies what data to get rather than how to get it, which gives the query optimizer the flexibility to determine the best way to obtain that data while taking performance into account.
 
+### MapReduce Queries
+
+The MapReduce programming model can be used to process large amounts of data in bulk across many machines, based on the `map` and `reduce` functions. These functions must be pure functions, which allows them to be called on any machine in any order as many times as necessary (e.g. due to failure).
+
+MapReduce is fairly low-level and can be used to implement higher-level query languages like SQL.
+
+An example MongoDB MapReduce query will:
+
+1. filter the desired data declaratively with the `query` key
+2. call the `map` function for each document matching the `query`, setting `this` to the matched document
+3. have the `map` function emit a key and a value
+4. group the emitted key-value pairs by key, then call the `reduce` function one for all key-value pairs with the same key
+5. the result is written to a collection named by the `out` key
+
+``` javascript
+db.observations.mapReduce(
+  function map() {
+    var year  = this.observationTimestamp.getFullYear();
+    var month = this.observationTimestamp.getMonth() + 1;
+
+    emit(year + "-" + month, this.numAnimals);
+  },
+  function reduce(key, values) {
+    return Array.sum(values);
+  },
+  {
+    query: { family: "Sharks" },
+    out: "monthlySharkReport"
+  }
+);
+```
+
+Since MapReduce isn't declarative and loses out on a query optimizer's ability to improve the performance of a query, MongoDB also supports a JSON-based declarative query language known as the aggregation pipeline.
+
+The previous MapReduce query would look like this:
+
+``` javascript
+db.observations.aggregate([
+  { $match: { family: "Sharks" } },
+  { $group: {
+    _id: {
+      year:  { $year:  "$observationTimestamp" },
+      month: { $month: "$observationTimestamp" }
+    },
+    totalAnimals: { $sum: "$numAnimals" }
+  } }
+]);
+```
+

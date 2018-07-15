@@ -355,3 +355,62 @@ SELECT ?personName WHERE {
 }
 ```
 
+#### Datalog
+
+Datalog provides the foundation for later query languages. It is used as the query language of Datomic, and Cascalog is a Datalog implementation for querying large datasets in Hadoop. Datalog is a subset of Prolog, but Datomic and Cascalog use a Clojure s-expression syntax for Datalog.
+
+Datalog's data model is similar to the triple-store model albeit generalized so that `(subject, predicate, object)` is written as `predicate(subject, object)`.
+
+The previous data can be represented as Datalog facts.
+
+``` prolog
+name(namerica, 'North America').
+type(namerica, continent).
+
+name(usa, 'United States').
+type(usa, country).
+within(usa, namerica).
+
+name(idaho, 'Idaho').
+type(idaho, state).
+within(idaho, usa).
+
+name(lucy, 'Lucy').
+born_in(lucy, idaho).
+```
+
+A Datalog query defines rules that tell the database about new predicates. In the following case, the two new predicates are `within_recursive` and `migrated`. These rules are derived from data or from other rules, since rules can refer to other rules just like functions can call other functions or themselves recursively. In rules, words that start with uppercase letters are variables that can match any value.
+
+For example, `name(Location, Name)` matches the triple `name(namerica, 'North America')`, binding the variable `Location` to `namerica` and `Name` to `'North America'`.
+
+A rule applies if the system can find a match for all of its predicates on the right-hand side of the `:-` operator, then it's as if the left-hand side of the `:-` operator was added to the database, with the variables replaced by the values they matched.
+
+The following rules could be matched as:
+
+1. rule 1 applies because `name(namerica, 'North America')` exists, so this generates and adds `within_recursive(namerica, 'North America')` to the database
+2. rule 2 applies because `within(usa, namerica)` exists and step 1 generated `within_recursive(namerica, 'North America')`, so this generates and adds `within_recursive(usa, 'North America')` to the database
+3. rule 2 applies because `within(idaho, usa)` exists and step 2 generated `within_recursive(usa, 'North America')`, so this generates and adds `within_recursive(idaho, 'North America')`
+
+Then rule 3 can find people born in some location `BornIn` and living in some location `LivingIn`. Then querying with `BornIn` set to `'United States'` and `LivingIn` set to `'Europe'` leaving the name of the person as a variable `Who` asks the Datalog system to find out which values can appear for that variable `Who`.
+
+``` prolog
+/* Rule 1 */
+within_recursive(Location, Name) :- name(Location, Name).
+
+/* Rule 2 */
+within_recursive(Location, Name) :- within(Location, Via),
+                                    within_recursive(Via, Name).
+
+/* Rule 3 */
+migrated(Name, BornIn, LivingIn) :- name(Person, Name),
+                                    born_in(Person, BornLoc),
+                                    within_recursive(BornLoc, BornIn),
+                                    lives_in(Person, LivingLoc),
+                                    within_recursive(LivingLoc, LivingIn).
+
+?- migrated(Who, 'United States', 'Europe').
+/* Who = 'Lucy'. */
+```
+
+Datalog is less convenient for simple queries, but scales better with the data's complexity.
+

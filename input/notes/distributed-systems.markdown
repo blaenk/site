@@ -146,7 +146,7 @@ Even though query optimizers are complicated, incurring many years of research a
 
 ## Document Model
 
-Document databases are more like the hierarchical model in the sense that they store nested records (one-to-many) within their parent record rather than in a separate table. Representing many-to-one or many-to-many relationships can be done through a unique identifier known as a _document reference_---similar to a foreign key in the relational model---which is resolved at read-time by using a join or follow-up queries.
+Document databases are more like the hierarchical model in the sense that they store nested records (one-to-many) within their parent record rather than in a separate table. Document databases can be useful when data comes in self-contained documents and relationships between them are rare. Representing many-to-one or many-to-many relationships can still be done through a unique identifier known as a _document reference_---similar to a foreign key in the relational model---which is resolved at read-time by using a join or follow-up queries.
 
 The document model claims better schema flexibility, better performance due to locality, and a closer match to the application data structures.
 

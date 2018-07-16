@@ -509,7 +509,7 @@ One problem is that the hash table must fit in memory, which is problematic when
 
 Another problem is that range queries are not efficient, since each key needs to be looked up individually in separate hash maps.
 
-## Sorted String Tables
+## Log-Structured Merge-Trees
 
 A sorted string table (SSTable) keeps the sequence of key-value pairs in the segment file sorted by key, and requires that each key appears only once per segment file, something that is already guaranteed by the merge process.
 

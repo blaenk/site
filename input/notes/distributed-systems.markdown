@@ -470,3 +470,41 @@ JOIN lives_in_europe ON vertices.vertex_id = lives_in_europe.vertex_id;
 # Storage and Retrieval
 
 An index is a separate structure derived from the primary data, to maintaining it has an overhead, such as on writes, since the index has to be updated as well. Appropriate indexes speed up read queries but slow down writes, which is why databases don't index everything by default.
+
+## Hash Indexes
+
+An append-only file storing key-value pairs can be indexed with a hash index so that every key is mapped to the byte offset of the data in the file. This hash index would have to be updated whenever a new key-value pair is appended. When a value needs to be read, the hash index can be keyed to obtain the offset into the data file at which the record begins, then the file seeked to that location and the record read.
+
+This file-append key-value store is resilient, providing high-performance reads and writes _as long as_ all keys fit in RAM; values don't need to fit in RAM since they can be read from disk, if they're not already in the filesystem cache. This storage system is suited to situations where the values may be updated frequently, but there aren't many distinct keys.
+
+This system is used in Bitcask, the default storage engine of Riak.
+
+One way to avoid running out of disk space is to break the log file into segments of a certain size, closing it when it reaches that size and writing subsequent writes to a new segment file.
+
+The segments can then undergo _compaction_, which discards duplicate keys in the log, keeping only the most recent update for each key.
+
+Since compaction usually decreases the size of segments, certain small segments can then be merged into a regular sized segment file, usually at the same time as compaction is performed.
+
+Merging and compaction can be done from a separate thread while read requests continue to be served from the old segment files. When the separate thread finishes merging and compaction, it can swap out the segment files so that new requests use them.
+
+Since there are multiple files (segments), each segment needs its own in-memory hash table mapping the keys to the file offsets. A value is then obtained by checking in the most recent segment's hash table, and if absent, proceeding to the next segment's hash table. The merging and compaction process ensures that the number of segments remains small, which by extension keeps small the number of hash tables that need to be checked.
+
+<!-- Advantages -->
+
+Deleting records can be accomplished by appending a special deletion record, sometimes known as a _tombstone_, which indicates to the merging and compaction process to discard any previous values for the deleted key.
+
+For crash recovery, the in-memory hash tables can be reconstructed by reading each segment file from beginning to end and adding the keys and their offsets to an in-memory hash table. Alternatively, snapshots of the in-memory hash tables can be stored on disk and simply loaded into memory.
+
+Partially written records can be avoided by including checksums in the file. Partially in-place updated records are not a problem since there are no in-place updates.
+
+Since records are written in strictly sequential order, there is usually one writer thread, but since segments are append-only and immutable, there can be concurrent multiple readers.
+
+Append-only writing and segment merging are sequential write operations which are much faster than random writes on hard drives and even solid state drives.
+
+The merge process avoids the problem of data files becoming fragmented over time.
+
+<!-- Disadvantages -->
+
+One problem is that the hash table must fit in memory, which is problematic when there are a very large number of keys.
+
+Another problem is that range queries are not efficient, since each key needs to be looked up individually in separate hash maps.

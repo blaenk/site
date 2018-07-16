@@ -508,3 +508,27 @@ The merge process avoids the problem of data files becoming fragmented over time
 One problem is that the hash table must fit in memory, which is problematic when there are a very large number of keys.
 
 Another problem is that range queries are not efficient, since each key needs to be looked up individually in separate hash maps.
+
+## Sorted String Tables
+
+A sorted string table (SSTable) keeps the sequence of key-value pairs in the segment file sorted by key, and requires that each key appears only once per segment file, something that is already guaranteed by the merge process.
+
+Merging segments is more efficient even if the files don't fit in memory, since merging is as straightforward as with [merge sort]'s merge process. Since adjacent segments are merged, duplicate keys can be ignored besides the most recent occurrence.
+
+[merge sort]: /notes/algorithms#merge-sort
+
+A full index of all keys no longer needs to be kept in memory. Instead the index can be sparse, only storing keys occurring every few kilobytes in the segment file. When a key is looked up and absent from the index, the file range where it should occur in the segment file is sequentially scanned.
+
+In fact, since several key-value pairs will need to be scanned within the requested range, that range can be grouped into a block and compressed before writing it to disk. Each entry in the sparse index would then point to the start of such a compressed block.
+
+The key-value pairs in a segment file are kept sorted by first writing them into an in-memory balanced tree structure often referred to as a _memtable_, such as a [red-black tree].
+
+[red-black tree]: /notes/algorithms#red-black-trees
+
+When the memtable reaches a certain size threshold, it's written out to disk in sorted order as the newly most recent SSTable file segment. New writes can continue to be written to a new memtable as the previous one is being written out to disk.
+
+To read a value, the key is first checked in the memtable, then the most recent on-disk segment, and the next, and so on.
+
+The merging and compaction process running in the background combines segment files and discards overwritten or deleted values.
+
+When the system crashes, the most recent writes in the memtable that haven't been written to disk are lost. This can be mitigated by keeping a separate write-ahead log on disk where each write is immediately appended. When writing out a memtable the log is discarded and started anew. When restoring from a crash, the log is played back to recreate the state of the memtable.

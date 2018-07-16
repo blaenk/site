@@ -532,3 +532,5 @@ To read a value, the key is first checked in the memtable, then the most recent 
 The merging and compaction process running in the background combines segment files and discards overwritten or deleted values.
 
 When the system crashes, the most recent writes in the memtable that haven't been written to disk are lost. This can be mitigated by keeping a separate write-ahead log on disk where each write is immediately appended. When writing out a memtable the log is discarded and started anew. When restoring from a crash, the log is played back to recreate the state of the memtable.
+
+This indexing structure is known as a log-structured merge-tree (LSM Trees). Similar systems are used in LevelDB, RocksDB, Cassandra, HBase, and Google BigTable. The full-text search indexing engine Lucene, used by Elasticsearch and Solr, uses something similar for its term dictionary, where the key is a term (word) and the value is a list of IDs of documents where it occurs.

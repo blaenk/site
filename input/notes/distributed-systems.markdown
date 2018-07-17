@@ -594,3 +594,10 @@ LSM-Tree compaction can sometimes interfere with the performance of current read
 Finite disk write bandwidth needs to be shared between an initial write (logging and flushing a memtable to disk) and compaction threads. If write throughput is high, it is possible that the compaction process can't keep up with the rate of incoming writes, so that the number of unmerged segments keeps growing until disk space is exhausted, causing slower disk reads since they more and more segment files need to be checked. SSTable-based storage usually doesn't throttle the rate of incoming writes for compaction to keep up, so this situation needs to be monitored.
 
 B-Trees can be better suited to strong transactional semantics by simply placing locks on ranges of keys by attaching them to the tree, whereas LSM-Trees can contain multiple copies of the same key in different segments.
+
+## Secondary Indexes
+
+In a secondary index, the indexed values are not necessarily unique. Key entries are made unique either by making each value entry be a list of rows containing that key entry as a column value or by making each key entry unique by appending a row identifier to it.
+
+Secondary indexes are often crucial for performing joins efficiently.
+

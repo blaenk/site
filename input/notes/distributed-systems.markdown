@@ -613,3 +613,7 @@ The extra indirection incurred by a heap file can be a performance penalty for r
 
 A _clustered index_ is an index which stores the row directly within the index. For example, MySQL's InnoDB storage engine sets up the primary key index as a clustered index and secondary indexes refer to the primary key rather than a heap file location.
 
+## Covering Index
+
+A _covering index_ (aka "index with included columns") is a compromise between a clustered index and a non-clustered index, storing only some of the table's columns within the index, allowing certain queries to be answered with the index alone, in which case the index "covers" the query.
+

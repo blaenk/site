@@ -609,3 +609,7 @@ Updating a value can be done in place if the new value is not larger, but if it 
 
 The extra indirection incurred by a heap file can be a performance penalty for reads.
 
+## Clustered Indexes
+
+A _clustered index_ is an index which stores the row directly within the index. For example, MySQL's InnoDB storage engine sets up the primary key index as a clustered index and secondary indexes refer to the primary key rather than a heap file location.
+

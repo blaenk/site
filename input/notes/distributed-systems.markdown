@@ -533,4 +533,18 @@ The merging and compaction process running in the background combines segment fi
 
 When the system crashes, the most recent writes in the memtable that haven't been written to disk are lost. This can be mitigated by keeping a separate write-ahead log on disk where each write is immediately appended. When writing out a memtable the log is discarded and started anew. When restoring from a crash, the log is played back to recreate the state of the memtable.
 
-This indexing structure is known as a log-structured merge-tree (LSM Trees). Similar systems are used in LevelDB, RocksDB, Cassandra, HBase, and Google BigTable. The full-text search indexing engine Lucene, used by Elasticsearch and Solr, uses something similar for its term dictionary, where the key is a term (word) and the value is a list of IDs of documents where it occurs.
+Range queries can be performed efficiently since the data is stored in sorted order.
+
+This indexing structure is known as a log-structured merge-tree (LSM-Trees). Similar systems are used in LevelDB, RocksDB, Cassandra, HBase, and Google BigTable. The full-text search indexing engine Lucene, used by Elasticsearch and Solr, uses something similar for its term dictionary, where the key is a term (word) and the value is a list of IDs of documents where it occurs (postings list).
+
+LSM-tree lookup can be slow for non-existent keys, since the memtable and all segments need to be checked before determining that the key does not exist. Storage engines often use a [bloom filter] to determine if a key is not in the set.
+
+[bloom filter]: /notes/algorithms#bloom-filter
+
+The two most common strategies for determining the order and timing of how SSTables are compacted and merged are _size-tiered_ and _leveled_ compaction.
+
+Size-tiered compaction works by successively merging newer and smaller SSTables into older and larger SSTables.
+
+Leveled compaction works by splitting up the key range into smaller SSTables, with older moved into separate "levels," allowing compaction to proceed more incrementally and use less disk space.
+
+RocksDB and LevelDB use leveled compaction, which is the source of the latter's name. HBase uses size-tiered compaction, and Cassandra supports both.

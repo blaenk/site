@@ -601,3 +601,11 @@ In a secondary index, the indexed values are not necessarily unique. Key entries
 
 Secondary indexes are often crucial for performing joins efficiently.
 
+## Heap Files and Non-Clustered Indexes
+
+Indexes can store as value a reference to the row stored elsewhere in a _heap file_, which stores the rows in no particular order, possibly append-only. This approach avoids duplicating data when multiple secondary indexes exist, since each index simply references a location in the heap file.
+
+Updating a value can be done in place if the new value is not larger, but if it is, the value probably needs to be moved to a different location within the heap where it may fit, requiring all indexes to be updated to point to the new heap location. Alternatively, a forwarding pointer can be left at the old location.
+
+The extra indirection incurred by a heap file can be a performance penalty for reads.
+

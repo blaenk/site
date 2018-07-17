@@ -617,3 +617,6 @@ A _clustered index_ is an index which stores the row directly within the index. 
 
 A _covering index_ (aka "index with included columns") is a compromise between a clustered index and a non-clustered index, storing only some of the table's columns within the index, allowing certain queries to be answered with the index alone, in which case the index "covers" the query.
 
+## Clustered and Covering Index Implications
+
+Clustered and covering indexes can speed up reads but require additional storage and they also increase write overhead. Additional effort is also necessary to prevent observed inconsistencies due to the data duplication, in order to enforce transactional guarantees.

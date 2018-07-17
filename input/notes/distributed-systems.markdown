@@ -471,7 +471,7 @@ JOIN lives_in_europe ON vertices.vertex_id = lives_in_europe.vertex_id;
 
 An index is a separate structure derived from the primary data, to maintaining it has an overhead, such as on writes, since the index has to be updated as well. Appropriate indexes speed up read queries but slow down writes, which is why databases don't index everything by default.
 
-## Log Segments and Hash Indexes
+## Log-Structured Storage
 
 An append-only file storing key-value pairs can be indexed with a hash index so that every key is mapped to the byte offset of the data in the file. This hash index would have to be updated whenever a new key-value pair is appended. When a value needs to be read, the hash index can be keyed to obtain the offset into the data file at which the record begins, then the file seeked to that location and the record read.
 

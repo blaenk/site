@@ -481,7 +481,7 @@ This system is used in Bitcask, the default storage engine of Riak.
 
 One way to avoid running out of disk space is to break the log file into segments of a certain size, closing it when it reaches that size and writing subsequent writes to a new segment file.
 
-The segments can then undergo _compaction_, which discards duplicate keys in the log, keeping only the most recent update for each key.
+The segments can then undergo _compaction_, which discards duplicate keys in the log, keeping only the most recent update for each key. This is also known as garbage collection.
 
 Since compaction usually decreases the size of segments, certain small segments can then be merged into a regular sized segment file, usually at the same time as compaction is performed.
 

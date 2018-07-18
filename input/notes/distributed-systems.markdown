@@ -726,3 +726,39 @@ A column store can benefit from storing the rows sorted by a commonly accessed c
 If different queries benefit from different sort orders, it's also possible to store the same data in several different orders. If the data needs to be replicated anyway, the redundant data can be stored in different ways so that the best version for a particular query can be picked.
 
 Writing to a sorted column store can appear to be difficult since inserting a row into the middle of a sorted table would require rewriting all column files in order to maintain consistent row ordering within the column files. However, an LSM-Tree can be used to back the column files to maintain a consistent row order despite inserts. Queries will then need to examine both the column data on disk and the recent writes in memory and combine the two, but that is hidden by the query optimizer.
+
+### Materialized Data Cubes
+
+Since analytic queries often involve aggregate functions such as `COUNT` and `AVG`, it can be wasteful to calculate them every time. The results can instead be cached in a _materialized view_, which is like a standard virtual view whose contents are the results of a query, except a materialized view actually contains the copy of the query results on disk, whereas a virtual view is just a shortcut for writing queries. Reading from a virtual view entails expanding the view's underlying query and processing it, whereas reading from a materialized view entails reading the copy of the saved results.
+
+As with an index, a materialized view needs to be updated when the underlying data changes. This can be done automatically, but since the updates can be expensive, materialized views aren't usually used in OLTP databases, but they make more sense in more read-heavy data warehouses.
+
+A _data cube_ or _OLAP cube_ is a materialized view that is a grid of aggregates grouped by multiple different dimensions. Certain queries become very fast through the use of a materialized data cube because they have been precomputed. Data cubes aren't as flexible as querying raw data because queries are limited to the information within the cube, so an effort is made to keep as much raw data as possible while creating data cubes to optimize certain queries as needed.
+
+For example, a two-dimensional data cube for "date" (e.g. `date_key`) and "product" (e.g. `product_sk`) would contain in each cell the aggregate result (e.g. `SUM`) of an attribute of all facts (e.g. `fact_sales.net_price`) with that date-product combination.
+
+A date-product cube can have `product_sk` columns and `date_key` rows. Each cell would be constructed by a query such as:
+
+``` postgresql
+SELECT SUM(fact_sales.net_price)
+FROM fact_sales
+WHERE date_key = row_num AND product_sk = column_num;
+```
+
+The aggregate can then be applied further on rows or columns of the cube to reduce by one dimension, such as a product's sales regardless of date or date's sales regardless of product.
+
+Aggregating (e.g. `SUM`) an entire `date_key` row in the data cube would correspond to the total `SUM` of `net_price` for a given `date_key` regardless of `product_sk`.
+
+``` postgresql
+SELECT SUM(fact_sales.net_price)
+FROM fact_sales
+WHERE date_key = row_num;
+```
+
+Aggregating (e.g. `SUM`) an entire `product_sk` column in the data cube would correspond to the total `SUM` of `net_price` for a given `product_sk` regardless of `date_key`.
+
+``` postgresql
+SELECT SUM(fact_sales.net_price)
+FROM face_sales
+WHERE product_sk = column_num;
+```

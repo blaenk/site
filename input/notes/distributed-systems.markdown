@@ -778,3 +778,17 @@ In both situations, old and new systems coexist and expect old or new data forma
 _Backward compatibility_ means that newer code can read old data. This is straightforward to achieve because newer code can be aware of older data formats and can be made to explicitly handle it.
 
 _Forward compatibility_ means that older code can read newer data. This is more difficult to achieve because it requires old code to ignore the additions made by newer code.
+
+## Textual Encoding Formats
+
+Language-specific serialization formats such as `java.io.Serializable` or Python `pickle` are tied to a language and are at best left to very transient purposes. They may lead to security vulnerabilities if arbitrary classes can be instantiated. Versioning is often weak or non-existent. Efficiency in CPU and encoded structure size is often an afterthought.
+
+Textual formats such as JSON, XML, and CSV have subtle issues.
+
+There is ambiguity with number encoding. XML and CSV can't distinguish between a number and a string consisting of digits without referring to a schema. JSON doesn't distinguish between integers and floating-point numbers. Integers greater than 2^53 cannot be exactly represented in IEEE 754 double-precision numbers used by JavaScript, leading to inaccuracies when parsed by JavaScript. This lead Twitter to return 64-bit integer Tweet IDs twice in API responses: once as a JSON number and again as a decimal string.
+
+Byte sequences aren't supported. This is usually mitigated by encoding binary data as Base64 text, with a schema indicating that it should be interpreted as Base64 encoded data, but it increases data size by 33%.
+
+Although optional schemas are supported by XML and JSON. XML schema use is common, but many JSON tools ignore schemas, leaving the correct interpretation of the data to be hard-coded into the application.
+
+Regardless, textual formats are popular as data interchange formats.

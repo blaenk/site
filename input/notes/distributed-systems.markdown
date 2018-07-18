@@ -616,3 +616,18 @@ A _clustered index_ is an index which stores the row directly within the index. 
 A _covering index_ (aka "index with included columns") is a compromise between a clustered index and a non-clustered index, storing only some of the table's columns within the index, allowing certain queries to be answered with the index alone, in which case the index "covers" the query.
 
 Clustered and covering indexes can speed up reads but require additional storage and they also increase write overhead. Additional effort is also necessary to prevent observed inconsistencies due to the data duplication, in order to enforce transactional guarantees.
+
+## Multi-Column Indexes
+
+Querying multiple columns of a table can benefit from multi-column indexes.
+
+A _concatenated index_ simply concatenates several fields into one key, with the index specifying the concatenation order.
+
+A _multi-dimensional index_ provides a more general way of querying several columns simultaneously such as for geospatial data. A restaurant search feature may require finding all restaurants by their latitude and longitude within a rectangular area representing the map area the user is viewing. Traditional indexes can either give all restaurants in a range of latitudes or in a range of longitudes, but not both.
+
+One way to resolve this is by mapping a two-dimensional location into a single number using a space-filling curve.
+
+More appropriately, a specialized spatial index based on structures such as R-Trees is used. PostGIS implements geospatial indexes with R-trees using PostgreSQL's Generalized Search Tree indexing feature.
+
+Multi-dimensional indexes aren't only for geospatial data, they can also be used for color range searching, or efficiently finding all weather observations during a year within some temperature range, for example.
+

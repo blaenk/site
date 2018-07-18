@@ -644,3 +644,29 @@ Even though some in-memory databases may write a log to disk, they are still con
 The main performance advantage of an in-memory database compared to a traditional one is not that disk doesn't need to be read during normal operation, since with enough memory, that data may already be cached in memory by the operating system. Rather, the performance advantage comes from not needing to serialize in-memory data structures.
 
 In-memory databases can actually store more data than fits in memory by using an _anti-caching_ approach which evicts least-recently used (LRU) data from memory to disk when memory is needed, then loading it back when it's accessed again, similar to virtual memory and swap files of operating systems, except at the granularity of individual records rather than entire memory pages. However, the indexes must fit in memory.
+
+# Analytic Processing
+
+A transaction has come to generally mean a group of reads and writes that form a logical unit, although not necessarily with ACID (atomicity, consistency, isolation, durability) properties. Transaction processing simply means that low-latency reads and writes are possible, as opposed to batch processing jobs which only run periodically.
+
+Online Transaction Processing (OLTP) is an access pattern marked by interactive use of a database based on a user's input.
+
+By comparison, analytic queries need to scan over very large numbers of records, only reading a few columns per record, usually calculating aggregate statistics such as sum or average, instead of returning raw data to a user. Analytic queries can answer questions such as:
+
+* What was the total revenue of each of store in a given month?
+* How many more bananas were sold during the last promotion?
+* Which brand of baby food is most often purchased together with a given brand of diapers?
+
+Analytic queries are usually written by business analysts and fed into reports that help the company make better decisions, a process known as business intelligence.
+
+The access pattern of analytic queries is called Online Analytic Processing (OLAP).
+
+The main read pattern of OLTP is a small number of records per query, fetched by key, whereas OLAP performs an aggregate calculation over a large number of records.
+
+The main write pattern of OLTP is random-access, low-latency writes based on user input, whereas OLAP is based on bulk import (ETL) or event stream.
+
+OLTP is primarily used by the end user via a web application, whereas OLAP is primarily used by an internal analyst.
+
+OLTP usually represents the latest state of data at a current point in time, whereas OLAP maintains a history of events that happened over time.
+
+OLTP dataset sizes usually range from gigabytes to terabytes, whereas for OLAP they range from terabytes to petabytes.

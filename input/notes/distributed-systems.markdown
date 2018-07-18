@@ -595,13 +595,15 @@ Finite disk write bandwidth needs to be shared between an initial write (logging
 
 B-Trees can be better suited to strong transactional semantics by simply placing locks on ranges of keys by attaching them to the tree, whereas LSM-Trees can contain multiple copies of the same key in different segments.
 
-## Secondary Indexes
+## Alternative Indexes
+
+### Secondary Indexes
 
 In a secondary index, the indexed values are not necessarily unique. Key entries are made unique either by making each value entry be a list of rows containing that key entry as a column value or by making each key entry unique by appending a row identifier to it.
 
 Secondary indexes are often crucial for performing joins efficiently.
 
-## Heap Files and Non-Clustered Indexes
+### Heap Files and Non-Clustered Indexes
 
 Indexes can store as value a reference to the row stored elsewhere in a _heap file_, which stores the rows in no particular order, possibly append-only. This approach avoids duplicating data when multiple secondary indexes exist, since each index simply references a location in the heap file.
 
@@ -609,7 +611,7 @@ Updating a value can be done in place if the new value is not larger, but if it 
 
 The extra indirection incurred by a heap file can be a performance penalty for reads.
 
-## Clustered and Covering Indexes
+### Clustered and Covering Indexes
 
 A _clustered index_ is an index which stores the row directly within the index. For example, MySQL's InnoDB storage engine sets up the primary key index as a clustered index and secondary indexes refer to the primary key rather than a heap file location.
 
@@ -617,7 +619,7 @@ A _covering index_ (aka "index with included columns") is a compromise between a
 
 Clustered and covering indexes can speed up reads but require additional storage and they also increase write overhead. Additional effort is also necessary to prevent observed inconsistencies due to the data duplication, in order to enforce transactional guarantees.
 
-## Multi-Column Indexes
+### Multi-Column Indexes
 
 Querying multiple columns of a table can benefit from multi-column indexes.
 
@@ -631,7 +633,7 @@ More appropriately, a specialized spatial index based on structures such as R-Tr
 
 Multi-dimensional indexes aren't only for geospatial data, they can also be used for color range searching, or efficiently finding all weather observations during a year within some temperature range, for example.
 
-## Full-text Search Fuzzy Indexes
+### Full-text Search Fuzzy Indexes
 
 In Lucene, the in-memory index is a finite state automaton over the characters in the keys, similar to a trie. The automaton can be transformed into a Levenshtein automaton which can search for words within a given edit distance.
 

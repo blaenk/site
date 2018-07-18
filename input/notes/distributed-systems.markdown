@@ -647,7 +647,7 @@ The main performance advantage of an in-memory database compared to a traditiona
 
 In-memory databases can actually store more data than fits in memory by using an _anti-caching_ approach which evicts least-recently used (LRU) data from memory to disk when memory is needed, then loading it back when it's accessed again, similar to virtual memory and swap files of operating systems, except at the granularity of individual records rather than entire memory pages. However, the indexes must fit in memory.
 
-# Analytic Processing
+## Analytic Processing
 
 A transaction has come to generally mean a group of reads and writes that form a logical unit, although not necessarily with ACID (atomicity, consistency, isolation, durability) properties. Transaction processing simply means that low-latency reads and writes are possible, as opposed to batch processing jobs which only run periodically.
 
@@ -672,3 +672,23 @@ OLTP is primarily used by the end user via a web application, whereas OLAP is pr
 OLTP usually represents the latest state of data at a current point in time, whereas OLAP maintains a history of events that happened over time.
 
 OLTP dataset sizes usually range from gigabytes to terabytes, whereas for OLAP they range from terabytes to petabytes.
+
+### Data Warehouses
+
+A _data warehouse_ is a different kind of database that better matches OLAP access patterns. It is a separate database that analysts can query without affecting OLTP operations. It contains a read-only copy of the data from the various OLTP databases, extracted by a periodic data dump or continuous stream of updates. The data is transformed into an analysis-friendly schema, cleaned up, then loaded into the data warehouse in a process known as _Extract-Transform-Load_ (ETL).
+
+Data warehouses exist in almost all large enterprises, but are almost unheard of in smaller companies, since they have a comparatively small amount of data that can easily be queried through a conventional database.
+
+Although many data warehouses are relational, the internals of the systems can be very different because they are optimized for different query patterns, such that most database vendors now focus on either transaction processing or analytics.
+
+Existing vendors include Teradata, Vertica, SAP HANA, and ParAccel. Recently there have been open source SQL-on-Hadoop projects that aim to compete with commercial data warehouses, such as Apache Hive, Spark SQL, Cloudera Impala, Facebook Presto, Apache Tajo, and Apache Drill.
+
+Many data warehouses are used in a formulaic style known as a _star schema_ (aka _dimensional modeling_). When a star schema is visualized, the fact table sits in the middle surrounded by its dimension tables like rays of a star.
+
+At the center of the schema is a _fact table_ where each row is an event that occurred at a particular time, such as a sale in a `fact_sales` table.
+
+Some columns are attributes, but many others are foreign key references to _dimension tables_, such that a row in a fact table is an event, and a dimension table represents extra details, such as a product in a `dim_product` dimension table which would include columns for the SKU, description, brand name, etc. Even seemingly simple information such as date and time are often stored in separate dimension tables to allow encoding additional information about the dates, such as whether it was a holiday.
+
+A variation of a star schema is a _snowflake schema_ where dimensions are further broken down into subdimension tables, such as `dim_product` referencing a separate `dim_brand` table. Although more normalized than star schemas, star schemas are often preferred for being easier to work with.
+
+Tables in a data warehouse are often very wide, with fact tables often having over 100 columns, and sometimes several hundred.

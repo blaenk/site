@@ -631,3 +631,7 @@ More appropriately, a specialized spatial index based on structures such as R-Tr
 
 Multi-dimensional indexes aren't only for geospatial data, they can also be used for color range searching, or efficiently finding all weather observations during a year within some temperature range, for example.
 
+## Full-text Search Fuzzy Indexes
+
+In Lucene, the in-memory index is a finite state automaton over the characters in the keys, similar to a trie. The automaton can be transformed into a Levenshtein automaton which can search for words within a given edit distance.
+

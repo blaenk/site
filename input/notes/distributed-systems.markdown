@@ -475,7 +475,7 @@ An index is a separate structure derived from the primary data, to maintaining i
 
 An append-only file storing key-value pairs can be indexed with a hash index so that every key is mapped to the byte offset of the data in the file. This hash index would have to be updated whenever a new key-value pair is appended. When a value needs to be read, the hash index can be keyed to obtain the offset into the data file at which the record begins, then the file seeked to that location and the record read.
 
-This file-append key-value store is resilient, providing high-performance reads and writes _as long as_ all keys fit in RAM; values don't need to fit in RAM since they can be read from disk, if they're not already in the filesystem cache. This storage system is suited to situations where the values may be updated frequently, but there aren't many distinct keys.
+This file-append key-value store is resilient, providing high-performance reads and writes _as long as_ all keys fit in memory; values don't need to fit in memory since they can be read from disk, if they're not already in the filesystem cache. This storage system is suited to situations where the values may be updated frequently, but there aren't many distinct keys.
 
 This system is used in Bitcask, the default storage engine of Riak.
 

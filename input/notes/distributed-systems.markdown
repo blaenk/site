@@ -792,3 +792,17 @@ Byte sequences aren't supported. This is usually mitigated by encoding binary da
 Although optional schemas are supported by XML and JSON. XML schema use is common, but many JSON tools ignore schemas, leaving the correct interpretation of the data to be hard-coded into the application.
 
 Regardless, textual formats are popular as data interchange formats.
+
+## Binary JSON and XML Formats
+
+There are binary encodings for JSON (MessagePack, BSON, BJSON, UBJSON, BISON, Smile) and XML (WBXML, Fast Infoset). Some extend the datatypes but otherwise keep the data model. Since they don't describe a schema, each field name is included in the encoded data. It's unclear if the marginal space and parse time reductions that most binary encodings of JSON yield are worth the loss in human-readability.
+
+In MessagePack, for example, the first byte indicates the type and count/size of the following data. If this information doesn't fit in a byte, a separate type indicator is used and the field count is expressed in 16 or 32 bits.
+
+Generally, data is laid out as:
+
+1. object/array indicator
+2. data type/length indicator
+3. field name
+4. data
+

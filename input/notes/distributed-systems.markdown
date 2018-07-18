@@ -691,4 +691,38 @@ Some columns are attributes, but many others are foreign key references to _dime
 
 A variation of a star schema is a _snowflake schema_ where dimensions are further broken down into subdimension tables, such as `dim_product` referencing a separate `dim_brand` table. Although more normalized than star schemas, star schemas are often preferred for being easier to work with.
 
-Tables in a data warehouse are often very wide, with fact tables often having over 100 columns, and sometimes several hundred.
+### Column-Oriented Storage
+
+Tables in a data warehouse are often very wide, with fact tables often having over 100 columns, and sometimes several hundred. However, typical queries only access 4 or 5 of the columns at one time.
+
+OLTP databases usually store data in a row-oriented fashion, with all values from one row of a table stored next to each other. Even if indexes exist on the columns being queried, a row-oriented storage engine needs to load all of the rows, with all of their attributes, from disk into memory, then parse them, and only then filter out those that don't meet the required conditions.
+
+In _column-oriented storage_, all of the values from each column are stored together. Each column is stored in a separate file, allowing a query to only read and parse those columns that are used in the query. For this to work, each column file needs to contain the rows in the same order, so that reassembling a row is as simple as taking the same entry number in each column file.
+
+Column-oriented storage lends itself to compression. _Bitmap encoding_ can be used to compress the column values when the number of distinct values is small compared to the number of rows. A column with $n$ distinct values can be turned into $n$ separate bitmaps, one for each distinct value, with one bit for each row, so that the bit for that row is 1 if the row has that value and 0 if not. The bitmaps in total will be much smaller than storing the entire list of column values.
+
+If $n$ is very small then the bitmaps can be stored with one bit per row, otherwise they will be sparse, with a lot of zeros in most of the bitmaps. In this case, they can be further compressed with run-length encoding.
+
+Bitmap indexes are well suited for common data warehouse queries. Some operations can be reduced to bitwise operations, because the bitmaps contains the rows in the same order.
+
+``` postgresql
+WHERE product_sk IN (30, 68, 68);
+```
+
+This query would load the three bitmaps for each `product_sk` referenced and calculate the bitwise OR of all of them.
+
+``` postgresql
+WHERE product_sk = 31 AND store_sk = 3;
+```
+
+This query would load the two bitmaps and calculate the bitwise AND.
+
+A bottleneck for analytic queries is the bandwidth for getting data from disk into memory, as well as the bandwidth from main memory to the CPU cache.
+
+Column-oriented storage layouts make efficient use of CPU cycles. The query engine can take a chunk of compressed column data that fits in the L1 cache and iterate in a tight loop without function calls. Column compression allows more rows from a column to fit in the same amount of L1 cache. In fact, certain operations can operate on chunks of compressed column data directly.
+
+A column store can benefit from storing the rows sorted by a commonly accessed column, such as a date column, by speeding up those reads. Storing columns in some sorted order also facilitates compression of the column, since the primary sort column will have long sequences of the same value which lends itself well to run-length encoding, so that a sorted column in a table with billions of rows can be compressed down to a few kilobytes. Even if second and third sort keys may not has as many repeated values, highly compressing the first sort column, which is ideally the most accessed, is a huge performance gain.
+
+If different queries benefit from different sort orders, it's also possible to store the same data in several different orders. If the data needs to be replicated anyway, the redundant data can be stored in different ways so that the best version for a particular query can be picked.
+
+Writing to a sorted column store can appear to be difficult since inserting a row into the middle of a sorted table would require rewriting all column files in order to maintain consistent row ordering within the column files. However, an LSM-Tree can be used to back the column files to maintain a consistent row order despite inserts. Queries will then need to examine both the column data on disk and the recent writes in memory and combine the two, but that is hidden by the query optimizer.

@@ -635,3 +635,12 @@ Multi-dimensional indexes aren't only for geospatial data, they can also be used
 
 In Lucene, the in-memory index is a finite state automaton over the characters in the keys, similar to a trie. The automaton can be transformed into a Levenshtein automaton which can search for words within a given edit distance.
 
+## In-Memory Databases
+
+In-memory databases are kept entirely in memory. Some in-memory databases can be durable by writing a log of changes to disk, or periodic snapshots to disk, or by replicating the in-memory state to other machines. Restarting an in-memory databases requires reloading its state either from disk or from a replica. Examples include VoltDB, MemSQL, Oracle TimesTen, and RAMCloud. Redis and Couchbase provide weak durability by writing to disk asynchronously.
+
+Even though some in-memory databases may write a log to disk, they are still considered in-memory because it's only for durability purposes, and all reads are still served entirely from memory.
+
+The main performance advantage of an in-memory database compared to a traditional one is not that disk doesn't need to be read during normal operation, since with enough memory, that data may already be cached in memory by the operating system. Rather, the performance advantage comes from not needing to serialize in-memory data structures.
+
+In-memory databases can actually store more data than fits in memory by using an _anti-caching_ approach which evicts least-recently used (LRU) data from memory to disk when memory is needed, then loading it back when it's accessed again, similar to virtual memory and swap files of operating systems, except at the granularity of individual records rather than entire memory pages. However, the indexes must fit in memory.

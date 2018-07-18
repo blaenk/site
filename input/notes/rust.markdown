@@ -859,7 +859,7 @@ let more_numbers: Vec<int> = numbers;
 
 ## Strings
 
-Strings are represented as vectors of `u8` with a guarantee of containing a valid UTF-8 sequence. The `String` type represents a non-null terminated, growable string, while the `&str` type represents fixed-sized one.
+Strings are represented as vectors of `u8` with a guarantee of containing a valid UTF-8 sequence. The `String` type represents a non-null terminated, growable string, while the `&str` type represents fixed-size one.
 
 `String` is represented as a vector of bytes `Vec<u8>` that is guaranteed to always be a valid UTF-8 sequence. The `&str` type is a slice `&[u8]` that always points to a valid UTF-8 sequence and can be used as a view into String, as `&[T]` is a view into `Vec<T>`.
 

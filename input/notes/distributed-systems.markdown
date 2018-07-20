@@ -775,9 +775,9 @@ In client-side applications the user may not install an update right away, creat
 
 In both situations, old and new systems coexist and expect old or new data formats and schemas.
 
-_Backward compatibility_ means that newer code can read old data. This is straightforward to achieve because newer code can be aware of older data formats and can be made to explicitly handle it.
+_Backward compatibility_ means that new code can read old data. This is straightforward to achieve because new code can be aware of old data formats and can be made to explicitly handle it.
 
-_Forward compatibility_ means that older code can read newer data. This is more difficult to achieve because it requires old code to ignore the additions made by newer code.
+_Forward compatibility_ means that old code can read new data. This is more difficult to achieve because it requires old code to ignore the additions made by new code.
 
 ## Textual Encoding Formats
 

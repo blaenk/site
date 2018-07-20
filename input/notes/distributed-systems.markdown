@@ -806,3 +806,62 @@ Generally, data is laid out as:
 3. field name
 4. data
 
+## Apache Thrift and Google Protocol Buffers
+
+Apache Thrift (originally created at Facebook) and Google Protocol Buffers (protobuf) are fully binary encodings. A schema is required in order to encode data.
+
+Thirft's Interface Definition Language (IDL) for describing a schema looks like:
+
+``` thrift
+struct Person {
+  1: required string userName;
+  2: optional i64 favoriteNumber;
+  3: optional list<string> interests;
+}
+```
+
+Protocol Buffers schema definition language looks like:
+
+``` protocol-buffer
+message Person {
+  required string user_name = 1;
+  optional int64 favorite_number = 2;
+  repeated string interests = 3;
+}
+```
+
+Thrift and Protocol Buffers both have a code generation tool that reads the schema and generates code which can encode or decode records of the schema. This can be a nuisance with dynamically typed languages since they can introduce an unnecessarily compilation step.
+
+Thrift has two binary encoding formats called BinaryProtocol and CompactProtocol (DenseProtocol is only supported by C++).
+
+Thrift's BinaryProtocol is similar to MessagePack's format except that instead of including the field names it includes _field tags_, which are the numbers specified in the schema definition used to identify fields, leading to a more compact encoding. Field tags are necessary to differentiate fields because field order can't be used since unset field values are omitted from the encoded data.
+
+Generally, struct records are laid out as:
+
+1. data type
+2. field tag
+3. length
+4. data
+
+A struct record is finally ended with a null 0x00 byte.
+
+Thrift's CompactProtocol is similar to the BinaryProtocol except that it packs the field type and tag number into a single byte, and uses variable-length integers instead of full 64-bit, 8-byte integers, where the top bit of each byte is used to indicate whether there are still more bytes in the number.
+
+Google Protocol Buffers encode in a manner similar to Thrift's CompactProtocol.
+
+Optional and required field markers have no effect on the encoded data, except for a run-time check for required fields to ensure that they are present.
+
+A field's tag can't be changed since existing encoded data would become invalid.
+
+Regarding schema evolution, new fields can be added as long as each new field has a tag number. Old code can ignore the new fields since it doesn't know about those tag numbers.
+
+Thrift and Protocol Buffers can be forward compatible by giving new fields tag numbers, so old code can ignore fields they don't know about, since they don't know the corresponding field numbers. The field data type information can be used to determine how many bytes in the record to skip. This allows old code to read records written by new code.
+
+Thrift and Protocol Buffers can be backward compatible as long as field tag numbers aren't modified and new fields aren't marked required, since new code would fail to read old data that didn't provide the new field. This means that all new fields must be optional or must have a default value. This allows new code can continue to read old data fields.
+
+Only optional fields can be removed. Removed fields' tags can never be used again, since there may remain data with those tag numbers. New code must ignore removed fields.
+
+Protocol Buffers have a `repeated` marker instead of a generic list or array data types. Since repeated fields are just the same field repeated, it's fine to change an single-valued optional field into a multi-valued repeated field. It's backward compatible since new code reading old data will read it as a list of zero or one elements. It's forward compatible since old code reading new data only sees the _last_ element.
+
+Thrift generic list data types don't support this schema evolution feature, but they do support nested lists.
+

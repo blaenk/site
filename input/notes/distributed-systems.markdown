@@ -765,9 +765,9 @@ WHERE product_sk = column_num;
 
 # Data Encoding and Evolution
 
-Data evolution refers to the changes made to a data format or schema over time, usually precipitated by changes to an application's code. Changes usually consist of new fields or record types, or existing data needs to be presented in a new way.
+Schema evolution refers to the changes made to a data format or schema over time, usually precipitated by changes to an application's code. Changes usually consist of new fields or record types, or existing data needs to be presented in a new way.
 
-Data evolution requires great care in situations where different versions of a system coexist simultaneously, with an older system expecting the old format and a newer system wanting to use the new format but needing to handle the old format as well. This situation is increasingly common.
+Schema evolution requires great care in situations where different versions of a system coexist simultaneously, with an older system expecting the old format and a newer system wanting to use the new format but needing to handle the old format as well. This situation is increasingly common.
 
 A _rolling upgrade_ (aka _staged rollout_) is a process by which a new version of an application is deployed to a few nodes at a time, ensuring that the process is running smoothly, and gradually continuing to deploy to all nodes, allowing deployment without downtime, thereby encouraging more frequent releases and better evolvability.
 

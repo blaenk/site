@@ -865,3 +865,66 @@ Protocol Buffers have a `repeated` marker instead of a generic list or array dat
 
 Thrift generic list data types don't support this schema evolution feature, but they do support nested lists.
 
+### Apache Avro
+
+Apache Avro is a binary encoding format that started from Hadoop since Thrift was not a good fit. Avro supports two schema languages: Avro IDL and JSON. Avro doesn't identify fields or their data types. Avro encoding simply consists of concatenated values.
+
+``` avro
+record Person {
+  string userName;
+  union { null, long } favoriteNumber = null;
+  array<string> interests;
+}
+```
+
+``` json
+{
+  "type": "record",
+  "name": "Person",
+  "fields": [
+    {
+      "name": "userName",
+      "type": "string"
+    },
+    {
+      "name": "favoriteNumber",
+      "type": [
+        "null",
+        "long"
+      ],
+      "default": null
+    },
+    {
+      "name": "interests",
+      "type": {
+        "type": "array",
+        "items": "string"
+      }
+    }
+  ]
+}
+```
+
+Since Avro encoding is just a series of concatenated values without identification. Avro has a notion of a _writer schema_ used to encode the data and a _reader schema_ used to decode the data. The reader and writer schemas _only_ have to be compatible---they don't have to be identical.
+
+The Avro library resolves differences between the writer and reader schema by translating data from the writer's schema into the reader's schema, as specified by the Avro specification. This allows writer and reader schema fields to be in different orders, since Avro's schema resolution matches them by name. Readers ignore fields not present in their schema and fill in missing expected fields with default values specified in their schema.
+
+Avro is forward compatible because old readers can read new writers, and backwards compatible because new readers can read old writers. However, this is only possible if the only fields that are added or removed are those with default values.
+
+Changing the data type of a field is only possible if Avro can convert the types. Changing names of fields is possible if the reader schema has aliases for field names, allowing it to match an old writer's schema field names against those aliases, but this is only backward compatible and not forward compatible, since old readers won't know the new names.
+
+Avro union fields can take on a value of any type specified in the union. A type that can be set to `null` as well as another value must include `null` in the union type. A union field's default value must be of the type of the first branch in the union.
+
+Adding a branch to a union type is backward compatible but not forward compatible, since old readers won't be able to interpret the additional branch types.
+
+In large files with many records the writer schema can be written to the beginning of the file. Then readers can read the schema from the file and use it to decode the contained records. Avro object container files work this way.
+
+In a database with different records written over time, writer schemas can be versioned within the database and each written record can be tied to a schema version which can be used to read it back. Espresso from LinkedIn works this way.
+
+With network communications, schema versions can be negotiated before record communication. Avro RPC works this way.
+
+In general, versioning schemas within a database can be useful as documentation and as a way to check schema backward and forward compatibility before deployments. The schema version can be an incrementing number or a hash of the schema.
+
+One advantage of not writing field tag numbers explicitly is that schemas can more easily be dynamically generated, something which is further facilitated through Avro's JSON schema language.
+
+This can be useful, for example, to dump a database' contents into a format generated for each database table, with each column corresponding to a field in a table record. If the database schema changes, a new schema can be generated and the database can continue to be dumped. This would not be as straightforward with Thrift or Protocol Buffers, since they would have to keep field tags consistent across database schema changes.

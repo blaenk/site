@@ -865,7 +865,7 @@ Protocol Buffers have a `repeated` marker instead of a generic list or array dat
 
 Thrift generic list data types don't support this schema evolution feature, but they do support nested lists.
 
-### Apache Avro
+## Apache Avro
 
 Apache Avro is a binary encoding format that started from Hadoop since Thrift was not a good fit. Avro supports two schema languages: Avro IDL and JSON. Avro doesn't identify fields or their data types. Avro encoding simply consists of concatenated values.
 

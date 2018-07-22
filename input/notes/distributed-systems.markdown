@@ -773,7 +773,7 @@ A _rolling upgrade_ (aka _staged rollout_) is a process by which a new version o
 
 In client-side applications the user may not install an update right away, creating an old system that may need to continue to work with the updated data.
 
-In both situations, old and new systems coexist and expect old or new data formats and schemas.
+In both situations, old and new systems must coexist simultaneously, and they will expect old or new data schemas, requiring both backward and forward compatibility.
 
 _Backward compatibility_ means that new code can read old data. This is straightforward to achieve because new code can be aware of old data formats and can be made to explicitly handle it.
 

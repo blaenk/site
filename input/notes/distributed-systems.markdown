@@ -987,3 +987,11 @@ A message broker:
 
 * allows a single message to be sent to several recipients
 
+### Distributed Actor Model
+
+In the actor model, logic is encapsulated in actors which may have private local state and which communicate with each other through asynchronous messages whose delivery is not guaranteed.
+
+In the distributed actor model, the actor model is scaled across multiple nodes, so that if two actors are on separate nodes, the messages are transparently encoded and transmitted. Local transparency works better here than in RPC because the actor model already assumes that messages may be lost even within a single process, and because there is less of a fundamental mismatch between local and remote actors: both must send messages to communicate with each other.
+
+Care must be taken to preserve backward and forward compatibility, and this is dependent on the encoding format used by the actor framework. Akka uses Java's built-in serialization by default, but can be replaced with Protocol Buffers. Erlang OTP makes it difficult to make changes to record schemas.
+

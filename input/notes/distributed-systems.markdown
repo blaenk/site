@@ -995,3 +995,23 @@ In the distributed actor model, the actor model is scaled across multiple nodes,
 
 Care must be taken to preserve backward and forward compatibility, and this is dependent on the encoding format used by the actor framework. Akka uses Java's built-in serialization by default, but can be replaced with Protocol Buffers. Erlang OTP makes it difficult to make changes to record schemas.
 
+# Distributed Data
+
+A _shared-memory architecture_ is one where many components (CPU, RAM, disks) are shared within a single machine under a single operating system. However, modern CPU architectures feature nonuniform memory access (NUMA), so some memory banks are closer to one CPU than others. Making efficient use of this architecture requires breaking the data down for each CPU to access nearby memory, so that partitioning is still required even if within a single machine [^cache_coherence].
+
+[^cache_coherence]: [Cache coherence] reminds me a lot about data replication and consistency in its effort to maintain memory consistency.
+
+[cache coherence]: /notes/computer-architecture#cache-coherence
+
+_Vertical scaling_ (aka _scaling up_) is scaling by upgrading a machine to a more powerful one. The cost of vertical scaling grows faster than linearly, so a machine with twice the CPUs, RAM, and disk capacity is significantly more than twice as expensive. Even so, bottlenecks within a single machine may prevent it from handling twice the load. Cost limits this architecture's scalability.
+
+A _shared-disk architecture_ is one where several machines with independent CPUs and RAM share an array of disks connected via a fast network---Network Attached Storage (NAS) or Storage Area Network (SAN). This architecture is sometimes used for data warehousing workloads. Locking contention and overhead limit this architecture's scalability.
+
+A _shared-nothing architecture_ (aka _horizontal scaling_, _scaling out_) is one where each machine has its own independent CPUs, RAM, and disks, and coordination is done at the software level with a conventional network. This allows geographical distribution of data and processing to reduce latency for users in different locations.
+
+Two common ways to distribute data across nodes is through replication and partitioning. Both may be combined; are _not_ mutually exclusive. For example, two partitions can be replicated so that there are two replicas per partition.
+
+_Replication_ refers to keeping a copy of the _same_ data on different nodes, providing redundancy in the event of nodes becoming unavailable.
+
+_Partitioning_ refers to splitting a database into smaller _partitions_ and assigning each to different nodes (aka _sharding_).
+

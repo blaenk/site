@@ -943,3 +943,25 @@ _Data outlives code_ because deploying a new application version is generally mu
 
 When taking database snapshots, it may be beneficial to encode them consistently instead of with the schema used at the time of the dump, by encoding them in a format like Avro object container files.
 
+## Service Dataflow
+
+In a service data flow, one process sends a request and expects a response as quickly as possible.
+
+A design goal of service-oriented architectures (SOA), microservices, is to make an application easier to change and maintain by making component services independently deployable and evolvable, without having to coordinate with other services. This presupposes having old and new versions of services and clients running at the same time, so the data encoding between them must be compatible across API versions.
+
+Remote Procedure Calls (RPC) tries to make network requests appear as regular function calls through the _location transparency_ abstraction. RPC tends to be used for communication between services within the same organization. Hiding the location can be problematic because:
+
+* A network request may be lost or the connection may be slow or unavailable, so requests may need to be retried.
+
+* Simply resending a request may result in multiple requests being received if they actually are getting through but the responses are getting lost, which can result in the same action being performed multiple times if there isn't an idempotance mechanism to deduplicate requests.
+
+* Latency is variable. The same identical calls may take different times to complete.
+
+* Client and Server may be implemented in different languages, allowing for inconsistencies, such as with JavaScript numbers.
+
+Apache Thrift and Apache Avro have RPC support, and gRPC is an RPC built on top of Google Protocol Buffers. These RPC libraries are a new generation of RPC which explicitly acknowledge the network request rather than attempt to hide it.
+
+It is reasonable to expect that all servers are updated before all clients, so only backward compatibility on requests (new servers handling old client requests) and forward compatibility on responses (old clients handling new server responses) are necessary. These compatibility qualities are inherited from the encoding format.
+
+Any necessary compatibility-breaking changes are achieved only by maintaining multiple versions of the service API simultaneously, usually accomplished in the case of REST APIs by including the version number in the URL or an `Accept` HTTP header.
+

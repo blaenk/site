@@ -965,3 +965,25 @@ It is reasonable to expect that all servers are updated before all clients, so o
 
 Any necessary compatibility-breaking changes are achieved only by maintaining multiple versions of the service API simultaneously, usually accomplished in the case of REST APIs by including the version number in the URL or an `Accept` HTTP header.
 
+## Message-Passing Dataflow
+
+In an asynchronous message-passing data flow, a client _message_ is sent to an intermediary _message broker_ (aka _message queue_) which stores it temporarily.
+
+The communication process involves a process sending a message to a _queue_ (aka _topic_) which the broker ensures is delivered to one or more _subscribers_ (aka _consumers_) to that queue or topic. Each topic may have many producers and consumers.
+
+Message-passing communication is asynchronous and usually unilateral, so a sender doesn't usually expect to receive a response, although it's possible by using a separate response channel. Instead it's "fire and forget."
+
+Messages are usually just sequences of bytes with some metadata, so any encoding format may be used. Making the encoding backward and forward compatible allows independently changing and deploying publishers and consumers in any order. However, republishing messages to another topic needs to take care not to lose unknown fields as in [the case with databases].
+
+[the case with databases]: #database-dataflow
+
+A message broker:
+
+* can improve system reliability by acting as a waiting queue when the recipient is unavailable or overloaded
+
+* can automatically redeliver messages to processes that crashed, preventing message loss
+
+* decouples the sender from the recipient, so that they don't have to know each others IP address and port
+
+* allows a single message to be sent to several recipients
+

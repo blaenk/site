@@ -769,7 +769,7 @@ Schema evolution refers to the changes made to a data format or schema over time
 
 Schema evolution requires great care in situations where different versions of a system coexist simultaneously, with an older system expecting the old format and a newer system wanting to use the new format but needing to handle the old format as well. This situation is increasingly common.
 
-A _rolling upgrade_ (aka _staged rollout_) is a process by which a new version of an application is deployed to a few nodes at a time, ensuring that the process is running smoothly, and gradually continuing to deploy to all nodes, allowing deployment without downtime, thereby encouraging more frequent releases and better evolvability.
+A _rolling upgrade_ (aka _staged rollout_) is a process by which a new version of an application is deployed to a few nodes at a time, ensuring that the process is running smoothly, and gradually continuing to deploy to all nodes, allowing deployment without downtime, thereby encouraging more frequent releases and better evolvability. Flawed releases can be detected early and rolled back before they affect large numbers of users.
 
 In client-side applications the user may not install an update right away, creating an old system that may need to continue to work with the updated data.
 

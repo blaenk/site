@@ -1097,9 +1097,9 @@ The four kinds of memory access orderings are:
 
 Unlike sequential consistency where all orderings must be enforced, a _relaxed consistency model_ allows certain kinds of memory accesses to not be enforced. For example, "read A, read B" accesses can be made out-of-order.
 
-In a system with a relaxed consistency model, ordering constraints are enforced on memory accesses via special instructions, memory barriers, which ensure that previous memory accesses are complete before proceeding.
+In a system with a relaxed consistency model, ordering constraints are enforced on memory accesses via special instructions, _memory barriers_, which ensure that previous memory accesses are complete before proceeding.
 
-A memory barrier/fence is an instruction in a system with a relaxed consistency model that ensures that all memory access instructions (of a certain kind) prior to the barrier (in program order) are complete before proceeding. For example, `msync` on x86.
+A _memory barrier_ (aka _fence_) is an instruction in a system with a relaxed consistency model that ensures that all memory access instructions (of a certain kind) prior to the barrier (in program order) are complete before proceeding. For example, `msync` on x86.
 
 The `volatile` keyword in C/C++ ensures that reads and writes are not reordered by the compiler via instruction scheduling. It has no effect on memory consistency. Reads and writes to `volatile` variables do not guarantee a memory barrier. This means that `volatile` alone is not sufficient to use a variable for inter-thread communication.
 

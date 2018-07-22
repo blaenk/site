@@ -928,3 +928,18 @@ In general, versioning schemas within a database can be useful as documentation 
 One advantage of not writing field tag numbers explicitly is that schemas can more easily be dynamically generated, something which is further facilitated through Avro's JSON schema language.
 
 This can be useful, for example, to dump a database' contents into a format generated for each database table, with each column corresponding to a field in a table record. If the database schema changes, a new schema can be generated and the database can continue to be dumped. This would not be as straightforward with Thrift or Protocol Buffers, since they would have to keep field tags consistent across database schema changes.
+
+## Dataflow
+
+## Database Dataflow
+
+Even if there were only a single process that writes to and reads from a database, it'd essentially be equivalent to sending a message to one's future self. Backward compatibility would be important so that the future self (newer reader) could decode the data written by the present self (older writer).
+
+Realistically there will be many different applications or instances of the same application using the same database simultaneously, so both backward _and_ forward compatibility are important.
+
+It's possible for old code to read new data that contains a new field and corresponding value, ignoring that field, only to write the data back without that new field value. Instead the old code should keep the new fields intact, even if it couldn't interpret them. The aforementioned encoding formats handle this, but it may need to be handled at the application level as well. An ORM might lose fields in the object-relational mapping process, so that then writing the objects back won't include the lost data.
+
+_Data outlives code_ because deploying a new application version is generally much easier than deploying a new version of a database schema. Migrating (rewriting) the existing data into a new schema can be expensive on a large dataset, so it's generally avoided. Simple changes such as adding a new column with a default null value are generally possible without rewriting existing data, so that nulls are filled into the returned data when the record is read and is missing data for the field.
+
+When taking database snapshots, it may be beneficial to encode them consistently instead of with the schema used at the time of the dump, by encoding them in a format like Avro object container files.
+

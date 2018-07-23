@@ -1109,3 +1109,15 @@ The logical log records may consist of:
 * deletions: information to uniquely identify the row, such as primary key, or the values of all columns if there is no primary key
 * updates: information to uniquely identify the row and the new values of all columns (or those that changed)
 * transactions: transactions that modify several rows generate several records followed by a record indicating that the transaction was committed
+
+## Trigger-Based Replication
+
+_Triggers_ are a way to register custom application code that is executed when a data change (write transaction) occurs.
+
+Trigger-based replication is an _application-layer replication_, and can be used to replicate a subset of the data, to replicate from one type of database to another, or to use custom conflict resolution logic.
+
+It works by having triggers that then log the change into a separate table which is read by an external process, which can apply any necessary application logic to replicate the data change to another system. This is done by Databus for Oracle and Bucardo for PostgreSQL.
+
+Application-layer replication can also be achieved through other tools like Oracle GoldenGate which can read database logs to make them available to an application.
+
+Trigger-based replication often has more overhead and is more error-prone than built-in replication, but can nonetheless be very flexible.

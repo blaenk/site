@@ -1129,3 +1129,25 @@ A _read-scaling architecture_ is one where there are many followers that can pro
 On the other hand, reads from an asynchronous follower may yield outdated information if the follower has fallen behind, leading to apparent inconsistencies where running the same query at the same time on leader and follower yields different results. However, this inconsistency is temporary, since all followers are expected to catch up eventually, leading to _eventual consistency_.
 
 _Replication lag_ refers to the delay between a write happening on the leader and being reflected on a follower. It may be a fraction of a second in practice, but if the system is under heavy load or there is a problem on the network, it can increase to seconds or even minutes.
+
+## Read-After-Write Consistency
+
+In asynchronous replication a situation could arise where a user makes a write that modifies some data (processed by the leader) which they then read back afterward (processed by a replica), but before the new data has finished replicating to the replica processing the read, thereby appearing to the user as if the write was lost.
+
+_Read-after-write consistency_ (aka _read-your-writes consistency_) is a guarantee that users can read the effects of _their own_ writes.
+
+Possible ways to implement read-after-write consistency include:
+
+* Assign leader to process reads of data that the user may have modified. However, this requires knowing what data may have been modified, or can simply entail assuming it for certain data, such as a user's own profile information.
+
+* If most things are potentially editable by the user, the above approach would negate read scalability, since most reads would be processed by the leader. In this case another approach can be to read all recently-modified data from the leader.
+
+* Clients can remember the timestamp of their most recent write, which the system can use to ensure that reads reflect updates at least up until that timestamp. If the replica is not caught up to that timestamp, the read can be processed by another replica or it can wait until the replica has caught up. The timestamp can be a logical timestamp or system clock timestamp, the latter of which requires clock synchronization.
+
+* Distributing replicas across multiple datacenters has additional complexity, since any request that needs to be served by a leader needs to be routed to the datacenter containing it.
+
+A similar situation can occur with one user accessing data from multiple devices, in which case _cross-device read-after-write consistency_ may be necessary.
+
+In this case, timestamp-based read-after-write becomes more difficult since one device doesn't know what updates have occurred on the other, requiring the metadata to be centralized.
+
+Furthermore, read-from-leader read-after-write becomes more difficult since datacenter-distributed replicas don't guarantee that connections from different devices will be routed to the same datacenter, which can especially occur when connecting through a cell phone's data network, requiring requests to be routed from all of a user's devices to the same datacenter so that they end up assigned to the same leader.

@@ -1015,3 +1015,13 @@ _Replication_ refers to keeping a copy of the _same_ data on different nodes, pr
 
 _Partitioning_ refers to splitting a database into smaller _partitions_ and assigning each to different nodes (aka _sharding_).
 
+# Replication
+
+Replicated data has the benefit that it can be geographically collocated, increase availability, and increase read throughput.
+
+The difficulty involved with replication relates to handling _changes_ to the replicated data. After all, immutable data can simply be copied to every node once.
+
+Three popular algorithms for replicating changes between nodes are single-leader, multi-leader, and leaderless replication. Since the fundamental constraints of networks have remained the same since the 1970s, the principles of replication haven't changed much.
+
+A _replica_ is a node that stores a copy of the database. Every write needs to be processed by every replica so that they contain the same data, otherwise they would no longer be replicas.
+

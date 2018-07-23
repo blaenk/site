@@ -1025,3 +1025,49 @@ Three popular algorithms for replicating changes between nodes are single-leader
 
 A _replica_ is a node that stores a copy of the database. Every write needs to be processed by every replica so that they contain the same data, otherwise they would no longer be replicas.
 
+## Leader-Based Replication
+
+_Leader-based replication_ (aka _active/passive replication_, _master-slave replication_) works by designating one of the replicas as the _leader_ (aka _master_ or _primary_) and all writes are sent to and performed through it,  while reads can be processed by the leader or any follower. The other replicas are known as _followers_ (aka _read replicas_, _slaves_, _secondaries_, _hot standbys_). New writes that the leader completes are also propagated to all of the followers through a _replication log_ or _change stream_. Each follower then applies all writes in the same order as were processed on the leader, as specified in the log, to update its local copy of the data.
+
+Many applications feature leader-based replication, including relational databases such as PostgreSQL, MySQL, Oracle Data Guard, SQL Server's AlwaysOn Availability Groups, non-relational databases like RethinkDB, Espresso, and message brokers like Kafka and RabbitMQ.
+
+_Synchronous replication_ waits until the followers confirm that they have received the write before making it visible to other clients and signaling a successful write.
+
+_Asynchronous replication_ sends writes to followers but _doesn't_ wait for a response.
+
+Replication is usually completed within a second, but there is no guarantee. For example, a follower may fall behind the leader by several minutes if it's recovering from a failure, operating at near maximum capacity, or if there are network problems, so it has to process other writes before it can process the latest write.
+
+Synchronous replication guarantees that followers' copies of the data are up-to-date and consistent with the leader's. However, if a follower doesn't respond, writes block and can't be processed until it becomes available, so it is impractical to make all followers synchronous since any one node could halt the entire system.
+
+A _semi-synchronous_ configuration is a more common configuration where one follower is synchronous and the rest are asynchronous. If the synchronous follower becomes slow or unavailable, one of the asynchronous followers becomes synchronous, ensuring that consistent data exists on at least two nodes.
+
+Leader-based replication is often _fully asynchronous_ so that any non-replicated writes are lost if a single leader fails and is not recoverable, with the advantage that the leader can continue processing even if all followers have fallen behind. This configuration is widely used when there are many followers or they are geographically distributed.
+
+Creating a new follower can usually be done without downtime by:
+
+1. Taking a consistent snapshot of the leader's data at some point in time, preferably without taking a lock on the entire database.
+2. Transferring the snapshot to the follower node.
+3. Connecting the follower to the leader and requesting all data changes made since the snapshot was taken, which requires knowing the snapshot's position in the replication log, known as a _log sequence number_ in PostgreSQL.
+4. Applying all of the data changes that have been made since the snapshot was made.
+5. The follower is now _caught up_ and it proceeds with regular follower behavior by continuing to process streamed data changes as they happen.
+
+When a follower fails, since it keeps a log of data changes received from the leader, it can simply continue processing its log once it has recovered and request all data changes that occurred while it wasn't available. Once caught up, it can proceed with regular follower behavior.
+
+_Failover_ is when a leader fails and a follower is promoted to be the new leader. Clients must be reconfigured to send writes to it and other followers must begin consuming data changes from it.
+
+Automatic failover can occur by:
+
+1. Determining when a leader has failed, such as through a timeout.
+2. Appointing a new leader either through an election process or through a previously elected _controller node_. the best candidate is usually the one that is most up-to-date so as to minimize data loss.
+3. Reconfiguring the system to use the new leader.
+
+Various issues can occur with automatic failover. These issues lead some operations teams to prefer to perform failovers manually.
+
+In an asynchronous replication configuration, the new leader may not have received all changes before the old leader failed. If the old leader becomes available again, those changes present on the old leader are usually simply discarded, since the new leader may have already received writes which would conflict with that old data.
+
+However, discarding writes can be dangerous if coordination is required with external storage systems, such as Redis. At GitHub, an outdated follower was promoted to leader, so auto-incrementing primary keys were "reissued" so far as Redis was concerned, which lead to Redis serving cached data associated with the old leader's primary keys for requests involving the new leader's "reissued" primary keys, leaking private data.
+
+A _split brain_ situation is where two nodes believe they are the leader, each accepting writes. This is dangerous if there is no conflict resolution process. This can happen for example if the old leader goes down and then becomes available again thinking that it's still the leader. The system needs to ensure that the old leader acknowledges the new leader and by becoming a follower or shutting down, known as _Shoot The Other Node In The Head_ (STONITH). Care must be taken to not end up with both nodes shut down.
+
+A timeout duration needs to be carefully considered because a longer timeout means a longer recovery time (more time before the recovery process begins), but a shorter timeout could lead to unnecessary failovers being initiated. A shorter timeout could possibly be exceeded if the node is under heavy load or network problems, in which case an unnecessary failover can exacerbate problems.
+

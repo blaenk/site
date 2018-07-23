@@ -1083,3 +1083,14 @@ Another problem is that statements that rely on existing data (e.g. auto-increme
 
 Although there are workarounds for some problems, there are too many edge cases making other replication methods more favorable.
 
+## Write-Ahead Log Shipping
+
+The same append-only write-ahead log kept by an LSM-Tree or B-Tree can be used to build a replica on another node, so that besides writing the log to disk it's also sent to followers over the network, so that followers processing the log end up building a copy of the exact same data structures found on the leader. This is done on PostgreSQL and Oracle.
+
+The caveat is that the log describes data at a very low level, detailing which bytes were changed in which disk blocks. This ends up tightly coupling to the storage engine, so that it's typically not possible to run any two different versions of the database on the leader and followers.
+
+Zero-downtime database upgrades would usually be accomplished by performing a rolling upgrade of followers, then performing a failover from the now-outdated leader to an updated follower.
+
+Since WAL shipping is tightly coupled to the storage engine, if the replication protocol doesn't allow a version mismatch, zero-downtime upgrades aren't possible with WAL shipping.
+
+If the replication protocol doesn't allow a version mismatch---as is common with WAL shipping---and since WAL shipping is tightly coupled to the storage engine and is therefore likely to be incompatible between database versions, zero-downtime upgrades may be impossible with WAL shipping replication.

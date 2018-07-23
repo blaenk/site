@@ -1105,10 +1105,10 @@ Logical log formats are usually easier for external applications to parse, facil
 
 The logical log records may consist of:
 
-* inserts: the new values of all columns
-* deletions: information to uniquely identify the row, such as primary key, or the values of all columns if there is no primary key
-* updates: information to uniquely identify the row and the new values of all columns (or those that changed)
-* transactions: transactions that modify several rows generate several records followed by a record indicating that the transaction was committed
+* Inserts: The new values of all columns
+* Deletions: Information to uniquely identify the row, such as primary key, or the values of all columns if there is no primary key
+* Updates: Information to uniquely identify the row and the new values of all columns (or those that changed)
+* Transactions: Transactions that modify several rows generate several records followed by a record indicating that the transaction was committed
 
 ## Trigger-Based Replication
 

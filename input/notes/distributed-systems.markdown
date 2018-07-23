@@ -1121,3 +1121,11 @@ It works by having triggers that then log the change into a separate table which
 Application-layer replication can also be achieved through other tools like Oracle GoldenGate which can read database logs to make them available to an application.
 
 Trigger-based replication often has more overhead and is more error-prone than built-in replication, but can nonetheless be very flexible.
+
+## Replication Lag
+
+A _read-scaling architecture_ is one where there are many followers that can process read-only queries. It realistically only works with asynchronous replication, since with synchronous replication a single node failure would make the entire system unavailable for writing. The more nodes there are, the more likely this may happen.
+
+On the other hand, reads from an asynchronous follower may yield outdated information if the follower has fallen behind, leading to apparent inconsistencies where running the same query at the same time on leader and follower yields different results. However, this inconsistency is temporary, since all followers are expected to catch up eventually, leading to _eventual consistency_.
+
+_Replication lag_ refers to the delay between a write happening on the leader and being reflected on a follower. It may be a fraction of a second in practice, but if the system is under heavy load or there is a problem on the network, it can increase to seconds or even minutes.

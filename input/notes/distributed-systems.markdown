@@ -1071,3 +1071,15 @@ A _split brain_ situation is where two nodes believe they are the leader, each a
 
 A timeout duration needs to be carefully considered because a longer timeout means a longer recovery time (more time before the recovery process begins), but a shorter timeout could lead to unnecessary failovers being initiated. A shorter timeout could possibly be exceeded if the node is under heavy load or network problems, in which case an unnecessary failover can exacerbate problems.
 
+## Statement-Based Replication
+
+In _statement-based replication_, the leader logs every write request statement (e.g. in SQL: `INSERT`, `UPDATE`, `DELETE`) that it executes and forwards them to followers, each of which parse and execute the statement.
+
+There are potential problems which can cause the data on each replica to diverge and become inconsistent.
+
+One problem with statement-based replication is that any non-deterministic functions calls (e.g. `NOW()` or `RAND()`) may generate different values on each replica. More generally, statements with side-effects (e.g. triggers, stored procedures, user-defined functions) can result in different side-effects on each replica.
+
+Another problem is that statements that rely on existing data (e.g. auto-incrementing columns, `UPDATE … WHERE …`) must be executed in the same order on each replica or they may have different effects. This can be a bottleneck with multiple concurrently executing transactions.
+
+Although there are workarounds for some problems, there are too many edge cases making other replication methods more favorable.
+

@@ -1151,3 +1151,13 @@ A similar situation can occur with one user accessing data from multiple devices
 In this case, timestamp-based read-after-write becomes more difficult since one device doesn't know what updates have occurred on the other, requiring the metadata to be centralized.
 
 Furthermore, read-from-leader read-after-write becomes more difficult since datacenter-distributed replicas don't guarantee that connections from different devices will be routed to the same datacenter, which can especially occur when connecting through a cell phone's data network, requiring requests to be routed from all of a user's devices to the same datacenter so that they end up assigned to the same leader.
+
+## Monotonic Reads
+
+In asynchronous replication a situation could arise where a user appears to observe changes moving backward in time if they read from different replicas, such as one to a follower with little lag and then again to a follower with greater lag. This can happen for example on a web site if refreshing a page is routed to a random server.
+
+For example, one user may insert new data then another user may make two read queries of that data. The first query would hit a follower with little lag and so the user would see the inserted data, but the second query would hit the second follower with greater lag which hasn't received and processed the write, so the user would not see the inserted data.
+
+_Monotonic reads_ is a guarantee that prevents this issue. It is less of a guarantee than strong consistency but a stronger guarantee than eventual consistency. Reading data may still yield an old value, monotonic reads simply guarantees that if one user makes several reads in sequence, they will not read older data after having previously read newer data.
+
+One implementation method for monotonic reads is to ensure that a user always reads from the same replica. This can be accomplished by choosing the replica based on a hash of the user ID rather than randomly, but this would require rerouting if the assigned replica fails.

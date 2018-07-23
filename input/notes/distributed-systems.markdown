@@ -1161,3 +1161,15 @@ For example, one user may insert new data then another user may make two read qu
 _Monotonic reads_ is a guarantee that prevents this issue. It is less of a guarantee than strong consistency but a stronger guarantee than eventual consistency. Reading data may still yield an old value, monotonic reads simply guarantees that if one user makes several reads in sequence, they will not read older data after having previously read newer data.
 
 One implementation method for monotonic reads is to ensure that a user always reads from the same replica. This can be accomplished by choosing the replica based on a hash of the user ID rather than randomly, but this would require rerouting if the assigned replica fails.
+
+## Consistent Prefix Reads
+
+In asynchronous replication a situation could arise that appears to violate causality, particularly in partitioned (sharded) databases. This can occur if certain partitions are replicated slower than others, so that an observer may see a later write before an earlier one.
+
+_Consistent prefix reads_ is a guarantee that ensures that if a sequence of writes happens in a certain order, then anyone reading the writes will see them appear in the same order.
+
+This wouldn't happen if the database always applied writes in the same order, so that reads always saw a consistent prefix. But with partitioned databases, partitions oftentimes operate independently so that there is _no global ordering of writes_, and therefore no consistent prefix, so a user may see some parts of the database in an older state and some other parts in a newer state.
+
+One solution is to ensure that causally related writes are written to the same partition, but in some applications this is inefficient.
+
+There are also certain algorithms can track causal dependencies.

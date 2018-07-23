@@ -1094,3 +1094,18 @@ Zero-downtime database upgrades would usually be accomplished by performing a ro
 Since WAL shipping is tightly coupled to the storage engine, if the replication protocol doesn't allow a version mismatch, zero-downtime upgrades aren't possible with WAL shipping.
 
 If the replication protocol doesn't allow a version mismatch---as is common with WAL shipping---and since WAL shipping is tightly coupled to the storage engine and is therefore likely to be incompatible between database versions, zero-downtime upgrades may be impossible with WAL shipping replication.
+
+## Logical Log Replication
+
+_Logical log replication_ (aka _row-based replication_) usually consists of a sequence of records describing writes at table row granularity. It is considered _logical_ to distinguish from replication of the _physical_ data representation.
+
+A logical log is decoupled from the storage engine internals, so it is more easily backward compatible, allowing for leader and followers to run different versions, thereby facilitating zero-downtime upgrades. Decoupling from the storage engine may even enable different nodes to run different storage engines.
+
+Logical log formats are usually easier for external applications to parse, facilitating _change data capture_: the process of sending database contents to an external system such as data warehouses or custom indexes and caches.
+
+The logical log records may consist of:
+
+* inserts: the new values of all columns
+* deletions: information to uniquely identify the row, such as primary key, or the values of all columns if there is no primary key
+* updates: information to uniquely identify the row and the new values of all columns (or those that changed)
+* transactions: transactions that modify several rows generate several records followed by a record indicating that the transaction was committed

@@ -1,10 +1,10 @@
 ---
-title = "Distributed Systems"
+title = "Scalability"
 published = "March 7, 2018"
 comments = false
 ---
 
-Notes about distributed systems and system scalability from resources such as the amazingly wonderful book _Designing Data-Intensive Applications_ by Martin Kleppmann.
+Notes about system scalability from resources such as the amazingly wonderful book _Designing Data-Intensive Applications_ by Martin Kleppmann.
 
 <toc />
 

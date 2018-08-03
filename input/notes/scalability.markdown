@@ -929,8 +929,6 @@ One advantage of not writing field tag numbers explicitly is that schemas can mo
 
 This can be useful, for example, to dump a database' contents into a format generated for each database table, with each column corresponding to a field in a table record. If the database schema changes, a new schema can be generated and the database can continue to be dumped. This would not be as straightforward with Thrift or Protocol Buffers, since they would have to keep field tags consistent across database schema changes.
 
-## Dataflow
-
 ## Database Dataflow
 
 Even if there were only a single process that writes to and reads from a database, it'd essentially be equivalent to sending a message to one's future self. Backward compatibility would be important so that the future self (newer reader) could decode the data written by the present self (older writer).

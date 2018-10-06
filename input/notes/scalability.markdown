@@ -1176,3 +1176,21 @@ There are also certain algorithms can track causal dependencies.
 
 When working with eventually consistent systems, it's worth considering what will happen when replication lag increases to several minutes or hours, instead of treating replication as synchronous when in fact it is asynchronous. If this poses a problem, then a stronger guarantee such as read-after-write may be necessary.
 
+## Multi-Leader Replication
+
+In _multi-leader replication_, (aka _master-master_ or _active/active replication_) each node that processes a write must forward that data change to all of the other nodes, with each leader acting as a follower of all other leaders.
+
+The benefits rarely outweigh the added complexity of multi-leader replication when used within a single datacenter.
+
+It makes more sense to use multi-leader replication in a multi-datacenter environment, to tolerate datacenter failure or for proximity co-location, for example.
+
+With a single-leader configuration in a multi-datacenter deployment, every write must be processed synchronously over the internet to the datacenter with the leader, making it very sensitive to Internet problems. In the event of datacenter failure, a new leader in another datacenter can be promoted.
+
+With a multi-leader configuration in a multi-datacenter deployment, every write is processed synchronously by the local datacenter's leader and is then replicated asynchronously to the other datacenter leaders. In the event of datacenter failure, each datacenter can continue operating independently, and replication can catch up once the failed datacenter recovers.
+
+The major downside to multi-leader replication is the fact that write conflicts may occur when the same data is modified concurrently in two different datacenters, requiring conflict resolution.
+
+Multi-leader replication is often retrofitted onto a database, causing surprising interactions with other database features such as auto-incrementing keys, triggers, and constraints, making it dangerous. Multi-leader replication should be avoided if possible.
+
+Applications with offline support can be modeled as multi-leader replicating systems, where each device has a local database acting as a leader with asynchronous multi-leader replication between other replicas.
+

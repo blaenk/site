@@ -1,0 +1,9 @@
+{{ define "content" }}
+<ul class="archive">
+  {{ range where .Data.Pages.ByDate.Reverse "Section" "posts" }}
+    <li class="archive-item">
+      <a class="item-link" href="{{ .URL }}">{{ .Title }}</a>
+    </li>
+  {{ end }}
+</ul>
+{{ end }}

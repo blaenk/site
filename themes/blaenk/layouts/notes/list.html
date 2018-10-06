@@ -1,0 +1,40 @@
+{{ define "title" }}
+  {{ .Title }} · {{ .Site.Title }}
+{{ end }}
+{{ define "content" }}
+<div class="page-group">
+  <h2>Concepts</h2>
+  {{ $concepts := where .Data.Pages.ByTitle "Params.note.kind" "concept" }}
+  <ul class="archive">
+    {{ range $concepts }}
+    <li class="archive-item">
+      <a class="item-link" href="{{ .URL }}">{{ .Title }}</a>
+    </li>
+    {{ end }}
+  </ul>
+</div>
+
+<div class="page-group">
+  <h2>Languages</h2>
+  {{ $languages := where .Data.Pages.ByTitle "Params.note.kind" "language" }}
+  <ul class="archive">
+    {{ range $languages }}
+    <li class="archive-item">
+      <a class="item-link" href="{{ .URL }}">{{ .Title }}</a>
+    </li>
+    {{ end }}
+  </ul>
+</div>
+
+<div class="page-group">
+  <h2>Technologies</h2>
+  {{ $technologies := where .Data.Pages.ByTitle "Params.note.kind" "technology" }}
+  <ul class="archive">
+    {{ range $technologies }}
+    <li class="archive-item">
+      <a class="item-link" href="{{ .URL }}">{{ .Title }}</a>
+    </li>
+    {{ end }}
+  </ul>
+</div>
+{{ end }}

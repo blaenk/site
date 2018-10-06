@@ -1,4 +1,2 @@
-/target/
-/output/
-/cache/
-/.deploy/
+/hugo/
+/resources/

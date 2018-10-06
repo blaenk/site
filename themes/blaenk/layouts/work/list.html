@@ -1,0 +1,30 @@
+{{ define "title" }}
+  {{ .Title }} · {{ .Site.Title }}
+{{ end }}
+{{ define "content" }}
+<div class="page-group">
+  <h2>Projects</h2>
+  <ul class="archive">
+    {{ range .Data.Pages.ByTitle }}
+    {{ if eq .Params.work.kind "project" }}
+    <li class="archive-item">
+      <a class="item-link" href="{{ .URL }}">{{ .Title }}</a>
+    </li>
+    {{ end }}
+    {{ end }}
+  </ul>
+</div>
+
+<div class="post-group">
+  <h2>Contributions</h2>
+  <ul class="archive">
+    {{ range .Data.Pages.ByTitle }}
+    {{ if eq .Params.work.kind "contribution" }}
+    <li class="archive-item">
+      <a class="item-link" href="{{ .URL }}">{{ .Title }}</a>
+    </li>
+    {{ end }}
+    {{ end }}
+  </ul>
+</div>
+{{ end }}

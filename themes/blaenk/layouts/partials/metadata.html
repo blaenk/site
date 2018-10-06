@@ -1,0 +1,21 @@
+<div class="meta">
+  <div class="meta-component">
+    <i class="far fa-calendar-alt fa-fw"></i>
+    {{ .Lastmod.Format "January 2, 2006" }}
+  </div>
+  <div class="meta-component">
+    <i class="fas fa-code-branch fa-fw"></i>
+    {{ if .GitInfo }}
+    <a href="https://github.com/blaenk/site/commit/{{ .GitInfo.AbbreviatedHash }}"
+       title="{{ .GitInfo.Subject }}">
+      {{ .GitInfo.AbbreviatedHash }}
+    </a>
+    {{ else }}
+    Not versioned
+    {{ end }}
+  </div>
+  <div class="meta-component">
+    <i class="fas fa-history"></i>
+    <a href="https://github.com/blaenk/site/commits/master/content/{{ .Path }}">History</a>
+  </div>
+</div>

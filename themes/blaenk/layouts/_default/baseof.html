@@ -1,0 +1,73 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>
+    {{- block "title" . }}{{ .Site.Title }}{{- end }}
+  </title>
+  <meta name="author" content="Jorge Israel Peña">
+  <meta name="description" content="AKA Blaenk Denum">
+
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href="/favicon.png" rel="shortcut icon">
+
+  <link href='//fonts.googleapis.com/css?family=Noto+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <link href='//fonts.googleapis.com/css?family=Merriweather:900italic,900,700italic,400italic,700,400,300italic,300' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+
+  {{ $options := (dict "outputStyle" "compressed" "enableSourceMap" true) }}
+  {{ $style := resources.Get "scss/screen.scss" | resources.ToCSS $options | fingerprint }}
+  <link href='{{ $style.Permalink }}' rel='stylesheet' type='text/css' />
+
+  {{ range .AlternativeOutputFormats -}}
+    {{ printf `<link rel="%s" type="%s" href="%s" title="%s" />` .Rel .MediaType.Type .Permalink $.Site.Title | safeHTML }}
+  {{ end -}}
+
+  <script
+    src="https://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    crossorigin="anonymous"></script>
+
+  <!-- MathJax -->
+  <script type="text/x-mathjax-config">
+   MathJax.Hub.Config({
+     messageStyle: "none",
+     tex2jax: {
+       inlineMath: [['$','$'], ['\\(','\\)']],
+       displayMath: [['$$','$$'], ['\\[','\\]']],
+       processEscapes: true,
+       processEnvironments: true,
+       skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+       TeX: { equationNumbers: { autoNumber: "AMS" },
+              extensions: ["AMSmath.js", "AMSsymbols.js"] }
+     }
+   });
+
+   MathJax.Hub.Register.MessageHook('End Process', function() {
+     jQuery('#MathJax_Font_Test').empty();
+   });
+
+   MathJax.Hub.Register.MessageHook('New Math', function(params) {
+     jQuery('#' + params[1]).parent().addClass('mathjax');
+   });
+  </script>
+
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS_HTML' async></script>
+
+  {{ $toc := resources.Get "js/toc.js" }}
+  {{ $page := resources.Get "js/page.js" }}
+  {{ $js := slice $toc $page | resources.Concat "js/bundle.js" | minify | fingerprint }}
+  <script src='{{ $js.Permalink }}' integrity="{{ $js.Data.Integrity }}" type='text/javascript'></script>
+</head>
+<body>
+    <div class="page-wrapper">
+    {{- partial "masthead.html" . -}}
+    {{- block "content" . }}{{- end }}
+    {{- partial "footer.html" . -}}
+    </div>
+</body>
+</html>

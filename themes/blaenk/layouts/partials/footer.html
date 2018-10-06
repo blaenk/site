@@ -1,0 +1,34 @@
+<footer id="footer">
+  <div id="social">
+    <a href="https://github.com/blaenk" title="github"><i class="fab fa-github-alt"></i></a>
+    &middot;
+    <a href="https://gitlab.com/blaenk" title="gitlab"><i class="fab fa-gitlab"></i></a>
+    &middot;
+    <a href="https://stackoverflow.com/users/101090/jorge-israel-pena" title="stackoverflow"><i class="fab fa-stack-overflow"></i></a>
+    &middot;
+    <a href="https://twitter.com/blaenk" title="twitter"><i class="fab fa-twitter"></i></a>
+    &middot;
+    <a href="mailto:jorge.israel.p@gmail.com" title="email"><i class="far fa-envelope"></i></a>
+    &middot;
+    {{ with .OutputFormats.Get "rss" -}}
+      {{ printf `<a title="rss" href="%s"><i class="fa fa-rss-square"></i></a>` .Permalink | safeHTML }}
+    {{ else }}
+      {{ if .GitInfo }}
+        <a tite="rss" href="https://github.com/blaenk/site/commits/master/content/{{ .Path }}.atom"><i class="fa fa-rss-square"></i></a>
+      {{ else }}
+        <a title="rss" href="/index.xml"><i class="fa fa-rss-square"></i></a>
+      {{ end }}
+    {{ end -}}
+  </div>
+</footer>
+
+<!-- google analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-37339861-1', 'auto');
+  ga('send', 'pageview');
+</script>

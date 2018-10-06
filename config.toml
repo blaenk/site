@@ -1,0 +1,13 @@
+baseURL = "https://www.blaenkdenum.com/"
+languageCode = "en-us"
+title = "Blaenk Denum"
+
+theme = "blaenk"
+
+enableGitInfo = true
+pygmentsCodeFences = true
+pygmentsUseClasses = true
+FootnoteReturnLinkContents = '<i class="fas fa-level-up-alt"></i>'
+
+[blackfriday]
+fractions = false

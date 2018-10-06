@@ -1194,3 +1194,22 @@ Multi-leader replication is often retrofitted onto a database, causing surprisin
 
 Applications with offline support can be modeled as multi-leader replicating systems, where each device has a local database acting as a leader with asynchronous multi-leader replication between other replicas.
 
+### Write Conflicts
+
+Writes may succeed on their local leaders only to be detected as write conflicts at a later time, after asynchronous replication has completed.
+
+The simplest way to deal with conflicts is to avoid them, such as by ensuring that all writes for a particular record go through the same leader. For example, a user's writes can always be routed to the same leader, appearing to be single-leader. However, this adds difficult if it needs to change due to datacenter failure or because the user has moved.
+
+Databases must resolve conflicts in a _convergent_ way meaning that they must arrive at the same final value when all changes have been replicated. This can be achieved by:
+
+* Giving each _write_ a unique ID, then pick the write with the highest ID. Using a timestamp is known as _last write wins_ (LWW). Prone to data loss.
+* Give each _replicate_ a unique ID, then pick the write originating from the replica with the lowest ID. Prone to data loss.
+* Merge the values somehow, e.g. concatenation.
+* Record the conflict and all of its information, and use application code to resolve it at a later time, perhaps by asking the user.
+
+Most multi-leader replication tools allow writing conflict resolution logic in application code, which can be executed on write or on read:
+
+* On write as soon as the database detects a conflict in the log of replicated changes.
+* On read. When a conflict is detected, all conflicting writes are stored. Next time it is read, the multiple versions of the data are returned, then the resolved value can be written back.
+
+An important fact is that conflict resolution usually applies at row or document-level, regardless of whether they are part of a transaction.

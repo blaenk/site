@@ -1171,3 +1171,8 @@ This wouldn't happen if the database always applied writes in the same order, so
 One solution is to ensure that causally related writes are written to the same partition, but in some applications this is inefficient.
 
 There are also certain algorithms can track causal dependencies.
+
+## Replication Lag Solutions
+
+When working with eventually consistent systems, it's worth considering what will happen when replication lag increases to several minutes or hours, instead of treating replication as synchronous when in fact it is asynchronous. If this poses a problem, then a stronger guarantee such as read-after-write may be necessary.
+

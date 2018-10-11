@@ -6,8 +6,6 @@ date = 2015-08-27
 kind = "contribution"
 +++
 
-## i8-Type Support
-
 [HaXR] is the main (only?) available package for performing XML-RPC in Haskell. It supports type conversions via typeclasses as with other serialization packages such as [Aeson], which can also be automated via [Template Haskell]. I [contributed][haxr pr] `i8`-type support to the package.
 
 [HaXR]: http://hackage.haskell.org/package/haxr

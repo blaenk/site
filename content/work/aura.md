@@ -6,8 +6,6 @@ date = 2015-08-27
 kind = "contribution"
 +++
 
-## Allow Number Parameter for Truncation
-
 [Aura] is an [arch user repository] front-end written in Haskell. It allows for the seamless, automated installation of packages from the AUR. Aura has a flag `-As` which allows for searching the AUR, which can also accept the flags `--head` and `--tail` to show only the first or last 10 results.
 
 The reason these flags exist instead of just using the `head` or `tail` programs is that the results that Aura outputs consist of two lines each: one for the package name and the other for the package description. For this reason, the Aura developers included these as a convenience. The problem was that these flags didn't accept a parameter, instead always defaulting to 10 items.

@@ -6,8 +6,6 @@ date = 2015-08-27
 kind = "contribution"
 +++
 
-## Unix Domain Socket Support
-
 I [contributed][goscgi pr] support for [unix domain sockets] to a Go package for creating [SCGI] clients.
 
 [goscgi pr]: https://github.com/mpl/scgiclient/pull/1

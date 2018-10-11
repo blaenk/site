@@ -107,9 +107,9 @@ fmap  :: (a -> b) -> f a -> f b
 (<$>) = fmap
 ```
 
-Note that in a monadic context, the effects are applied sequentially, from left to right. This is makes sense because function application is left-associative, and each application of `<*>`, which for monads is `ap` which itself is `liftM2 id`, has to extract the pure function and value from their respective monad 'container' [^mobit], thereby performing the monad's effects.
+Note that in a monadic context, the effects are applied sequentially, from left to right. This is makes sense because function application is left-associative, and each application of `<*>`, which for monads is `ap` which itself is `liftM2 id`, has to extract the pure function and value from their respective monad 'container' [^mobit_note], thereby performing the monad's effects.
 
-[^mobit]: Or [mobit] as some have taken to calling values that monads manage.
+[^mobit_note]: Or [mobit] as some have taken to calling values that monads manage.
 
 [mobit]: http://www.haskell.org/haskellwiki/What_a_Monad_is_not#Monads_are_not_values
 

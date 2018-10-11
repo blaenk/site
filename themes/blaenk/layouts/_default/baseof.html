@@ -12,6 +12,18 @@
   <meta name="MobileOptimized" content="320">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <meta name="twitter:site" content="@blaenk">
+  <meta name="twitter:creator" content="@blaenk">
+  {{ if .IsPage }}
+  <meta name="twitter:description" content="{{ .Summary }}" />
+  <meta name="twitter:title" content="{{ .Title }}" />
+  <!-- <meta name="twitter:card" content="summary_large_image" /> -->
+  <!-- <meta name="twitter:image" content="{{ .Params.image }}" /> -->
+  {{ else }}
+  <meta name="twitter:title" content="{{ .Site.Title }}" />
+  <meta name="twitter:description" content="{{ .Description }}" />
+  {{ end }}
+
   <link href="/favicon.png" rel="shortcut icon">
 
   <link href='//fonts.googleapis.com/css?family=Merriweather:900italic,900,700italic,400italic,700,400,300italic,300|Noto+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>

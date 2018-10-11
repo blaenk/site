@@ -9,7 +9,7 @@ This is a list of books I've finished reading recently, in reverse chronological
 
 <img src="/images/books/java.jpg" class="right" width="128">
 
-[Java: The Complete Reference](http://amzn.com/0071808558) --- I've always "known" Java through my use of it in school where it was sometimes required, but I never formally learned it. With the release of Java 8 and the many new languages that are targeting the JVM, I felt it would be a good idea to sweep through a Java book to ensure that I understand the nook and crannies of Java.
+[Java: The Complete Reference](http://amzn.com/0071808558) [[notes](/notes/java)] --- I've always "known" Java through my use of it in school where it was sometimes required, but I never formally learned it. With the release of Java 8 and the many new languages that are targeting the JVM, I felt it would be a good idea to sweep through a Java book to ensure that I understand the nook and crannies of Java.
 
 I was specifically looking for a book that served more as a reference instead of a beginner-oriented book that which I would have to sift through to find the nuggets of actual information, past the exercises and code examples. This book seems well regarded and has so far served that purpose.
 

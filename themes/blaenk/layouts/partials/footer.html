@@ -11,7 +11,7 @@
     <a href="mailto:jorge.israel.p@gmail.com" title="email"><i class="far fa-envelope"></i></a>
     &middot;
     {{ with .OutputFormats.Get "rss" -}}
-      {{ printf `<a title="rss" href="%s"><i class="fa fa-rss-square"></i></a>` .Permalink | safeHTML }}
+      {{ printf `<a title="rss" href="%s"><i class="fa fa-rss-square"></i></a>` .RelPermalink | safeHTML }}
     {{ else }}
       {{ if .GitInfo }}
         <a tite="rss" href="https://github.com/blaenk/site/commits/master/content/{{ .Path }}.atom"><i class="fa fa-rss-square"></i></a>

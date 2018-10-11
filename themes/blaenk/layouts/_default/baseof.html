@@ -20,10 +20,10 @@
 
   {{ $options := (dict "outputStyle" "compressed" "enableSourceMap" true) }}
   {{ $style := resources.Get "scss/screen.scss" | resources.ToCSS $options | fingerprint }}
-  <link href='{{ $style.Permalink }}' rel='stylesheet' type='text/css' />
+  <link href='{{ $style.RelPermalink }}' rel='stylesheet' type='text/css' />
 
   {{ range .AlternativeOutputFormats -}}
-    {{ printf `<link rel="%s" type="%s" href="%s" title="%s" />` .Rel .MediaType.Type .Permalink $.Site.Title | safeHTML }}
+    {{ printf `<link rel="%s" type="%s" href="%s" title="%s" />` .Rel .MediaType.Type .RelPermalink $.Site.Title | safeHTML }}
   {{ end -}}
 
   <script
@@ -60,7 +60,7 @@
   {{ $toc := resources.Get "js/toc.js" }}
   {{ $page := resources.Get "js/page.js" }}
   {{ $js := slice $toc $page | resources.Concat "js/bundle.js" | minify | fingerprint }}
-  <script src='{{ $js.Permalink }}' integrity="{{ $js.Data.Integrity }}" type='text/javascript'></script>
+  <script src='{{ $js.RelPermalink }}' integrity="{{ $js.Data.Integrity }}" type='text/javascript'></script>
 </head>
 <body>
     <div class="page-wrapper">

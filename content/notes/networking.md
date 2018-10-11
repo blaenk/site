@@ -45,17 +45,17 @@ A _point of presence_ (POP) is a node in a dense population center, closer to ot
 
 A larger buffer on a switch or router means that there can be a larger queuing delay, which means that it will take longer for the source to hear about congestion that might exist on the network.
 
-The rule of thumb for the ideal buffer size for switches and routers is that the buffer size should be equal to the maximum amount of outstanding data that can be on the path between the source and destination, i.e. $2T \cdot C$, where $2T$ is the roundtrip propagation delay and $C$ is the capacity of the bottleneck link.
+The rule of thumb for the ideal buffer size for switches and routers is that the buffer size should be equal to the maximum amount of outstanding data that can be on the path between the source and destination, i.e. `$2T \cdot C$`, where `$2T$` is the roundtrip propagation delay and `$C$` is the capacity of the bottleneck link.
 
-There is a revised recommended buffer size which accounts of the number of flows $n$ passing through the router:
+There is a revised recommended buffer size which accounts of the number of flows `$n$` passing through the router:
 
-$$ \frac {2T \cdot C} {\sqrt n} $$
+<div>$$ \frac {2T \cdot C} {\sqrt n} $$</div>
 
 In distance vector routing, each router sends multiple distance vectors to each of its neighbors, essentially copies of its own routing table. Routers then compute the costs to each destination based on the shortest available path, often using Bellman-Ford, and update their routing tables. These updated tables are then sent to their neighbors again until convergence.
 
-For example, if node $x$ is trying to find a shortest-cost route to node $y$ through some intermediate node $v$, the shortest-cost is the minimum of the costs to each intermediate node $v$ plus $v$'s distance to $y$.
+For example, if node `$x$` is trying to find a shortest-cost route to node `$y$` through some intermediate node `$v$`, the shortest-cost is the minimum of the costs to each intermediate node `$v$` plus `$v$`'s distance to `$y$`.
 
-$$ d_x (y) = min_v \left( c(x, v) + d_v (y) \right) $$
+<div>$$ d_x (y) = min_v \left( c(x, v) + d_v (y) \right) $$</div>
 
 Split horizon ensures that updates received on an interface are not sent back on the same interface they were received on, preventing loops.
 
@@ -67,6 +67,6 @@ If A learns about the distance to C from B, A will make sure to advertise to B t
 
 # Transmission Control Protocol
 
-A TCP sender's sending rate $R$ is defined as:
+A TCP sender's sending rate `$R$` is defined as:
 
-$$ R = \frac {\text {window size}} {\text {round trip time}} $$
+<div>$$ R = \frac {\text {window size}} {\text {round trip time}} $$</div>

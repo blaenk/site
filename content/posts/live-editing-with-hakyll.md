@@ -282,7 +282,7 @@ pushJS preview key = field key $ \item -> do
 
 The contents of the file `push-js.html` are pretty straightforward. We use the `$path$` that we were passed by `pushJS` to connect to the WebSocket server. Then we define an `onmessage` handler. This handler does a couple of things. First it finds the element that contains my post body. Once it has the element, it replaces the contents of this element with the data received through the WebSocket.
 
-We then have to perform some house cleaning, essentially re-running JavaScript functionality that ran on DOM load, such as creating links out of the headers in the post. I wrapped this stuff up in a global `refresh` function. This allows me to simply call it again in this handler. The last thing I do in this handler is re-run MathJax $\LaTeX$ typesetting on the post body element, since it originally ran on DOM load as well.
+We then have to perform some house cleaning, essentially re-running JavaScript functionality that ran on DOM load, such as creating links out of the headers in the post. I wrapped this stuff up in a global `refresh` function. This allows me to simply call it again in this handler. The last thing I do in this handler is re-run MathJax `$\LaTeX$` typesetting on the post body element, since it originally ran on DOM load as well.
 
 ``` html
 <!-- preview push -->

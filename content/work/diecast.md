@@ -22,9 +22,9 @@ A `Compiler` is used to process an `Item`. Processing an item may involve perfor
 
 One of the goals is to have parallelized compilation. In order to do this I believe it's necessary to determine the order in which `Item`s must be built so that dependency constraints are satisfied. Further, for this ordering to be processable in a parallelized fashion it's necessary to prevent dependents from being built before all of its dependencies are complete.
 
-The ordering required is the topological ordering of a dependency graph. A dependency graph in this context is a directed acyclic graph (DAG) where an edge $a \to b$ means that $b$ depends on $a$, so that $a$ must be processed _before_ $b$. A topological sort provides this ordering, so that all dependencies come before their dependents.
+The ordering required is the topological ordering of a dependency graph. A dependency graph in this context is a directed acyclic graph (DAG) where an edge `$a \to b$` means that `$b$` depends on `$a$`, so that `$a$` must be processed _before_ `$b$`. A topological sort provides this ordering, so that all dependencies come before their dependents.
 
-In the dependency graph below, $5$ and $6$ must be built before $4$, that is, $4$ depends on $5$ and $6$. One of the valid topological orderings is [8, 7, 2, 3, 0, 5, 1, 6, 4, 9, 11, 12, 10], which is the topological ordering resulting from a reverse post-order depth-first search.
+In the dependency graph below, `$5$` and `$6$` must be built before `$4$`, that is, `$4$` depends on `$5$` and `$6$`. One of the valid topological orderings is [8, 7, 2, 3, 0, 5, 1, 6, 4, 9, 11, 12, 10], which is the topological ordering resulting from a reverse post-order depth-first search.
 
 
 <img class="center" src="/images/notes/diecast/dependency-graph.png">
@@ -214,7 +214,7 @@ This can be accomplished through the use of a counter which is decremented as `I
 
 As soon as a `Barrier` is encountered by an `Item`, the `Generator` should check to see if an entry already exists in the collection of active `Barrier`s:
 
-* If an entry doesn't exist yet, this is the first `Item` to encounter the `Barrier`. Inserted an entry with an initial reference count of $N - 1$ where $N$ is the number of `Item`s associated with that `Binding`.
+* If an entry doesn't exist yet, this is the first `Item` to encounter the `Barrier`. Inserted an entry with an initial reference count of `$N - 1$` where `$N$` is the number of `Item`s associated with that `Binding`.
 * If an entry does exist, then it means that this is just another `Item` that has reached the barrier. Decrement the reference count for the entry. If after this decrement the reference count reaches 0, then re-enqueue all of the `Item`s associated with the `Binding` onto the job queue.
 
 In either case, the `Item` should not trigger dependency resolution, as it's not actually complete yet. This should be implicit since the `Compiler` wouldn't have completed by then.

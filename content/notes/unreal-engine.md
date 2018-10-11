@@ -2877,7 +2877,7 @@ With the **View Space** aka `CameraSpace`, the `ViewToClip` transform contains x
 
 **Screen Space** aka `NormalizedDeviceCoordinates` (in OpenGL) represents the space after the perspective divide, where left is -1, right is 1, top is 1, bottom is -1, near is 0, and far is 1.
 
-**Viewport space** aka `ViewportCoordinates` aka `WindowCoordinates` is representative of the pixel resolution of the display, where left is 0, right is $\text{width} - 1$, top is 0, and bottom is $\text{height} - 1$.
+**Viewport space** aka `ViewportCoordinates` aka `WindowCoordinates` is representative of the pixel resolution of the display, where left is 0, right is `$\text{width} - 1$`, top is 0, and bottom is `$\text{height} - 1$`.
 
 # Source vs Launcher
 

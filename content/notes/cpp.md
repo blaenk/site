@@ -624,15 +624,15 @@ uint8_t var = -1;
 
 The value `-1` is encoded by first representing it as a positive number:
 
-$$ 0000\ 0001 $$
+<div>$$ 0000\ 0001 $$</div>
 
 The digits are then flipped, so that 1s become 0s and vice versa:
 
-$$ 1111\ 1110 $$
+<div>$$ 1111\ 1110 $$</div>
 
 Finally, the value is incremented by 1 to arrive at the Two's Complement representation of `-1`:
 
-$$ 1111\ 1111 $$
+<div>$$ 1111\ 1111 $$</div>
 
 When this value is assigned to an unsigned integer, the value is simply interpreted as if it were unsigned to begin with. Therefore, this value is interpreted as being `255`.
 
@@ -660,24 +660,26 @@ The modulus operation `%` simply calculates the remainder of the left expression
 
 The equation generally used to calculate the modulus is:
 
-$$ \text{mod}(a, n) = a - \lfloor a / n \rfloor * n $$
+<div>$$ \text{mod}(a, n) = a - \lfloor a / n \rfloor * n $$</div>
 
 The operation `-1 % 256` yields the result `255` with this implementation. This is the result yielded in languages such as Python and Ruby.
 
 C and C++ uses the same equation as the above, **but** the division operation has an additional restriction when used with negative operands:
 
-$$ \text{div}(-a, n) = \text{div}(a, -n) = -(a/n) $$
+<div>$$ \text{div}(-a, n) = \text{div}(a, -n) = -(a/n) $$</div>
 
 With these definitions, the division of `-1 / 256` in the above equation becomes `-(1 / 256)`. The result of `1 / 256` is zero due to truncation. The negation of this result is still zero, so the result of the modulus operation is simply `-1`, which is **very different** from the result of `256` yielded above without these restrictions.
 
 Given the above restriction on the division operation with negative operands, the definition of the modulus operation with negative operands can be simplified to:
 
+<div>
 $$
 \begin{align}
   \text{mod}(\phantom {-} a, -n) &= \phantom {-} \text{mod}(a, n) \\
   \text{mod}(-a, \phantom {-} n) &= -\text{mod}(a, n)
 \end{align}
 $$
+</div>
 
 # Exceptions
 
@@ -3729,7 +3731,7 @@ std::pair<int, int> bounds = std::minmax(std::rand() % v.size(),
                                          std::rand() % v.size());
 ```
 
-The `nth_element` function selects the $n^\text {th}$ element from the sorted order of the range, i.e. the $n^\text {th}$-order statistic. A comparison function can be specified.
+The `nth_element` function selects the `$n^\text {th}$` element from the sorted order of the range, i.e. the `$n^\text {th}$`-order statistic. A comparison function can be specified.
 
 This is like Quicksort's partitioning, so the range is modified so that the element pointed to by `nth` becomes the `nth` element of the sorted order of the range. All elements to the left of the iterator are less than or equal to that element and all elements to the right of the iterator are greater than that element.
 
@@ -3838,7 +3840,7 @@ v = {1, 1, 1, 1};
 
 The `partial_sum` function successively computes the sums of increasing sub-ranges of the input range and copies each sum into the output iterator. A custom sum function can be provided. Specifically, the result is such that:
 
-$$ \text {dest}[i] = \sum_0^i \text {src}[i] $$
+<div>$$ \text {dest}[i] = \sum_0^i \text {src}[i] $$</div>
 
 This can be useful for example to compute the [maximal sub-array](https://en.wikipedia.org/wiki/Maximum_subarray_problem).
 

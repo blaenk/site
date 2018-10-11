@@ -5,33 +5,39 @@ date = 2013-01-04
 
 <nav id="toc" class="right-toc"></nav>
 
-[Convolution](http://en.wikipedia.org/wiki/Convolution) is a mathematical method of combining two signals to form a third signal. Passing the [Dirac delta function](http://en.wikipedia.org/wiki/Dirac_delta_function) (unit impulse) $\delta[n]$ through a linear system results in the impulse response $h[n]$. The impulse response is simply the signal resulting from passing the unit impulse (Dirac delta function) through a linear system.
+[Convolution](http://en.wikipedia.org/wiki/Convolution) is a mathematical method of combining two signals to form a third signal. Passing the [Dirac delta function](http://en.wikipedia.org/wiki/Dirac_delta_function) (unit impulse) `$\delta[n]$` through a linear system results in the impulse response `$h[n]$`. The impulse response is simply the signal resulting from passing the unit impulse (Dirac delta function) through a linear system.
 
 ## Principle
 
 The properties of [homogeneity](http://www.cns.nyu.edu/~david/handouts/linear-systems/linear-systems.html) and [shift-invariance](http://en.wikipedia.org/wiki/Shift-invariant_system) in [Linear Time-Invariant System Theory](http://en.wikipedia.org/wiki/LTI_system_theory) hold that scaling and shifting an input signal in a linear system results in the same scaling and shifting in the output signal. Because of these properties, we can represent any impulse as a shifted and scaled delta function and consequently know what the impulse response, i.e. output signal in response to an impulse input signal, will be for that scaled and shifted impulse.
 
-An impulse of $-3$ at the $8^{th}$ sample would be represented as a unit impulse $h$ by scaling the delta function $\delta$ by $-3$ and shifting it to the right by $8$ samples: $-3\delta[n-8]$, where $n-8$ means the $8^{th}$ sample is now the $0^{th}$. Due to homogeneity and shift invariance, we can determine the impulse response of this impulse by simply scaling and shifting the unit impulse response in the same manner. In other words:
+An impulse of `$-3$` at the `$8^{th}$` sample would be represented as a unit impulse `$h$` by scaling the delta function `$\delta$` by `$-3$` and shifting it to the right by `$8$` samples: `$-3\delta[n-8]$`, where `$n-8$` means the `$8^{th}$` sample is now the `$0^{th}$`. Due to homogeneity and shift invariance, we can determine the impulse response of this impulse by simply scaling and shifting the unit impulse response in the same manner. In other words:
 
+<div>
 $$-3\delta[n-8] \mapsto -3h[n-8]$$
+</div>
 
 What this means is that if we know the unit impulse response of a system, we consequently know how the system will react to _any_ impulse, not just a unit impulse. These impulse responses can then be synthesized to form the output signal that would result from running the input signal through the actual system. An example of the powerful implications of this property is [convolution reverb](http://en.wikipedia.org/wiki/Convolution_reverb), in which an impulse response of a physical or virtual space is generated and then convolved with any input signal to simulate the effect of reverberation in that space.
 
-In short, the input signal _convolved_ with the unit impulse response results in the output signal. Convolution of input signal $x[n]$ with unit impulse $h[n]$ to generate output signal $y[n]$ is denoted as:
+In short, the input signal _convolved_ with the unit impulse response results in the output signal. Convolution of input signal `$x[n]$` with unit impulse `$h[n]$` to generate output signal `$y[n]$` is denoted as:
 
+<div>
 $$x[n] * h[n] = y[n]$$
+</div>
 
-Since convolution allows us to go from input signal $x[n]$ to output signal $y[n]$, we can conclude that convolution involves the generation of the impulse response for each impulse in the input signal as decomposed by [impulse decomposition](http://www.dspguide.com/ch5/7.htm), _as well as_ the subsequent synthesis of each impulse response, to generate the output signal.
+Since convolution allows us to go from input signal `$x[n]$` to output signal `$y[n]$`, we can conclude that convolution involves the generation of the impulse response for each impulse in the input signal as decomposed by [impulse decomposition](http://www.dspguide.com/ch5/7.htm), _as well as_ the subsequent synthesis of each impulse response, to generate the output signal.
 
 ## Definition
 
 Convolution can be described by the so-called _convolution summation_. The convolution summation is pretty simple, and is defined as follows:
 
+<div>
 $$y[i] = \sum_{j=0}^{M-1} h[j]\ x[i-j]$$
+</div>
 
-Where the length of the output signal $y[n]$ is defined as $M + N - 1$ where $M$ is the length of the unit impulse response and $N$ is the length of the input signal.
+Where the length of the output signal `$y[n]$` is defined as `$M + N - 1$` where `$M$` is the length of the unit impulse response and `$N$` is the length of the input signal.
 
-All this says is that a given sample $y[i]$ in the output signal $y[n]$ is determined by the summation of every $i^{th}$ sample in every resultant impulse response. In effect, the summation above encodes how different samples in the resulting impulse responses contribute to a single output sample.
+All this says is that a given sample `$y[i]$` in the output signal `$y[n]$` is determined by the summation of every `$i^{th}$` sample in every resultant impulse response. In effect, the summation above encodes how different samples in the resulting impulse responses contribute to a single output sample.
 
 Natural imperative instinct might lead you to conclude that this can be easily implemented using nested iterations and arrays:
 
@@ -78,11 +84,13 @@ In the signature, `xs` refers to the input signal and `hs` refers to the impulse
 
 Now for the implementation of `convolve`. First, consider this component of the convolution summation:
 
+<div>
 $$x[i-j]$$
+</div>
 
-When we are computing the first sample, such that $i = 0$, in the output signal $y[n]$, then at one point we need to refer to the $x[-(M-1)]$ sample where $M$ is length of impulse response. However, there are no samples to the left of the first sample.
+When we are computing the first sample, such that `$i = 0$`, in the output signal `$y[n]$`, then at one point we need to refer to the `$x[-(M-1)]$` sample where `$M$` is length of impulse response. However, there are no samples to the left of the first sample.
 
-So what we have to do is prepad the input signal with $M-1$ samples of value $0$. This padding has the added benefit of allowing us to simply map over the padded input signal to generate the output signal. This is because the convolution operation's output signal length is $M + N - 1$ where $M$ is the length of the impulse response and $N$ is the length of the input signal. The padding can be achieved with:
+So what we have to do is prepad the input signal with `$M-1$` samples of value `$0$`. This padding has the added benefit of allowing us to simply map over the padded input signal to generate the output signal. This is because the convolution operation's output signal length is `$M + N - 1$` where `$M$` is the length of the impulse response and `$N$` is the length of the input signal. The padding can be achieved with:
 
 ``` haskell
 let pad = replicate ((length hs) - 1) 0

@@ -16,31 +16,29 @@ I want to freshen up on statistics and probabilities, which are very important f
 
 The probability of an event is the fraction of times it occurs out of the total possible outcomes:
 
-$$ P(E) = \frac {\text {# of events}} {\text {# total outcomes}} $$
+<div>$$ P(E) = \frac {\text {# of events}} {\text {# total outcomes}} $$</div>
 
-The probability is bound in the range of $[0, 1]$. Therefore, the probability of an event not happening---referred to as the probability of the event's complement---is simply defined as:
+The probability is bound in the range of `$[0, 1]$`. Therefore, the probability of an event not happening---referred to as the probability of the event's complement---is simply defined as:
 
-$$ P(E^c) = 1 - P(E) $$
+<div>$$ P(E^c) = 1 - P(E) $$</div>
 
 ## Addition Rule
 
 The probability of the union of multiple _mutually exclusive_ events can be determined by simply adding the probabilities of the individual events:
 
-<div>
-$$ P(E_1 \cup E_2) = P(E_1) + P(E_2) = \sum_{i=1}^{N} P(E_i) $$
-</div>
+<div>$$ P(E_1 \cup E_2) = P(E_1) + P(E_2) = \sum_{i=1}^{N} P(E_i) $$</div>
 
 However, if the events are _not mutually exclusive_, then the concept of _inclusion-exclusion_ must be practiced in order to avoid _double counting_, where portions of the probabilities represent the same event:
 
-$$ P(E_1 \cup E_2) = P(E_1) + P(E_2) - P(E_1 \cap E_2) $$
+<div>$$ P(E_1 \cup E_2) = P(E_1) + P(E_2) - P(E_1 \cap E_2) $$</div>
 
 ## Conditional Probability
 
-The _conditional probability_ of an event $B$ is the probability that the event $B$ happens given that another event $A$ occurred, and is written as:
+The _conditional probability_ of an event `$B$` is the probability that the event `$B$` happens given that another event `$A$` occurred, and is written as:
 
-$$ P(B \mid A) $$
+<div>$$ P(B \mid A) $$</div>
 
-This is inferred from the problem. For example, in "draw without replacement" problems, the probability of $B$ occurring changes from the mere fact that $A$ occurred, because the total number of outcomes---the denominator of the probability---has decreased by one, since the item from event $A$ was not returned. The numerator also could have decreased by one if it corresponds to the same group as $B$'s. On the other hand, in problems that "draw with replacement," the fact that $A$ has already occurred has no effect on any subsequent events because all items are still present.
+This is inferred from the problem. For example, in "draw without replacement" problems, the probability of `$B$` occurring changes from the mere fact that `$A$` occurred, because the total number of outcomes---the denominator of the probability---has decreased by one, since the item from event `$A$` was not returned. The numerator also could have decreased by one if it corresponds to the same group as `$B$`'s. On the other hand, in problems that "draw with replacement," the fact that `$A$` has already occurred has no effect on any subsequent events because all items are still present.
 
 ## Multiplication Rule
 
@@ -55,7 +53,7 @@ P(A \cap B) &= P(A) \times P(B \mid A) \\
 $$
 </div>
 
-This is simply read as the probability of $A$ occurring followed by $B$ is the simply the fraction $P(B \mid A)$ of the probability $P(A)$ occurring.
+This is simply read as the probability of `$A$` occurring followed by `$B$` is the simply the fraction `$P(B \mid A)$` of the probability `$P(A)$` occurring.
 
 ## Problem Solving Techniques
 
@@ -64,7 +62,7 @@ Count the number of **trials**. For example, when drawing cards from a box, ever
 Example 1  
 A random number generator picks at random from the ten digits 0, 1, 2, 3, 4, 5, 6, 7, 8, and 9. Find the chance that the digit it picks is prime and greater than 5.
 
-There is only one **trial** consisting of picking a single digit. The **conditions** of the event are that it is prime and it is greater than 5. Therefore, only one digit satisfies the conditions, 7, so the answer is $1/10$.
+There is only one **trial** consisting of picking a single digit. The **conditions** of the event are that it is prime and it is greater than 5. Therefore, only one digit satisfies the conditions, 7, so the answer is `$1/10$`.
 
 Example 2  
 In a class, 15% of the students have read _Hamlet_ and 40% have read _The Merchant of Venice_; 5% of the students have read both. What is the chance that a student picked at random has read one of the plays but not the other?
@@ -78,7 +76,7 @@ $$
 $$
 </div>
 
-We are interested in both outcomes occurring---the event $A$ _or_ the event $B$---and since they are mutually exclusive, the addition rule can be used to arrive at the answer:
+We are interested in both outcomes occurring---the event `$A$` _or_ the event `$B$`---and since they are mutually exclusive, the addition rule can be used to arrive at the answer:
 
 <div>
 $$

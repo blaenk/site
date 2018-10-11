@@ -379,7 +379,7 @@ The general syntax of a joined table is:
 T1 join_type T2 [ join_condition ]
 ```
 
-Assume that `T1` has $N$ rows and `T2` has $M$ rows.
+Assume that `T1` has `$N$` rows and `T2` has `$M$` rows.
 
 ### Cross Join
 
@@ -387,7 +387,7 @@ Assume that `T1` has $N$ rows and `T2` has $M$ rows.
 T1 CROSS JOIN T2
 ```
 
-For every possible combination of rows from `T1` and `T2` (Cartesian product), the joined table will contain a row consisting of all columns in `T1` followed by all columns in `T2`. The joined table will have $N \cdot M$ rows.
+For every possible combination of rows from `T1` and `T2` (Cartesian product), the joined table will contain a row consisting of all columns in `T1` followed by all columns in `T2`. The joined table will have `$N \cdot M$` rows.
 
 * For each row `R1` of `T1`:
     * For each row `R2` of `T2`:
@@ -462,7 +462,7 @@ FROM a INNER JOIN b ON (a.id = b.id) WHERE b.val > 5;
 
 ### Left Outer Join
 
-Perform an inner join. Then for each row in `T1` that does not satisfy the join condition with any row in `T2`, a joined row is added with `NULL` values in columns of `T2`. This means that the joined table always has at least one row for each row in `T1`, i.e. at least $N$ rows.
+Perform an inner join. Then for each row in `T1` that does not satisfy the join condition with any row in `T2`, a joined row is added with `NULL` values in columns of `T2`. This means that the joined table always has at least one row for each row in `T1`, i.e. at least `$N$` rows.
 
 * Inner join
 * For each row `R1` of `T1`:
@@ -470,7 +470,7 @@ Perform an inner join. Then for each row in `T1` that does not satisfy the join 
 
 ### Right Outer Join
 
-Perform an inner join. Then for each row in `T2` that does not satisfy the join condition with any row in `T2`, a joined row is added with `NULL` values in columns of `T2`. This means that the joined table always has at least one row for each row in `T2`, i.e. at least $M$ rows.
+Perform an inner join. Then for each row in `T2` that does not satisfy the join condition with any row in `T2`, a joined row is added with `NULL` values in columns of `T2`. This means that the joined table always has at least one row for each row in `T2`, i.e. at least `$M$` rows.
 
 This is essentially a flipped left outer join.
 
@@ -480,7 +480,7 @@ This is essentially a flipped left outer join.
 
 ### Full Outer Join
 
-Perform an inner join. Then for each row in `T1` that does not satisfy the join condition with any row in `T2`, a joined row is added with `NULL` values in columns of `T2`. Also for each row of `T2` that does not satisfy the join condition with any row in `T1`, a joined row is added with `NULL` values in the columns of `T1`. This results in at least $N \cdot M$ rows.
+Perform an inner join. Then for each row in `T1` that does not satisfy the join condition with any row in `T2`, a joined row is added with `NULL` values in columns of `T2`. Also for each row of `T2` that does not satisfy the join condition with any row in `T1`, a joined row is added with `NULL` values in the columns of `T1`. This results in at least `$N \cdot M$` rows.
 
 This is essentially an inner join followed by the post-inner join parts of left outer join and right outer join.
 
@@ -1409,7 +1409,7 @@ Points are two-dimensional points specified as a comma-delimited point with opti
   x , y
 ```
 
-Lines are represented by the linear equation $Ax + By + C = 0$ where $A$ and $B$ are not both zero. Lines are specified as comma-delimited values of $A$, $B$, and $C$, or as a sequence of two Points.
+Lines are represented by the linear equation `$Ax + By + C = 0$` where `$A$` and `$B$` are not both zero. Lines are specified as comma-delimited values of `$A$`, `$B$`, and `$C$`, or as a sequence of two Points.
 
 ``` postgresql
 { A, B, C }

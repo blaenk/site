@@ -6,7 +6,7 @@ date = 2016-05-04
 kind = "concept"
 +++
 
-Diffie-Hellman key exchange works by agreeing on two publicly shared values: a large prime number $q$ and a primitive root $g$. Alice and Bob each generate a _secret key_---a large random number---$x_a$ and $x_b$ respectively, and each raise the _primitive root_ to the power of the _secret key_, modulo the _large prime number_.
+Diffie-Hellman key exchange works by agreeing on two publicly shared values: a large prime number `$q$` and a primitive root `$g$`. Alice and Bob each generate a _secret key_---a large random number---`$x_a$` and `$x_b$` respectively, and each raise the _primitive root_ to the power of the _secret key_, modulo the _large prime number_.
 
 <div>
 $$
@@ -28,7 +28,7 @@ k_{ab} &= y_a^{x_b} \bmod q
 $$
 </div>
 
-Given a prime number $q$, a primitive root $g$ is a number such that every number from 1 up to $q - 1$ can be computed by raising the primitive root to some number $k$.
+Given a prime number `$q$`, a primitive root `$g$` is a number such that every number from 1 up to `$q - 1$` can be computed by raising the primitive root to some number `$k$`.
 
 <div>
 $$

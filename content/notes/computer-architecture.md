@@ -14,28 +14,30 @@ Moore's Law states that every 18-24 months we get twice the number of transistor
 
 Dynamic power is consumed when there is activity on the circuit, whereas static power is consumed when the system is powered on but idle. The active power is:
 
-$$ P = \frac 1 2 C \cdot V^2 \cdot f \cdot \alpha $$
+<div>$$ P = \frac 1 2 C \cdot V^2 \cdot f \cdot \alpha $$</div>
 
-where $C$ is the capacitance (proportional to chip area), $V$ is the power supply voltage, $f$ is the frequency, and $\alpha$ is the activity factor (e.g. what percent of the processor transistors are actually active).
+where `$C$` is the capacitance (proportional to chip area), `$V$` is the power supply voltage, `$f$` is the frequency, and `$\alpha$` is the activity factor (e.g. what percent of the processor transistors are actually active).
 
 The fabrication yield can be computed as:
 
-$$ \text {yield} = \frac {\text {working chips}} {\text {chips on wafer}} $$
+<div>$$ \text {yield} = \frac {\text {working chips}} {\text {chips on wafer}} $$</div>
 
 The two different ways in which the benefits of Moore's Law can be reaped are lower cost: a smaller chip that does the same thing as the larger, previous generation chip, or increased speed for the same cost: new chip with the same area that is faster and more capable for the same cost as the previous generation chip.
 
 The Iron Law for measuring CPU time is computed as:
 
+<div>
 $$
 \begin{align*}
 \text {CPU Time} &= \frac {\text {instructions}} {\text {program}} \cdot \frac {\text {cycles}} {\text {instructions}} \cdot \frac {\text {seconds}} {\text {cycles}}\\
 &= \frac {\text {seconds}} {\text {program}}
 \end{align*}
 $$
+</div>
 
 Amdahl's Law measures the speedup when only a fraction of the program was enhanced. The enhanced fraction refers to a percentage of the original execution time that is affected by the enhancement. The implication of Amdahl's Law is to focus on optimizing the common case.
 
-$$ \text {speedup} = \frac {1} {(1 - \text {enhanced fraction}) + \frac {\text {enhanced fraction}} {\text {enhanced speedup}}} $$
+<div>$$ \text {speedup} = \frac {1} {(1 - \text {enhanced fraction}) + \frac {\text {enhanced fraction}} {\text {enhanced speedup}}} $$</div>
 
 Lhadma's Law cautions that in pursuit of optimizing the common case, the uncommon case shouldn't be slowed down too much.
 
@@ -116,7 +118,7 @@ The pathological case of initializing a 2-Bit Predictor with a weak state is tha
 
 More generally, every branch predictor has a sequence where it will mispredict 100% of the time.
 
-A _history-based predictor_ works by keeping track of the last $N$ branch outcomes to determine the next one.
+A _history-based predictor_ works by keeping track of the last `$N$` branch outcomes to determine the next one.
 
 A 1-Bit History BHT works by storing the branch outcome bit along with two 2-Bit Counters. On any given prediction, the current branch outcome bit is used to determine which 2-Bit Counter to use for the prediction. On a misprediction, the outcome bit is updated to reflect the outcome. Regardless of the outcome, the chosen 2-Bit Counter is updated based on that outcome.
 
@@ -124,11 +126,11 @@ A 1-Bit History BHT works by storing the branch outcome bit along with two 2-Bit
 
 An entry in the BHT of a 2-Bit History Predictor contains 2 bits of history and 4 x 2-Bit Counters (one for each history configuration).
 
-An N-Bit History Predictor must store for each entry in the BHT, $N$ history bits and $2^N$ 2-Bit Counters, one for each configuration. The 2-Bit Counter that is used for any particular prediction is determined by the history bits.
+An N-Bit History Predictor must store for each entry in the BHT, `$N$` history bits and `$2^N$` 2-Bit Counters, one for each configuration. The 2-Bit Counter that is used for any particular prediction is determined by the history bits.
 
-An N-Bit History Predictor can accurately predict all branch prediction patterns of length $\le N + 1$. An N-Bit History Predictor requires, per entry;
+An N-Bit History Predictor can accurately predict all branch prediction patterns of length `$\le N + 1$`. An N-Bit History Predictor requires, per entry;
 
-$$N + \text{2-bit counter} \cdot 2^N \text{ history permutations}$$
+<div>$$N + \text{2-bit counter} \cdot 2^N \text{ history permutations}$$</div>
 
 The _PShare Predictor_ works by storing a private history for each branch and sharing 2-Bit Counters. The history bits are stored in a _Pattern History Table_ (PHT). Each entry is XORed with the PC bits to index into the BHT to obtain the shared 2-Bit Counters. When the 2-Bit Counter is updated, the new history is mapped to this updated counter.
 
@@ -222,7 +224,7 @@ sub p11, p10, p5 ;; true dep on: add's p10 and mul's p5
 
 The ILP of the above program is:
 
-$$ \frac {\text {5 instructions}} {\text {2 cycles}} = 2.5 \text { ILP} $$
+<div>$$ \frac {\text {5 instructions}} {\text {2 cycles}} = 2.5 \text { ILP} $$</div>
 
 2 cycles are necessary because the first 4 instructions can be done in the same cycle in the ideal processor defined by ILP, but the final instruction would occur in the next cycle due to the true dependencies present in the code.
 
@@ -379,7 +381,7 @@ _Function call inlining_ eliminates call/return overhead and allows for better i
 
 Both loop unrolling and function call inlining increase code size.
 
-A _Very Long Instruction Word_ (VLIW) processor is one that executes one large instruction which does the same work as $N$ "normal" instructions. Examples include Itanium and DSP processors. The advantages are that the compiler does the hard work (via instruction scheduling), so the hardware can be simpler and more energy efficient because there is less to do per instruction (no need to detect dependencies), and they work well on loops and "regular" code. The disadvantages are that the latencies of instructions aren't always the same, and the compiler can't predict them (e.g. on a cache miss), most applications are irregular with lots of decisions and branches, and finally there is a large increase in code size due to no-op insertion due to dependencies.
+A _Very Long Instruction Word_ (VLIW) processor is one that executes one large instruction which does the same work as `$N$` "normal" instructions. Examples include Itanium and DSP processors. The advantages are that the compiler does the hard work (via instruction scheduling), so the hardware can be simpler and more energy efficient because there is less to do per instruction (no need to detect dependencies), and they work well on loops and "regular" code. The disadvantages are that the latencies of instructions aren't always the same, and the compiler can't predict them (e.g. on a cache miss), most applications are irregular with lots of decisions and branches, and finally there is a large increase in code size due to no-op insertion due to dependencies.
 
 # Caches
 
@@ -387,11 +389,11 @@ The _locality principle_ states that things that will happen soon are likely to 
 
 A cache's _Average Memory Access Time_ (AMAT) is the access time to memory as seen by the processor. It's computed as:
 
-$$ \text {AMAT} = \text {hit time} + \text {miss rate} * \text {miss penalty} $$
+<div>$$ \text {AMAT} = \text {hit time} + \text {miss rate} * \text {miss penalty} $$</div>
 
 A cache's _miss time_ is the overall time it takes to have a cache miss. It's computed as:
 
-$$ \text {miss time} = \text {hit time} + \text {miss penalty} $$
+<div>$$ \text {miss time} = \text {hit time} + \text {miss penalty} $$</div>
 
 A CPU's Level 1 (L1) cache is the cache that directly services read/write requests from the processor. It's usually 16-64KB in size, large enough to get about 90% hit rate, and small enough for the hit time to be about 1-3 cycles.
 
@@ -411,19 +413,19 @@ A _cache line_ is a slot into which a cache block fits. To differentiate, the ca
 
 The _block number_ is the block that corresponds to the memory address that is being accessed. It's determined by dividing the memory address by the block size.
 
-$$ \text {block number} = \frac {\text {address}} {\text {block size}} $$
+<div>$$ \text {block number} = \frac {\text {address}} {\text {block size}} $$</div>
 
 The _block offset_ is the offset into a particular block that corresponds to a particular memory address. This is necessary because each block may contain more than one memory address' data. It's computed as the remainder of the memory address divided by the block size.
 
-$$ \text {block offset} = {\text {address }} \bmod {\text { block size}} $$
+<div>$$ \text {block offset} = {\text {address }} \bmod {\text { block size}} $$</div>
 
-The number of bits used in a cache block offset is determined by the size capacity in bytes (if byte-addressable) of a cache line, or $\log_2 (\text {cache line byte size})$.
+The number of bits used in a cache block offset is determined by the size capacity in bytes (if byte-addressable) of a cache line, or `$\log_2 (\text {cache line byte size})$`.
 
-The block size should be a power of 2 because it simplifies the process of determining the appropriate block for a particular memory address, which is done by dividing by the block size. Dividing by $2^k$ is just a right-shift by $k$ bits, i.e. discarding the lower $k$ bits determines the block number. This is much simpler and faster than dividing by a non-power of 2.
+The block size should be a power of 2 because it simplifies the process of determining the appropriate block for a particular memory address, which is done by dividing by the block size. Dividing by `$2^k$` is just a right-shift by `$k$` bits, i.e. discarding the lower `$k$` bits determines the block number. This is much simpler and faster than dividing by a non-power of 2.
 
 <img src="//i.imgur.com/jX1dCZp.png" class="center" />
 
-For example, given a block size of $2^4$ = 16 bytes and a 32-bit address, the block offset is the least significant (lower) 4 bits and the block number is the most significant 28 bits.
+For example, given a block size of `$2^4$` = 16 bytes and a 32-bit address, the block offset is the least significant (lower) 4 bits and the block number is the most significant 28 bits.
 
 ``` cpp
 // address / 2^4
@@ -445,23 +447,23 @@ The _Last Level Cache_ (LLC) is the cache with no more caches beneath it, so tha
 
 A cache's _local hit rate_ is the hit rate that the cache actually observes for accesses to this particular cache, dependent on the hit rate of the caches above it.
 
-$$ \text {local hit rate} = \frac {\text {number of hits}} {\text {number of all accesses to this cache}} $$
+<div>$$ \text {local hit rate} = \frac {\text {number of hits}} {\text {number of all accesses to this cache}} $$</div>
 
 A cache's _local miss rate_ is simply the complement of the local hit rate:
 
-$$ \text {local miss rate} = 1 - \text {local hit rate} $$
+<div>$$ \text {local miss rate} = 1 - \text {local hit rate} $$</div>
 
 A cache's _global miss rate_ is the number of misses in this cache divided by all memory accesses that the CPU makes:
 
-$$ \text {global miss rate} = \frac {\text {number of misses in this cache}} {\text {number of all memory accesses made by CPU}} $$
+<div>$$ \text {global miss rate} = \frac {\text {number of misses in this cache}} {\text {number of all memory accesses made by CPU}} $$</div>
 
 A cache's _global hit rate_ is simply the complement of the global miss rate:
 
-$$ \text {global hit rate} = 1 - \text {global miss rate} $$
+<div>$$ \text {global hit rate} = 1 - \text {global miss rate} $$</div>
 
 _Misses per 1000 Instructions_ (MPKI) is a metric of how often the cache hits, which tries to capture the behavior of non-L1 caches:
 
-$$ \text {MPKI} = \frac {\text {number of misses in this cache}} {1000} $$
+<div>$$ \text {MPKI} = \frac {\text {number of misses in this cache}} {1000} $$</div>
 
 _Cache inclusion_ means that if a block is in the L1 cache, then it also has to be in the L2 cache.
 
@@ -477,7 +479,7 @@ A _direct-mapped cache_ is one where, for a given cache block, there is exactly 
 
 A direct-mapped cache can be thought of as a special instance of a set-associative cache where there is a set for each cache line, i.e. a 1-way set associative cache. This way the index bits are still used to determine the cache line.
 
-In a direct-mapped cache, a cache block's cache line is determined by using some _index bits_, which are taken from above the block offset component. The number of index bits used is determined by the number of lines in the cache, in particular, $\log_2 (\text {total lines})$. The tag comprises the rest of the bits, essentially identifying which of all possible blocks that can go in that cache line is actually present.
+In a direct-mapped cache, a cache block's cache line is determined by using some _index bits_, which are taken from above the block offset component. The number of index bits used is determined by the number of lines in the cache, in particular, `$\log_2 (\text {total lines})$`. The tag comprises the rest of the bits, essentially identifying which of all possible blocks that can go in that cache line is actually present.
 
 <img src="//i.imgur.com/j3Q5olI.png" class="center" />
 
@@ -487,9 +489,9 @@ The cache block offset granularity is in bytes (on x86), or the smallest address
 
 ## Set-Associative Cache
 
-A _set-associative cache_ is one where, for a given cache block, there are $N$ cache lines where it may go. Cache lines are grouped into sets. The number of sets there are is equal to the number of cache lines divided by $N$. A cache is _n-way set-associative_ when a particular block can be in one of $N$ lines within a unique set. That is, each block maps to a unique set, but may choose among the lines within that set.
+A _set-associative cache_ is one where, for a given cache block, there are `$N$` cache lines where it may go. Cache lines are grouped into sets. The number of sets there are is equal to the number of cache lines divided by `$N$`. A cache is _n-way set-associative_ when a particular block can be in one of `$N$` lines within a unique set. That is, each block maps to a unique set, but may choose among the lines within that set.
 
-The number of index bits used in an n-way set-associative cache is $\log_2 (\text {number of sets})$.
+The number of index bits used in an n-way set-associative cache is `$\log_2 (\text {number of sets})$`.
 
 The associativity of a cache refers to how many cache lines are assigned to each set. More cache lines per set means the cache is more associative.
 
@@ -497,7 +499,7 @@ The associativity of a cache refers to how many cache lines are assigned to each
 
 A _fully associative cache_ is one where any cache block can be in any cache line, so each tag must be checked in order to see if a block is present.
 
-A fully associative cache can be thought of as a special instance of a set-associative cache where there is one set containing all of the cache lines. This means that there are no index bits, because $\log_2(\text {number of sets = 1}) = 0$.
+A fully associative cache can be thought of as a special instance of a set-associative cache where there is one set containing all of the cache lines. This means that there are no index bits, because `$\log_2(\text {number of sets = 1}) = 0$`.
 
 An address in a fully associative cache doesn't require an index component because the tag alone identifies the correct line, since any block can go in any line in a fully associative cache.
 
@@ -519,13 +521,13 @@ When the MRU block is re-accessed, there is no change.
 
 When a block that's not the LRU or MRU is accessed, its LRU counter is set to the max (i.e. marked MRU) and all other LRU counters with a count _greater_ than the previous count of this block are decremented.
 
-For an n-way set-associative cache, an LRU implementation requires $N$ counters (one for each cache line) of bit size $\log_2 (n)$, for each set.
+For an n-way set-associative cache, an LRU implementation requires `$N$` counters (one for each cache line) of bit size `$\log_2 (n)$`, for each set.
 
-A counter-based LRU cache implementation requires all $N$ counters in the set to be updated on each access, _even on cache hits_.
+A counter-based LRU cache implementation requires all `$N$` counters in the set to be updated on each access, _even on cache hits_.
 
 ### Not Most Recently Used
 
-Not Most Recently Used (NMRU) is an approximation of LRU which works by tracking which block has been used most recently, then picking a random block aside from that one, so that the just-used block isn't replaced. This entails keeping one MRU pointer per set. For example, in a 2-way set-associative cache, there would be a 1-bit pointer per set to specify which of the two entries in the set is the MRU. In general, a pointer of size $\log_2 (N)$ is required per set.
+Not Most Recently Used (NMRU) is an approximation of LRU which works by tracking which block has been used most recently, then picking a random block aside from that one, so that the just-used block isn't replaced. This entails keeping one MRU pointer per set. For example, in a 2-way set-associative cache, there would be a 1-bit pointer per set to specify which of the two entries in the set is the MRU. In general, a pointer of size `$\log_2 (N)$` is required per set.
 
 NMRU is much cheaper than true LRU because each set only requires one pointer to the MRU, compared to true LRU where each entry in each set requires its own counter.
 
@@ -617,13 +619,13 @@ A virtual address can be split up into two components: the virtual page number a
 
 The number of bits used for the virtual page number is dependent on the number of entries in the page table:
 
-$$ \text {virtual page number bitsize} = \log_2 (\text {page table size}) $$
+<div>$$ \text {virtual page number bitsize} = \log_2 (\text {page table size}) $$</div>
 
 The remaining bits are used for the page offset.
 
 A flat page table is one where there is a page table entry for every page number, that is, 1 entry per page in the entire virtual address space, even those regions unused by the program. Each entry contains the frame number and the access bits. The size of a flat page table is:
 
-$$ \frac {\text {virtual memory}} {\text {page size}} * \text {entry size} $$
+<div>$$ \frac {\text {virtual memory}} {\text {page size}} * \text {entry size} $$</div>
 
 The problem with flat page tables is that they take up space even for virtual address space that isn't being used by a process. Since a page table exists for each process, this can become prohibitively expensive for much larger address spaces.
 
@@ -677,7 +679,7 @@ Cache hits can be overlapped/coalesced by pipelining the cache.
 
 Hit time is affected by the TLB hit latency because the TLB has to be accessed before the cache can be accessed, in order to get the physical address used to search the cache. The overall cache hit latency is the TLB hit latency plus the cache hit latency:
 
-$$ \text {overall cache hit latency} = \text {TLB hit latency } + \text { cache hit latency} $$
+<div>$$ \text {overall cache hit latency} = \text {TLB hit latency } + \text { cache hit latency} $$</div>
 
 A _Physically Indexed, Physically Tagged_ (PIPT) cache (aka _Physically Accessed Cache_, aka _Physical Cache_) is one that is accessed using a physical address.
 
@@ -693,9 +695,9 @@ Aliasing can be avoided. Since a virtual address' page offset is the same as the
 
 The cache size must be restricted by the number of page offset bits and the cache block offset bits. Specifically, the number of index bits must be:
 
-$$ \text {index bit size} = \text {page offset bits } - \text { cache block offset bits}$$
+<div>$$ \text {index bit size} = \text {page offset bits } - \text { cache block offset bits}$$</div>
 
-For example, given a 4 KB page and 32 B cache blocks, there will be a 12-bit page offset since $\log_2 (4096) = 12$ and a 5-bit block offset since $\log_2 (32) = 5$, resulting in a 7-bit index since 12 - 5 = 7, which amounts to $2^7 = 128$ sets.
+For example, given a 4 KB page and 32 B cache blocks, there will be a 12-bit page offset since `$\log_2 (4096) = 12$` and a 5-bit block offset since `$\log_2 (32) = 5$`, resulting in a 7-bit index since 12 - 5 = 7, which amounts to `$2^7 = 128$` sets.
 
 The only way to increase the cache size while preventing aliasing in a virtually indexed, physically tagged cache, given that the maximum number of index bits are already being used, is to increase the associativity of the cache. For example, going from a 2-way set-associative cache to a 4-way set-associative cache. However, this increases latency since it introduces more blocks that must be checked for a hit.
 
@@ -751,7 +753,7 @@ A hard disk finds a particular sector on a track by first moving the head to the
 
 Hard disk capacity can be computed as:
 
-$$ \text {disk capacity} = \text {# of surfaces } * \text { tracks per surface } * \text { bytes per sector} $$
+<div>$$ \text {disk capacity} = \text {# of surfaces } * \text { tracks per surface } * \text { bytes per sector} $$</div>
 
 _Seek time_ is the amount of time it takes to move the head assembly to the correct cylinder so that one of the heads is above the track that contains the data.
 
@@ -829,9 +831,9 @@ The storage capacity of a RAID 1 array is the minimum storage capacity of the di
 
 ### RAID 4
 
-RAID 4 works via _block-interleaved parity_. Of the $N$ disks, $N - 1$ contain striped data as in RAID 0, while the last disk has parity blocks. The tracks of each stripe are XORed to compute the corresponding parity block. If one disk fails, the remaining disks and the parity block can be XORed to reconstruct the data of the failed disk.
+RAID 4 works via _block-interleaved parity_. Of the `$N$` disks, `$N - 1$` contain striped data as in RAID 0, while the last disk has parity blocks. The tracks of each stripe are XORed to compute the corresponding parity block. If one disk fails, the remaining disks and the parity block can be XORed to reconstruct the data of the failed disk.
 
-RAID 4 multiplies the data read throughput by $N - 1$, i.e. ignoring the parity disk.
+RAID 4 multiplies the data read throughput by `$N - 1$`, i.e. ignoring the parity disk.
 
 The data write throughput of RAID 4 is half the throughput of one disk, because it requires two accesses for every write. This is because the parity disk has to be accessed to read the old value and the new value has to be written back.
 
@@ -850,13 +852,13 @@ Four accesses are necessary per write, specifically:
 
 However, each of those accesses is distributed among all of the disks, so that the write throughput is:
 
-$$ \text {write throughput} = \frac N 4 * \text { throughput of 1 disk} $$
+<div>$$ \text {write throughput} = \frac N 4 * \text { throughput of 1 disk} $$</div>
 
 RAID 5 has the same reliability as RAID 4: it fails if more than one disk fails, but if only one disk fails, it can be reconstructed from the remaining data.
 
 The storage capacity of a RAID 5 array is:
 
-$$ \text {total storage} = \text {total sum } - \text { total parity data} $$
+<div>$$ \text {total storage} = \text {total sum } - \text { total parity data} $$</div>
 
 Essentially one disk's worth of storage is spent on parity.
 
@@ -893,8 +895,8 @@ A shared memory system is _incoherent_ when the same memory location has differe
 
 Caches are _coherent_ if:
 
-1. read $R$ from address $X$ on core $C_1$ returns the value written by the most recent write $W$ to $X$ on $C_1$ if no other core has written to $X$ between $W$ and $R$.
-2. if $C_1$ writes to $X$ and $C_2$ reads after some time, and there are no other writes in-between, $C_2$'s read returns the value from $C_1$'s write
+1. read `$R$` from address `$X$` on core `$C_1$` returns the value written by the most recent write `$W$` to `$X$` on `$C_1$` if no other core has written to `$X$` between `$W$` and `$R$`.
+2. if `$C_1$` writes to `$X$` and `$C_2$` reads after some time, and there are no other writes in-between, `$C_2$`'s read returns the value from `$C_1$`'s write
 3. writes to the same location are serialized: they must be seen to occur in the same order on all cores
 
 _Write-update coherence_ is when writes are broadcast to update other caches.
@@ -907,15 +909,15 @@ _Directory coherence_ is when each block is assigned an ordering point in order 
 
 Write-update coherence can be optimized with respect to the number of memory writes by giving a dirty bit an additional meaning. Caches snoop on the bus for reads as well, and when a read is detected for data that it has modified (i.e. is dirty), it serves that data over the bus, avoiding a slower memory access.
 
-If a previously served dirty block in cache $A$ is modified/dirtied by another cache $B$, cache $B$'s write is broadcast over the bus and is picked up by $A$, but now $A$ unsets the dirty bit, essentially relinquishing ownership of the block to cache $B$.
+If a previously served dirty block in cache `$A$` is modified/dirtied by another cache `$B$`, cache `$B$`'s write is broadcast over the bus and is picked up by `$A$`, but now `$A$` unsets the dirty bit, essentially relinquishing ownership of the block to cache `$B$`.
 
 Write-update coherence can be optimized with respect to the number of bus writes by adding a share bit to each block, denoting whether the block is shared with other caches (i.e. other caches contain copies of that block).
 
-If cache $A$ has a block and it snoops that another cache $B$ reads or writes to that block, cache $A$ sets the block's shared bit to 1 and alters the bus so that when $B$ receives the data, it knows that the block is shared and sets its shared bit to 1 as well.
+If cache `$A$` has a block and it snoops that another cache `$B$` reads or writes to that block, cache `$A$` sets the block's shared bit to 1 and alters the bus so that when `$B$` receives the data, it knows that the block is shared and sets its shared bit to 1 as well.
 
 When a write hit occurs, the write is only broadcast over the bus if the shared bit is 1, since that would mean that other caches would need to be aware of that write in order to remain coherent.
 
-Write-invalidate snooping coherence works such that, when cache $A$ reads a block and cache $B$ writes to that block, cache $A$ snoops the read on the bus and invalidates the block by setting its valid bit to 0.
+Write-invalidate snooping coherence works such that, when cache `$A$` reads a block and cache `$B$` writes to that block, cache `$A$` snoops the read on the bus and invalidates the block by setting its valid bit to 0.
 
 Most modern processors use write-invalidate coherence because it better handles situations where a thread moves to another core. With write-update, the thread's cache data in the previous core's cache will continue to be updated even though it's no longer needed there.
 
@@ -969,8 +971,8 @@ If a block is in the _shared state_ and is written to (local write), then the bl
 
 A _cache-to-cache transfer_ works as follows:
 
-1. core 1 has block $B$ in _modified state_
-2. core 2 puts a read request for $B$ on the bus
+1. core 1 has block `$B$` in _modified state_
+2. core 2 puts a read request for `$B$` on the bus
 3. core 1 has to provide the data since it contains local modifications not yet available in memory
 
 An _abort-and-retry cache-to-cache transfer_ works as follows:
@@ -1087,7 +1089,7 @@ _Sequential memory consistency_ means that the accesses from one core are not re
 
 A possible implementation of sequential consistency would have to ensure that a core performs the next access only when all previous accesses are complete, which would mean poor performance.
 
-It would be better if it re-orders a sequence of loads. So for example, load $A$ and load $B$ gets re-ordered to load $B$ and load $A$, then the coherence traffic must be monitored to see if a write to $B$ occurs before load $A$ is executed, in which case the previous load $B$ must be replayed.
+It would be better if it re-orders a sequence of loads. So for example, load `$A$` and load `$B$` gets re-ordered to load `$B$` and load `$A$`, then the coherence traffic must be monitored to see if a write to `$B$` occurs before load `$A$` is executed, in which case the previous load `$B$` must be replayed.
 
 The four kinds of memory access orderings are:
 

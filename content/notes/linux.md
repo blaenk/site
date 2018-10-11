@@ -214,11 +214,11 @@ Page tables maintain a mapping between virtual addresses and physical addresses.
 
 A page table exists for each and every process. On a context-switch, the page table pointer is updated by updating the page table register, which points to the currently active page table (e.g. CR3 on x86), to point to the new process' page table.
 
-The number of page table entries is all of the virtual page numbers that can exist in a virtual address space, which is $2^{N} / M$ where $N$ is the virtual address size and $M$ is the page size. For example, on a 32-bit architecture with 4 KB page size, that means that $N = 2^{32}$ and $M = 4096$, so $2^{32} / 4096$ = 1,048,576 virtual page numbers (and thus, one page table entry for each one).
+The number of page table entries is all of the virtual page numbers that can exist in a virtual address space, which is `$2^{N} / M$` where `$N$` is the virtual address size and `$M$` is the page size. For example, on a 32-bit architecture with 4 KB page size, that means that `$N = 2^{32}$` and `$M = 4096$`, so `$2^{32} / 4096$` = 1,048,576 virtual page numbers (and thus, one page table entry for each one).
 
-This means that there would need to be 1,048,576 entries in a page table, where each entry would contain for example 4 bytes to store the page frame number and additional bits. This amounts to $1,048,576 * 4\ \text {bytes}$, or about 4 MB per-process.
+This means that there would need to be 1,048,576 entries in a page table, where each entry would contain for example 4 bytes to store the page frame number and additional bits. This amounts to `$1,048,576 * 4\ \text {bytes}$`, or about 4 MB per-process.
 
-On a larger virtual address space, such as a 64-bit system, the virtual address space would be $2^{64}$ with a page table entry of 8 bytes and a page size of 4096 bytes would amount to $2^{32} / 4096 * 8\ \text {bytes}$, or about 36 petabytes per-process. This is clearly prohibitively expensive, especially considering that the vast majority of the address space is unused, meaning that the vast majority of the page table entries are not necessary.
+On a larger virtual address space, such as a 64-bit system, the virtual address space would be `$2^{64}$` with a page table entry of 8 bytes and a page size of 4096 bytes would amount to `$2^{32} / 4096 * 8\ \text {bytes}$`, or about 36 petabytes per-process. This is clearly prohibitively expensive, especially considering that the vast majority of the address space is unused, meaning that the vast majority of the page table entries are not necessary.
 
 For this reason, a level of indirection is introduced in order to facilitate a sparse page table. Specifically, an outer page table contains pointers to internal (real) page tables. The internal page tables are only created for valid virtual memory regions, allowing holes to exist.
 
@@ -226,10 +226,10 @@ For this reason, a level of indirection is introduced in order to facilitate a s
 
 This is known as a _hierarchical page table_. It is indexed by:
 
-1. obtaining the virtual address prefixes $p_1$ and $p_2$ and the offset $d$.
-2. index into the outer table with $p_1$ to obtain the internal page table
-3. index into the internal page table with $p_2$ to obtain the page
-4. index into the page with the offset $d$ to obtain the physical address
+1. obtaining the virtual address prefixes `$p_1$` and `$p_2$` and the offset `$d$`.
+2. index into the outer table with `$p_1$` to obtain the internal page table
+3. index into the internal page table with `$p_2$` to obtain the page
+4. index into the page with the offset `$d$` to obtain the physical address
 
 <img src="//i.imgur.com/pNJ2kfY.png" class="center" />
 
@@ -285,13 +285,13 @@ A user-level memory allocator is responsible for the dynamic process state, such
 
 A kernel-level memory allocator is responsible for allocating memory regions for the kernel as well as the static state of a process, such as the code, stack, and initialized data regions, as well as keeping track of the free memory that's available on the system.
 
-The kernel-level _buddy allocator_ works by starting with $2^x$ chunk of pages. On each request, one of the chunks is subdivided into another $2^y$ chunk until the smallest such chunk is found that can satisfy the request. When freeing, the "buddy," the adjacent chunk, is checked to see if it's also free in order to aggregate them both into a larger chunk.
+The kernel-level _buddy allocator_ works by starting with `$2^x$` chunk of pages. On each request, one of the chunks is subdivided into another `$2^y$` chunk until the smallest such chunk is found that can satisfy the request. When freeing, the "buddy," the adjacent chunk, is checked to see if it's also free in order to aggregate them both into a larger chunk.
 
 <img src="//i.imgur.com/VHwkAhY.png" class="center" />
 
 In the example above, an allocation request of size 8 is received. The region is subdivided until a chunk of size 8 is found to allocate. Then another chunk of size 8 is allocated (on the buddy of the previously allocated chunk). Then an allocation request of size 4 is received which requires subdividing other chunks. Then the second allocated chunk of 8 is deallocated and its buddy is checked to see if it's free in order to merge with it, but it's not. Then the first allocated chunk of 8 is deallocated and its buddy is checked to see if it's free in order to merge with it. It is, so they merge into a chunk of 16.
 
-Since the buddy allocator specifically allocates at a $2^x$ granularity, it increases the likelihood of internal fragmentation, since not a lot of kernel data structures are near the size of a power of 2.
+Since the buddy allocator specifically allocates at a `$2^x$` granularity, it increases the likelihood of internal fragmentation, since not a lot of kernel data structures are near the size of a power of 2.
 
 The kernel-level _slab allocator_ works by using object caches backed by physically contiguous pages, or _slabs_, of a size that is a multiple of the object size.
 
@@ -464,7 +464,7 @@ The run-queue data structure for the Linux O(1) scheduler essentially has two ar
 
 As each processes' timeslice expires, it's queued onto the corresponding queue in the expired array. However, if the process yields (e.g. to I/O) _before_ its timeslice expires, it remains on the active array. Once all processes expire and there are no remaining processes in the queues of the active array, the the pointers to the active and expired arrays are swapped (like a double-buffer swap) and the process is repeated on the newly active array.
 
-The Linux O(1) scheduler gets its name because it can achieve constant time $O(1)$ process selection by using a bitmap to index into the first (thus highest-priority) non-empty run-queue, and accessing the head of the run-queue is itself a $O(1)$ operation.
+The Linux O(1) scheduler gets its name because it can achieve constant time `$O(1)$` process selection by using a bitmap to index into the first (thus highest-priority) non-empty run-queue, and accessing the head of the run-queue is itself a `$O(1)$` operation.
 
 The Linux O(1) scheduler mitigates process starvation by ensuring that all tasks in the active array are run until their timeslices expire, _including_ lower-priority tasks, which has shorter timeslices in order to minimize interfering with higher-priority tasks.
 
@@ -478,7 +478,7 @@ Periodically, CFS updates the current process' vruntime and compares it to the l
 
 CFS handles priority and niceness by adjusting the progress rate of a process' vruntime. In other words, low-priority processes will have a faster rate of increase in their vruntime, whereas high-priority processes will have a slower rate of increase in their vruntime. This has the effect that low-priority processes run for less time, because they more quickly reach the point at which the left-most process has a smaller vruntime than theirs, and vice versa.
 
-The performance characteristics of CFS are determined by the performance characteristics of the red-black tree that backs it: $O(\text {height})$ for selecting a task and $O(\log n)$ for adding a task.
+The performance characteristics of CFS are determined by the performance characteristics of the red-black tree that backs it: `$O(\text {height})$` for selecting a task and `$O(\log n)$` for adding a task.
 
 # Concurrency
 
@@ -509,7 +509,7 @@ spinlock_unlock(lock):
 
 A test-and-test-and-set spinlock is one which doesn't spin on the expensive atomic operation in the regular case that the lock is not free, which decreases memory contention. Instead it spins on the cached value, which will eventually be updated either due to write-update or because of write-invalidation. When a change is detected, the atomic operation is performed to determine if the lock can indeed be acquired [^wait_spinlock].
 
-However, the test-and-test-and-set spinlock also has some performance disadvantages because everyone sees that the lock is free at the same time, which causes everyone to try to acquire the lock at the same time. This creates $O(n^2)$ cache-coherence contention because each processor will attempt to acquire the lock via the atomic operation, which produces coherence traffic to invalidate all other caches.
+However, the test-and-test-and-set spinlock also has some performance disadvantages because everyone sees that the lock is free at the same time, which causes everyone to try to acquire the lock at the same time. This creates `$O(n^2)$` cache-coherence contention because each processor will attempt to acquire the lock via the atomic operation, which produces coherence traffic to invalidate all other caches.
 
 A possible implementation could be:
 
@@ -776,7 +776,7 @@ An example of hosted virtualization is [Kernel-based VM](https://en.wikipedia.or
 
 The _warm-up phase_ of a _pre-copy memory migration_ of a virtual machine consists of copying all of its memory from the source to the destination while the VM is still running, while continuously re-copying dirtied pages until the rate of re-copied pages is greater-than-or-equal-to the page dirtying rate.
 
-$$ \text {Rate of re-copying} \ge \text {Rate of dirtying} $$
+<div>$$ \text {Rate of re-copying} \ge \text {Rate of dirtying} $$</div>
 
 Once this condition is met, the _stop-and-copy phase_ of a pre-copy memory migration begins. The VM is stopped in order to copy the (relatively few) remaining dirty pages to the destination. Then the VM is resumed at the destination.
 

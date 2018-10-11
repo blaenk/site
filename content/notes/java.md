@@ -1570,7 +1570,7 @@ The `LinkedList` class extends `AbstractSequentialList` and implements `List`, `
 
 The `HashSet` class extends `AbstractSet` and implements `Set`, and provides hash table behavior. Two of the constructors accept a capacity argument (default 16), with one of them accepting a load capacity argument (default 0.75) known as _fill ratio_, which determines how full the hash set can be before it is grown, and as such it must be a value between 0.0 and 1.0. In other words, the hash set is grown when:
 
-$$ \text{# of elements} \gt \text{capacity} \cdot \text{fill ratio} $$
+<div>$$ \text{# of elements} \gt \text{capacity} \cdot \text{fill ratio} $$</div>
 
 ### LinkedHashSet
 
@@ -1875,7 +1875,7 @@ There are also specialized variants of the `Optional` class for primitives which
 
 ## Random
 
-The `Random` class is a pseudorandom number generator. A variety of different kinds of numbers can be extracted from `Random` via different methods such as `nextBoolean`, `nextBytes`, `nextInt`, and so on. The `nextBytes` method in particular takes an array and fills it with the randomly generated values. The `nextInt` method has an overload that accepts an upper bound so that numbers are generated within the range $[0, n)$.
+The `Random` class is a pseudorandom number generator. A variety of different kinds of numbers can be extracted from `Random` via different methods such as `nextBoolean`, `nextBytes`, `nextInt`, and so on. The `nextBytes` method in particular takes an array and fills it with the randomly generated values. The `nextInt` method has an overload that accepts an upper bound so that numbers are generated within the range `$[0, n)$`.
 
 The seed can be passed to one of the constructor overloads or reset after the fact with the `setSeed` method.
 

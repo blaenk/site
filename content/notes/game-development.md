@@ -156,12 +156,13 @@ I learned linear algebra and related 3D math using math and Direct3D texts which
 
 ### Handedness
 
-The handedness of a system has an effect on the directions of the positive $z$-axis, positive rotation, and the cross-product. These can easily be determined by using the [right-hand rule](http://en.wikipedia.org/wiki/Right-hand_rule) or left-hand rule. It's important to realize that this has _nothing_ to do with row or column-major notation.
+The handedness of a system has an effect on the directions of the positive `$z$`-axis, positive rotation, and the cross-product. These can easily be determined by using the [right-hand rule](http://en.wikipedia.org/wiki/Right-hand_rule) or left-hand rule. It's important to realize that this has _nothing_ to do with row or column-major notation.
 
 ### Representation
 
-Row-major notation means that when indexing or denoting a matrix' size, the row is written first, and vice versa with column-major notation. Given a row-major matrix $R$, the column-major matrix $C$ is derived by deriving the transpose $R^{T}$:
+Row-major notation means that when indexing or denoting a matrix' size, the row is written first, and vice versa with column-major notation. Given a row-major matrix `$R$`, the column-major matrix `$C$` is derived by deriving the transpose `$R^{T}$`:
 
+<div>
 $$
 \begin{align}
 R &=
@@ -179,6 +180,7 @@ C = R^T &=
 \end{bmatrix}
 \end{align}
 $$
+</div>
 
 
 ### Storage
@@ -189,11 +191,11 @@ When it comes to matrix storage in memory, the key is that they are both stored 
 
 When multiplying vectors with matrices, row-major notation requires pre-multiplication; the vector must appear to the left of the matrix. Column-major notation requires post-multiplication. This has the effect that the row-major, pre-multiplication transformation:
 
-$$ vMVP $$
+<div>$$ vMVP $$</div>
 
 Must be expressed as follows in column-major notation:
 
-$$ M^T V^T P^T v^T $$
+<div>$$ M^T V^T P^T v^T $$</div>
 
 However, row-major and column-major matrices are already transposes of each other, and as a result they are [stored](#storage) the same way in memory. This means that no actual transposing has to take place!
 
@@ -207,7 +209,7 @@ The most common optimization is to treat the world as a composition of _chunks_,
 
 A chunk may be represented by a volumetric grid such as a 3D array, optimized into a flat slab of memory indexed with the formula:
 
-$$ \text {chunk}[x + (y * \text {size}_x) + (z * \text {size}_x * \text {size}_y)] $$
+<div>$$ \text {chunk}[x + (y * \text {size}_x) + (z * \text {size}_x * \text {size}_y)] $$</div>
 
 The problem with this is that a lot of space is wasted for empty cells. A 16x16x16 chunk size where every cell conveys its information within one byte of data yields 4096 bytes, or 4 kilobytes. If every single cell in the chunk is empty except for one, then 4095 bytes are being wasted. That's 99.9% of the space allocated for the chunk.
 

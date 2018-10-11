@@ -58,103 +58,101 @@ The goal of asymptotic analysis is to suppress the constant factors and lower-or
 
 The summation of a constant is simply the product of the constant and the range:
 
-$$ \sum_{i = 1}^n 1 = n $$
+<div>$$ \sum_{i = 1}^n 1 = n $$</div>
 
-The sum of the first $n$ integers can be visualized as folding the range of values at the middle so that the first integer is paired with the last, or more generally: the $i^\text{th}$ paired with the $(n - i + 1)\text{th}$. Below, the bound of $n/2$ refers to the "folding at the middle," then each pair is added. **Note** that the sum is quadratic!
+The sum of the first `$n$` integers can be visualized as folding the range of values at the middle so that the first integer is paired with the last, or more generally: the `$i^\text{th}$` paired with the `$(n - i + 1)\text{th}$`. Below, the bound of `$n/2$` refers to the "folding at the middle," then each pair is added. **Note** that the sum is quadratic!
 
-<div>
-$$ \sum_{i = 1}^n i = \sum_{i = 1}^{n/2} (i + (n - i + 1)) = \frac {n (n + 1)} 2 $$
-</div>
+<div>$$ \sum_{i = 1}^n i = \sum_{i = 1}^{n/2} (i + (n - i + 1)) = \frac {n (n + 1)} 2 $$</div>
 
 The sum of a _harmonic series_ is approximately equal to the logarithm of the bound.
 
-$$ H(n) = \sum_{i = 1}^n \frac 1 i \approx \log n $$
+<div>$$ H(n) = \sum_{i = 1}^n \frac 1 i \approx \log n $$</div>
 
 ## Logarithms
 
 The exponent of a logarithm operand can be extracted:
 
-$$ \log_a n^b = b \cdot \log_a n $$
+<div>$$ \log_a n^b = b \cdot \log_a n $$</div>
 
 ## Bounds
 
 <img src="//i.imgur.com/fMlyzap.png" class="center" />
 
-The upper-bound $f(n) = O(g(n))$ means that there exists some constant $c$ such that $f(n)$ is _always_ $\le c \cdot g(n)$ for a large enough $n$, that is, for some offset $n_0$ such that $n \ge n_0$.
+The upper-bound `$f(n) = O(g(n))$` means that there exists some constant `$c$` such that `$f(n)$` is _always_ `$\le c \cdot g(n)$` for a large enough `$n$`, that is, for some offset `$n_0$` such that `$n \ge n_0$`.
 
 <img src="//i.imgur.com/L5oa2vN.png" class="center" />
 
-The lower-bound $f(n) = \Omega(g(n))$ is similar except that it is a lower-bound, so that there exists some constant $c$ such that $f(n)$ is _always_ $\ge c \cdot g(n)$ for $n \ge n_0$.
+The lower-bound `$f(n) = \Omega(g(n))$` is similar except that it is a lower-bound, so that there exists some constant `$c$` such that `$f(n)$` is _always_ `$\ge c \cdot g(n)$` for `$n \ge n_0$`.
 
 <img src="//i.imgur.com/GzSDZW7.png" class="center" />
 
-There is also $f(n) = \Theta(g(n))$ which means that $c_1 \cdot g(n)$ is an upper-bound and $c_2 \cdot g(n)$ is a lower-bound on $f(n)$ for $n \ge n_0$. This is a tighter bound on $f(n)$ than simply a lower or upper-bound alone would provide.
+There is also `$f(n) = \Theta(g(n))$` which means that `$c_1 \cdot g(n)$` is an upper-bound and `$c_2 \cdot g(n)$` is a lower-bound on `$f(n)$` for `$n \ge n_0$`. This is a tighter bound on `$f(n)$` than simply a lower or upper-bound alone would provide.
 
 <img src="//i.imgur.com/mdfglLj.png" class="center" />
 
-Constant factors are ignored since they can easily be beaten out by a different chosen value of $c$.
+Constant factors are ignored since they can easily be beaten out by a different chosen value of `$c$`.
 
 ## Dominance Relations
 
-A faster-growing function $f(n)$ _dominates_ a slower-growing one $g(n)$, i.e. $ f \gg g$. In order of increasing dominance:
+A faster-growing function `$f(n)$` _dominates_ a slower-growing one `$g(n)$`, i.e. `$f \gg g$`. In order of increasing dominance:
 
 | Name         | Complexity | Examples |
 | :-------     | :--------- | :----------------- |
-| Constant     | $1$        | adding two numbers |
-| Logarithmic  | $\log n$   | branching; binary search |
-| Linear       | $n$        | scanning; incrementing each element in an array |
-| Linearithmic | $n \log n$ | branching and scanning at each level; QuickSort and MergeSort |
-| Quadratic    | $n^2$      | looking at all/most pairs of an array; InsertionSort |
-| Cubic        | $n^3$      | looking at all/most triples of an array; matrix multiplication |
-| Exponential  | $c^n$      | looking at all subsets of an array |
-| Factorial    | $n!$       | looking at all permutations or orderings of n items |
+| Constant     | `$1$`        | adding two numbers |
+| Logarithmic  | `$\log n$`   | branching; binary search |
+| Linear       | `$n$`        | scanning; incrementing each element in an array |
+| Linearithmic | `$n \log n$` | branching and scanning at each level; QuickSort and MergeSort |
+| Quadratic    | `$n^2$`      | looking at all/most pairs of an array; InsertionSort |
+| Cubic        | `$n^3$`      | looking at all/most triples of an array; matrix multiplication |
+| Exponential  | `$c^n$`      | looking at all subsets of an array |
+| Factorial    | `$n!$`       | looking at all permutations or orderings of n items |
 
 When analyzing an algorithm it is common to produce an expression of bounds which can easily be simplified by keeping in mind the principle of dominance relations.
 
 ### Sum of Bounds
 
-For example, is an algorithm first sorts its input and then prints each element, then that's a sorting operation of $O(n \log n)$ followed by a linear printing operation of $O(n)$, essentially becoming $O(n \log n + n)$. However, the linearithmic term clearly dominates the linear term, so simplifying it to $O(n \log n)$ still leaves an accurate bound.
+For example, is an algorithm first sorts its input and then prints each element, then that's a sorting operation of `$O(n \log n)$` followed by a linear printing operation of `$O(n)$`, essentially becoming `$O(n \log n + n)$`. However, the linearithmic term clearly dominates the linear term, so simplifying it to `$O(n \log n)$` still leaves an accurate bound.
 
-$$ O(f(n)) + O(g(n)) → O(\max (f(n), g(n))) $$
+<div>$$ O(f(n)) + O(g(n)) → O(\max (f(n), g(n))) $$</div>
 
 ### Product of Bounds
 
-Constant factors are ignored since a different value of the constant $c$ can be chosen to compensate for any arbitrary constant factor.
+Constant factors are ignored since a different value of the constant `$c$` can be chosen to compensate for any arbitrary constant factor.
 
-$$ O(c \cdot f(n)) → O(f(n)) $$
+<div>$$ O(c \cdot f(n)) → O(f(n)) $$</div>
 
-However, the product of functions is important. For example, a linear scan of an array in $O(n)$ where for each element another linear scan of the array is made in $O(n)$ produces a product of $O(n \cdot n) = O(n^2)$.
+However, the product of functions is important. For example, a linear scan of an array in `$O(n)$` where for each element another linear scan of the array is made in `$O(n)$` produces a product of `$O(n \cdot n) = O(n^2)$`.
 
-$$ O(f(n)) \cdot O(g(n)) → O(f(n) \cdot g(n)) $$
+<div>$$ O(f(n)) \cdot O(g(n)) → O(f(n) \cdot g(n)) $$</div>
 
 ## Master Theorem
 
 The master theorem provides a straightforward, "black-box" way of determining the running time of a recursive, divide-and-conquer algorithm. It's stated as:
 
-$$ T(n) = a T \left(\frac n b\right) + f\left(n^d\right) $$
+<div>$$ T(n) = a T \left(\frac n b\right) + f\left(n^d\right) $$</div>
 
 where:
 
-* $n$ is the size of the problem
-* $a$ is the number of recursive calls per level
-* $\frac n b$ is the size of each subproblem
-* $f\left(n^d\right)$ is the work done outside of the recursive calls, e.g. the merge in mergesort
+* `$n$` is the size of the problem
+* `$a$` is the number of recursive calls per level
+* `$\frac n b$` is the size of each subproblem
+* `$f\left(n^d\right)$` is the work done outside of the recursive calls, e.g. the merge in mergesort
 
-Then the run-time complexity of an algorithm can be determined based on the values of $a$, $b$, and $d$.
+Then the run-time complexity of an algorithm can be determined based on the values of `$a$`, `$b$`, and `$d$`.
 
-* when $a = b^d$, the complexity is $O\left(n^d \log n\right)$
+* when `$a = b^d$`, the complexity is `$O\left(n^d \log n\right)$`
 
-    The same amount of work $n^d$ is being done at each level, of which there are $\log n$.
+    The same amount of work `$n^d$` is being done at each level, of which there are `$\log n$`.
 
     <img src="//i.imgur.com/MPsr8vI.png" />
 
-* when $a < b^d$, the complexity is $O\left(n^d\right)$
+* when `$a < b^d$`, the complexity is `$O\left(n^d\right)$`
 
     Most of the work is done at the root, as if only at a single level.
 
     <img src="//i.imgur.com/01nnPMf.png" />
 
-* when $a > b^d$, the complexity is $O\left(n^{\log_b a}\right)$
+* when `$a > b^d$`, the complexity is `$O\left(n^{\log_b a}\right)$`
 
     It's equivalent to the number of leaves in the recursion tree, since most of the work is done at the bottom of the tree.
 
@@ -162,8 +160,8 @@ Then the run-time complexity of an algorithm can be determined based on the valu
 
 Essentially, the master theorem is a tug-of-war between:
 
-* $a$: the rate of subproblem proliferation
-* $b^d$: the rate of work shrinkage per subproblem
+* `$a$`: the rate of subproblem proliferation
+* `$b^d$`: the rate of work shrinkage per subproblem
 
 ## Approximations
 
@@ -171,7 +169,7 @@ Oftentimes it's useful to use approximations instead of exact values.
 
 Stirling's approximation:
 
-$$ \ln N! \approx N \ln N - N + \ln \sqrt {2 \pi N} $$
+<div>$$ \ln N! \approx N \ln N - N + \ln \sqrt {2 \pi N} $$</div>
 
 # Bitwise Operations
 
@@ -248,7 +246,7 @@ The parity can be computed by continuously right-shifting and ANDing the shifted
 
 A very important property of XOR is that it a number XORed with itself is 0.
 
-$$ N \oplus N = 0 $$
+<div>$$ N \oplus N = 0 $$</div>
 
 For example, given a list of numbers where each number appears exactly twice _except_ for one number, the number that appears only once can be obtained by XORing each element with the next one, since duplicate elements would cancel themselves out.
 
@@ -256,23 +254,19 @@ More generally, bytes can be treated as a set, where bitwise operations correspo
 
 A set can be tested for the presence of a value by using the AND operator. More generally, this can be seen as a set intersection operation, in which the operands may, after all, be singleton sets.
 
-<div>
-$$ S_a \mathrel{\&} S_b $$
-</div>
+<div>$$ S_a \mathrel{\&} S_b $$</div>
 
-A value can be _unconditionally_ added to set $S$ using the OR operator:
+A value can be _unconditionally_ added to set `$S$` using the OR operator:
 
-$$ S \mathrel{|} N $$
+<div>$$ S \mathrel{|} N $$</div>
 
-A value can be _unconditionally_ removed from set $S$ using the AND operator with the complement of the value to be removed:
+A value can be _unconditionally_ removed from set `$S$` using the AND operator with the complement of the value to be removed:
 
-<div>
-$$ S \mathrel{\&} \mathord{\sim} N $$
-</div>
+<div>$$ S \mathrel{\&} \mathord{\sim} N $$</div>
 
-A value can be _conditionally_ added or removed from the set $S$ using the XOR operator. The value will be removed if it is already contained and added if it isn't.
+A value can be _conditionally_ added or removed from the set `$S$` using the XOR operator. The value will be removed if it is already contained and added if it isn't.
 
-$$ S \oplus N $$
+<div>$$ S \oplus N $$</div>
 
 For example, given an array of numbers, each of which appears exactly three times _except_ for one number, the number that appears only once can be obtained using a combination of the above operations.
 
@@ -341,25 +335,25 @@ public int singleNumber(int[] nums) {
 
 # Integers
 
-It's possible to "shift" a number to the left by $n$ digits by multiplying it with $\text {base}^\text {digits}$. For example, the number $321$ can be shifted to the left by 2 digits to $32100$ by multiplying it by $10^2$.
+It's possible to "shift" a number to the left by `$n$` digits by multiplying it with `$\text {base}^\text {digits}$`. For example, the number `$321$` can be shifted to the left by 2 digits to `$32100$` by multiplying it by `$10^2$`.
 
-$$\text {shifted left by n} = x * \text {base}^\text {digits}$$
+<div>$$\text {shifted left by n} = x * \text {base}^\text {digits}$$</div>
 
-Similarly, it's possible to get the last $n$ digits of a number by getting the remainder of dividing it by $\text {base}^\text {digits}$. For example, the last 2 digits of $321$ can be obtained by getting the remainder of dividing it (i.e. the modulo) by $10^2$.
+Similarly, it's possible to get the last `$n$` digits of a number by getting the remainder of dividing it by `$\text {base}^\text {digits}$`. For example, the last 2 digits of `$321$` can be obtained by getting the remainder of dividing it (i.e. the modulo) by `$10^2$`.
 
-$$\text {right-most n digits} = x \bmod \text {base}^\text {digits}$$
+<div>$$\text {right-most n digits} = x \bmod \text {base}^\text {digits}$$</div>
 
-The square root of a number can be found via binary search by searching from $[1.0, n]$ for a number which, squared, is equal to the input (given some tolerance or until convergence). If the input is real and less than 1, the bounds change to $[n, 1.0]$.
+The square root of a number can be found via binary search by searching from `$[1.0, n]$` for a number which, squared, is equal to the input (given some tolerance or until convergence). If the input is real and less than 1, the bounds change to `$[n, 1.0]$`.
 
-The logarithm of a number can naively be computed by counting how many times the operand can be divided by the base without going below 1. For example, $\log_2 64$ can divide $64 / 2$ a total of six times until it reaches 1, doing it a seventh time causes the value to go below 1.
+The logarithm of a number can naively be computed by counting how many times the operand can be divided by the base without going below 1. For example, `$\log_2 64$` can divide `$64 / 2$` a total of six times until it reaches 1, doing it a seventh time causes the value to go below 1.
 
 # Arrays
 
-The 2-SUM problem is one where the input is a sorted array of integers and a target value $k$ and the objective is to determine if there is a pair of entries $i$ and $j$ such that:
+The 2-SUM problem is one where the input is a sorted array of integers and a target value `$k$` and the objective is to determine if there is a pair of entries `$i$` and `$j$` such that:
 
-$$A[i] + A[j] = k$$
+<div>$$A[i] + A[j] = k$$</div>
 
-The brute-force approach would be to check if this is true for all possible pairs of values in the array, of which there are $n^2$. Alternatively, a [hash table](#hash-tables) can be used.
+The brute-force approach would be to check if this is true for all possible pairs of values in the array, of which there are `$n^2$`. Alternatively, a [hash table](#hash-tables) can be used.
 
 Another approach is to iterate from both ends of the array. For example, at first, the first and last elements will be used. If their sum is greater than the target, the right end will be iterated leftward so as to attempt to obtain a smaller element. If instead their sum is less than the target, the left end will be iterated rightward in hopes of increasing their sum.
 
@@ -387,17 +381,17 @@ Many problems can be reduced to sorting.
 
 The following algorithms are described with the assumption that the sequence is an array of contiguous memory and constant access time. This is _noteworthy_ because it is important to recognize algorithms can have different speeds depending on the underlying data structure.
 
-For example, selection sort backed by a priority queue or balanced binary tree can help to speed up the operation of finding the smallest element in the unsorted region. Instead of being linear, the operation would be $\lg(n)$. Given that this is done at every element in the sequence, of which there are $N$, this means that selection sort backed by such a structure can be improved from $O(n^2)$ to $O(n\lg(n))$ [^sorting_improvements].
+For example, selection sort backed by a priority queue or balanced binary tree can help to speed up the operation of finding the smallest element in the unsorted region. Instead of being linear, the operation would be `$\lg(n)$`. Given that this is done at every element in the sequence, of which there are `$N$`, this means that selection sort backed by such a structure can be improved from `$O(n^2)$` to `$O(n\lg(n))$` [^sorting_improvements].
 
 A sorting algorithm is known as _stable_ if it maintains the same relative order of equal keys as it was before the sorting operation.
 
-The best case complexity of comparison-based sorting is $O(n \log n)$. If the distribution of the data is known, sorting can be done much faster using counting or bucket sort, for example.
+The best case complexity of comparison-based sorting is `$O(n \log n)$`. If the distribution of the data is known, sorting can be done much faster using counting or bucket sort, for example.
 
 ## Selection Sort
 
 |Case    |Growth|
 |:-----  |:--------|
-|Any     |$\Theta(n^2)$|
+|Any     |`$\Theta(n^2)$`|
 
 This is a pretty naive algorithm that is mainly useful for didactic purposes.
 
@@ -428,8 +422,8 @@ public void sort(Comparable[] seq) {
 
 |Case   |Growth|
 |:----- |:--------|
-|Best   |$\Theta(n)$|
-|Worst  |$O(n^2)$|
+|Best   |`$\Theta(n)$`|
+|Worst  |`$O(n^2)$`|
 
 This is a _stable_ algorithm that is still pretty straightforward but somewhat improves upon selection sort if the array is already sorted or if it's nearly sorted.
 
@@ -457,26 +451,26 @@ public void sort(Comparable[] seq) {
 
 |Case   |Growth|
 |:----- |:--------|
-|Worst  |$O(n^{3/2})$|
+|Worst  |`$O(n^{3/2})$`|
 
-While insertion sort can be faster than selection sort, one problem with it is that the swap operations are done one at a time. This means that in the worst case, when sorting position 1 of the array, the smallest element could be at the very end of the array, meaning a total of $N - 1$ swaps where $N$ is the length of the array.
+While insertion sort can be faster than selection sort, one problem with it is that the swap operations are done one at a time. This means that in the worst case, when sorting position 1 of the array, the smallest element could be at the very end of the array, meaning a total of `$N - 1$` swaps where `$N$` is the length of the array.
 
 Shell sort aims to mitigate this by doing the following:
 
-1. pick a large number $H$ some constant factor less than the length of the sequence
-2. consider every $H^{th}$ element in the sequence and apply insertion sort to those elements
-3. now consider every $(H + 1)^{th}$ element and do the same
-4. repeat incrementing $H$ until the end of the array is reached
-5. repeat steps 2 - 4 but with $H$ reduced by some factor until the reduction reaches $1$
-6. ultimately do regular insertion sort, i.e. $H = 1$
+1. pick a large number `$H$` some constant factor less than the length of the sequence
+2. consider every `$H^{th}$` element in the sequence and apply insertion sort to those elements
+3. now consider every `$(H + 1)^{th}$` element and do the same
+4. repeat incrementing `$H$` until the end of the array is reached
+5. repeat steps 2 - 4 but with `$H$` reduced by some factor until the reduction reaches `$1$`
+6. ultimately do regular insertion sort, i.e. `$H = 1$`
 
-The value picked for $H$ and the factor which is used to reduce it form what is known as a [gap sequence](http://en.wikipedia.org/wiki/Shellsort#Gap_sequences). The overall worst-case time complexity _depends on the chosen gap sequence_. A commonly chosen gap sequence with a worst-case time complexity of $O(n^{3/2})$ is:
+The value picked for `$H$` and the factor which is used to reduce it form what is known as a [gap sequence](http://en.wikipedia.org/wiki/Shellsort#Gap_sequences). The overall worst-case time complexity _depends on the chosen gap sequence_. A commonly chosen gap sequence with a worst-case time complexity of `$O(n^{3/2})$` is:
 
-$$\frac {(3^k - 1)} {2} \text{, not greater than}\ \lceil N/3 \rceil$$
+<div>$$\frac {(3^k - 1)} {2} \text{, not greater than}\ \lceil N/3 \rceil$$</div>
 
-This sequence begins at the largest increment less than $N/3$ and decreases to 1. This means that for a sequence of length $16$ the sequence is $13, 4, 1$.
+This sequence begins at the largest increment less than `$N/3$` and decreases to 1. This means that for a sequence of length `$16$` the sequence is `$13, 4, 1$`.
 
-The effect of shell sort is that it sorts elements that are $H$ elements apart with one swap instead of $H$. The granularity of the sorting operation increases as $H$ itself decreases such that every element is eventually sorted, but with the added benefit that as $H$ decreases, the distance of the longest-distance swap decreases.
+The effect of shell sort is that it sorts elements that are `$H$` elements apart with one swap instead of `$H$`. The granularity of the sorting operation increases as `$H$` itself decreases such that every element is eventually sorted, but with the added benefit that as `$H$` decreases, the distance of the longest-distance swap decreases.
 
 ``` java
 public void sort(Comparable[] seq) {
@@ -500,12 +494,12 @@ public void sort(Comparable[] seq) {
 
 |Case   |Growth|
 |:----- |:--------|
-|Worst  |$O(n\lg{n})$|
-|Space  |$O(n)$|
+|Worst  |`$O(n\lg{n})$`|
+|Space  |`$O(n)$`|
 
 This is a _stable_ algorithm and the first algorithm that is linearithmic in complexity. The general idea is that the sequence is split into many pieces and then they're all merged back together. The sorting occurs during the merging phase. The merging algorithm works such that the resultant merged piece is sorted.
 
-The main drawback is that it has $O(n)$ space complexity because an auxiliary sequence has to be created to facilitate the merging process.
+The main drawback is that it has `$O(n)$` space complexity because an auxiliary sequence has to be created to facilitate the merging process.
 
 ``` java
 public void merge(Comparable[] seq, int lo, int mid, int hi) {
@@ -522,13 +516,13 @@ public void merge(Comparable[] seq, int lo, int mid, int hi) {
 }
 ```
 
-The complexity is $O(n \log n)$ because the number of subproblems is doubling at each level (i.e. the two recursive calls), but the work to be done by those subproblems is halving. That is, for a given level $j$, the amount of work done is:
+The complexity is `$O(n \log n)$` because the number of subproblems is doubling at each level (i.e. the two recursive calls), but the work to be done by those subproblems is halving. That is, for a given level `$j$`, the amount of work done is:
 
-$$ 2^j \left( \frac n 2^j \right) = n $$
+<div>$$ 2^j \left( \frac n 2^j \right) = n $$</div>
 
-Given an input size of $n$, the number of levels in the recursion tree is $\log_2 n$, which means that at each of the $\log_2 n$ levels in the tree there is $n$ work being done, hence $n \log n$.
+Given an input size of `$n$`, the number of levels in the recursion tree is `$\log_2 n$`, which means that at each of the `$\log_2 n$` levels in the tree there is `$n$` work being done, hence `$n \log n$`.
 
-The number of _inversions_ in an array can be counted in $O(n \log n)$ by reducing the problem to merge sort. Specifically, during a merge, each time an element from the right half is merged and there are elements remaining in the left half, then the chosen element from the right half represents an inversion between each of the elements remaining on the left half.
+The number of _inversions_ in an array can be counted in `$O(n \log n)$` by reducing the problem to merge sort. Specifically, during a merge, each time an element from the right half is merged and there are elements remaining in the left half, then the chosen element from the right half represents an inversion between each of the elements remaining on the left half.
 
 ``` cpp
 left: [1, 2, 12, 13] right: [6, 8, 9, 10]
@@ -592,8 +586,8 @@ There are a couple of improvements that can be made to top-down merge sort:
 
 The other approach to merge sort is bottom-up, that is, starting with arrays consisting of one element and merging them together, then merging all of the arrays of size two, and so on until the entire array is merged.
 
-1. increments a counter $SZ$ in the series of powers of two until $SZ < N$
-2. merges every sub-array of length $2SZ$
+1. increments a counter `$SZ$` in the series of powers of two until `$SZ < N$`
+2. merges every sub-array of length `$2SZ$`
 
 One **advantage** of bottom-up merge sort is that it can be modified to perform on linked-lists **in place**.
 
@@ -612,8 +606,8 @@ public void sort(Comparable[] seq) {
 
 |Case   |Growth|
 |:----- |:--------|
-|Worst  |$O(n \log n)$|
-|Space  |$O(\log n)$|
+|Worst  |`$O(n \log n)$`|
+|Space  |`$O(\log n)$`|
 
 QuickSort works by choosing an element in the array---the pivot---and partitioning the array such that all elements _less than_ the pivot are moved to its left and all elements _greater than_ the pivot are moved to its right. This has the effect that, at the end of this operation, the chosen element will be at its "sorted order position," i.e. the position in which it would be if the entire array were already sorted.
 
@@ -639,13 +633,13 @@ The partition algorithm is similar to merge in merge sort in that it is what act
 
 <img class="center" src="/images/notes/algorithms/quicksort/partition.png">
 
-1. choose a partition element separator $v$
-2. scan through the array from $i$ to $j$ in both directions
-    1. while $i < v$ do `i++`
-    2. while $j > v$ do `j--`
-    3. swap $i$ and $j$
-3. repeat step 2 until the iterators $i$ and $j$ cross
-4. swap the partition element $v$ with the final position of the right-side iterator $j$
+1. choose a partition element separator `$v$`
+2. scan through the array from `$i$` to `$j$` in both directions
+    1. while `$i < v$` do `i++`
+    2. while `$j > v$` do `j--`
+    3. swap `$i$` and `$j$`
+3. repeat step 2 until the iterators `$i$` and `$j$` cross
+4. swap the partition element `$v$` with the final position of the right-side iterator `$j$`
 
 The sorting algorithm then recurses on the two partitions. Note that `i` is set to `lo` and not `lo + 1` to ensure that the pivot at `lo` is skipped, since the first operation is `++i`. However, `j` is set to `hi + 1` to ensure that `hi` is _not_ skipped, since it's not the pivot.
 
@@ -692,9 +686,9 @@ private int partition(Comparable[] seq, int lo, int hi) {
 
 |Case   |Growth|
 |:----- |:--------|
-|Best   |$O(n)$|
-|Worst  |$O(n\lg{n})$|
-|Space  |$O(\lg{n})$|
+|Best   |`$O(n)$`|
+|Worst  |`$O(n\lg{n})$`|
+|Space  |`$O(\lg{n})$`|
 
 One problem with quick sort as it is implemented above is that items with keys equal to that of the partition item are swapped anyways, unnecessarily. Three-way partitioning aims to resolve this by partitioning into three separate sub-arrays, the middle of which corresponds to those items with keys equal to the partition point. E. W. Dijkstra popularized this as the _Dutch National Flag_ problem.
 
@@ -702,11 +696,11 @@ One problem with quick sort as it is implemented above is that items with keys e
 
 <img class="center" src="/images/notes/algorithms/quicksort/3waypartition.png">
 
-1. perform a 3-way comparison between element $i$ and $v$
-    1. $seq[i] < v$: swap $lt$ and $i$ and `lt++` and `i++`
-    2. $seq[i] > v$: swap $i$ and $gt$ and `gt--`
-    3. $seq[i] = v$: `i++`
-2. repeat step 1 until $i$ and $gt$ cross, i.e. while $i \leq gt$
+1. perform a 3-way comparison between element `$i$` and `$v$`
+    1. `$seq[i] < v$`: swap `$lt$` and `$i$` and `lt++` and `i++`
+    2. `$seq[i] > v$`: swap `$i$` and `$gt$` and `gt--`
+    3. `$seq[i] = v$`: `i++`
+2. repeat step 1 until `$i$` and `$gt$` cross, i.e. while `$i \leq gt$`
 3. recurse on the left and right segments
 
 Quick sort performs a lot better than merge sort in sequences that have duplicate keys. Its time is reduced from linearithmic to linear for sequences with large numbers of duplicate keys.
@@ -733,18 +727,18 @@ private void sort(Comparable[] seq, int lo, int hi) {
 
 # Heaps
 
-A priority queue is an abstract data type that allows adding elements and retrieving the smallest or largest element. Priority queues are useful for an unbounded sequence for which we want to retrieve the $M$ smallest elements at any given moment.
+A priority queue is an abstract data type that allows adding elements and retrieving the smallest or largest element. Priority queues are useful for an unbounded sequence for which we want to retrieve the `$M$` smallest elements at any given moment.
 
 The data structure commonly used to back a priority queue is an array embedding the contents of a **complete binary tree** in level-order that maintains two invariants:
 
-1. the parent of $k$ is $\left\lfloor (k - 1)/2 \right\rfloor$
-2. the children of $k$ are at $2k + 1$ and $2k + 2$
+1. the parent of `$k$` is `$\left\lfloor (k - 1)/2 \right\rfloor$`
+2. the children of `$k$` are at `$2k + 1$` and `$2k + 2$`
 
 ## Heap Insertion
 
 |Case    |Growth|
 |:-----  |:--------|
-|Worst   |$O(\lg{n})$|
+|Worst   |`$O(\lg{n})$`|
 
 Swimming in a heap is when a node is checked to ensure the invariant that every node is smaller than its parent. If a node's value becomes larger than its parent, the node is swapped with its parent and the process is repeated at the new parent until the tree root is reached. This can be characterized as a new, larger node having to swim up the tree to its proper place.
 
@@ -772,7 +766,7 @@ private void swim(Comparable[] seq, int target) {
 
 |Case   |Growth|
 |:----- |:--------|
-|Worst  |$O(\lg{n})$|
+|Worst  |`$O(\lg{n})$`|
 
 From a different perspective, if a node's key becomes smaller than one or both of its children, the heap-order invariant will also be violated, because it conversely means that one or more of its children are larger than the parent. In this case, the node is simply swapped with the larger of its two children, a process known as sinking. This process is repeated for the new child all the way down the tree until the invariant holds.
 
@@ -811,7 +805,7 @@ void Sink(std::vector<T> &vec, int target) {
 
 |Case   |Growth|
 |:----- |:--------|
-|Worst  |$O(n\lg{n})$|
+|Worst  |`$O(n\lg{n})$`|
 
 Heap sort is a sorting algorithm facilitated by a priority queue which performs well when backed by a binary heap. Heap sort more or less amounts to:
 
@@ -820,7 +814,7 @@ Heap sort is a sorting algorithm facilitated by a priority queue which performs 
 
 However, there are certain details involved to make it operate faster. Usually these operations are performed in place to avoid using extra space.
 
-First, the sequence has to be put into heap order, which is accomplished by walking up the tree (bottom-up) and sinking every root node with more than one child. The starting point for this is always $(N - 1) / 2$, which is the last node with two children. It's important to note that "sinking a node" doesn't mean that the node will definitively be swapped.
+First, the sequence has to be put into heap order, which is accomplished by walking up the tree (bottom-up) and sinking every root node with more than one child. The starting point for this is always `$(N - 1) / 2$`, which is the last node with two children. It's important to note that "sinking a node" doesn't mean that the node will definitively be swapped.
 
 Assuming a maximum-oriented priority queue, the sorting is then accomplished by:
 
@@ -869,11 +863,11 @@ If one of the heaps grows larger, its top element should be popped and pushed on
 
 |Case    |Growth|
 |:-----  |:--------|
-|Average |$\Theta(n)$|
+|Average |`$\Theta(n)$`|
 
-Selecting the $k^\text{th}$ smallest item in a sequence can be accomplished by using QuickSort's partition algorithm. This is guaranteed by the invariant held by QuickSort's partition algorithm which states that given the partition index $j$, all elements to the left are less than or equal to $j$ and all elements to the right are greater than or equal to $j$, effectively making the sub-sequence up to $j$ consist of the smallest $j$ elements in the sequence.
+Selecting the `$k^\text{th}$` smallest item in a sequence can be accomplished by using QuickSort's partition algorithm. This is guaranteed by the invariant held by QuickSort's partition algorithm which states that given the partition index `$j$`, all elements to the left are less than or equal to `$j$` and all elements to the right are greater than or equal to `$j$`, effectively making the sub-sequence up to `$j$` consist of the smallest `$j$` elements in the sequence.
 
-With that in mind, the desired index $k$ is input to QuickSelect. After partitioning in $O(n)$, the resulting position $j$ of the $k^\text{th}$ element is compared to the input $k$. If the resulting position $j$ is less than the desired $k$ then QuickSelect is repeated on the right region $A[j ..]$ with a compensated $k$, i.e. $k - j$. If the resulting position $j$ is greater than the desired $k$ then QuickSelect is repeated on the left region $A[.. j]$ with the same $k$.
+With that in mind, the desired index `$k$` is input to QuickSelect. After partitioning in `$O(n)$`, the resulting position `$j$` of the `$k^\text{th}$` element is compared to the input `$k$`. If the resulting position `$j$` is less than the desired `$k$` then QuickSelect is repeated on the right region `$A[j ..]$` with a compensated `$k$`, i.e. `$k - j$`. If the resulting position `$j$` is greater than the desired `$k$` then QuickSelect is repeated on the left region `$A[.. j]$` with the same `$k$`.
 
 ``` cpp
 template <typename Iter>
@@ -903,7 +897,7 @@ auto QuickSelect(Iter begin, Iter end, std::size_t i) -> decltype(*begin) {
 
 |Case    |Growth|
 |:-----  |:--------|
-|Worst   |$O(n)$|
+|Worst   |`$O(n)$`|
 
 This is the classical data structure consisting of a binary tree where each node has two children. The sub-tree to the left of each node consists of elements smaller than the node and the sub-tree to the right of each node consists of elements greater than the node.
 
@@ -921,21 +915,21 @@ The depth of a tree node is the number of edges from the root to the node, i.e. 
 
 The height of a tree node is the number of edges on the longest path from the node to a leaf. The height of an entire tree is the height of its root, i.e. the depth of the deepest node.
 
-The number of levels in a binary tree with $n$ nodes is $\log_2 n$.
+The number of levels in a binary tree with `$n$` nodes is `$\log_2 n$`.
 
-In a perfect binary tree, the number of nodes at depth $d$ is $2^d$.
+In a perfect binary tree, the number of nodes at depth `$d$` is `$2^d$`.
 
-In a perfect binary tree with $L$ levels, the total number of nodes is $2^L - 1$. So if there are 3 levels, $2^3 - 1 = 7$ total nodes.
+In a perfect binary tree with `$L$` levels, the total number of nodes is `$2^L - 1$`. So if there are 3 levels, `$2^3 - 1 = 7$` total nodes.
 
 ## BST Traversal
 
-There are three main forms of traversing a BST. The _order_ refers to the order in which the current node $C$ is visited, that is, the time at which $C$ is visited is the only thing that varies, so $L$ is always visited before $R$.
+There are three main forms of traversing a BST. The _order_ refers to the order in which the current node `$C$` is visited, that is, the time at which `$C$` is visited is the only thing that varies, so `$L$` is always visited before `$R$`.
 
 |Traversal   |Order|
 |:---------- |:-----|
-|pre-order   |$C \to L \to R$|
-|in-order    |$L \to C \to R$|
-|post-order  |$L \to R \to C$|
+|pre-order   |`$C \to L \to R$`|
+|in-order    |`$L \to C \to R$`|
+|post-order  |`$L \to R \to C$`|
 
 ### Morris Traversal
 
@@ -1000,15 +994,15 @@ while (current != null) {
 
 Most operations such as insertion and lookup are very straightforward. Deletion is somewhat more involved.
 
-To delete node $k$:
+To delete node `$k$`:
 
-1. $k$ **has no children**: remove it
-2. $k$ **has just one child**: swap it with child and delete it
-3. $k$ **has two children**:
-    1. compute $k$'s predecessor $l$, i.e. maximum of left subtree
-    2. swap $k$ and $l$
-    3. delete $k$
-    4. now $k$ has no right child, recurse starting at 1
+1. `$k$` **has no children**: remove it
+2. `$k$` **has just one child**: swap it with child and delete it
+3. `$k$` **has two children**:
+    1. compute `$k$`'s predecessor `$l$`, i.e. maximum of left subtree
+    2. swap `$k$` and `$l$`
+    3. delete `$k$`
+    4. now `$k$` has no right child, recurse starting at 1
 
 The transplant operation can be handled by simply associating the parent with the new child and vice versa:
 
@@ -1029,18 +1023,18 @@ void replace_node(tree *t, node *u, node *v) {
 
 ## BST Select
 
-The BST can be augmented so that each node contains the count of notes rooted at it, including itself. Then the count can be computed for node $x$ base by adding the count of left child $y$ and right child $z$ plus one for $x$:
+The BST can be augmented so that each node contains the count of notes rooted at it, including itself. Then the count can be computed for node `$x$` base by adding the count of left child `$y$` and right child `$z$` plus one for `$x$`:
 
-$$size(x) = size(y) + size(z) + 1$$
+<div>$$size(x) = size(y) + size(z) + 1$$</div>
 
 It's important to keep this augmented information up-to-date with the operations on the tree, such as insertion or deletion, by traversing up the parents from the affected node to increment or decrement their counts.
 
-Selection of the $i^\text{th}$ order statistic can be found easily by guiding the traversal of the tree with the augmented size information.
+Selection of the `$i^\text{th}$` order statistic can be found easily by guiding the traversal of the tree with the augmented size information.
 
-* the node in question is itself the ith order statistic, because $a = i - 1$
-* the $i^\text{th}$ order is somewhere in the left subtree, recurse
-* the $i^\text{th}$ order is somewhere in the right subtree, recurse. Since the right
-  subtree only knows about itself, shift $i$ to discard the left subtree and the
+* the node in question is itself the ith order statistic, because `$a = i - 1$`
+* the `$i^\text{th}$` order is somewhere in the left subtree, recurse
+* the `$i^\text{th}$` order is somewhere in the right subtree, recurse. Since the right
+  subtree only knows about itself, shift `$i$` to discard the left subtree and the
   root node.
 
 ``` cpp
@@ -1114,7 +1108,7 @@ The **problem** with implementing a direct representation of 2-3 trees is that t
 
 |Case    |Growth|
 |:-----  |:--------|
-|Worst   |$O(2 \lg {n})$|
+|Worst   |`$O(2 \lg {n})$`|
 
 [Red-Black trees](http://en.wikipedia.org/wiki/Red–black_tree) are trees that guarantee near-perfect balance by maintaining 5 invariants:
 
@@ -1282,14 +1276,14 @@ void delete(node *m, void *key) {
 
 If the node is replaced with a successor, that successor is essentially removed from its original location, thereby possibly causing tree unbalanced. For this reason, the original successor node is removed using `delete_one_child` which re-balances the tree if necessary.
 
-* node $M$: successor to the node to be deleted
-* node $C$: child of $M$, prioritized to be a non-leaf child if possible
-* node $N$: child $C$ in its new position
-* node $P$: $N$'s parent
-* node $S$: $N$'s sibling
-* nodes $S_{L}$ and $S_{R}$: $S$'s left and right child respectively
+* node `$M$`: successor to the node to be deleted
+* node `$C$`: child of `$M$`, prioritized to be a non-leaf child if possible
+* node `$N$`: child `$C$` in its new position
+* node `$P$`: `$N$`'s parent
+* node `$S$`: `$N$`'s sibling
+* nodes `$S_{L}$ and $S_{R}$`: `$S$`'s left and right child respectively
 
-**First**, if $M$ is **red**, then simply replace it with its child $C$ which must be **black** by property 4 (both children of **red** nodes are **black**). Any paths that passed through the deleted node will simply pass through one fewer **red** node, maintaining balance:
+**First**, if `$M$` is **red**, then simply replace it with its child `$C$` which must be **black** by property 4 (both children of **red** nodes are **black**). Any paths that passed through the deleted node will simply pass through one fewer **red** node, maintaining balance:
 
 ``` c
 void delete_one_child(node *n) {
@@ -1298,7 +1292,7 @@ void delete_one_child(node *n) {
   replace_node(n, child);
 ```
 
-**Second**, if $M$ is **black** and $C$ is **red**, paint $C$ **black** and put it in $M$'s place. This preserves the same amount of **black** nodes along that path:
+**Second**, if `$M$` is **black** and `$C$` is **red**, paint `$C$` **black** and put it in `$M$`'s place. This preserves the same amount of **black** nodes along that path:
 
 ``` c
   if (n->color == BLACK)
@@ -1306,7 +1300,7 @@ void delete_one_child(node *n) {
       child->color = BLACK;
 ```
 
-**Third**, the most complex case is when both $M$ and $C$ are **black**. Replacing one with the other effectively removes one **black** node along that path, unbalancing the tree. Begin by replacing $M$ with its child $C$, then proceed to the first re-balancing case:
+**Third**, the most complex case is when both `$M$` and `$C$` are **black**. Replacing one with the other effectively removes one **black** node along that path, unbalancing the tree. Begin by replacing `$M$` with its child `$C$`, then proceed to the first re-balancing case:
 
 ``` c
     else
@@ -1316,9 +1310,9 @@ void delete_one_child(node *n) {
 }
 ```
 
-When both $M$ and $C$ are **black** nodes, four situations [^rbtree_case_merge] can arise that require re-balancing, unless $C$'s new position $N$ is the new root. If $C$ becomes the root it simply means that a **black** node was removed from all paths, effectively decreasing the black-height of every path by one and the tree therefore requires no re-balancing.
+When both `$M$` and `$C$` are **black** nodes, four situations [^rbtree_case_merge] can arise that require re-balancing, unless `$C$`'s new position `$N$` is the new root. If `$C$` becomes the root it simply means that a **black** node was removed from all paths, effectively decreasing the black-height of every path by one and the tree therefore requires no re-balancing.
 
-**First**: $N$'s sibling $S$ is **red**. In this case, reverse the colors of $P$ and $S$ and rotate $P$ left. Although all paths still have the same black-height, $N$'s sibling $S$ is now **black** and its parent $P$ is **red**, allowing fall-through to case 4, 5, or 6:
+**First**: `$N$`'s sibling `$S$` is **red**. In this case, reverse the colors of `$P$` and `$S$` and rotate `$P$` left. Although all paths still have the same black-height, `$N$`'s sibling `$S$` is now **black** and its parent `$P$` is **red**, allowing fall-through to case 4, 5, or 6:
 
 <img src="/images/notes/algorithms/red-black-trees/delete_1.png" class="center">
 
@@ -1342,15 +1336,15 @@ void delete_case1(node *n) {
 }
 ```
 
-**Second**: $P$, $S$, and $S$'s children are all **black**. Repaint $S$ **red** so that all paths passing through $S$ have the same black-height as those that go through $N$.
+**Second**: `$P$`, `$S$`, and `$S$`'s children are all **black**. Repaint `$S$` **red** so that all paths passing through `$S$` have the same black-height as those that go through `$N$`.
 
 <img src="/images/notes/algorithms/red-black-trees/delete_2a.png" class="center">
 
-If $P$ is **red**, then the tree is violating property **4** (both children of **red** nodes are **black**), fix it by simply painting $P$ **black**.
+If `$P$` is **red**, then the tree is violating property **4** (both children of **red** nodes are **black**), fix it by simply painting `$P$` **black**.
 
 <img src="/images/notes/algorithms/red-black-trees/delete_2b.png" class="center">
 
-Otherwise, if $P$ was already **black**, however, then after the painting of $S$ to **red**, $P$ now has effectively lost one level from its black-height, so case 1 should be applied to $P$:
+Otherwise, if `$P$` was already **black**, however, then after the painting of `$S$` to **red**, `$P$` now has effectively lost one level from its black-height, so case 1 should be applied to `$P$`:
 
 ``` c
 void delete_case2(node *n) {
@@ -1370,7 +1364,7 @@ void delete_case2(node *n) {
 }
 ```
 
-**Third**: $S$ is **black**, $S_{L}$ is **red**, $S_{R}$ is **black**, $N$ is left child of its $P$. Rotate $S$ right, then exchange colors of $S$ and its new parent. This case just prepares the tree for falling into case 6, since $N$ now has a **black** sibling---$S_{L}$---whose right child is **red**.
+**Third**: `$S$` is **black**, `$S_{L}$` is **red**, `$S_{R}$` is **black**, `$N$` is left child of its `$P$`. Rotate `$S$` right, then exchange colors of `$S$` and its new parent. This case just prepares the tree for falling into case 6, since `$N$` now has a **black** sibling---`$S_{L}$`---whose right child is **red**.
 
 <img src="/images/notes/algorithms/red-black-trees/delete_3.png" class="center">
 
@@ -1392,9 +1386,9 @@ void delete_case3(node *n) {
 }
 ```
 
-**Fourth**: $S$ is **black**, $S_{R}$ is **red**, $N$ is left child of its $P$. Rotate $P$ left, exchange colors of $P$ and $S$, and make $S_{R}$ **black**.
+**Fourth**: `$S$` is **black**, `$S_{R}$` is **red**, `$N$` is left child of its `$P$`. Rotate `$P$` left, exchange colors of `$P$` and `$S$`, and make `$S_{R}$` **black**.
 
-This unbalances the tree by increasing black-height of paths through $N$ by one because either $P$ became **black** or it was **black** and $S$ became a **black** grandparent.
+This unbalances the tree by increasing black-height of paths through `$N$` by one because either `$P$` became **black** or it was **black** and `$S$` became a **black** grandparent.
 
 <img src="/images/notes/algorithms/red-black-trees/delete_4.png" class="center">
 
@@ -1421,13 +1415,13 @@ Hash tables consist of an array coupled with a _hash function_---such as [Murmur
 
 Hash Tables can be used for de-duplication, as well as keeping track of what states have already been seen in search algorithms, especially for those applications where it's not feasible to store all of the nodes.
 
-In the 2-SUM problem, given an unsorted array of $n$ integers and a target sum $t$, we need to find if there is a pair of integers that sum to $t$.
+In the 2-SUM problem, given an unsorted array of `$n$` integers and a target sum `$t$`, we need to find if there is a pair of integers that sum to `$t$`.
 
-The brute-force approach is to check all possible pairs in $O(n^2)$ to see if they add up to the target $t$.
+The brute-force approach is to check all possible pairs in `$O(n^2)$` to see if they add up to the target `$t$`.
 
-Alternatively, we can sort the array in $O(n \log n)$ and scan through the array, for each element $x$ determine the required summand $r = t - x$, then look for $r$ in the array using binary search $O(n \log n)$. If $r$ is found, then there's a match, i.e. $x + r = t$.
+Alternatively, we can sort the array in `$O(n \log n)$` and scan through the array, for each element `$x$` determine the required summand `$r = t - x$`, then look for `$r$` in the array using binary search `$O(n \log n)$`. If `$r$` is found, then there's a match, i.e. `$x + r = t$`.
 
-This can be improved further by using a hash table. Put each element of the array into a hash table, then for each element $x$ in the array compute the required summand $r = t - x$ and check if $r$ is present in the hash table. If so, then there's a match.
+This can be improved further by using a hash table. Put each element of the array into a hash table, then for each element `$x$` in the array compute the required summand `$r = t - x$` and check if `$r$` is present in the hash table. If so, then there's a match.
 
 ## Hash Functions
 
@@ -1435,13 +1429,13 @@ Hash functions need to be consistent, efficient, and should uniformly distribute
 
 A popular and simple hashing function is modular hashing of the form:
 
-$$h(k) = k \bmod M$$
+<div>$$h(k) = k \bmod M$$</div>
 
-where $k$ is the key and $M$ is the array size, used to avoid integer overflow, usually chosen to be prime. Multiple pieces of data can be combined into one hash by doing:
+where `$k$` is the key and `$M$` is the array size, used to avoid integer overflow, usually chosen to be prime. Multiple pieces of data can be combined into one hash by doing:
 
-$$(H * R + D) \bmod M$$
+<div>$$(H * R + D) \bmod M$$</div>
 
-where $R$ is a prime number such as a 31, $H$ is the hash as constructed so far (initially set to some prime number) and $D$ is the new piece of data.
+where `$R$` is a prime number such as a 31, `$H$` is the hash as constructed so far (initially set to some prime number) and `$D$` is the new piece of data.
 
 For example, given a three properties---day, month, and year---the following hash computation could be used:
 
@@ -1466,7 +1460,7 @@ for (int i = 0; i < s.length(); i++)
 
 A simpler hashing scheme that doesn't account for integer overflow is:
 
-$$R * H$$
+<div>$$R * H$$</div>
 
 So for example, given a day, month, and year:
 
@@ -1488,32 +1482,36 @@ Alternatively, design a family of hash functions and choose one randomly.
 
 ## Load Factor
 
-The _load factor_ is defined by $\alpha = N/M$ where $\alpha$ is the percentage of table entries that are occupied, $N$ is the number of objects in the hash table, and $M$ is the number of buckets in the hash table.
+The _load factor_ is defined by `$\alpha = N/M$` where `$\alpha$` is the percentage of table entries that are occupied, `$N$` is the number of objects in the hash table, and `$M$` is the number of buckets in the hash table.
 
+<div>
 $$
 \text {load factor}\ \alpha =
   \frac {\text {# of objects in hash table}}
         {\text {# of buckets in hash table}}
 $$
+</div>
 
 Note that a load factor is still relevant in an open addressing scheme, in which case each bucket can only hold one value.
 
-In linear probing, $\alpha$ can never be 1 because if the table becomes full, a search miss would go into an infinite loop. Instead, array resizing is performed to ensure that the load factor is between $\frac {1} {8}$ and $\frac {1} {2}$.
+In linear probing, `$\alpha$` can never be 1 because if the table becomes full, a search miss would go into an infinite loop. Instead, array resizing is performed to ensure that the load factor is between `$\frac {1} {8}$` and `$\frac {1} {2}$`.
 
-The average number of compares, or _probes_, in a linear-probing hash table of size $M$ and $N = \alpha M$ keys is:
+The average number of compares, or _probes_, in a linear-probing hash table of size `$M$` and `$N = \alpha M$` keys is:
 
+<div>
 $$
 \text {hits: ~} \frac {1} {2} \left( 1 + \frac {1} {1 - \alpha} \right) \\
 \text {misses: ~} \frac {1} {2} \left( 1 + \frac {1} {\left( 1 - \alpha \right)^2} \right)
 $$
+</div>
 
-Based on this, when $\alpha$ is about 0.5 there will be 1.5 compares for a search hit and 2.5 compares for a search miss on average. For this reason, $\alpha$ should be kept under 0.5 through the use of array resizing.
+Based on this, when `$\alpha$` is about 0.5 there will be 1.5 compares for a search hit and 2.5 compares for a search miss on average. For this reason, `$\alpha$` should be kept under 0.5 through the use of array resizing.
 
 ## Separate Chaining
 
 |Case    |Growth|
 |:-----  |:--------|
-|Worst   |$O(\lg {n})$|
+|Worst   |`$O(\lg {n})$`|
 
 This collision resolution strategy involves storing a linked-list at every entry in the array. The intent is to choose the size of the array large enough so that the linked-lists are sufficiently short.
 
@@ -1522,17 +1520,17 @@ Separate chaining consists of a two-step process:
 1. hash the key to get the index to retrieve the list
 2. sequentially search the list for the key
 
-A property of separate chaining is that the average length of the lists is always $N/M$ in a hash table with $M$ lists and $N$ keys.
+A property of separate chaining is that the average length of the lists is always `$N/M$` in a hash table with `$M$` lists and `$N$` keys.
 
 ## Double Hashing
 
-Double hashing is a form of open addressing in which two hash functions are used. If the first hash function incurs a collision, then the result of the second hash function serves as an offset at which to try insertion. For example, if $h_1(x) = 17$ caused a collision, and $h_2(x) = 23$, then it will try inserting at position $17 + 23 = 40$, then $40 + 23 = 63$, and so on.
+Double hashing is a form of open addressing in which two hash functions are used. If the first hash function incurs a collision, then the result of the second hash function serves as an offset at which to try insertion. For example, if `$h_1(x) = 17$` caused a collision, and `$h_2(x) = 23$`, then it will try inserting at position `$17 + 23 = 40$`, then `$40 + 23 = 63$`, and so on.
 
 ## Linear Probing
 
 |Case    |Growth|
 |:-----  |:--------|
-|Worst   |$O(c \lg {n})$|
+|Worst   |`$O(c \lg {n})$`|
 
 Linear probing is a form of open addressing that relies on empty entries in the array for collision resolution. Linear probing simply consists of:
 
@@ -1564,9 +1562,9 @@ For example, a bloom filter could be used to back a spell-checker. All correctly
 
 Bloom filters are often used in network routers for tasks such as keeping track of blocked IP addresses, the contents of a cache to avoid spurious lookups, and maintaining statistics to prevent denial of service attacks.
 
-Bloom filters consist of a bitset, where each entry uses $\frac n {|S|}$ bits. The bloom filter has $k$ hash functions.
+Bloom filters consist of a bitset, where each entry uses `$\frac n {|S|}$` bits. The bloom filter has `$k$` hash functions.
 
-Insertion is accomplished by hashing the input with each of the $k$ hash functions and turning on the bit at that position, regardless of whether that bit was already on.
+Insertion is accomplished by hashing the input with each of the `$k$` hash functions and turning on the bit at that position, regardless of whether that bit was already on.
 
 ``` cpp
 for (const auto &hash_function : hash_functions) {
@@ -1602,23 +1600,23 @@ A graph is _connected_ if a path exists from every vertex to every other vertex.
 
 _Acyclic graphs_ are graphs with no cycles. A tree is an acyclic connected graph, and a disjoint set of trees is a _forest_.
 
-A graph $G$ with $V$ vertices is a tree if any of the following are satisfied:
+A graph `$G$` with `$V$` vertices is a tree if any of the following are satisfied:
 
-* $G$ has $V - 1$ edges and no cycles
-* $G$ has $V - 1$ edges and is connected
-* $G$ is connected but removing a single edge disconnects it
-* $G$ is acyclic but adding any edge creates a cycle
-* exactly one simple path connects each pair of vertices in $G$
+* `$G$` has `$V - 1$` edges and no cycles
+* `$G$` has `$V - 1$` edges and is connected
+* `$G$` is connected but removing a single edge disconnects it
+* `$G$` is acyclic but adding any edge creates a cycle
+* exactly one simple path connects each pair of vertices in `$G$`
 
 A _spanning tree_ of a connected graph is a subgraph that contains all of the vertices as a single tree. A _spanning forest_ of a graph is the union of all spanning trees of its connected components.
 
 A graph's _density_ is its proportion of possible paris of vertices that are connected. A _sparse_ graph has relatively few of the possible edges present compared to a _dense_ one.
 
-As a rule of thumb, a graph is considered sparse if it has an edge count closer to the number of its vertices $O(N)$ and it's considered dense if it has an edge count closer to the number of vertices squared $O(N^2)$.
+As a rule of thumb, a graph is considered sparse if it has an edge count closer to the number of its vertices `$O(N)$` and it's considered dense if it has an edge count closer to the number of vertices squared `$O(N^2)$`.
 
 A _bipartite graph_ is one whose vertices can be divided into two sets such that all edges connect a vertex in one set with a vertex in the other.
 
-Oftentimes, the number of nodes/vertices is represented by $N$ and the number of edges is represented by $M$.
+Oftentimes, the number of nodes/vertices is represented by `$N$` and the number of edges is represented by `$M$`.
 
 **Answers**:
 
@@ -1630,13 +1628,13 @@ Oftentimes, the number of nodes/vertices is represented by $N$ and the number of
 
 An _undirected graph_ is one in which the connections don't have an associated direction. There are various data structures that can be used represent graphs:
 
-* **adjacency matrix**: a $V \times V$ boolean array where row $v$ and column $w$ are set to true if vertices $v$ and $w$ are connected with an edge.
+* **adjacency matrix**: a `$V \times V$` boolean array where row `$v$` and column `$w$` are set to true if vertices `$v$` and `$w$` are connected with an edge.
 * **array of adjacency lists**: a vertex-indexed array of lists of the vertices adjacent to each vertex, similar to hash tables with separate chaining
 * **array of edges**: a collection of Edge objects each containing two instance variables for each of the connected vertices
 
-Adjacency lists have the best balance between space and time performance. They have space usage proportional to $V + E$, constant time to add an edge, and time proportional to the degree of $v$ to iterate through adjacent vertices.
+Adjacency lists have the best balance between space and time performance. They have space usage proportional to `$V + E$`, constant time to add an edge, and time proportional to the degree of `$v$` to iterate through adjacent vertices.
 
-An undirected graph can have a minimum of $n - 1$ edges and a maximum of $\binom N 2 = \frac {n (n - 1)} 2$ edges.
+An undirected graph can have a minimum of `$n - 1$` edges and a maximum of `$\binom N 2 = \frac {n (n - 1)} 2$` edges.
 
 ### Depth-First Search
 
@@ -1680,7 +1678,7 @@ void DFS(std::set<T> *explored, T node, Pre pre, Post post) {
 }
 ```
 
-To trace the paths in the graph, an array can be kept of size $V$ indexed by a given vertex whose value is the vertex that connects to it. This array of edges represents a tree rooted at the source vertex.
+To trace the paths in the graph, an array can be kept of size `$V$` indexed by a given vertex whose value is the vertex that connects to it. This array of edges represents a tree rooted at the source vertex.
 
 ### Breadth-First Search
 
@@ -1795,9 +1793,9 @@ bool dfs(const Graph &G, int v) {
 
 The edges in _directed graphs_ have an associated one-way direction, such that edges are defined by an ordered pair of vertices that define a one-way adjacency. A directed graph (or _digraph_) is a set of vertices and a collection of directed edges, each connecting an ordered pair of vertices. The _outdegree_ of a vertex is the number of edges pointing from it, while the _indegree_ is the number of edges pointing to it.
 
-The first vertex in a directed edge is the _head_ and the second vertex is the _tail_. Edges are drawn as arrows pointing from head to tail, such as $v \rightarrow w$.
+The first vertex in a directed edge is the _head_ and the second vertex is the _tail_. Edges are drawn as arrows pointing from head to tail, such as `$v \rightarrow w$`.
 
-Directed graphs can be represented by adjacency lists with the stricter property that if node $w$ is present in the adjacency list corresponding to $v$, it simply means that there is a directed edge $v \rightarrow w$, but not vice versa unless explicitly defined.
+Directed graphs can be represented by adjacency lists with the stricter property that if node `$w$` is present in the adjacency list corresponding to `$v$`, it simply means that there is a directed edge `$v \rightarrow w$`, but not vice versa unless explicitly defined.
 
 ### Digraph Reachability
 
@@ -1866,20 +1864,20 @@ std::vector<T> TopologicalOrder() {
 
 For example, consider an alien or unknown alphabet and we're given an array of words which are _sorted_ according to the lexigraphical order of the alphabet. In order to to reconstruct, or extract, the lexicographical order of this unknown alphabet, first treat the lexicographical order simply as a "relationship". Graphs can model relationships, so start by creating a node for each character.
 
-Information about the lexicographical order of the alphabet can be inferred from the sorted order of the input. Word $A$ comes before $B$ because $A$ mismatches with $B$ at some character position $i$ such that $A[i] < B[i]$, by definition of a lexicographical sorted order.
+Information about the lexicographical order of the alphabet can be inferred from the sorted order of the input. Word `$A$` comes before `$B$` because `$A$` mismatches with `$B$` at some character position `$i$` such that `$A[i] < B[i]$`, by definition of a lexicographical sorted order.
 
-What's necessary then is to determine the mismatching characters $A[i]$ and $B[i]$ for each pair of adjacent words in the input and to establish a relationship between those two characters which denotes precedence, i.e. a directed edge $A[i] \to B[i]$ to mean that $A[i]$ comes before $B[i]$ in the alphabet.
+What's necessary then is to determine the mismatching characters `$A[i]$` and `$B[i]$` for each pair of adjacent words in the input and to establish a relationship between those two characters which denotes precedence, i.e. a directed edge `$A[i] \to B[i]$` to mean that `$A[i]$` comes before `$B[i]$` in the alphabet.
 
 Once this is all done, the topological order of the graph can be obtained to determine the full order of the alphabet.
 
 ### Strong Connectivity
 
-Two vertices $v$ and $w$ are _strongly connected_ if they are mutually reachable, i.e. $v \leftrightarrow w$. Consequently, an entire digraph is _strongly connected_ if _all_ of its vertices are strongly connected to one another. Further, _strong components_ are connected components of a graph that are strongly connected.
+Two vertices `$v$` and `$w$` are _strongly connected_ if they are mutually reachable, i.e. `$v \leftrightarrow w$`. Consequently, an entire digraph is _strongly connected_ if _all_ of its vertices are strongly connected to one another. Further, _strong components_ are connected components of a graph that are strongly connected.
 
-The [Kosaraju-Sharir](http://en.wikipedia.org/wiki/Kosaraju%27s_algorithm) algorithm is able to find strongly connected components in digraphs in $O(m + n)$. The algorithm operates as follows:
+The [Kosaraju-Sharir](http://en.wikipedia.org/wiki/Kosaraju%27s_algorithm) algorithm is able to find strongly connected components in digraphs in `$O(m + n)$`. The algorithm operates as follows:
 
-1. given digraph $G$ and its reverse digraph $G^R$, compute the reverse postorder of $G^R$
-2. run standard DFS on $G$ on the vertices in the order generated by step 1
+1. given digraph `$G$` and its reverse digraph `$G^R$`, compute the reverse postorder of `$G^R$`
+2. run standard DFS on `$G$` on the vertices in the order generated by step 1
 3. all vertices visited on a recursive DFS call from the constructor are a strong component, so identify them
 
 The algorithm can answer the following questions:
@@ -1912,17 +1910,17 @@ The algorithm can be understood by considering a kernel DAG, or _condensation di
 
 The algorithm begins by finding a vertex that is in a sink component of the kernel DAG. A _sink component_ is one that has no edges pointing from it. Running DFS from this vertex only visits the vertices in that component. DFS then marks the vertices in that component, effectively removing them from further consideration in that digraph. It then repeats this by finding another sink component in the resulting kernel DAG.
 
-The first vertex in a reverse postorder of $G$ is in a _source_ component of the kernel DAG, whereas the first vertex in a reverse postorder of the _reverse_ digraph $G^R$ is in a _sink_ component of the kernel DAG.
+The first vertex in a reverse postorder of `$G$` is in a _source_ component of the kernel DAG, whereas the first vertex in a reverse postorder of the _reverse_ digraph `$G^R$` is in a _sink_ component of the kernel DAG.
 
 ### All-Pairs Reachability
 
-All-Pairs reachability asks: given a digraph, is there a directed path from a given vertex $v$ to another given vertex $w$? This can be answered by creating a separate graph representation known as a transitive closure, which allows for straightforward checking of which vertex is reachable by others.
+All-Pairs reachability asks: given a digraph, is there a directed path from a given vertex `$v$` to another given vertex `$w$`? This can be answered by creating a separate graph representation known as a transitive closure, which allows for straightforward checking of which vertex is reachable by others.
 
 <img src="/images/notes/algorithms/graphs/transitive-closure.png" class="right">
 
-The _transitive closure_ of digraph $G$ is another digraph with the same set of vertices but with an edge from $v$ to $w$ in the transitive closure if and only if $w$ is reachable from $v$ in $G$. Transitive closures are generally represented as a matrix of booleans where row $v$ at column $w$ is true if $w$ is reachable from $v$ in the digraph.
+The _transitive closure_ of digraph `$G$` is another digraph with the same set of vertices but with an edge from `$v$` to `$w$` in the transitive closure if and only if `$w$` is reachable from `$v$` in `$G$`. Transitive closures are generally represented as a matrix of booleans where row `$v$` at column `$w$` is true if `$w$` is reachable from `$v$` in the digraph.
 
-Finding the transitive closure of a digraph can be accomplished by running DFS on every vertex of the digraph and storing the resulting reachability array for each each vertex from which DFS was run. However, it can be impractical for large graphs because it uses space proportional to $V^2$ and time proportional to $V(V + E)$.
+Finding the transitive closure of a digraph can be accomplished by running DFS on every vertex of the digraph and storing the resulting reachability array for each each vertex from which DFS was run. However, it can be impractical for large graphs because it uses space proportional to `$V^2$` and time proportional to `$V(V + E)$`.
 
 ## Dynamic Connectivity
 
@@ -1938,16 +1936,16 @@ A _site_ is an element or node in a disjoint set. The disjoint set is known as a
 
 |Operation   |Growth|
 |:---------- |:--------|
-|Find        |$O(1)$|
-|Union       |$O(n)$|
+|Find        |`$O(1)$`|
+|Union       |`$O(n)$`|
 
 This algorithm favors a quick `find()` operation by sacrificing the `union()` operation.
 
 Union operates as follows:
 
-1. of the two sites $P$ and $Q$, _arbitrarily_ choose one to merge under the other
-2. gets the associated components of $P$ and $Q$
-2. goes through the whole array, setting sites which were part of $P$'s component to now be part of $Q$'s
+1. of the two sites `$P$` and `$Q$`, _arbitrarily_ choose one to merge under the other
+2. gets the associated components of `$P$` and `$Q$`
+2. goes through the whole array, setting sites which were part of `$P$`'s component to now be part of `$Q$`'s
 3. decrements the number of components in the disjoint-set
 
 ``` java
@@ -1970,8 +1968,8 @@ public void union(int p, int q) {
 
 |Operation   |Growth|
 |:---------- |:--------|
-|Find        |$\text{tree height}$|
-|Union       |$\text{tree height}$|
+|Find        |`$\text{tree height}$`|
+|Union       |`$\text{tree height}$`|
 
 This algorithm aims to speed up the `union()` operation by avoiding the act of going through the whole array to change the component of every affected site.
 
@@ -2001,8 +1999,8 @@ public void union(int p, int q) {
 
 |Operation   |Growth|
 |:---------- |:--------|
-|Find        |$\lg(n)$|
-|Union       |$\lg(n)$|
+|Find        |`$\lg(n)$`|
+|Union       |`$\lg(n)$`|
 
 The problem with vanilla Quick-Union is that the trees are merged arbitrarily. This can cause bad performance depending on which tree is merged under the other.
 
@@ -2036,7 +2034,7 @@ public void union(int p, int q) {
 
 |Operation   |Growth|
 |:---------- |:--------|
-|Union       |$\approx 1$|
+|Union       |`$\approx 1$`|
 
 A further improvement can be done called _path compression_ in which every site traversed due to a call to `find()` is directly linked to the component root.
 
@@ -2051,7 +2049,7 @@ public int find(int p) {
 
 ## Minimum Cut
 
-Adding an edge to a tree creates a cycle and removing an edge from a tree breaks it into two separate subtrees. Knowing this, a _cut_ of a graph is a partition of its vertices into two nonempty disjoint sets, connected by a _crossing edge_. A graph with $n$ vertices has $2^n$ cuts because each vertex $n$ has two choices as to which set it's placed in, left or right, i.e. $n$ blanks to be filled with one of two values.
+Adding an edge to a tree creates a cycle and removing an edge from a tree breaks it into two separate subtrees. Knowing this, a _cut_ of a graph is a partition of its vertices into two nonempty disjoint sets, connected by a _crossing edge_. A graph with `$n$` vertices has `$2^n$` cuts because each vertex `$n$` has two choices as to which set it's placed in, left or right, i.e. `$n$` blanks to be filled with one of two values.
 
 A minimum cut (min-cut) is the cut with the fewest number of crossing edges, with parallel edges allowed, i.e. edges which connect the same vertices. Min-cuts are useful for identifying weaknesses in networks (i.e. hotspots), identifying tightly-knit communities in social networks, and image segmentation.
 
@@ -2066,7 +2064,7 @@ while N > 2:
 return cut
 ```
 
-It's possible that random contraction will not find the minimum cut. This is mitigated by running it a large number of times, since it is very fast, and returning the smallest cut found. The largest number of min-cuts that a graph with $n$ vertices can have is $\binom n 2 = \frac {n (n - 1)} 2$.
+It's possible that random contraction will not find the minimum cut. This is mitigated by running it a large number of times, since it is very fast, and returning the smallest cut found. The largest number of min-cuts that a graph with `$n$` vertices can have is `$\binom n 2 = \frac {n (n - 1)} 2$`.
 
 ## Minimum Spanning Trees
 
@@ -2078,8 +2076,8 @@ A _spanning tree_ is a connected subgraph with no cycles that includes all of th
 
 |Case    |Growth|
 |:-----  |:--------|
-|Worst   |$O(E \lg {E})$|
-|Space   |$O(E)$|
+|Worst   |`$O(E \lg {E})$`|
+|Space   |`$O(E)$`|
 
 This method of finding the MST operates by attaching a new edge to a growing tree at each step. Starting with any vertex from the graph to create a single-vertex tree, each time taking the minimum-weight edge that connects a vertex on the tree to a vertex not yet on the tree.
 
@@ -2122,7 +2120,7 @@ void visit(EdgeWeightedGraph &G,
 }
 ```
 
-Instead of storing edges in the priority queue, it's faster to store vertices that have not been explored/spanned yet which are on the other end of edges crossing the cut. If a new vertex is visited which has incident edges which are shorter to reach a vertex $w$ for which an edge-to already existed in the heap, that edge must be replaced with the new shorter edge. This way, the shortest edge is always at the top of the heap.
+Instead of storing edges in the priority queue, it's faster to store vertices that have not been explored/spanned yet which are on the other end of edges crossing the cut. If a new vertex is visited which has incident edges which are shorter to reach a vertex `$w$` for which an edge-to already existed in the heap, that edge must be replaced with the new shorter edge. This way, the shortest edge is always at the top of the heap.
 
 This is very similar to what is done in Dijkstra's algorithm.
 
@@ -2159,8 +2157,8 @@ void visit(EdgeWeightedGraph &G,
 
 |Case    |Growth|
 |:-----  |:--------|
-|Worst   |$O(E \lg {E})$|
-|Space   |$O(V)$|
+|Worst   |`$O(E \lg {E})$`|
+|Space   |`$O(V)$`|
 
 The above implementation is lazy with respect to ignoring ineligible edges in the priority queue. That approach leaves ineligible edges in the priority queue until they're dequeued for consideration and discarded if they are ineligible.
 
@@ -2171,7 +2169,7 @@ By contrast, an _eager approach_ would make sure those edges aren't present in t
 
 For each vertex present in the above arrays, the vertex index associated with its weight are stored in a minimum priority queue, such that when the minimum weight is removed the associated index is returned. The implication of maintaining the priority queue this way is that given the next minimum-weight crossing edge returned by the priority queue, its associated vertex is the next one to add to the MST.
 
-An improvement from the lazy implementation is that the eager implementation uses space proportional to $V$ whereas the lazy implementation uses $E$.
+An improvement from the lazy implementation is that the eager implementation uses space proportional to `$V$` whereas the lazy implementation uses `$E$`.
 
 ``` java
 void primEager(EdgeWeightedGraph G) {
@@ -2207,10 +2205,10 @@ void visit(EdgeWeightedGraph G, int v) {
 
 |Case    |Growth|
 |:-----  |:--------|
-|Worst   |$O(E \lg {E})$|
-|Space   |$O(E)$|
+|Worst   |`$O(E \lg {E})$`|
+|Space   |`$O(E)$`|
 
-An alternative method for finding the MST is to process the edges in increasing order of their weight values, each time taking an edge for the MST that doesn't form a cycle, stopping once $V-1$ edges have been aggregated. The edges form a forest of trees, gradually growing into a single tree (the MST). The algorithm can be thought of as starting with a forest of $V$ single-vertex trees, and on each step finding an edge to connect two trees until there is only one left (the MST).
+An alternative method for finding the MST is to process the edges in increasing order of their weight values, each time taking an edge for the MST that doesn't form a cycle, stopping once `$V-1$` edges have been aggregated. The edges form a forest of trees, gradually growing into a single tree (the MST). The algorithm can be thought of as starting with a forest of `$V$` single-vertex trees, and on each step finding an edge to connect two trees until there is only one left (the MST).
 
 The implementation uses a priority queue of edges based on their weight, a union-find data structure to identify potential cycles, and a queue to collect edges for for the MST.
 
@@ -2237,9 +2235,9 @@ void kruskal(EdgeWeightedGraph G) {
 
 ## Shortest Paths
 
-The _shortest path_ from vertex $s$ to $t$ in an edge-weighted digraph is a directed path from $s$ to $t$ such that no other such path has a lower weight. A _shortest-path tree_ (SPT) for a source vertex $s$ is a subgraph containing $s$ and all the vertices reachable from $s$ that forms a directed tree rooted at $s$ such that every path is a shortest path in the digraph.
+The _shortest path_ from vertex `$s$` to `$t$` in an edge-weighted digraph is a directed path from `$s$` to `$t$` such that no other such path has a lower weight. A _shortest-path tree_ (SPT) for a source vertex `$s$` is a subgraph containing `$s$` and all the vertices reachable from `$s$` that forms a directed tree rooted at `$s$` such that every path is a shortest path in the digraph.
 
-_Edge relaxation_ refers to replacing an existing edge that reaches $w$ with a new edge $v \rightarrow w$ if the new edge makes the path from the source vertex to $w$ be of lower cost than it was previously.
+_Edge relaxation_ refers to replacing an existing edge that reaches `$w$` with a new edge `$v \rightarrow w$` if the new edge makes the path from the source vertex to `$w$` be of lower cost than it was previously.
 
 ``` java
 void relax(DirectedEdge e) {
@@ -2271,8 +2269,8 @@ void relax(EdgeWeightedDigraph G, int v) {
 
 |Case    |Growth|
 |:-----  |:--------|
-|Worst   |$O(E \lg {V})$|
-|Space   |$O(V)$|
+|Worst   |`$O(E \lg {V})$`|
+|Space   |`$O(V)$`|
 
 Dijkstra's alrogithm is similar to Prim's algorithm for finding the MST. Dijkstra's algorithm finds the SPT by finding the lowest-weight non-tree vertex as provided by an index minimum-priority queue and relaxing that vertex.
 
@@ -2371,8 +2369,8 @@ To specifically find the shortest path from the source vertex to an arbitrary ve
 
 |Case   |Growth|
 |:----- |:--------|
-|Worst  |$O(E + V)$|
-|Space  |$O(V)$|
+|Worst  |`$O(E + V)$`|
+|Space  |`$O(V)$`|
 
 Shortest paths can be found much more efficiently in acyclic graphs, specifically, the single-source problem can be solved in linear time, negative edge weights are easily handled, and other related problems such as finding the longest paths are solvable. This is possible by relaxing vertices in topological order.
 
@@ -2391,7 +2389,7 @@ This approach can be used for finding the longest path between two vertices in a
 
 ### Parallel Job Scheduling
 
-The _critical path method_ for parallel job scheduling consists of encoding the constraints of the scheduling problem in a DAG. Both a source vertex $s$ and a sink vertex $t$ are created on either ends of the graph. Jobs are encoded in the graph as a pair of nodes connected by an edge whose weight corresponds to that job's duration. For each precedence constraint $v \rightarrow w$, add a zero-weight edge from $v$ to $w$. Finally, add a zero-weight edge from the source to every job's start vertex and from every job's end vertex to the sink.
+The _critical path method_ for parallel job scheduling consists of encoding the constraints of the scheduling problem in a DAG. Both a source vertex `$s$` and a sink vertex `$t$` are created on either ends of the graph. Jobs are encoded in the graph as a pair of nodes connected by an edge whose weight corresponds to that job's duration. For each precedence constraint `$v \rightarrow w$`, add a zero-weight edge from `$v$` to `$w$`. Finally, add a zero-weight edge from the source to every job's start vertex and from every job's end vertex to the sink.
 
 When the scheduling problem is encoded in this manner, it can be solved by scheduling each job at the time corresponding to its longest path from the source vertex.
 
@@ -2401,15 +2399,15 @@ Relative deadlines can be encoded as a negative weighted edge going from the con
 
 |Case    |Growth|
 |:-----  |:--------|
-|Worst   |$O(VE)$|
-|Average |$O(E + V)$|
-|Space   |$O(V)$|
+|Worst   |`$O(VE)$`|
+|Average |`$O(E + V)$`|
+|Space   |`$O(V)$`|
 
 The problem of finding the shortest paths can be generalized to graphs containing negative cycles. The Bellman-Ford algorithm accomplishes this by adding the source vertex to a queue and entering a loop where a vertex is dequeued and relaxed, and any vertex affected by that relaxation gets enqueued.
 
-A _negative cycle_ is a directed cycle with net negative weight. No shortest path between $s$ and $v$ can consist of a vertex that lies within a negative cycle, or the weight of the path can be made arbitrarily low and a _shortest_ path would "never" be achieved.
+A _negative cycle_ is a directed cycle with net negative weight. No shortest path between `$s$` and `$v$` can consist of a vertex that lies within a negative cycle, or the weight of the path can be made arbitrarily low and a _shortest_ path would "never" be achieved.
 
-To prevent the Bellman-Ford algorithm from looping infinitely due to negative cycles, it has to ensure to terminate after $V$ passes either by keeping track with a counter or by detecting negative cycles within a subgraph.
+To prevent the Bellman-Ford algorithm from looping infinitely due to negative cycles, it has to ensure to terminate after `$V$` passes either by keeping track with a counter or by detecting negative cycles within a subgraph.
 
 ``` java
 void bellmanFord(EdgeWeightedDigraph G, int s) {
@@ -2443,9 +2441,9 @@ void relax(EdgeWeightedDigraph G, int v) {
 }
 ```
 
-If the queue is not empty after $V$ passes through each edge then there is a negative cycle. By extension, if a negative cycle is present in a graph, the Bellman-Ford algorithm can end up in an infinite loop, continuously lowering the weight of each affected path.
+If the queue is not empty after `$V$` passes through each edge then there is a negative cycle. By extension, if a negative cycle is present in a graph, the Bellman-Ford algorithm can end up in an infinite loop, continuously lowering the weight of each affected path.
 
-This is mitigated by checking for negative cycles on every $V^{th}$ call to relax, as on line 26 of the above code listing. On every such interval, a [cycle finder](#directed-cycle-detection) is initiated on the sub-graph denoted by the edges so-far considered by Bellman-Ford.
+This is mitigated by checking for negative cycles on every `$V^{th}$` call to relax, as on line 26 of the above code listing. On every such interval, a [cycle finder](#directed-cycle-detection) is initiated on the sub-graph denoted by the edges so-far considered by Bellman-Ford.
 
 ``` java
 void findNegativeCycle() {
@@ -2464,7 +2462,7 @@ void findNegativeCycle() {
 
 ## Constraint Satisfaction Problems
 
-_Constraint Satisfaction Problems_ (CSP) [^cs188_csp] are a special subset of search problems where the state is defined by variables $X_i$ with corresponding values from a domain $D$ (which may depend on $i$), and the goal test is a set of constraints specifying the allowable combinations of values for the variables. A solution in this case is simply an assignment to all variables which satisfies the constraints.
+_Constraint Satisfaction Problems_ (CSP) [^cs188_csp] are a special subset of search problems where the state is defined by variables `$X_i$` with corresponding values from a domain `$D$` (which may depend on `$i$`), and the goal test is a set of constraints specifying the allowable combinations of values for the variables. A solution in this case is simply an assignment to all variables which satisfies the constraints.
 
 [^cs188_csp]: See [Week 3](https://courses.edx.org/courses/BerkeleyX/CS188.1x/2012_Fall/courseware/Week_3/Lecture_4_CSPs/) of CS 188.1x for more information.
 
@@ -2472,7 +2470,7 @@ Example problems that may be modeled as CSPs are map coloring, N-Queens, and Sud
 
 [Map coloring]: http://en.wikipedia.org/wiki/Map_coloring
 
-[N-Queens] looks for a possible configuration of an N×N chess board with N queens on it such that there is one queen on each row and none of them threaten each other, i.e. they cannot be on the same row, column, or diagonal. This problem can be modeled so that there is one variable `$Q_k$` for each queen taking on a value from the domain `$D = \{1, 2, \ldots N\}$` which corresponds to the column the queen is on. The constraints can be modeled implicitly with $\forall_{i,j}\ \text{non-threatening} (Q_i, Q_j)$.
+[N-Queens] looks for a possible configuration of an N×N chess board with N queens on it such that there is one queen on each row and none of them threaten each other, i.e. they cannot be on the same row, column, or diagonal. This problem can be modeled so that there is one variable `$Q_k$` for each queen taking on a value from the domain `$D = \{1, 2, \ldots N\}$` which corresponds to the column the queen is on. The constraints can be modeled implicitly with `$\forall_{i,j}\ \text{non-threatening} (Q_i, Q_j)$`.
 
 [N-Queens]: http://en.wikipedia.org/wiki/Eight_queens_puzzle
 
@@ -2480,9 +2478,9 @@ Example problems that may be modeled as CSPs are map coloring, N-Queens, and Sud
 
 |Case  |Growth|
 |:-----|:-------|
-|Worst |$O(d^n)$|
+|Worst |`$O(d^n)$`|
 
-<aside class="table-caption">where $d$ is domain size</aside>
+<aside class="table-caption">where `$d$` is domain size</aside>
 
 Given a state tree of the constraint satisfaction problem, all of the solutions would be at the bottom, so BFS would experience the worst-case. DFS with its backtracking gets to the bottom quicker, but it must be adapted to the context of CSPs in order to be optimal.
 
@@ -2500,9 +2498,9 @@ This adaptation is known as _backtracking search_. Backtracking search only cons
 
 This algorithm can be optimized further by ordering the variables in a specific way, filtering out values from domains as other variables are set in order to detect failure earlier, and exploiting the problem's structure.
 
-_Forward checking_ keeps track of domains for unassigned variables and removes from them values which would violate a constraint when added to the existing assignment. This is done whenever a new variable is assigned. For example, in a map coloring problem, if the domain is $D = \{\text{red}, \text{green}, \text{blue}\}$ and Region1 is set to red, then red would be removed from the domain of Region2 which borders it, since setting Region2 to red would violate the constraints.
+_Forward checking_ keeps track of domains for unassigned variables and removes from them values which would violate a constraint when added to the existing assignment. This is done whenever a new variable is assigned. For example, in a map coloring problem, if the domain is `$D = \{\text{red}, \text{green}, \text{blue}\}$` and Region1 is set to red, then red would be removed from the domain of Region2 which borders it, since setting Region2 to red would violate the constraints.
 
-_Constraint propagation_ takes this further by propagating these effects farther, in order to detect potential failures earlier. This is done by having a notion of an _arc_ which leads from other variables on the constraint graph to the variable in question, so that the _head_ of the arc is the variable in question and the tail is the other variable. Then it is said that a given arc $X \to Y$ is _consistent_ iff for _every_ $x$ in the tail's domain, there is some $y$ in the head's domain which could be assigned without violating the constraint.
+_Constraint propagation_ takes this further by propagating these effects farther, in order to detect potential failures earlier. This is done by having a notion of an _arc_ which leads from other variables on the constraint graph to the variable in question, so that the _head_ of the arc is the variable in question and the tail is the other variable. Then it is said that a given arc `$X \to Y$` is _consistent_ iff for _every_ `$x$` in the tail's domain, there is some `$y$` in the head's domain which could be assigned without violating the constraint.
 
 _Forward checking_ uses this concept so that, when a new variable is assigned, arc consistency is enforced for each variable by removing values from their domain which would otherwise make them inconsistent. Naturally, when a value is removed from a varible's domain, all neighbors of that variable (incoming arcs) have to be re-enforced. Arc consistency is run after every assignment in backtracking search.
 
@@ -2511,9 +2509,9 @@ The algorithm, known as the [AC-3 algorithm](http://en.wikipedia.org/wiki/AC-3_a
 1. create a queue containing all of the arcs in the CSP
 2. while the queue is not empty:
     1. retrieve an arc from the queue
-    2. for each value $x$ in the tail's domain:
-        1. if no value $y$ in the head's domain satisfies the constraints given $x$:
-            1. delete $x$ from the tail's domain
+    2. for each value `$x$` in the tail's domain:
+        1. if no value `$y$` in the head's domain satisfies the constraints given `$x$`:
+            1. delete `$x$` from the tail's domain
     3. if there were values removed, then add an arc to the queue for each neighbor (i.e. each incoming arc)
 
 _Variable Ordering_ refers to optimizing by prioritizing some variables over others. _Minimum Remaining Values_ (MRV) consists of prioritizing variables which have the fewest legal values left in their domain. This is so that, if backtracking becomes necessary, the amount of backtracking will be much less.
@@ -2522,17 +2520,17 @@ _Value Ordering_ refers to optimizing by prioritizing certain values in a domain
 
 ### K-Consistency
 
-There are increasing degrees of consistency. For example, _1-Consistency_ (Node Consistency) is when each single variable's (node) domain has a value which meets that node's unary constraints. _2-Consistency_ (Arc Consistency) is when any consistent assignment for one variable can be extended to the other for each pair of nodes. _K-Consistency_ is the generalized notion where any consistent assignment to $k - 1$ variables can be extended to the $k^{th}$ node for each $k$ nodes, i.e. whatever is done at the tail $k - 1$ variables can be extended to the head.
+There are increasing degrees of consistency. For example, _1-Consistency_ (Node Consistency) is when each single variable's (node) domain has a value which meets that node's unary constraints. _2-Consistency_ (Arc Consistency) is when any consistent assignment for one variable can be extended to the other for each pair of nodes. _K-Consistency_ is the generalized notion where any consistent assignment to `$k - 1$` variables can be extended to the `$k^{th}$` node for each `$k$` nodes, i.e. whatever is done at the tail `$k - 1$` variables can be extended to the head.
 
-_Strong N-Consistency_ requires that all of the lower orders of K-Consistency are also satisfied, e.g. $k - 1$, $k - 2$, etc. This would mean that the CSP could be solved without backtracking, since the constraints could be enforced further and further until the entire constraint graph is enforced. Naturally this is very difficult to accomplish, though a good middle ground is where $k = 3$, referred to as _path consistency_.
+_Strong N-Consistency_ requires that all of the lower orders of K-Consistency are also satisfied, e.g. `$k - 1$`, `$k - 2$`, etc. This would mean that the CSP could be solved without backtracking, since the constraints could be enforced further and further until the entire constraint graph is enforced. Naturally this is very difficult to accomplish, though a good middle ground is where `$k = 3$`, referred to as _path consistency_.
 
 ### Tree-Structured CSPs
 
 |Case   |Growth|
 |:----- |:-------|
-|Worst  |$O(n d^2)$|
+|Worst  |`$O(n d^2)$`|
 
-<aside class="table-caption">where $d$ is domain size</aside>
+<aside class="table-caption">where `$d$` is domain size</aside>
 
 The CSP can be solved _much_ faster if there are no cycles in the constraint graph, specifically linear in the size of the graph and quadratic in the size of the domains.
 
@@ -2546,9 +2544,9 @@ The tree must first be re-ordered by choosing a root variable so that all parent
 
 |Case   |Growth|
 |:----- |:-------|
-|Worst  |$O(d^c\ (n - c)\ d^2)$|
+|Worst  |`$O(d^c\ (n - c)\ d^2)$`|
 
-<aside class="table-caption">where $c$ is cutset size</aside>
+<aside class="table-caption">where `$c$` is cutset size</aside>
 
 This optimization only applies to tree-structured CSPs, but not all problems are tree-structured. However, sometimes a constraint graph can easily be converted into a tree-structured CSP by removing a particular set of nodes. This is accomplished by setting the value of the variable and then severing the connection to its neighbors, imposing an additional unary constraint on the neighbors reflecting the value the node was set to, essentially removing the now-invalid values from the domains of the neighbors.
 
@@ -2570,7 +2568,7 @@ Iterative algorithms begin with a constraint graph where every variable is set t
 
 This approach to CSP solving is _very_ performant for any randomly-generated CSP particularly if there are many variables but few constraints or vice versa, but _not_ when both are the case:
 
-$$ R = \frac {\text {# of constraints}} {\text {# of variables}} $$
+<div>$$ R = \frac {\text {# of constraints}} {\text {# of variables}} $$</div>
 
 # Strings
 
@@ -2615,10 +2613,10 @@ for (int i = 0; i < N; i++)
 
 |Case   |Growth|
 |:----- |:--------|
-|Worst  |$O(NW)$|
-|Space  |$O(N)$|
+|Worst  |`$O(NW)$`|
+|Space  |`$O(N)$`|
 
-Least Significant Digit (LSD) sort works by sorting the strings based on the last character and then repeating this operation up until the first character. This is accomplished by modifying the counting sort algorithm so that it does a pass for every character in the string. This is mainly useful if all strings are the same length $W$ and relatively small alphabet size $R$.
+Least Significant Digit (LSD) sort works by sorting the strings based on the last character and then repeating this operation up until the first character. This is accomplished by modifying the counting sort algorithm so that it does a pass for every character in the string. This is mainly useful if all strings are the same length `$W$` and relatively small alphabet size `$R$`.
 
 ``` java
 void sort(String[] a, int W) {
@@ -2653,19 +2651,19 @@ void sort(String[] a, int W) {
 
 |Case    |Growth|
 |:-----  |:--------|
-|Best    |$\Omega (N)$|
-|Worst   |$O(Nw)$|
-|Space   |$O(N + WR)$|
+|Best    |`$\Omega (N)$`|
+|Worst   |`$O(Nw)$`|
+|Space   |`$O(N + WR)$`|
 
-<aside class="table-caption">Table: $w:$ average string length</aside>
+<aside class="table-caption">Table: $w$: average string length</aside>
 
 Most Significant Digit (MSD) sort is similar to LSD except that it operates in left-to-right order instead, meaning it works fine for variable-length strings. This is accomplished by performing counting sort to sort the array of strings based on their first character, then recursively performing the same operation on the sub-array of strings with the same first letter.
 
-Because MSD works left-to-right and strings may be of variable length, the possibility of reaching the end of the string requires special handling. This is solved by observing the fact that a smaller string $S_1$ that is a prefix of larger string $S_2$ should naturally come before it in lexicographically sorted order. For example, _sea_ should come before _seashore_.
+Because MSD works left-to-right and strings may be of variable length, the possibility of reaching the end of the string requires special handling. This is solved by observing the fact that a smaller string `$S_1$` that is a prefix of larger string `$S_2$` should naturally come before it in lexicographically sorted order. For example, _sea_ should come before _seashore_.
 
 This order is maintained by keeping a separate count of such strings that have had all of their characters sorted. This count is held at `count[1]`. A string has had all of its characters sorted if the character position currently being sorted is past the length of the string currently being considered. Once the counts are converted to key ranges, such strings will naturally be inserted at the beginning of the sorted sub-array.
 
-On each recursion of the sorting operation, an array for counts is allocated whose size is proportional to the alphabet size, occurrences are counted, transformed to key ranges, and so on. The point is that these operations can come to dominate the sorting operation, which makes having a cutoff for small sub-arrays crucial. After the cutoff, insertion sort takes over, with the slight modification that it only operates on the $d^{th}$ character position onward.
+On each recursion of the sorting operation, an array for counts is allocated whose size is proportional to the alphabet size, occurrences are counted, transformed to key ranges, and so on. The point is that these operations can come to dominate the sorting operation, which makes having a cutoff for small sub-arrays crucial. After the cutoff, insertion sort takes over, with the slight modification that it only operates on the `$d^{th}$` character position onward.
 
 ``` java
 void charAt(String s, int d) {
@@ -2716,11 +2714,11 @@ void sort(String[] a, int lo, int hi, int d) {
 
 |Case   |Growth|
 |:----- |:--------|
-|Best   |$\Omega (N)$|
-|Worst  |$O(Nw \lg {R})$|
-|Space  |$O(W + \lg {N})$|
+|Best   |`$\Omega (N)$`|
+|Worst  |`$O(Nw \lg {R})$`|
+|Space  |`$O(W + \lg {N})$`|
 
-<aside class="table-caption">Table: $w:$ average string length</aside>
+<aside class="table-caption">Table: $w$: average string length</aside>
 
 Three-way quicksort can be adapted to work on a per-character basis similar to MSD. The advantages of this are that the algorithm doesn't use extra space---unlike MSD---and that the number of sub-arrays per recurse is bounded at three.
 
@@ -2756,7 +2754,7 @@ Trie structures exploit string properties to provide much faster string search, 
 
 <img src="/images/notes/algorithms/tries/trie.png" class="right">
 
-The structure of tries is comprised of a tree where every node has $R$ _links_ where $R$ is the size of the alphabet. Every node also has an associated _label_ corresponding to the character value consumed to reach the node. The root node has no such label as there is no link pointing to it. Every node also also has an associated _value_ corresponding to the value associated with the key denoted by the path ending at the particular node.
+The structure of tries is comprised of a tree where every node has `$R$` _links_ where `$R$` is the size of the alphabet. Every node also has an associated _label_ corresponding to the character value consumed to reach the node. The root node has no such label as there is no link pointing to it. Every node also also has an associated _value_ corresponding to the value associated with the key denoted by the path ending at the particular node.
 
 A _search hit_ occurs when the trie search arrives at the final node and that node's value is not empty. A _search hit_ occurs both if the final node's value is empty or if the search terminated on a null link.
 
@@ -2875,7 +2873,7 @@ Node get(Node x, String key, int d) {
 }
 ```
 
-Insertion is similar to insertion with tries except that only one of three links can be taken, instead of $R$ links.
+Insertion is similar to insertion with tries except that only one of three links can be taken, instead of `$R$` links.
 
 ``` java
 void put(String key, Value val) { root = put(root, key, val, 0); }
@@ -2933,7 +2931,7 @@ The DFA is constructed such that every state corresponds to the characters in th
 
 The DFA is essentially represented by a table `dfa[c][j]` such that `c` corresponds to the character in the text currently being considered and `j` corresponds to the position of the character currently being considered in the pattern, i.e. the state in the DFA. In effect, `dfa[c][j]` determines which state to proceed to when at state `j` considering character `c`.
 
-The value stored at `dfa[c][j]` therefore is the identifier of the state that the algorithm should jump to, which could mean either backtracking in the case of a mismatch when $C \neq \text{pattern}[J]$ or a progression to the next state when $C = \text{pattern}[J]$.
+The value stored at `dfa[c][j]` therefore is the identifier of the state that the algorithm should jump to, which could mean either backtracking in the case of a mismatch when `$C \neq \text{pattern}[J]$` or a progression to the next state when `$C = \text{pattern}[J]$`.
 
 #### Preventing Backtracking in KMP
 
@@ -3058,7 +3056,7 @@ int search(String text, String pattern) {
 
 ### Rabin-Karp
 
-The Rabin-Karp algorithm conceptually works by computing a hash of the pattern and then hashing every equal-lengthed substring in the text to find a match. The key idea is that a string of length $M$ corresponds to an $M$-digit base-$R$ number. So a proper hash function would convert an $M$-digit base-$R$ number to an integer value between $0$ and $Q - 1$ where $Q$ is some very large prime number. This is possible with a simple modular hashing scheme, by taking the remainder of dividing the number by $Q$.
+The Rabin-Karp algorithm conceptually works by computing a hash of the pattern and then hashing every equal-lengthed substring in the text to find a match. The key idea is that a string of length `$M$` corresponds to an `$M$`-digit base-`$R$` number. So a proper hash function would convert an `$M$`-digit base-`$R$` number to an integer value between `$0$` and `$Q - 1$` where `$Q$` is some very large prime number. This is possible with a simple modular hashing scheme, by taking the remainder of dividing the number by `$Q$`.
 
 ``` java
 long hash(String key, int M) {
@@ -3069,13 +3067,13 @@ long hash(String key, int M) {
 }
 ```
 
-The problem with using the above approach for the text is that it incurs the cost of multiplication, addition, and remainder calculations for _each character_. Instead, for an $M$-character substring of the text where $t_i$ corresponds to `text.charAt(i)` the hash $x_i$ can be computed as:
+The problem with using the above approach for the text is that it incurs the cost of multiplication, addition, and remainder calculations for _each character_. Instead, for an `$M$`-character substring of the text where `$t_i$` corresponds to `text.charAt(i)` the hash `$x_i$` can be computed as:
 
-$$ x_i = t_i R^{M - 1} + t_{i + 1} R^{M - 2} + \ldots + t_{i + M - 1} R^0 $$
+<div>$$ x_i = t_i R^{M - 1} + t_{i + 1} R^{M - 2} + \ldots + t_{i + M - 1} R^0 $$</div>
 
 From the above formula it's apparent that the hash is constructed by individual _hash components_ derived from each character in the text. It stands to reason, then, that the hash of the text shifted one character to the right is:
 
-$$ x_{i + 1} = \left( x_i - t_i R^{M - 1} \right) R + t_{i + M} $$
+<div>$$ x_{i + 1} = \left( x_i - t_i R^{M - 1} \right) R + t_{i + M} $$</div>
 
 That is, the original hash minus the hash component of the first character of the previous text, plus the hash component of the new ending character.
 
@@ -3116,15 +3114,15 @@ A Regular Expression pattern can be represented as a Non-Deterministic Finite-St
 NFA traversal in this context occurs as follows:
 
 * **match transitions**: if current state corresponds to a character in the alphabet and the current character in the text matches it, the automaton can transition from it, i.e. consume the character
-* **$\epsilon$-transitions**: if no match is made in the pattern, any transition can be taken from a metacharacter, so called for effectively matching the empty string $\epsilon$
+* **`$\epsilon$`-transitions**: if no match is made in the pattern, any transition can be taken from a metacharacter, so called for effectively matching the empty string `$\epsilon$`
 
 The traversal of the NFA is handled in the following manner:
 
-1. **at the start state**: find all set of states reachable via $\epsilon$ transitions
+1. **at the start state**: find all set of states reachable via `$\epsilon$` transitions
 2. consume pattern character if there's a match in one of the possible states
 3. **from each match state**:
     1. add set of states reachable via match transitions
-    2. add set of states reachable via $\epsilon$ transitions
+    2. add set of states reachable via `$\epsilon$` transitions
 4. repeat at 2
 
 As the text input is fed to the NFA, on input character the following conditions can arise:
@@ -3133,13 +3131,13 @@ As the text input is fed to the NFA, on input character the following conditions
 * **set of states doesn't contain the accept state**: feed it the next character
 * **the end of the text has been reached**: there was no match
 
-The NFA is simply represented by the pattern string and a digraph representing the $\epsilon$-transitions.
+The NFA is simply represented by the pattern string and a digraph representing the `$\epsilon$`-transitions.
 
 ### Regex Match Checking
 
-From this information, it is possible to create an algorithm that determines whether a regular expression matches the provided text. Reachability is determined by a Directed DFS implementation [^directed_dfs]. This is straightforward because the DFS would only operate on the digraph, which only represents $\epsilon$-transitions.
+From this information, it is possible to create an algorithm that determines whether a regular expression matches the provided text. Reachability is determined by a Directed DFS implementation [^directed_dfs]. This is straightforward because the DFS would only operate on the digraph, which only represents `$\epsilon$`-transitions.
 
-First, the set of states reachable via $\epsilon$-transitions from the start state are collected:
+First, the set of states reachable via `$\epsilon$`-transitions from the start state are collected:
 
 ``` java
 boolean match(String text) {
@@ -3161,7 +3159,7 @@ As the text is fed into the NFA one character at a time, the set of reachable st
         matches.add(v + 1);
 ```
 
-Each of the states reachable via $\epsilon$-transitions from each of the states collected are added to the collection:
+Each of the states reachable via `$\epsilon$`-transitions from each of the states collected are added to the collection:
 
 ``` java
     pc = new Bag<Integer>();
@@ -3188,7 +3186,7 @@ Once the entire text has been consumed, the final iteration of the above loop wo
 
 The construction of the NFA is accomplished similar to how Djikstra's [shunting-yard algorithm](http://en.wikipedia.org/wiki/Shunting-yard_algorithm) works for evaluating mathematical expressions in infix notation by using two stacks: one for operators and another for values.
 
-In this context, a stack is maintained for the operators and a digraph the size of the length of the pattern plus one (to account for the accept state) is maintained to represent the NFA's $\epsilon$-transitions. _Concatenation_ is already handled implicitly by nature of how the pattern is stored.
+In this context, a stack is maintained for the operators and a digraph the size of the length of the pattern plus one (to account for the accept state) is maintained to represent the NFA's `$\epsilon$`-transitions. _Concatenation_ is already handled implicitly by nature of how the pattern is stored.
 
 ``` java
 Digraph NFA(String regex) {
@@ -3208,7 +3206,7 @@ For _parentheses_ and _or expressions_, the position of the `(` or `|` is pushed
       ops.push(i);
 ```
 
-If a `)` is encountered and it signified the end of an _or expression_, then the appropriate edges must be created. A regex `(A | B)` is handled by adding two $\epsilon$-transitions: one from the `(` to the `B` and the other from the `|` to the `)`. Push the position of the `|` (having previously pushed the `(`).
+If a `)` is encountered and it signified the end of an _or expression_, then the appropriate edges must be created. A regex `(A | B)` is handled by adding two `$\epsilon$`-transitions: one from the `(` to the `B` and the other from the `|` to the `)`. Push the position of the `|` (having previously pushed the `(`).
 
 ``` java
     else if (re[i] == ')') {
@@ -3231,7 +3229,7 @@ _Closures_ are detected by looking ahead of the current state (if possible). If 
     }
 ```
 
-Finally, `)`, `*`, and `)` each also have an $\epsilon$-transition leading to the next state in the pattern.
+Finally, `)`, `*`, and `)` each also have an `$\epsilon$`-transition leading to the next state in the pattern.
 
 ``` java
     if (re[i] == '(' || re[i] == '*' || re[i] == ')')
@@ -3393,11 +3391,11 @@ Dijkstra's shortest-path algorithm is greedy for example because it processes ea
 
 # B-Trees
 
-A B-Trees of order $M$ is a tree consisting of internal and external $k$-nodes each consisting of $k$ keys where $2 \leq k \leq M - 1$ at the root and $M/2 \leq k \leq M - 1$ at every other node. _Internal nodes_ contain copies of keys, where every key is greater than or equal to its parent node's associated key, but not greater than the parent node's next largest key. _External nodes_ are the leaves of the tree that associate keys with data. A _sentinel key_ is created to be less than all other keys and is the first key in the root node.
+A B-Trees of order `$M$` is a tree consisting of internal and external `$k$`-nodes each consisting of `$k$` keys where `$2 \leq k \leq M - 1$` at the root and `$M/2 \leq k \leq M - 1$` at every other node. _Internal nodes_ contain copies of keys, where every key is greater than or equal to its parent node's associated key, but not greater than the parent node's next largest key. _External nodes_ are the leaves of the tree that associate keys with data. A _sentinel key_ is created to be less than all other keys and is the first key in the root node.
 
 ## B-Tree Insertion
 
-To insert a key, the tree is recursively descended by following the link pertaining to the interval upon which the inserted key falls until an external node is reached. The tree is balanced on the way up the tree after the recursive call. If a node is full it is split into two $M/2$-nodes and attached to a parent 2-node (if at the root) or a $(k + 1)$-node where $k$ was the original size of the full node's parent. Whenever a node is split, the smallest key in the new node (or both smallest keys from both nodes if at the root) is inserted into the parent node.
+To insert a key, the tree is recursively descended by following the link pertaining to the interval upon which the inserted key falls until an external node is reached. The tree is balanced on the way up the tree after the recursive call. If a node is full it is split into two `$M/2$`-nodes and attached to a parent 2-node (if at the root) or a `$(k + 1)$`-node where `$k$` was the original size of the full node's parent. Whenever a node is split, the smallest key in the new node (or both smallest keys from both nodes if at the root) is inserted into the parent node.
 
 ``` java
 void add(Key key) {
@@ -3484,7 +3482,7 @@ An _st-flow_ is a set of edge flows for the network that represent the distribut
 
 The Ford-Fulkerson algorithm, also known as the _augmenting-path algorithm_, works by increasing flows incrementally along paths from the source to the sink. It works by considering that each edge consists of a _forward edge_ and a _backward edge_.
 
-A path is found in the network in which there are no full forward edges and no empty backward edges. The flow of the network can then be increased by an amount $X$, by increasing flow in forward edges by $X$ and decreasing flow in backward edges by $X$ in this path. The value of $X$ is the minimum of the unused capacities in forward edges and backward edges in the path. This path that can be used to increase flow in the network is known as an _augmenting path_.
+A path is found in the network in which there are no full forward edges and no empty backward edges. The flow of the network can then be increased by an amount `$X$`, by increasing flow in forward edges by `$X$` and decreasing flow in backward edges by `$X$` in this path. The value of `$X$` is the minimum of the unused capacities in forward edges and backward edges in the path. This path that can be used to increase flow in the network is known as an _augmenting path_.
 
 Following from this, the maxflow can be found by starting with zero flow everywhere and gradually increase the flow along any augmenting path from source to sink until there are no more augmenting paths.
 
@@ -3504,8 +3502,8 @@ An interval search tree stores ranges and provides operations for searching for 
 
 For searching, the input interval is checked to see if it overlaps with the current node. If not, and the left node is null, search proceeds on the right child. If the left node's max upper bound is less than the input interval's lower bound, search proceeds on the right node. Otherwise search proceeds on the left node.
 
-1. if input interval $[l, r]$ overlaps current node, return
-2. if left node is `null` or left's max upper < $l$: go right  
+1. if input interval `$[l, r]$` overlaps current node, return
+2. if left node is `null` or left's max upper < `$l$`: go right  
     else: go left
 
 ```java
@@ -3568,7 +3566,7 @@ Third it's important to compute the final solution after solving all subproblems
 
 ## Maximum-Weight Independent Set
 
-Example problem: given a path graph $G = (V, E)$ with non-negative weights on the vertices, produce a subset of the graph's vertices so that **no two vertices are adjacent** and that the subset has the **maximum total weight** of every such subset.
+Example problem: given a path graph `$G = (V, E)$` with non-negative weights on the vertices, produce a subset of the graph's vertices so that **no two vertices are adjacent** and that the subset has the **maximum total weight** of every such subset.
 
 <img src="//i.imgur.com/kQkyCTD.png" class="center" />
 
@@ -3578,33 +3576,33 @@ A greedy approach would be to iteratively choose the maximum-weight vertex that 
 
 A divide-and-conquer approach would be problematic when attempting to combine the results of subproblems.
 
-Let $S \subseteq V$ be a max-weight independent set (IS). Let $v_n$ be the last/right-most/final vertex of the path. Either $v_n$ is in $S$ or it isn't.
+Let `$S \subseteq V$` be a max-weight independent set (IS). Let `$v_n$` be the last/right-most/final vertex of the path. Either `$v_n$` is in `$S$` or it isn't.
 
-Suppose $v_n \not\in S$ and let $G'$ be the graph with $v_n$ deleted off of the end (since $v_n$ is the last vertex on the path). Then $S$ is also an independent set of $G'$, specifically a max-weight independent set.
+Suppose `$v_n \not\in S$` and let `$G'$` be the graph with `$v_n$` deleted off of the end (since `$v_n$` is the last vertex on the path). Then `$S$` is also an independent set of `$G'$`, specifically a max-weight independent set.
 
-Suppose $v_n \in S$, then the penultimate vertex $v_{n - 1} \not\in S$, since it is adjacent to $v_n$. Then let $G''$ be the graph with $v_{n - 1}$ and $v_n$ deleted.
+Suppose `$v_n \in S$`, then the penultimate vertex `$v_{n - 1} \not\in S$`, since it is adjacent to `$v_n$`. Then let `$G''$` be the graph with `$v_{n - 1}$` and `$v_n$` deleted.
 
 <img src="//i.imgur.com/J0oxqD1.png" class="center" />
 
-Unlike the earlier claim that if $v_n \not\in S$ then $S$ is also an independent set of $G'$, it's not true that if $v_{n - 1} \not\in S$ then $S$ is also an independent set of $G''$, because the $v_n \in S$ but $v_n \not\in G''$.
+Unlike the earlier claim that if `$v_n \not\in S$` then `$S$` is also an independent set of `$G'$`, it's not true that if `$v_{n - 1} \not\in S$` then `$S$` is also an independent set of `$G''$`, because the `$v_n \in S$` but `$v_n \not\in G''$`.
 
-However $S - \{v_n\}$ is an independent set of $G''$, specifically a max-weight independent set.
+However `$S - \{v_n\}$` is an independent set of `$G''$`, specifically a max-weight independent set.
 
-This means that if we knew whether or not $v_n$ was in the max-weight independent set, we could recursively compute the max-weight independent set of $G'$ or $G''$. We can try both possibilities and return the better solution.
+This means that if we knew whether or not `$v_n$` was in the max-weight independent set, we could recursively compute the max-weight independent set of `$G'$` or `$G''$`. We can try both possibilities and return the better solution.
 
-Essentially, recursively compute $S_1$ as the max-weight independent set of $G'$ as well as $S_2$ as the max-weight independent set of $G''$. Then return max of $S_1$ or $S_2 \cup v_n$.
+Essentially, recursively compute `$S_1$` as the max-weight independent set of `$G'$` as well as `$S_2$` as the max-weight independent set of `$G''$`. Then return max of `$S_1$` or `$S_2 \cup v_n$`.
 
 However, this would take exponential time because very little work is done before recursing.
 
 A realization is that there is only a linear number of distinct subproblems, one for each prefix of the graph since the recursion only plucks vertices off from the right. This causes repeated work for the same prefixes.
 
-This can be mitigated by caching the solution to the subproblem in a global table for subsequent $O(1)$-time lookup, i.e. _memoization_, where there is an array of solutions to subproblems where index $i$ holds the solution to the $i^\text{th}$ subproblem.
+This can be mitigated by caching the solution to the subproblem in a global table for subsequent `$O(1)$`-time lookup, i.e. _memoization_, where there is an array of solutions to subproblems where index `$i$` holds the solution to the `$i^\text{th}$` subproblem.
 
 This is more straightforward if it's reformulated as a bottom-up iterative algorithm.
 
-Let $G_i$ be the first $i$ vertices of $G$. Then populate an array `A` from left-to-right with `A[i]` set to the value of the max-weight independent set of $G_i$. Naturally `A[0]` is an empty set so it's set to weight 0, and `A[1]` is a single-vertex graph so it's set to the weight of the first vertex.
+Let `$G_i$` be the first `$i$` vertices of `$G$`. Then populate an array `A` from left-to-right with `A[i]` set to the value of the max-weight independent set of `$G_i$`. Naturally `A[0]` is an empty set so it's set to weight 0, and `A[1]` is a single-vertex graph so it's set to the weight of the first vertex.
 
-After adding another vertex, determine the max-weight independent set for this new $G$. This will be the maximum of either $A[i - 1]$ or $A[i - 1] + w_i$. If it's $A[i - 1]$ then it means that the max-weight independent set is of $G_{i - 1}$. If it's $A[i - 2] + w_i$ then it means that the max-weight independent set is of $G_{i - 2}$.
+After adding another vertex, determine the max-weight independent set for this new `$G$`. This will be the maximum of either `$A[i - 1]$` or `$A[i - 1] + w_i$`. If it's `$A[i - 1]$` then it means that the max-weight independent set is of `$G_{i - 1}$`. If it's `$A[i - 2] + w_i$` then it means that the max-weight independent set is of `$G_{i - 2}$`.
 
 ``` cpp
 for i from 2 to and including n:
@@ -3631,31 +3629,32 @@ return S
 
 ## Knapsack Problem
 
-There are $n$ items and each has a value:
+There are `$n$` items and each has a value:
 
-* value $v_i$ (non-negative)
-* size $w_i$ (non-negative and integral)
-* capacity $W$ (non-negative and integral)
+* value `$v_i$` (non-negative)
+* size `$w_i$` (non-negative and integral)
+* capacity `$W$` (non-negative and integral)
 
-The output should be a subset $S \subset \{1, 2, 3, \ldots, n\}$ that maximizes the sum of the values that are selected $\sum_{i \in S} v_i$ while preventing the sum of the weights from exceeding the capacity $\sum_{i \in S} w_i \le W$.
+The output should be a subset `$S \subset \{1, 2, 3, \ldots, n\}$` that maximizes the sum of the values that are selected `$\sum_{i \in S} v_i$` while preventing the sum of the weights from exceeding the capacity `$\sum_{i \in S} w_i \le W$`.
 
 This is useful for whenever we have a budget of a resource that we can use and we want to use it in the smartest way possible.
 
 First we'll formulate a recurrence---an optimal solution as a function of solutions to smaller subproblems---based on the structure of an optimal solution.
 
-Let $S$ be the max-value solution to an instance of knapsack, and let $n$ be the final selected item.
+Let `$S$` be the max-value solution to an instance of knapsack, and let `$n$` be the final selected item.
 
-Suppose $n \not\in S$, then $S$ must be optimal with the first $(n - 1)$ items.
+Suppose `$n \not\in S$`, then `$S$` must be optimal with the first `$(n - 1)$` items.
 
-Suppose $n \in S$, then $S - \{n\}$ must be an optimal solution with respect to the first $(n - 1)$ items with capacity $W - w_n$.
+Suppose `$n \in S$`, then `$S - \{n\}$` must be an optimal solution with respect to the first `$(n - 1)$` items with capacity `$W - w_n$`.
 
-The solution $V_{i,x}$ is the value of the best solution that:
+The solution `$V_{i,x}$` is the value of the best solution that:
 
-1. uses only the first $i$ items
-2. has total capacity $\le x$
+1. uses only the first `$i$` items
+2. has total capacity `$\le x$`
 
 Therefore:
 
+<div>
 $$
 V_{i,x} = \max
 \begin{cases}
@@ -3663,10 +3662,11 @@ V_{(i - 1), x} & \text {case 1, item i excluded} \\
 v_i + V_{(i - 1), x - w_i} & \text {case 2, item i included}
 \end{cases}
 $$
+</div>
 
-However, an edge case exists in that if $w_i > x$, then we must use case 1.
+However, an edge case exists in that if `$w_i > x$`, then we must use case 1.
 
-Now given the above recurrence, the $O(nW)$ algorithm can be implemented.
+Now given the above recurrence, the `$O(nW)$` algorithm can be implemented.
 
 ``` cpp
 A = 2D-array. first dimension is item count, second is capacity

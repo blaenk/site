@@ -52,9 +52,9 @@ A sequence can be repeated by multiplying it with an integer. If the integer is 
 
 The `in` operator tests to check whether an object equals any item in the given sequence or iterable. The converse is `not in`. In dictionaries, `in` tests for key presence, while in strings it tests for substring presence.
 
-Negative indexing starts from the end of the sequence of length $L$, i.e. `-1` is the last element, at index $L - 1$.
+Negative indexing starts from the end of the sequence of length `$L$`, i.e. `-1` is the last element, at index `$L - 1$`.
 
-A slicing of `[i:j]` is exclusive: it excludes the upper bound. When the upper bound is less than or equal to the lower bound, the slicing is an empty subsequence. When a bound is omitted, the extent is implied: `0` for the lower bound, sequence length $L$ for the upper bound. Omitting both bounds takes a slicing of the entire sequence, which is often used to make shallow copies.
+A slicing of `[i:j]` is exclusive: it excludes the upper bound. When the upper bound is less than or equal to the lower bound, the slicing is an empty subsequence. When a bound is omitted, the extent is implied: `0` for the lower bound, sequence length `$L$` for the upper bound. Omitting both bounds takes a slicing of the entire sequence, which is often used to make shallow copies.
 
 A slicing can include a _stride_ denoting the distance between successive indices, in the form `[i:j:k]`. For example, `[::2]` would include all even indices of the original sequence, while `[::-1]` would contain the sequence elements in reverse, in which case the lower and upper bound should be flipped, which makes sense if thought of as "from" and "to" indicators.
 
@@ -1068,7 +1068,7 @@ If absent, Python calls `__repr__` instead.
 
 ## Collection Special Methods
 
-A sequence with $L$ items should accept any integer key $K$ such that $-L \le K \lt L$. A negative index $-K$ which is $-L \le K \lt 0$ should be equivalent to $K + L$.
+A sequence with `$L$` items should accept any integer key `$K$` such that `$-L \le K \lt L$`. A negative index `$-K$` which is `$-L \le K \lt 0$` should be equivalent to `$K + L$`.
 
 Keying with an invalid type should raise `TypeError` and keying with an out-of-range index should raise `IndexError`. The `for` statement relies on this for sequences that don't define `__iter__`.
 

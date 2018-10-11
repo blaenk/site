@@ -469,11 +469,11 @@ The question is, how much should each type of error be penalized?
     <td rowspan="2">$h$</td>
     <td style="border-right: 2px solid black;">$+1$</td>
     <td style="text-align: center">no error</td>
-    <td style="text-align: center">**false accept**</td>
+    <td style="text-align: center"><strong>false accept</strong></td>
   </tr>
   <tr style="background-color: transparent;">
     <td style="border-right: 2px solid black;">$-1$</td>
-    <td style="text-align: center">**false reject**</td>
+    <td style="text-align: center"><strong>false reject</strong></td>
     <td style="text-align: center">no error</td>
   </tr>
 </table>

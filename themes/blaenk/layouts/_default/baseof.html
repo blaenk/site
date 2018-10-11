@@ -12,15 +12,30 @@
   <meta name="MobileOptimized" content="320">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta name="twitter:site" content="@blaenk">
-  <meta name="twitter:creator" content="@blaenk">
+  <meta name="twitter:site" content="@blaenk" />
+  <meta name="twitter:creator" content="@blaenk" />
+  <meta name="twitter:card" content="summary" />
+  
+  <meta property="og:url" content="{{ .Permalink }}" /> 
+
   {{ if .IsPage }}
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="{{ .Title }}" />
+  <meta property="og:site_title" content="{{ .Site.Title }}" />
+  <meta name="twitter:title" content="{{ .Title }} · {{ .Site.Title }}" />
+
+  <meta name="og:description" content="{{ .Summary }}" /> 
   <meta name="twitter:description" content="{{ .Summary }}" />
-  <meta name="twitter:title" content="{{ .Title }}" />
-  <!-- <meta name="twitter:card" content="summary_large_image" /> -->
-  <!-- <meta name="twitter:image" content="{{ .Params.image }}" /> -->
+  
+  <meta property="article:published_time" content="{{ .Date }}" />
+  <meta property="article:modified_time" content="{{ .Lastmod }}" />
   {{ else }}
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="{{ .Title }}" />
+  <meta property="og:site_title" content="{{ .Site.Title }}" />
   <meta name="twitter:title" content="{{ .Site.Title }}" />
+
+  <meta name="og:description" content="{{ .Description }}" /> 
   <meta name="twitter:description" content="{{ .Description }}" />
   {{ end }}
 

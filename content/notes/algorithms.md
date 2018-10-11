@@ -169,7 +169,7 @@ Oftentimes it's useful to use approximations instead of exact values.
 
 Stirling's approximation:
 
-<div>$$ \ln N! \approx N \ln N - N + \ln \sqrt {2 \pi N} $$</div>
+<div>$$ \log N! \approx N \log N - N + \log \sqrt {2 \pi N} $$</div>
 
 # Bitwise Operations
 
@@ -381,7 +381,7 @@ Many problems can be reduced to sorting.
 
 The following algorithms are described with the assumption that the sequence is an array of contiguous memory and constant access time. This is _noteworthy_ because it is important to recognize algorithms can have different speeds depending on the underlying data structure.
 
-For example, selection sort backed by a priority queue or balanced binary tree can help to speed up the operation of finding the smallest element in the unsorted region. Instead of being linear, the operation would be `$\lg(n)$`. Given that this is done at every element in the sequence, of which there are `$N$`, this means that selection sort backed by such a structure can be improved from `$O(n^2)$` to `$O(n\lg(n))$` [^sorting_improvements].
+For example, selection sort backed by a priority queue or balanced binary tree can help to speed up the operation of finding the smallest element in the unsorted region. Instead of being linear, the operation would be `$\log(n)$`. Given that this is done at every element in the sequence, of which there are `$N$`, this means that selection sort backed by such a structure can be improved from `$O(n^2)$` to `$O(n\log(n))$` [^sorting_improvements].
 
 A sorting algorithm is known as _stable_ if it maintains the same relative order of equal keys as it was before the sorting operation.
 
@@ -494,7 +494,7 @@ public void sort(Comparable[] seq) {
 
 |Case   |Growth|
 |:----- |:--------|
-|Worst  |`$O(n\lg{n})$`|
+|Worst  |`$O(n\log{n})$`|
 |Space  |`$O(n)$`|
 
 This is a _stable_ algorithm and the first algorithm that is linearithmic in complexity. The general idea is that the sequence is split into many pieces and then they're all merged back together. The sorting occurs during the merging phase. The merging algorithm works such that the resultant merged piece is sorted.
@@ -687,8 +687,8 @@ private int partition(Comparable[] seq, int lo, int hi) {
 |Case   |Growth|
 |:----- |:--------|
 |Best   |`$O(n)$`|
-|Worst  |`$O(n\lg{n})$`|
-|Space  |`$O(\lg{n})$`|
+|Worst  |`$O(n\log{n})$`|
+|Space  |`$O(\log{n})$`|
 
 One problem with quick sort as it is implemented above is that items with keys equal to that of the partition item are swapped anyways, unnecessarily. Three-way partitioning aims to resolve this by partitioning into three separate sub-arrays, the middle of which corresponds to those items with keys equal to the partition point. E. W. Dijkstra popularized this as the _Dutch National Flag_ problem.
 
@@ -738,7 +738,7 @@ The data structure commonly used to back a priority queue is an array embedding 
 
 |Case    |Growth|
 |:-----  |:--------|
-|Worst   |`$O(\lg{n})$`|
+|Worst   |`$O(\log{n})$`|
 
 Swimming in a heap is when a node is checked to ensure the invariant that every node is smaller than its parent. If a node's value becomes larger than its parent, the node is swapped with its parent and the process is repeated at the new parent until the tree root is reached. This can be characterized as a new, larger node having to swim up the tree to its proper place.
 
@@ -766,7 +766,7 @@ private void swim(Comparable[] seq, int target) {
 
 |Case   |Growth|
 |:----- |:--------|
-|Worst  |`$O(\lg{n})$`|
+|Worst  |`$O(\log{n})$`|
 
 From a different perspective, if a node's key becomes smaller than one or both of its children, the heap-order invariant will also be violated, because it conversely means that one or more of its children are larger than the parent. In this case, the node is simply swapped with the larger of its two children, a process known as sinking. This process is repeated for the new child all the way down the tree until the invariant holds.
 
@@ -805,7 +805,7 @@ void Sink(std::vector<T> &vec, int target) {
 
 |Case   |Growth|
 |:----- |:--------|
-|Worst  |`$O(n\lg{n})$`|
+|Worst  |`$O(n\log{n})$`|
 
 Heap sort is a sorting algorithm facilitated by a priority queue which performs well when backed by a binary heap. Heap sort more or less amounts to:
 
@@ -1108,7 +1108,7 @@ The **problem** with implementing a direct representation of 2-3 trees is that t
 
 |Case    |Growth|
 |:-----  |:--------|
-|Worst   |`$O(2 \lg {n})$`|
+|Worst   |`$O(2 \log {n})$`|
 
 [Red-Black trees](http://en.wikipedia.org/wiki/Red–black_tree) are trees that guarantee near-perfect balance by maintaining 5 invariants:
 
@@ -1511,7 +1511,7 @@ Based on this, when `$\alpha$` is about 0.5 there will be 1.5 compares for a sea
 
 |Case    |Growth|
 |:-----  |:--------|
-|Worst   |`$O(\lg {n})$`|
+|Worst   |`$O(\log {n})$`|
 
 This collision resolution strategy involves storing a linked-list at every entry in the array. The intent is to choose the size of the array large enough so that the linked-lists are sufficiently short.
 
@@ -1530,7 +1530,7 @@ Double hashing is a form of open addressing in which two hash functions are used
 
 |Case    |Growth|
 |:-----  |:--------|
-|Worst   |`$O(c \lg {n})$`|
+|Worst   |`$O(c \log {n})$`|
 
 Linear probing is a form of open addressing that relies on empty entries in the array for collision resolution. Linear probing simply consists of:
 
@@ -1999,8 +1999,8 @@ public void union(int p, int q) {
 
 |Operation   |Growth|
 |:---------- |:--------|
-|Find        |`$\lg(n)$`|
-|Union       |`$\lg(n)$`|
+|Find        |`$\log(n)$`|
+|Union       |`$\log(n)$`|
 
 The problem with vanilla Quick-Union is that the trees are merged arbitrarily. This can cause bad performance depending on which tree is merged under the other.
 
@@ -2076,7 +2076,7 @@ A _spanning tree_ is a connected subgraph with no cycles that includes all of th
 
 |Case    |Growth|
 |:-----  |:--------|
-|Worst   |`$O(E \lg {E})$`|
+|Worst   |`$O(E \log {E})$`|
 |Space   |`$O(E)$`|
 
 This method of finding the MST operates by attaching a new edge to a growing tree at each step. Starting with any vertex from the graph to create a single-vertex tree, each time taking the minimum-weight edge that connects a vertex on the tree to a vertex not yet on the tree.
@@ -2157,7 +2157,7 @@ void visit(EdgeWeightedGraph &G,
 
 |Case    |Growth|
 |:-----  |:--------|
-|Worst   |`$O(E \lg {E})$`|
+|Worst   |`$O(E \log {E})$`|
 |Space   |`$O(V)$`|
 
 The above implementation is lazy with respect to ignoring ineligible edges in the priority queue. That approach leaves ineligible edges in the priority queue until they're dequeued for consideration and discarded if they are ineligible.
@@ -2205,7 +2205,7 @@ void visit(EdgeWeightedGraph G, int v) {
 
 |Case    |Growth|
 |:-----  |:--------|
-|Worst   |`$O(E \lg {E})$`|
+|Worst   |`$O(E \log {E})$`|
 |Space   |`$O(E)$`|
 
 An alternative method for finding the MST is to process the edges in increasing order of their weight values, each time taking an edge for the MST that doesn't form a cycle, stopping once `$V-1$` edges have been aggregated. The edges form a forest of trees, gradually growing into a single tree (the MST). The algorithm can be thought of as starting with a forest of `$V$` single-vertex trees, and on each step finding an edge to connect two trees until there is only one left (the MST).
@@ -2269,7 +2269,7 @@ void relax(EdgeWeightedDigraph G, int v) {
 
 |Case    |Growth|
 |:-----  |:--------|
-|Worst   |`$O(E \lg {V})$`|
+|Worst   |`$O(E \log {V})$`|
 |Space   |`$O(V)$`|
 
 Dijkstra's alrogithm is similar to Prim's algorithm for finding the MST. Dijkstra's algorithm finds the SPT by finding the lowest-weight non-tree vertex as provided by an index minimum-priority queue and relaxing that vertex.
@@ -2715,8 +2715,8 @@ void sort(String[] a, int lo, int hi, int d) {
 |Case   |Growth|
 |:----- |:--------|
 |Best   |`$\Omega (N)$`|
-|Worst  |`$O(Nw \lg {R})$`|
-|Space  |`$O(W + \lg {N})$`|
+|Worst  |`$O(Nw \log {R})$`|
+|Space  |`$O(W + \log {N})$`|
 
 <aside class="table-caption">Table: $w$: average string length</aside>
 

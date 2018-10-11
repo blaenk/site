@@ -11,4 +11,6 @@ At any moment I have a handful of books that I'm currently reading. I find that 
 
 <img src="/images/books/dataintensive.jpg" class="right" width="128">
 
-[Designing Data-Intensive Applications](https://www.amazon.com/Designing-Data-Intensive-Applications-Reliable-Maintainable/dp/1449373321/) --- I've always been interested in the scalability of large scale, data-intensive systems. I read this book since way back when it was unfinished and in early access, but I lost most of my notes and highlights when my Kindle simply decided to ignore them.
+[Designing Data-Intensive Applications](https://www.amazon.com/Designing-Data-Intensive-Applications-Reliable-Maintainable/dp/1449373321/) [[notes](/notes/scalability)] --- I've always been interested in the scalability of large scale, data-intensive systems. I read this book since way back when it was unfinished and in early access, but my Kindle randomly decided to lose all of the notes and highlights I had made.
+
+Now I'm going through and re-reading it a second time. This book is amazing.

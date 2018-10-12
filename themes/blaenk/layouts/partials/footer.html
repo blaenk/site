@@ -14,7 +14,8 @@
       {{ printf `<a title="rss" href="%s"><i class="fa fa-rss-square"></i></a>` .RelPermalink | safeHTML }}
     {{ else }}
       {{ if .GitInfo }}
-        <a tite="rss" href="https://github.com/blaenk/site/commits/master/content/{{ .Path }}.atom"><i class="fa fa-rss-square"></i></a>
+        {{ $unixPath := replace .Path "\\" "/" }}
+        <a title="rss" href="https://github.com/blaenk/site/commits/master/content/{{ $unixPath }}.atom"><i class="fa fa-rss-square"></i></a>
       {{ else }}
         <a title="rss" href="/index.xml"><i class="fa fa-rss-square"></i></a>
       {{ end }}

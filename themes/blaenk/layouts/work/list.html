@@ -3,7 +3,7 @@
 {{ end }}
 {{ define "content" }}
 <div class="page-group">
-  <h2>Projects</h2>
+  <h2 id="projects">Projects</h2>
   <ul class="archive">
     {{ range .Data.Pages.ByTitle }}
     {{ if eq .Params.work.kind "project" }}
@@ -16,7 +16,7 @@
 </div>
 
 <div class="post-group">
-  <h2>Contributions</h2>
+  <h2 id="contributions">Contributions</h2>
   <ul class="archive">
     {{ range .Data.Pages.ByTitle }}
     {{ if eq .Params.work.kind "contribution" }}

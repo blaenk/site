@@ -348,10 +348,6 @@ article {
         margin-left: 0;
         margin-top: 5px;
         font-size: 0.9em;
-
-        & > li:only-child:before {
-          content: '';
-        }
       }
 
       ol {

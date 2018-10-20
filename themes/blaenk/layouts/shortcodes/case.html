@@ -1,0 +1,3 @@
+{{ if .Parent }}
+{{ template "case" (dict "case" (.Get "name") "order" (.Get "order")) }}
+{{ end }}

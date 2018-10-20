@@ -1,0 +1,47 @@
+{{/*
+    This shortcode generates a table for displaying algorithmic complexity.
+    It can be used with optional named arguments `time` and `space`.
+    Additionally, the shortcode `case` can be used within to specify arbitrary
+    complexity cases.
+
+    {{< complexity time="n \log n" space="n" />}}
+
+    {{< complexity time="n \log n" space="n" />}}
+        {{< case name="Best" order="\Omega(\log n)" >}}
+    {{< /complexity }}
+    */}}
+{{ define "case" }}
+    <tr>
+        <td align="left">{{ index . "case" | humanize }}</td>
+        {{ with (index . "order") }}
+        <td align="left"><code>
+        {{/* Assume O() unless alternative is explicitly specified. */}}
+        {{ if (not (findRE `^(\\Omega|\\omega|\\theta|\\Theta|O|o)` .)) }}
+        $O({{ . }})$
+        {{ else }}
+        ${{ . }}$
+        {{ end }}
+        {{ end }}
+        </code></td>
+    </tr>
+{{ end }}
+<table>
+    <thead>
+        <tr>
+            <th align="left">Case</th>
+            <th align="left">Order</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {{ with .Get "time" }}
+        {{ template "case" (dict "case" "time" "order" .) }}
+        {{ end }}
+
+        {{ with .Get "space" }}
+        {{ template "case" (dict "case" "space" "order" .) }}
+        {{ end }}
+
+        {{ .Inner }}
+    </tbody>
+</table>

@@ -24,6 +24,11 @@ article {
   .entry-content {
     padding-bottom: 15px;
 
+    span.highlight {
+      background-color: rgb(255, 233, 168);
+      padding: 2px;
+    }
+
     // DEFAULTS
     h1, h2, h3, h4, h5 { line-height: 2; }
 

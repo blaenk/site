@@ -55,13 +55,18 @@ article {
     ul, ol {
       li {
         p {
-          margin-top: 0;
+          // margin-top: 0;
           margin-bottom: 10px;
         }
 
-        ul {
-          margin-bottom: 10px;
+        p:only-of-type {
+          margin-top: 0;
+          margin-bottom: 0;
         }
+
+        // ul {
+        //   margin-bottom: 10px;
+        // }
       }
     }
 

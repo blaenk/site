@@ -70,18 +70,18 @@ article {
       }
     }
 
-    ul > li {
-      list-style-type: none;
+    // ul > li {
+    //   list-style-type: none;
 
-      &:before {
-        content: '\00bb';
-        cursor: default;
-        position: absolute;
-        margin-left: -0.9375em;
-        font-family: $font-sans;
-        line-height: 1.3;
-      }
-    }
+    //   &:before {
+    //     content: '\00bb';
+    //     cursor: default;
+    //     position: absolute;
+    //     margin-left: -0.9375em;
+    //     font-family: $font-sans;
+    //     line-height: 1.3;
+    //   }
+    // }
 
     strong {
       color: #333;

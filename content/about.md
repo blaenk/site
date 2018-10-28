@@ -7,13 +7,8 @@ date = 2012-09-21
 
 My name is Jorge Israel Peña. Online I sometimes go by the name Blaenk Denum. I'm a software developer from Southern California.
 
-I have a genuine interest in a wide spectrum of computer science and software development, including [Haskell], [Rust], [machine learning], web development, [POSIX] systems programming, and game development. I love to [read] about these and other subjects, and often write [notes] about them.
+I have a genuine interest in a wide spectrum of computer science and software development. Lately this includes general [algorithms](/notes/algorithms) and problem solving techniques, [data structures](/notes/data-structures), [distributed systems](/notes/scalability), system design, web development, and systems programming.
 
-[Haskell]: http://en.wikipedia.org/wiki/Haskell_(programming_language)
-[Rust]: http://en.wikipedia.org/wiki/Rust_(programming_language)
-[machine learning]: http://en.wikipedia.org/wiki/Machine_learning
-[POSIX]: http://en.wikipedia.org/wiki/POSIX
-[Web Development]: http://en.wikipedia.org/wiki/Web_development
 
 [read]: /reads/
 [notes]: /notes/

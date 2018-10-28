@@ -14,7 +14,7 @@ I love to [read] about these and other subjects, and often write [notes] about t
 [read]: /reads/
 [notes]: /notes/
 
-You can check out what I'm up to [lately] or find me on [github] and [stackoverflow]. To get in touch you can email me at **jorge.israel.p@gmail.com** or message me on [twitter].
+You can get in touch with me at <span class="path">jorge.israel.p@gmail.com</span> or check out what I'm up to [lately] or find me on [github] and [stackoverflow].
 
 [lately]: /lately
 [github]: http://github.com/blaenk

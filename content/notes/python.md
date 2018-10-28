@@ -144,7 +144,7 @@ Removing a non-existent key entry with `del` raises an exception.
 
 `popitem()` removes and returns an arbitrary key/value pair.
 
-`setdefault(k[, x])` returns the value associated with key `k` if any, and if there is none, establishes a key-value pair with `x` as the value.
+`setdefault(k[, x])` returns the value associated with key `k` if any, and if there is none, establishes a key-value pair with `x` as the value. Like `get()` except it _also sets_ the default value if one doesn't exist.
 
 `update(d)` merges the entries of dictionary `d` into the dictionary. It can also accept an iterable of key/value pairs, as well as named arguments.
 

@@ -1612,3 +1612,31 @@ The `str()` class creates a string version of the object via its `__str__` or `_
 
 The `slice()` class creates a slice object.
 
+# Input and Output
+
+Standard input can be read either by iterating over lines:
+
+``` python
+import sys
+
+for line in sys.stdin:
+    # line includes the newline, strip with .rstrip()
+```
+
+Or collecting them into an array:
+
+``` python
+import sys
+
+for line in sys.stdin.readlines():
+    # line includes the newline, strip with .rstrip()
+```
+
+Or use the `fileinput` module:
+
+``` python
+import fileinput
+
+for line in fileinput.input():
+    print(line)
+```

@@ -1589,3 +1589,26 @@ Going forward, the suggested package manager and virtual environment manager to 
 [Pipenv]: https://docs.pipenv.org/
 
 Since virtualenvs can be stored anywhere, it's easy to test multiple versions of the same project with multiple versions of Python. Furthermore, it may be a good idea to store virtualenvs outside of the source tree to avoid having to ignore them.
+
+# Built-Ins
+
+The `all()` function takes any iterable, often [generator expressions](#generator-expressions), and returns `True` if _all_ elements are true.
+
+The `any()` function is similar except it returns `True` if _any_ element is true.
+
+The `chr()` function encodes an integer to a Unicode character.
+
+The `int()` class creates an integer object from a number or string.
+
+The `bool()` class creates a boolean from standard truth testing.
+
+The `float()` class creates a float object from a number or string.
+
+The `list()` class creates a list from an iterable.
+
+The `set()` class creates a set from an iterable.
+
+The `str()` class creates a string version of the object via its `__str__` or `__repr__` methods, in that order.
+
+The `slice()` class creates a slice object.
+

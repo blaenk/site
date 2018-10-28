@@ -1640,3 +1640,11 @@ import fileinput
 for line in fileinput.input():
     print(line)
 ```
+
+# Regular Expressions
+
+A pattern is compiled with the `compile()` function in the `re` module.
+
+A string can be matched by a pattern with the pattern's `match()` method which returns `None` or a match object, which has `start()` and `end()` methods to denote the match endpoints, and `group()` containing the matched substring.
+
+The `findall()` and `finditer()` pattern methods can be used to find all of the matches up-front or iterate on all of the matches.

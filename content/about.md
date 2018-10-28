@@ -5,7 +5,7 @@ date = 2012-09-21
 
 <img src="/images/me.png" class="right" width="128" id="me">
 
-My name is Jorge Israel Peña, though online I sometimes go by Blaenk Denum. I'm a developer currently living in Southern California.
+My name is Jorge Israel Peña. Online I sometimes go by the name Blaenk Denum. I'm a software developer from Southern California.
 
 I have a genuine interest in a wide spectrum of computer science and software development, including [Haskell], [Rust], [machine learning], web development, [POSIX] systems programming, and game development. I love to [read] about these and other subjects, and often write [notes] about them.
 

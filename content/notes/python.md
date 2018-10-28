@@ -160,7 +160,7 @@ The `bool` type is a subclass of `int`.
 
 ## Variables
 
-Variables or other references have no intrinsic type, but rather the object to which a reference is bound has a type; a given reference may bound to objects of various types.
+Variables or other references have no intrinsic type, but rather the object to which a reference is bound has a type; a given reference may bind to objects of various types.
 
 A global variable is an attribute of a module object. A local variable is local to a function.
 

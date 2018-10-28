@@ -40,6 +40,28 @@ Multiple, adjacent string literals of any kind are concatenated by the compiler 
 
 Since strings are immutable, attempting to rebind or delete an item or slice of a string raises an exception.
 
+The `count()` method counts the number of non-overlapping occurrences of the substring, within an optional slice.
+
+The `startswith()` and `endswith()` methods check if a string starts or ends with another, within an optional slice.
+
+The `find()` method finds the first index in the string where the substring is found, within an optional slice. The `rfind()` method is the same except it works right-to-left.
+
+The `in` operator can be used when the position isn't needed.
+
+The `join()` method concatenates a given iterable with the string in between each element.
+
+The `lower()` and `upper()` methods lowercases or uppercases the string.
+
+The `lstrip()` and `rstrip()` methods strips leading or trailing characters. The `strip()` method strips on both ends.
+
+The `partition()` method splits the string at the first occurrence of another string, returning a triple containing substrings before, the separator, and after the separator.
+
+The `replace()` method returns a copy of the string with all occurrences of an old substring replaced with a new substring, with an optional maximum replacement count.
+
+The `split()` method creates a list of substrings in the string separated by a given separator, which is a space by default. The `rsplit()` method is the same except the maximum split count starts counting from right-to-left.
+
+The `splitlines()` method splits a string on newlines.
+
 ## Tuples
 
 Tuple parentheses are optional unless the context would make the commas ambiguous, such as in function calls, or to denote empty or nested tuples. A tuple of one item requires a comma after the single item. The built-in `tuple()` creates a tuple with an item for each item in the provided iterable.

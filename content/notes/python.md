@@ -6,6 +6,10 @@ date = 2018-03-14
 kind = "language"
 +++
 
+Python is a beautifully simple, no-nonsense language. In fact, it is so simple and straightforward, that oftentimes its users can become very productive with it right away, avoiding the deep dive into the language to see what truly makes it special. It's very popular with data science, data visualization, machine learning, and many other tasks.
+
+These are notes from the book _Python in a Nutshell_ and _Fluent Python_.
+
 <nav id="toc"></nav>
 
 A long line can be split into two lines by ending the first line with a backslash `\`. Python also automatically joins adjacent lines if an open parentheses `(`, bracket `[`, or brace `{` hasn't been closed. Lines after the first physical line are _continuation lines_. Indentation rules only apply to the first physical line and not to continuation lines.

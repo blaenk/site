@@ -1,12 +1,13 @@
 +++
-title = "Scalability"
+title = "Distributed Systems"
 date = 2018-03-07
+aliases = ["/notes/scalability"]
 
 [note]
 kind = "concept"
 +++
 
-Notes about system scalability from resources such as the amazingly wonderful book _Designing Data-Intensive Applications_ by Martin Kleppmann.
+Notes about the system design of scalable distributed systems from resources such as the amazingly wonderful book _Designing Data-Intensive Applications_ by Martin Kleppmann.
 
 <nav id="toc"></nav>
 

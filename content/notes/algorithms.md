@@ -10,49 +10,21 @@ What follows are some notes on algorithms I've been reviewing from [Algorithms](
 
 <div id="toc"></div>
 
-# Approaches
-
-## Strategies
-
-Some general strategies to approaching a given problem:
-
-* **concrete examples**: manually solve concrete instances and build a general solution
-* **case analysis**: split the input/execution into a number of cases and solve each in isolation
-* **iterative refinement**: brute-force and improve upon it
-* **reduction**: use well-known solution to another problem as subroutine
-* **graph modeling**: model the problem as a graph
-
-## Modeling
-
-* **permutations**: arrangements, tours, orderings, or sequences
-* **subsets**: clusters, collections, committees, groups, packagings, or selections
-* **trees**: hierarchies, dominance relationships, ancestor/descendant relationships, or taxonomies
-* **graphs**: networks, circuits, webs, relationships
-* **points**: sites, positions, data records, locations
-* **polygons**: shapes, regions, configurations, boundaries
-* **strings**: text, characters, patterns, labels
-
-## Techniques
-
-* **divide-and-conquer**: decompose the problem into two or more sub-problems until they are simple enough to solve directly, **then combine the results**
-* **greedy algorithms**: make locally optimum, seemed-like-a-good-idea-at-the-time decisions in stages and never change them (don't backtrack). This won't always yield the optimum solution.
-
-In divide-and-conquer, the problem is often solved in the combination phase. For example, merge sort divides the problem and actually solves (i.e. sorts) it during the merge phase.
-
-## Intractability
-
-An intractable problem is one that has no efficient solution. It can be proved that a problem is intractable if a known intractable problem can be reduced to the given problem.
-
-* change the problem formulation such that it still achieves the higher goal
-* brute-force or dynamic programming: acceptable if instances or exponential parameter is small
-* search: prune search-space via backtracking, branch-and-bound, hill-climbing
-* heuristics: insight, common case analysis
-* parallelization: solve subparts in parallel
-* approximation: solution that is provably close to optimum
 
 # Analysis
 
 The goal of asymptotic analysis is to suppress the constant factors and lower-order terms. This is because the constant factors are very system-dependent, such as how many cycles a certain operation may take between different pieces of hardware. The lower-order terms are also not as important because they are rendered irrelevant for very large inputs, where the higher-order terms dominate.
+
+| Name         | Complexity      | Examples |
+| :-------     | :-------------- | :----------------- |
+| Constant     | `$O(1)$`        | Adding two numbers |
+| Logarithmic  | `$O(\log n)$`   | Branching |
+| Linear       | `$O(n)$`        | Scanning the input |
+| Linearithmic | `$O(n \log n)$` | Branching _and_ scanning at each level |
+| Quadratic    | `$O(n^2)$`      | Looking at all pairs of an input |
+| Cubic        | `$O(n^3)$`      | Looking at all triples of an input |
+| Exponential  | `$O(c^n)$`      | Looking at all subsets of an input |
+| Factorial    | `$O(n!)$`       | Looking at all permutations/orderings of `$n$` items |
 
 ## Summations
 
@@ -94,18 +66,7 @@ Constant factors are ignored since they can easily be beaten out by a different 
 
 ## Dominance Relations
 
-A faster-growing function `$f(n)$` _dominates_ a slower-growing one `$g(n)$`, i.e. `$f \gg g$`. In order of increasing dominance:
-
-| Name         | Complexity | Examples |
-| :-------     | :--------- | :----------------- |
-| Constant     | `$1$`        | adding two numbers |
-| Logarithmic  | `$\log n$`   | branching; binary search |
-| Linear       | `$n$`        | scanning; incrementing each element in an array |
-| Linearithmic | `$n \log n$` | branching and scanning at each level; QuickSort and MergeSort |
-| Quadratic    | `$n^2$`      | looking at all/most pairs of an array; InsertionSort |
-| Cubic        | `$n^3$`      | looking at all/most triples of an array; matrix multiplication |
-| Exponential  | `$c^n$`      | looking at all subsets of an array |
-| Factorial    | `$n!$`       | looking at all permutations or orderings of n items |
+A faster-growing function `$f(n)$` _dominates_ a slower-growing one `$g(n)$`, i.e. `$f \gg g$`.
 
 When analyzing an algorithm it is common to produce an expression of bounds which can easily be simplified by keeping in mind the principle of dominance relations.
 

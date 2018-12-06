@@ -96,7 +96,7 @@ treasureMap += (1 -> "Go to island")
 
 The `Unit` type is equivalent to Haskell's `()` or `void` in C++.
 
-Scala has symbols similar to Ruby's `:symbols` which are defined as:
+Scala has symbols similar to Lisp's, defined as:
 
 ``` scala
 val someKey = 'symbol

@@ -1205,10 +1205,10 @@ The simplest way to deal with conflicts is to avoid them, such as by ensuring th
 
 Databases must resolve conflicts in a _convergent_ way meaning that they must arrive at the same final value when all changes have been replicated. This can be achieved by:
 
-* Giving each _write_ a unique ID, then pick the write with the highest ID. Using a timestamp is known as _last write wins_ (LWW). Prone to data loss.
-* Give each _replicate_ a unique ID, then pick the write originating from the replica with the lowest ID. Prone to data loss.
-* Merge the values somehow, e.g. concatenation.
-* Record the conflict and all of its information, and use application code to resolve it at a later time, perhaps by asking the user.
+1. Giving each _write_ a unique ID, then pick the write with the highest ID. Using a timestamp is known as _last write wins_ (LWW). Prone to data loss.
+2. Give each _replicate_ a unique ID, then pick the write originating from the replica with the lowest ID. Prone to data loss.
+3. Merge the values somehow, e.g. concatenation.
+4. Record the conflict and all of its information, and use application code to resolve it at a later time, perhaps by asking the user.
 
 Most multi-leader replication tools allow writing conflict resolution logic in application code, which can be executed on write or on read:
 

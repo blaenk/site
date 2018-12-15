@@ -1222,3 +1222,17 @@ There are active areas of research into conflict resolution, such as:
 * **Conflict-free replicated datatypes** (CRDTs): data structures that can be used concurrently while automatically resolving conflicts via two-way merges
 * **Mergeable persistnent data structures**: tracking history and using a three-way merge function, similar to Git
 * **Operational transformation**: Designed for concurrent editing of ordered lists of items, such as a list of characters (i.e. a document). Used by collaborative editing applications like Google Docs
+
+### Multi-Leader Replication Topologies
+
+A _replication topology_ describes the communication paths for write propagation between nodes.
+
+* **All-to-all topology**: every leader sends its writes to every other leader.
+
+* **Circular topology**: each node receives writes from one node and forwards the combination of those writes and its own writes to another node.
+
+* **Star topology**: a designated root node forwards writes to all other nodes. It can be generalized to a tree.
+
+In circular and star topologies, the nodes need to forward writes, so the flow of replication messages can be interrupted if just one node fails, requiring topology reconfiguration to reroute around the failed node.
+
+To prevent infinite replication loops, each node has a unique identifier which is used to tag each write when it has passed through a node, so that a node can ignore a write that is tagged with its own identifier.

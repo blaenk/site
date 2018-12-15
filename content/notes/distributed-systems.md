@@ -1216,3 +1216,9 @@ Most multi-leader replication tools allow writing conflict resolution logic in a
 * On read. When a conflict is detected, all conflicting writes are stored. Next time it is read, the multiple versions of the data are returned, then the resolved value can be written back.
 
 An important fact is that conflict resolution usually applies at row or document-level, regardless of whether they are part of a transaction.
+
+There are active areas of research into conflict resolution, such as:
+
+* **Conflict-free replicated datatypes** (CRDTs): data structures that can be used concurrently while automatically resolving conflicts via two-way merges
+* **Mergeable persistnent data structures**: tracking history and using a three-way merge function, similar to Git
+* **Operational transformation**: Designed for concurrent editing of ordered lists of items, such as a list of characters (i.e. a document). Used by collaborative editing applications like Google Docs

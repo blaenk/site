@@ -151,8 +151,7 @@ class Rational(num: Int, den: Int)
 
 Any code inside the class body will be put inside the _primary constructor_.
 
-
-_Fields_, accessible publicly, are created by defining class-level values:
+_Fields_, accessible publicly, are created by defining class-level values.
 
 ``` scala
 class Rational(num: Int, den: Int) {
@@ -160,6 +159,8 @@ class Rational(num: Int, den: Int) {
   val denom: Int = den
 }
 ```
+
+Fields and methods can be defined private using the `private` keyword.
 
 _Auxiliary constructors_ are additional constructors that simply directly or indirectly delegate object construction to the primary constructor. They are named after `this`, and their first action must be invoking another constructor:
 
@@ -169,11 +170,9 @@ class Rational(num: Int, den: Int) {
 }
 ```
 
-Fields and methods can be defined private using the `private` keyword.
-
 _Literal identifiers_ are ones that are enclosed in backticks, so that any string that would be accepted by the runtime will result in an identifier.
 
-Implicit conversions can be defined so that values of a certain time are implicitly converted to another type in order for an operation to go through. For example, if there's an addition function for `Rational` that takes a `Rational` and an Integer, we can do `r + 1` but not `1 + r` since that would attempt to invoke the function on the Integer itself. To solve this, we can define an implicit conversion to `Rational` on Integer:
+Implicit conversions can be defined so that values of a certain type are implicitly converted to another type in order for an operation to go through. For example, if there's an addition function for `Rational` that takes a `Rational` and an Integer, we can do `r + 1` but not `1 + r` since that would attempt to invoke the function on the Integer itself. To solve this, we can define an implicit conversion to `Rational` on Integer:
 
 ``` scala
 implicit def intToRational(x: Int) = new Rational(x)
@@ -236,7 +235,7 @@ speed(time = 10, distance = 100)
 It's possible to define default parameter values:
 
 ``` scala
-def printTime(out: java.io.PrintStream) =
+def printTime(out: java.io.PrintStream = System.out) =
   out.println("time = " + System.currentTimeMillis())
 ```
 
@@ -260,7 +259,9 @@ Explicitly defining multiple parameter lists allows using braces for the last pa
 val braces = curriedSum(1) { 2 }
 ```
 
-Parameters can be passed "by-name" so that parameters can be passed to a function and not evaluated until explicitly done so within the function. The syntax is simply to prepend the parameter with `=>`, I take this to mean that it's wrapping the parameter in a parameter-less lambda like `()` so that the expression passed as the parameter isn't evaluated until explicitly done so within the function:
+Parameters can be passed "by-name" so that they can be passed to a function and not evaluated until explicitly used within the function. The syntax is simply to prepend the parameter type with `=>` [^rust_lambda_parameter].
+
+[^rust_lambda_parameter]: The mnemonic I use is that it reminds me of the pattern in Rust to accomplish something similar by passing a closure to be called to evaluate the actual parameter to use.
 
 ``` scala
 def byNameAssert(predicate: => Boolean) =
@@ -284,9 +285,15 @@ abstract class Element {
 
 Methods themselves are abstract if they have no defined implementation.
 
-Parameterless methods are those that take no parameters and their parentheses are omitted. The convention is to omit the parentheses when there are no parameters and the method accesses mutable state only by reading its class' fields. Further, empty parentheses in function calls can be omitted. The convention is to only omit them if they have no side-effects. I/O calls for example should always explicitly contain the parentheses.
+Parameter-less methods are those that take no parameters and their parentheses are omitted.
 
-Classes can be extended other classes. This allows the sub-class to inherit all non-private members of the parent class, and makes the sub-class a sub-type of the parent type. All classes implicitly extend from `scala.AnyRef` which is equivalent to Java's `java.lang.Object`:
+The convention is to omit the parentheses when there are no parameters and the method accesses mutable state only by reading its class' fields.
+
+Empty parentheses in function calls can be omitted. The convention is to only omit them if they have no side-effects. I/O calls for example should always explicitly contain the parentheses.
+
+Classes can be extended by other classes. This allows the sub-class to inherit all non-private members of the parent class, and makes the sub-class a sub-type of the parent type.
+
+All classes implicitly extend from `scala.AnyRef` which is equivalent to Java's `java.lang.Object`:
 
 ``` scala
 class ArrayElement(conts: Array[String]) extends Element {
@@ -319,7 +326,7 @@ class LineElement(s: String) extends ArrayElement(Array(s)) {
 }
 ```
 
-Overriding must be explicitly denoted.
+Overriding must be explicitly denoted with the `override` keyword.
 
 The `final` keyword can be used to prevent subclass overriding on a particular method:
 
@@ -339,7 +346,9 @@ final class A extends B {
 
 # Hierarchy
 
-Every class is a direct or indirect subclass of `Any`, which defines a variety of "universal methods" available to all subclasses. The `==` method is final and simply calls `equals`, which is the method that subclasses should override.
+Every class is a direct or indirect subclass of `Any`, which defines a variety of "universal methods" available to all subclasses.
+
+The `==` method is final and simply calls `equals`, which is the method that subclasses should override.
 
 `Any` has two direct subclasses. `AnyVal` is the parent class of every built-in value class in Scala: `Byte`, `Short`, `Char`, `Int`, `Long`, `Float`, `Double`, `Boolean`, and `Unit`. These can't be instantiated with `new` because they are defined as final and abstract. `AnyRef` is the base class of all reference classes, it's just an alias for `java.lang.Object`.
 
@@ -361,7 +370,7 @@ trait SomeTrait {
 
 A trait can subclass a certain class, which essentially specifies a constraint on the trait such that it can only be mixed into classes that are or subclass the extended class.
 
-Traits can be mixed in using either the `extends` or `with` keywords, multiple mixins are simply chained using `with`. They also defined types, so a value of a certain trait type can be set to any object whose class mixes-in the particular trait.
+Traits can be mixed in using either the `extends` or `with` keywords, multiple mixins are simply chained using `with`. They also define types, so a value of a certain trait type can be set to any object whose class mixes-in the particular trait.
 
 Traits can override methods implemented in the classes they're mixed into. This is accomplished with the `abstract override` directive. This combination of specifiers conveys the fact that it overrides a method that it's mixed into (hence `override`), and therefore that method must be defined in the class it's mixed into (hence `abstract`). Methods with these qualifiers can use `super` to access the class they're mixed into, specifically the same method they're overriding:
 
@@ -382,6 +391,20 @@ Multiple mixins can be "stacked," in which case the same function is called in r
 # Packages
 
 The `package` statement is used as in Java to specify that what follows is to be part of the specified package. However, it can also be used with braces to only insert the contained code within the package.
+
+``` scala
+package users {
+  package administrators {
+    class NormalUser
+  }
+
+  package normalusers {
+    class NormalUser
+  }
+
+  class OtherUser
+}
+```
 
 The `import` statement can be used to import packages and symbols in different ways:
 
@@ -411,7 +434,9 @@ import Predef._
 
 # Testing
 
-Assertions can be made with `assert` and enabled in the JVM using the command options `-ea` (enable assertions) and `-da`. An alternative function is `ensuring`, which also takes a predicate. The predicate is a function that takes a so-called "result type" and returns a Boolean. If the predicate returns true, then `ensuring` returns the "result type," but if the predicate returns false, then `ensuring` throws an `AssertionError`.
+Assertions can be made with `assert` and enabled in the JVM using the command options `-ea` (enable assertions) and `-da`.
+
+An alternative function is `ensuring`, which also takes a predicate. The predicate is a function that takes a so-called "result type" and returns a Boolean. If the predicate returns true, then `ensuring` returns the "result type," but if the predicate returns false, then `ensuring` throws an `AssertionError`.
 
 Unit testing is possible with tools such as [ScalaTest](http://www.scalatest.org) and ScalaCheck. ScalaTest tests are functions with names prefixed by `test` inside classes that extend `Suite`:
 
@@ -522,7 +547,14 @@ case class UnOp(operator: String, arg: Expr) extends Expr
 case class BinOp(operator: String, left: Expr, right: Expr) extends Expr
 ```
 
-These case classes define factory methods to avoid having to explicitly write `new`, fields for the data, simple `toString` implementations, and a `copy` method that is very similar to Haskell's record syntax. For example, the following creates a copy of the `op` `BinOp` with the `operator` field changed to `"-"`:
+These case classes define:
+
+* factory methods to avoid having to explicitly write `new`
+* fields for the data
+* simple `toString` implementations, 
+* a `copy` method that is very similar to Haskell's record syntax
+
+For example, the following creates a copy of the `op` `BinOp` with the `operator` field changed to `"-"`:
 
 ``` scala
 op.copy(operator = "-")
@@ -546,28 +578,35 @@ def simplifyTop(expr: Expr): Expr =
   }
 ```
 
-This is very similar to other pattern matching features available in Haskell for example. In cases, we can use _constructor patterns_, _constant patterns_, and _variable patterns_. Variable patterns are simply those that begin with lower case characters, but we can force a lowercase identifier to be treated as a constant by surrounding it with backticks.
+This is very similar to other pattern matching features available in Haskell for example.
 
-It's also to use _sequence patterns_. In this case, the `_*` operator can be used to specify "the rest of the sequence," like so:
+`case` clauses can use:
 
-``` scala
-expr match {
-  case List(0, _*) => println("found it")
-  case _ =>
-}
-```
+* _constructor patterns_
+* _constant patterns_
+* _variable patterns_, which begin with lower case characters, unless surrounded with backticks
+* _sequence patterns_, where the `_*` operator can be used to specify "the rest of the sequence," like so:
 
-It's also possible to use _type patterns_ to match the type of the expression:
+    ``` scala
+    expr match {
+      case List(0, _*) => println("found it")
+      case _ =>
+    }
+    ```
 
-``` scala
-def generalSize(x: Any) = x match {
-  case s: String => s.length
-  case m: Map[_, _] => m.size
-  case _ => -1
-}
-```
+* _type patterns_ to match the type of the expression:
 
-_Type Erasure_ means that information about type arguments is not maintained at runtime. This is an artifact of the erasure model of generics that Java uses. As a result, it's not possible to pattern match on the type of `Map`, and the following code will return `true` for any `Map`:
+    ``` scala
+    def generalSize(x: Any) = x match {
+      case s: String => s.length
+      case m: Map[_, _] => m.size
+      case _ => -1
+    }
+    ```
+
+_Type Erasure_ means that information about type arguments is not maintained at runtime. This is an artifact of the erasure model of generics that Java uses.
+
+As a result, it's not possible to pattern match on the type of `Map`, and the following code will return `true` for any `Map`:
 
 ``` scala
 def isIntToIntMap(x: Any) = x match {
@@ -613,7 +652,7 @@ def describe(e: Expr): String = (e: @unchecked) match {
 The `Option` type is equivalent to Haskell's `Maybe` type. It can take on either a parameterized `Some` value or `None`.
 
 <a name="case-sequence"></a>
-A _case sequence_ is a function literal specific defined as a pattern match where each case is an entry point to the function:
+A _case sequence_ is a function literal specifically defined as a pattern match where each case is an entry point to the function:
 
 ``` scala
 val withDefault: Option[Int] => Int = {
@@ -670,7 +709,7 @@ new PartialFunction[List[Int],Int] {
 }
 ```
 
-The actors library's `react` function for example uses partial a partial argument function, since it's defined only for the messages teh caller wants to handle.
+The actors library's `react` function for example uses partial a partial argument function, since it's defined only for the messages the caller wants to handle.
 
 # Tuples
 
@@ -832,7 +871,7 @@ def orderedMergeSort[T <: Ordered[T]](xs: List[T]): List[T] = ...
 
 # Abstract Members
 
-A member of a class or trait is _abstract_ if it doesn't have a complete definition within the class. The implementations are meant to be defined in subclasses. Unlike other object-oriented languages, it's also possible to declare abstract fields and even abstract types. It's possible to declare abstract types, methods, `val`s and `var`s:
+A member of a class or trait is _abstract_ if it doesn't have a complete definition within the class. The implementations are meant to be defined in subclasses. Unlike other object-oriented languages, it's possible to declare abstract fields of `val` and `var`, methods, and even abstract types:
 
 ``` scala
 trait Abstract {
@@ -895,7 +934,7 @@ object twoThirds extends {
 } with RationalTrait
 ```
 
-The other way to solve this problem is using lazy `val`s, which defers the evaluation of the `val`'s expression until the first time it the `val` is used, much like in Haskell.
+The other way to solve this problem is using lazy `val`s, which defers the evaluation of the `val`'s expression until the first time it the `val` is used.
 
 ``` scala
 trait LazyRationalTrait {
@@ -957,7 +996,7 @@ def using[T, S](obj: T)(operation: T => S) = {
   result
 }
 
-def using[T, <: { def close(): Unit }, S](obj: T)(operation: T => S) = {
+def using[T <: { def close(): Unit }, S](obj: T)(operation: T => S) = {
   val result = operation(obj)
   obj.close()
   result
@@ -966,7 +1005,7 @@ def using[T, <: { def close(): Unit }, S](obj: T)(operation: T => S) = {
 
 ## Enumerations
 
-Enumerations in Scala aren't defined at the language-level. Instead there is a class `scala.Enumeration` that can be used to define enumerations, which works due to path-dependent types. This means that `Color.Value` would be different from `Direction.Value` becuase their parts differ:
+Enumerations in Scala aren't defined at the language-level. Instead there is a class `scala.Enumeration` that can be used to define enumerations, which works due to path-dependent types. This means that `Color.Value` would be different from `Direction.Value` because their parts differ:
 
 ``` scala
 object Color extends Enumeration {
@@ -1025,7 +1064,7 @@ implicit def function2ActionListener(f: ActionEvent => Unit) =
 There are a variety of rules concerning implicit definitions.
 
 * Only functions marked as `implicit` are tried.
-* The implicit conversion must be in the scope as a single identifier, i.e. not `some.convert`. This is why some libraries include a `Preamble` object which often contains useful implicit conversions which can be imported with `import.Preamble._`
+* The implicit conversion must be in the scope as a single identifier, i.e. not `some.convert`. This is why some libraries include a `Preamble` object which often contains useful implicit conversions which can be imported with `import Preamble._`
     * The _exception_ to this rule is that the compiler also looks inside the companion object of the source or target types of the conversion.
 * The compiler only attempts one implicit conversion, i.e. it won't attempt converting `x + y` into `convert1(convert2(x)) + y`.
 
@@ -1084,7 +1123,7 @@ def maxList[T](elements: List[T])(implicit orderer: T => Ordered[T]): T =
   }
 ```
 
-Also note that the implicit parameter can be used as an implicit parameter and conversion in the body, as a result, `ordered` doesn't appear anywhere in the function body. This is a very common thing to do, and since the name of the implicit parameter isn't used anywhere, it's possible to use a _view bound_.
+Also note that the implicit parameter can be used as an implicit parameter and conversion in the body, as a result, `ordered` doesn't appear anywhere in the function body. This is a very common thing to do, and since the name of the implicit parameter isn't used anywhere, it's possible to use a _view bound_, denoted by `<%`.
 
 For example, the following code essentially enforces the requirement that `T` can be _treated_ as an `Ordered[T]`, where _treated_ would mean that there is an implicit conversion available. If `T` is already an `Ordered[T]`, then an identity function is used as the implicit conversion:
 

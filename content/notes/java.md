@@ -219,7 +219,7 @@ Fields can be `transient`, which means that they should not be persisted when th
 Variable-length arguments are specified by threep periods and makes the arguments available as an array.
 
 ``` java
-void printArgs(int ... v) {
+void printArgs(int ...v) {
   for (int a : v) {
     System.out.println(a);
   }

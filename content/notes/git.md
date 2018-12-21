@@ -39,3 +39,7 @@ Rewording a commit during an interactive rebase has the effect of picking it for
 Commits can be deleted or even reordered during an interactive rebase by deleting or rearranging the lines.
 
 The `@` symbol is an alias for `HEAD`.
+
+## Rebasing
+
+In a rebase, the definition of "theirs" and "ours" flips compared to their definition in a merge because the frame of reference becomes the branch onto which we're rebasing, which becomes "ours" and the changes being rebased on top become "theirs".

@@ -33,7 +33,7 @@ The summation of a constant is simply the product of the constant and the range:
 
 <div>$$ \sum_{i = 1}^n 1 = n $$</div>
 
-The sum of the first `$n$` integers can be visualized as folding the range of values at the middle so that the first integer is paired with the last, or more generally: the `$i^\text{th}$` paired with the `$(n - i + 1)\text{th}$`. Below, the bound of `$n/2$` refers to the "folding at the middle," then each pair is added. **Note** that the sum is quadratic!
+The sum of the first `$n$` integers can be visualized as folding the range of values at the middle so that the first integer is paired with the last, or more generally: the `$i^\text{th}$` paired with the `$(n - i + 1)\text{th}$`. Below, the bound of `$n/2$` refers to the "folding at the middle," then each pair is added. **Note** that the sum is _quadratic_.
 
 <div>$$ \sum_{i = 1}^n i = \sum_{i = 1}^{n/2} (i + (n - i + 1)) = \frac {n (n + 1)} 2 $$</div>
 

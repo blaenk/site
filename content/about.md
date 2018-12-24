@@ -7,7 +7,7 @@ date = 2012-09-21
 
 My name is Jorge Israel Peña. Online I sometimes go by the name Blaenk Denum. I'm a software developer from Southern California.
 
-I have a genuine interest in a wide spectrum of computer science and software development. Lately this includes general [algorithms](/notes/algorithms) and problem solving techniques, [data structures](/notes/data-structures), [distributed systems](/notes/scalability), system design, web development, and systems programming.
+I have a genuine interest in a wide spectrum of computer science and software development. Lately this includes general [algorithms](/notes/algorithms) and problem solving techniques, [data structures](/notes/data-structures), [distributed systems](/notes/distributed-systems), system design, web development, and systems programming.
 
 I love to [read] about these and other subjects, and often write [notes] about them.
 

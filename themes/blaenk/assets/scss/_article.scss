@@ -24,6 +24,11 @@ article {
   .entry-content {
     padding-bottom: 15px;
 
+    .mermaid {
+      margin-top: 15px;
+      text-align: center;
+    }
+
     span.highlight {
       background-color: rgb(255, 233, 168);
       padding: 2px;

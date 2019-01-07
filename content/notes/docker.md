@@ -112,7 +112,7 @@ When used to `apt-get update`, it should be combined with `apt-get install` in t
 
 [caching issues]: #image-cache
 
-Commands that use pipes and the `system()` shell form are considered successful as long as the final operation succeeds, regardless of the status of preceding operations. This can be overridden by prefixing `set -o pipefial &&` to the command.
+Commands that use pipes and the `system()` shell form are considered successful as long as the final operation succeeds, regardless of the status of preceding operations. This can be overridden by prefixing `set -o pipefail &&` to the command.
 
 ### CMD
 

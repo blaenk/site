@@ -1,0 +1,2 @@
+hugo
+netlify deploy --prod

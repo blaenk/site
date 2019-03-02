@@ -6,6 +6,8 @@ date = 2017-04-18
 kind = "language"
 +++
 
+Ruby is a dynamic interpreted language. It gained widespread adoption for web development following the release of [Ruby on Rails](/notes/ruby-on-rails/). Early on its dynamic metaprogramming facilities were abused, as was evident in Ruby on Rails.
+
 <nav id="toc"></nav>
 
 The `rbconfig` package contains constants with information about the local Ruby installation, particularly in the `RbConfig::CONFIG` hash.

@@ -153,6 +153,11 @@ Note that symbols may contain spaces if they're surrounded with double quotes an
 
 Objects can be duplicated using the `dup` method. An object can be frozen with the `freeze` method, which prevents it from mutating. The `clone` method is like `dup` in that it duplicates the object, but it also keeps the object frozen if it already was frozen. Freezing is shallow, such that for example, object elements of an array can still be mutated even if the array itself can't.
 
+## Comparison
+
+Object comparison through `==` by default only compares pointers. By convention, `==` may be redefined by `equal?` is left alone to allow comparing pointers.
+
+It's easy to enable object comparison by mixing in the `Comparable` module and defining the `<=>` (spaceship) method. All other comparison methods are defined in terms of it.
 # Classes
 
 Classes are named with constants, which begin with an uppercase letter.

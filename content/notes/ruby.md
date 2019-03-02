@@ -585,3 +585,89 @@ Converting strings with no reasonable integer equivalent to integers with `to_i`
 The `to_str` function should be defined and used when an object needs to become a string, usually because they are string-like, compared to `to_s` which simply provides a string _representation_ of the object. For example, `String#+` uses `to_str` for converting the object to a string for the purpose of string concatenation, if it's defined.
 
 Similarly, objects can act as arrays if they define `to_ary`, to facilitate operations where the object must behave like an array, such as in array concatenation.
+# Strings
+
+Negative indices wrap around.
+
+Substrings can be obtained by specifying a second index: `str[i, j]`. Either can be negative, but the second must be closer to the end of the string than the first.
+
+Substrings can be obtained via substring search by passing a string as an index. This also accepts regular expressions.
+
+``` ruby
+str = "needle in a haystack"
+
+str["needle"] #=> "needle"
+str[/n..dle/] #=> "needle"
+```
+
+The `String#slice` method is an alias to `String#[]`. The receiver-modifying variant `String#slice!` removes the matched substring.
+
+The `String#[]=` method can be used to overwrite the matched substring.
+
+``` ruby
+str = "needle in a haystack"
+
+str["needle"] = "hay"
+```
+
+Note though that a fatal error is raised if there is no match.
+
+The `String#<<` method can be used to mutably append a string to another string.
+
+The `String#include?` method can be used to test for containment.
+
+The `String#start_with?` and `String#end_with?` methods can be used for prefixes and suffixes.
+
+The `String#empty?` method can be used to check if a string is empty.
+
+The `String#size` and `String#length` methods are synonyms of each other.
+
+The `String#index` method returns the index of the first occurrence of the parameter. The `String#rindex` variant starts from the right.
+
+The `String#ord` method can return the character ordinal code. The `Number#chr` method reverses this operation.
+
+It's possible to quote strings as `%char{text}` where `char` is any character and the braces `{}` can be any delimiter. This removes the need to escape quotes. Unmatched in-line delimiters must be escaped.
+
+``` ruby
+puts %q{This is equivalent to a single-quoted string}
+puts %Q{This is equivalent to a single-quoted string}
+
+%q-Valid string-
+%Q/Also valid/
+%q Space\ as\ a\ delimiter # Also valid
+%q[This is unmatched \[ and thus escaped]
+```
+
+Note that the IRB parser is (?) different from the one that Ruby uses, and has issues with these types of quotes.
+
+Here documents (heredoc) are considered double-quoted strings by default. They are preceded by `<<` and a name, and the string content must be flush-left.
+
+Using a prefix of `<<-` removes the flush-left requirement.
+
+Surrounding the name in single quotes treats the heredoc as a single-quoted string.
+
+The `<<NAME` doesn't have to occur at the end of the line, but the following line begins the body.
+
+``` ruby
+text = <<BODY
+This is
+my message
+body.
+BODY
+
+text = <<-NOT_FLUSH
+This is
+  my message
+body.
+NOT_FLUSH
+
+text = <<'LITERAL'
+This is
+my message with a literal \n
+body.
+'LITERAL'
+
+list = [1, 2, 3, 4, <<BODY.to_i]
+5
+BODY #=> 50
+```

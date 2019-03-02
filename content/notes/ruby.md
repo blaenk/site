@@ -13,14 +13,14 @@ Ruby is a dynamic interpreted language. It gained widespread adoption for web de
 The `rbconfig` package contains constants with information about the local Ruby installation, particularly in the `RbConfig::CONFIG` hash.
 
 | Term        | Contents                                  |
-|-------------+-------------------------------------------|
+|:------------| :-----------------------------------------|
 | rubylibdir  | standard library                          |
 | bindir      | CLI tools                                 |
 | archdir     | arcitecture-specific extensions/libraries |
 | sitedir     | own/third-party extensions/libraries      |
 | vendordir   | third-party extensions/libraries          |
 | sitelibdir  | own extensions (Ruby)                     |
-| sitearchdir | own extensions (C)                        |
+| sitearchdir | own extensions \(C)                       |
 
 # Loading Files
 

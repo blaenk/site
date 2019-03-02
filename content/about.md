@@ -5,25 +5,19 @@ date = 2012-09-21
 
 <img src="/images/me.png" class="right" width="128" id="me">
 
-My name is Jorge Israel Peña. Online I sometimes go by the name Blaenk Denum. I'm a software developer from Southern California.
+I'm a software engineer from Los Angeles with an interest in a wide spectrum of computer science and software development. Lately this includes general [algorithms](/notes/algorithms) and problem solving techniques, [data structures](/notes/data-structures), [distributed systems](/notes/distributed-systems), system design, web development, and systems programming.
 
-I have a genuine interest in a wide spectrum of computer science and software development. Lately this includes general [algorithms](/notes/algorithms) and problem solving techniques, [data structures](/notes/data-structures), [distributed systems](/notes/distributed-systems), system design, web development, and systems programming.
-
-I love to [read] about these and other subjects, and often write [notes] about them.
+I love to [read] about these and other subjects, and often write [notes] about them. You can also check out what I'm up to [lately].
 
 [read]: /reads/
 [notes]: /notes/
+[lately]: /lately/
 
-You can get in touch with me at <span class="path">jorge.israel.p@gmail.com</span> or check out what I'm up to [lately] or find me on [github] and [stackoverflow].
-
-[lately]: /lately
-[github]: http://github.com/blaenk
-[stackoverflow]: http://stackoverflow.com/users/101090/jorge-israel-pena
-[twitter]: https://twitter.com/blaenk
+You can find my contact information at the [bottom of this page](#footer).
 
 ## Ethic
 
-I try to be a [pragmatic] and well-rounded developer. I love to learn different technologies out of a genuine interest in gaining different perspectives on software development, both to help me keep an open mind and to be mindful of the variety of different approaches that can be taken to solve a problem.
+I try to be a [pragmatic] and well-rounded developer. I love to learn different technologies out of a genuine interest in gaining different perspectives, both to help me keep an open mind and to be mindful of the variety of different approaches that can be taken to solve a problem.
 
 [pragmatic]: http://en.wikipedia.org/wiki/The_Pragmatic_Programmer
 

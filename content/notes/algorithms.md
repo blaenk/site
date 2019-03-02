@@ -172,17 +172,21 @@ Algorithm operation:
 
 This essentially splits the sequence into a left sorted region and a right unsorted region.
 
-``` java
-public void sort(Comparable[] seq) {
-  int N = seq.length;
+``` cpp
+template<typename T>
+void sort(std::vector<T> &sequence) {
+  int size = sequence.size();
 
-  for (int i = 0; i < N; i++) {
+  for (int i = 0; i < size; i++) {
     int min = i;
 
-    for (int j = i + 1; j < N; j++)
-      if (seq[j] < seq[min]) min = j;
+    for (int j = i + 1; j < size; j++) {
+      if (sequence[j] < sequence[min]) {
+        min = j;
+      }
+    }
 
-    swap(seq[i], seq[min]);
+    swap(sequence[i], sequence[min]);
   }
 }
 ```
@@ -206,13 +210,20 @@ The benefit of insertion sort is that if the sequence is already sorted then the
 
 **Performance Factors**: order of the items
 
-``` java
-public void sort(Comparable[] seq) {
-  int N = seq.length;
+``` cpp
+template<typename T>
+void sort(std::vector<T> &sequence) {
+  int size = sequence.size();
 
-  for (int i = 1; i < N; i++)
-    for (int j = i; j > 0 && seq[j] < seq[j - 1]; j--)
-      swap(seq[j], seq[j - 1]);
+  for (int i = 0; i < size; i++) {
+    for (int j = i; j > 0; j--) {
+      if (sequence[j] < sequence[j - 1]) {
+        swap(sequence[j], sequence[j - 1]);
+      } else {
+        break;
+      }
+    }
+  }
 }
 ```
 
@@ -241,17 +252,25 @@ This sequence begins at the largest increment less than `$N/3$` and decreases to
 
 The effect of shell sort is that it sorts elements that are `$H$` elements apart with one swap instead of `$H$`. The granularity of the sorting operation increases as `$H$` itself decreases such that every element is eventually sorted, but with the added benefit that as `$H$` decreases, the distance of the longest-distance swap decreases.
 
-``` java
-public void sort(Comparable[] seq) {
-  int N = seq.length;
+``` cpp
+template<typename T>
+void sort(std::vector<T> &sequence) {
+  int size = sequence.size();
   int h = 1;
 
-  while (h < N/3) h = 3 * h + 1;
+  while (h < N/3) {
+    h = 3 * h + 1;
+  }
 
   while (h >= 1) {
-    for (int i = h; i < N; i++) {
-      for (int j = i; j >= h && seq[j] < seq[j - h]; j -= h)
-        swap(seq[j], seq[j - h]);
+    for (int i = h; i < size; i++) {
+      for (int j = i; j >= h; j -= h) {
+        if (sequence[j] < sequence[j - h]) {
+          swap(seq[j], sequence[j - h]);
+        } else {
+          break;
+        }
+      }
     }
 
     h = h / 3;
@@ -270,18 +289,26 @@ This is a _stable_ algorithm and the first algorithm that is linearithmic in com
 
 The main drawback is that it has `$O(n)$` space complexity because an auxiliary sequence has to be created to facilitate the merging process.
 
-``` java
-public void merge(Comparable[] seq, int lo, int mid, int hi) {
-  int i = lo, j = mid + 1;
+``` cpp
+template<typename T>
+void merge(std::vector<T> &sequence, int lo, int mid, int hi) {
+  int i = lo;
+  int j = mid + 1;
 
   for (int k = lo; k <= hi; k++)
-    aux[k] = seq[k];
+    aux[k] = sequence[k];
 
-  for (int k = lo; k <= hi; k++)
-    if      (i > mid)         seq[k] = aux[j++];
-    else if (j > hi)          seq[k] = aux[i++];
-    else if (aux[j] < aux[i]) seq[k] = aux[j++];
-    else                      seq[k] = aux[i++];
+  for (int k = lo; k <= hi; k++) {
+    if (i > mid) {
+      sequence[k] = aux[j++];
+    } else if (j > hi) {
+      sequence[k] = aux[i++];
+    } else if (aux[j] < aux[i]) {
+      sequence[k] = aux[j++];
+    } else {
+      sequence[k] = aux[i++];
+    }
+  }
 }
 ```
 
@@ -326,21 +353,26 @@ SortAndCount(array A, length n)
 
 This is a recursive approach that works by splitting the array into two pieces until the pieces consist of pairs of elements. On each recurrence, the two pieces that were split for that recurrence are merged back.
 
-``` java
-public void sort(Comparable[] seq) {
-  aux = new Comparable[seq.length];
-  sort(seq, 0, seq.length - 1);
+``` cpp
+template<typename T>
+void sort(std::vector<T> &sequence) {
+  aux = std::vector<T>(sequence.size());
+
+  sort(sequence, 0, sequence.size() - 1);
 }
 
-private void sort(Comparable[] seq, int lo, int hi) {
-  if (hi <= lo) return;
+template<typename T>
+void sort(std::vector<T> &sequence, int lo, int hi) {
+  if (hi <= lo) {
+    return;
+  }
 
   int mid = lo + (hi - lo) / 2;
 
-  sort(seq, lo, mid);
-  sort(seq, mid + 1, hi);
+  sort(sequence, lo, mid);
+  sort(sequence, mid + 1, hi);
 
-  merge(seq, lo, mid, hi);
+  merge(sequence, lo, mid, hi);
 }
 ```
 
@@ -358,14 +390,17 @@ The other approach to merge sort is bottom-up, that is, starting with arrays con
 
 One **advantage** of bottom-up merge sort is that it can be modified to perform on linked-lists **in place**.
 
-``` java
-public void sort(Comparable[] seq) {
-  int N = seq.length;
-  aux = new Comparable[N];
+``` cpp
+template<typename T>
+void sort(std::vector<T> &sequence) {
+  int size = sequence.size();
+  aux = std::vector<T>(size);
 
-  for (int sz = 1; sz < N; sz = sz + sz)
-    for (int lo = 0; lo < N - sz; lo += sz + sz)
-      merge(seq, lo, lo + sz - 1, min(lo + sz + sz - 1, N - 1));
+  for (int sz = 1; sz < N; sz = sz + sz) {
+    for (int lo = 0; lo < N - sz; lo += sz + sz) {
+      merge(sequence, lo, lo + sz - 1, min(lo + sz + sz - 1, N - 1));
+    }
+  }
 }
 ```
 
@@ -381,19 +416,24 @@ QuickSort works by choosing an element in the array---the pivot---and partitioni
 
 Note that the elements are simply moved to the correct side of the pivot, but the order of neither side is defined, i.e. neither the left nor the right side are necessarily sorted after partitioning.
 
-``` java
-public void sort(Comparable[] seq) {
-  shuffle(seq);
-  sort(seq, 0, seq.length - 1);
+``` cpp
+template<typename T>
+void sort(std::vector<T> &sequence) {
+  shuffle(sequence);
+
+  sort(sequence, 0, sequence.size() - 1);
 }
 
-private void sort(Comparable[] seq, int lo, int hi) {
-  if (hi <= lo) return;
+template<typename T>
+void sort(std::vector<T> &sequence, int lo, int hi) {
+  if (hi <= lo) {
+    return;
+  }
 
-  int j = partition(seq, lo, hi);
+  int j = partition(sequence, lo, hi);
 
-  sort(seq, lo, j - 1);
-  sort(seq, j + 1, hi);
+  sort(sequence, lo, j - 1);
+  sort(sequence, j + 1, hi);
 }
 ```
 
@@ -411,21 +451,34 @@ The partition algorithm is similar to merge in merge sort in that it is what act
 
 The sorting algorithm then recurses on the two partitions. Note that `i` is set to `lo` and not `lo + 1` to ensure that the pivot at `lo` is skipped, since the first operation is `++i`. However, `j` is set to `hi + 1` to ensure that `hi` is _not_ skipped, since it's not the pivot.
 
-``` java
-private int partition(Comparable[] seq, int lo, int hi) {
-  Comparable v = seq[lo];
-  int i = lo, j = hi + 1;
+``` cpp
+template<typename T>
+int partition(std::vector<T> &sequence, int lo, int hi) {
+  T v = sequence[lo];
+  int i = lo;
+  int j = hi + 1;
 
   while (true) {
-    while (seq[++i] < v) if (i == hi) break;
-    while (v < seq[--j]) if (j == lo) break;
+    while (sequence[++i] < v) {
+      if (i == hi) {
+        break;
+      }
+    }
 
-    if (i >= j) break;
+    while (v < sequence[--j]) {
+      if (j == lo) {
+        break;
+      }
+    }
 
-    swap(seq[i], seq[j]);
+    if (i >= j) {
+      break;
+    }
+
+    swap(sequence[i], sequence[j]);
   }
 
-  swap(seq[lo], seq[j]);
+  swap(sequence[lo], sequence[j]);
   return j;
 }
 ```
@@ -436,14 +489,14 @@ private int partition(Comparable[] seq, int lo, int hi) {
 
     Instead of:
 
-    ``` java
+    ``` cpp
     if (hi <= lo) return;
     ```
 
     use:
 
-    ``` java
-    if (hi <= lo + M) { insertionSort(seq, lo, hi); return; }
+    ``` cpp
+    if (hi <= lo + M) { insertionSort(sequence, lo, hi); return; }
     ```
 
     where `M` is the cutoff. Recommended sizes are between 5 and 15.
@@ -473,23 +526,33 @@ One problem with quick sort as it is implemented above is that items with keys e
 
 Quick sort performs a lot better than merge sort in sequences that have duplicate keys. Its time is reduced from linearithmic to linear for sequences with large numbers of duplicate keys.
 
-``` java
-private void sort(Comparable[] seq, int lo, int hi) {
-  if (hi <= lo) return;
-
-  int lt = lo, i = lo + 1, gt = hi;
-  Comparable v = seq[lo];
-
-  while (i <= gt) {
-    int cmp = (seq[i] > seq[v]) - (seq[i] < seq[v]);
-
-    if      (cmp < 0) swap(seq[lt++], seq[i++]);
-    else if (cmp > 0) swap(seq[i],    seq[gt--]);
-    else              i++;
+``` cpp
+template<typename T>
+void sort(std::vector<T> &sequence, int lo, int hi) {
+  if (hi <= lo) {
+    return;
   }
 
-  sort(seq, lo, lt - 1);
-  sort(seq, gt + 1, hi);
+  int lt = lo;
+  int i = lo + 1;
+  int gt = hi;
+
+  T v = sequence[lo];
+
+  while (i <= gt) {
+    int cmp = (sequence[i] > sequence[v]) - (sequence[i] < sequence[v]);
+
+    if (cmp < 0) {
+      swap(sequence[lt++], sequence[i++]);
+    } else if (cmp > 0) {
+      swap(sequence[i], sequence[gt--]);
+    } else {
+      i++;
+    }
+  }
+
+  sort(sequence, lo, lt - 1);
+  sort(sequence, gt + 1, hi);
 }
 ```
 
@@ -855,17 +918,22 @@ Union operates as follows:
 2. goes through the whole array, setting sites which were part of `$P$`'s component to now be part of `$Q$`'s
 3. decrements the number of components in the disjoint-set
 
-``` java
-public int find(int site) { return id[site]; }
+``` cpp
+int find(int site) {
+  return id[site];
+}
 
-public void union(int p, int q) {
+void union(int p, int q) {
   int pID = find(p);
   int qID = find(q);
 
   if (pID == qID) return;
 
-  for (int i = 0; i < id.length; i++)
-    if (id[i] == pID) id[i] = qID;
+  for (int i = 0; i < id.length; i++) {
+    if (id[i] == pID) {
+      id[i] = qID;
+    }
+  }
 
   count--;
 }
@@ -884,17 +952,22 @@ This is accomplished by creating a tree-like relationship between sites. With a 
 
 As a result of this, the `find()` operation needs to walk up the tree from any given site to find the root note which designates the component to which the given site belongs to. The walk is terminated when it encounters a site whose component is itself.
 
-``` java
-public int find(int p) {
-  while (p != id[p]) p = id[p];
+``` cpp
+int find(int p) {
+  while (p != id[p]) {
+    p = id[p];
+  }
+
   return p;
 }
 
-public void union(int p, int q) {
+void union(int p, int q) {
   int i = find(p);
   int j = find(q);
 
-  if (i == j) return;
+  if (i == j) {
+    return;
+  }
 
   id[i] = j;
 
@@ -923,15 +996,22 @@ Weighted Quick-Union fixes this by keeping track of each component's size in a s
 
 In the example above, by step 2, component 1 is size 2, so component 2, being size 1, is merged under component 1 and not the other way around.
 
-``` java
-public void union(int p, int q) {
+``` cpp
+void union(int p, int q) {
   int i = find(p);
   int j = find(q);
 
-  if (i == j) return;
+  if (i == j) {
+    return;
+  }
 
-  if (sz[i] < sz[j]) { id[i] = j; sz[j] += sz[i]; }
-  else               { id[j] = i; sz[i] += sz[j]; }
+  if (sz[i] < sz[j]) {
+    id[i] = j;
+    sz[j] += sz[i];
+  } else {
+    id[j] = i;
+    sz[i] += sz[j];
+  }
 
   count--;
 }
@@ -945,10 +1025,11 @@ public void union(int p, int q) {
 
 A further improvement can be done called _path compression_ in which every site traversed due to a call to `find()` is directly linked to the component root.
 
-``` java
-public int find(int p) {
-  if (p != id[p])
+``` cpp
+int find(int p) {
+  if (p != id[p]) {
     id[p] = find(id[p]);
+  }
 
   return id[p];
 }
@@ -963,12 +1044,14 @@ A minimum cut (min-cut) is the cut with the fewest number of crossing edges, wit
 The minimum cut can (potentially) be obtained through a randomized algorithm known as random contraction. It works by, as long as more than 2 vertices remain in the graph, picking a random remaining edge and merging or "contracting" them into a single vertex, removing any self-loops. When only 2 vertices remain, the cut represented by them is returned.
 
 ``` cpp
-while N > 2:
-  edge = random_edge()
-  node = merge_vertices(edge.from, edge.to)
-  remove_self_loops(node)
+while (N > 2) {
+  auto edge = random_edge();
+  auto node = merge_vertices(edge.from, edge.to);
 
-return cut
+  remove_self_loops(node);
+}
+
+return cut;
 ```
 
 It's possible that random contraction will not find the minimum cut. This is mitigated by running it a large number of times, since it is very fast, and returning the smallest cut found. The largest number of min-cuts that a graph with `$n$` vertices can have is `$\binom n 2 = \frac {n (n - 1)} 2$`.
@@ -1078,31 +1161,39 @@ For each vertex present in the above arrays, the vertex index associated with it
 
 An improvement from the lazy implementation is that the eager implementation uses space proportional to `$V$` whereas the lazy implementation uses `$E$`.
 
-``` java
-void primEager(EdgeWeightedGraph G) {
+``` cpp
+void primEager(EdgeWeightedGraph &G) {
   for (int v = 0; v < G.V(); v++) {
-    distTo[v] = Double.POSITIVE_INFINITY;
+    distTo[v] = std::numeric_limits<double>::max();
   }
 
   distTo[0] = 0.0;
-  pq.insert(0, 0.0);
+  pq.insert({0, 0.0});
 
-  while (!pq.empty())
-    visit(G, pq.delMin());
+  while (!pq.empty()) {
+    visit(G, pq.popMin());
+  }
 }
 
-void visit(EdgeWeightedGraph G, int v) {
+void visit(EdgeWeightedGraph &G, int v) {
   marked[v] = true;
 
-  for (Edge e : G.adj(v)) {
+  for (Edge e : G.adjacentTo(v)) {
     int w = e.other(v);
-    if (marked[w]) continue; // v-w is ineligible
+
+    if (marked[w]) {
+      continue; // v-w is ineligible
+    }
+
     if (e.weight() < distTo[w]) {
       edgeTo[w] = e;
       distTo[w] = e.weight();
 
-      if (pq.contains(w)) pq.changeKey(w, distTo[w]);
-      else                pq.insert(w, distTo[w]);
+      if (pq.contains(w)) {
+        pq.changeKey(w, distTo[w]);
+      } else {
+        pq.insert(w, distTo[w]);
+      }
     }
   }
 }
@@ -1121,19 +1212,24 @@ The implementation uses a priority queue of edges based on their weight, a union
 
 Despite the simplicity of Kruskal's algorithm, it is generally slower than Prim's because it has to check if an edge is already connected using the union-find data structure on each edge that is considered for the MST.
 
-``` java
+``` cpp
 void kruskal(EdgeWeightedGraph G) {
-  mst = new Queue<Edge>();
-  pq = new MinPQ<Edge>();
-  uf = new UF(G.V());
+  auto mst = Queue<Edge>();
+  auto pq = MinPQ<Edge>();
+  auto uf = UnionFind(G.V());
 
-  for (Edge e : G.edges())
+  for (Edge e : G.edges()) {
     pq.insert(e);
+  }
 
   while (!pq.empty() && mst.size() < G.V() - 1) {
     Edge e = pq.delMin(); // fetch edge with lowest weight
     int v = e.either(), w = e.other(v);
-    if (uf.connected(v, w)) continue; // check if already connected
+
+    if (uf.connected(v, w)) {
+      continue; // check if already connected
+    }
+
     uf.union(v, w); // if not, merge them in the union-find data structure
     mst.enqueue(e); // add the edge to result
   }
@@ -1146,9 +1242,10 @@ The _shortest path_ from vertex `$s$` to `$t$` in an edge-weighted digraph is a 
 
 _Edge relaxation_ refers to replacing an existing edge that reaches `$w$` with a new edge `$v \rightarrow w$` if the new edge makes the path from the source vertex to `$w$` be of lower cost than it was previously.
 
-``` java
+``` cpp
 void relax(DirectedEdge e) {
-  int v = e.from(), w = e.to();
+  int v = e.from();
+  int w = e.to();
 
   if (distTo[w] > distTo[v] + e.weight()) {
     distTo[w] = distTo[v] + e.weight();
@@ -1159,9 +1256,9 @@ void relax(DirectedEdge e) {
 
 _Vertex relaxation_ is similar to edge relaxation except that it relaxes all of the edges pointing from a given vertex.
 
-``` java
-void relax(EdgeWeightedDigraph G, int v) {
-  for (DirectedEdge e : G.adj(v)) {
+``` cpp
+void relax(EdgeWeightedDigraph &G, int v) {
+  for (DirectedEdge e : G.adjacentTo(v)) {
     int w = e.to();
 
     if (distTo[w] > distTo[v] + e.weight()) {
@@ -1243,19 +1340,22 @@ std::map<T, int> Dijkstra(T start) {
 }
 ```
 
-``` java
+``` cpp
 void dijkstra(EdgeWeightedDigraph G, int s) {
-  for (int v = 0; v < G.V(); v++)
-    distTo[v] = Double.POSITIVE_INFINITY;
+  for (int v = 0; v < G.V(); v++) {
+    distTo[v] = std::numeric_limits<double>::max();
+  }
+  
   distTo[s] = 0.0;
 
-  pq.insert(s, 0.0);
+  pq.insert({s, 0.0});
 
-  while (!pg.empty())
+  while (!pg.empty()) {
     relax(G, pq.delMin());
+  }
 }
 
-void relax(EdgeWeightedDigraph G, int v) {
+void relax(EdgeWeightedDigraph &G, int v) {
   for (DirectedEdge e : G.adj(v)) {
     int w = e.to();
 
@@ -1263,8 +1363,11 @@ void relax(EdgeWeightedDigraph G, int v) {
       distTo[w] = distTo[v] + e.weight();
       edgeTo[w] = e;
 
-      if (pq.contains(w)) pq.changeKey(w, distTo[w]);
-      else                pq.insert(w, distTo[w]);
+      if (pq.contains(w)) {
+        pq.changeKey(w, distTo[w]);
+      } else {
+        pq.insert(w, distTo[w]);
+      }
     }
   }
 }
@@ -1281,14 +1384,17 @@ To specifically find the shortest path from the source vertex to an arbitrary ve
 
 Shortest paths can be found much more efficiently in acyclic graphs, specifically, the single-source problem can be solved in linear time, negative edge weights are easily handled, and other related problems such as finding the longest paths are solvable. This is possible by relaxing vertices in topological order.
 
-``` java
-void shortestPathAcyclic(EdgeWeightedDigraph G, int s) {
-  for (int v = 0; v < G.V(); v++)
-    distTo[v] = Double.POSITIVE_INFINITY;
+``` cpp
+void shortestPathAcyclic(EdgeWeightedDigraph &G, int s) {
+  for (int v = 0; v < G.V(); v++) {
+    distTo[v] = std::numeric_limits<double>::max();
+  }
+
   distTo[s] = 0.0;
 
-  for (int v : G.topologicalOrder())
+  for (int v : G.topologicalOrder()) {
     relax(G, v);
+  }
 }
 ```
 
@@ -1316,19 +1422,20 @@ A _negative cycle_ is a directed cycle with net negative weight. No shortest pat
 
 To prevent the Bellman-Ford algorithm from looping infinitely due to negative cycles, it has to ensure to terminate after `$V$` passes either by keeping track with a counter or by detecting negative cycles within a subgraph.
 
-``` java
+``` cpp
 void bellmanFord(EdgeWeightedDigraph G, int s) {
   queue.enqueue(s);
   onQ[s] = true;
 
-  while (!queue.empty() && !this.hasNegativeCycle()) {
+  while (!queue.empty() && !this->hasNegativeCycle()) {
     int v = queue.dequeue();
     onQ[v] = false;
+
     relax(G, v);
   }
 }
 
-void relax(EdgeWeightedDigraph G, int v) {
+void relax(EdgeWeightedDigraph &G, int v) {
   for (DirectedEdge e : G.adj(v)) {
     int w = e.to();
 
@@ -1342,8 +1449,9 @@ void relax(EdgeWeightedDigraph G, int v) {
       }
     }
 
-    if (cost++ % G.V() == 0)
+    if (cost++ % G.V() == 0) {
       findNegativeCycle();
+    }
   }
 }
 ```
@@ -1352,7 +1460,7 @@ If the queue is not empty after `$V$` passes through each edge then there is a n
 
 This is mitigated by checking for negative cycles on every `$V^{th}$` call to relax, as on line 26 of the above code listing. On every such interval, a [cycle finder](#directed-cycle-detection) is initiated on the sub-graph denoted by the edges so-far considered by Bellman-Ford.
 
-``` java
+``` cpp
 void findNegativeCycle() {
   int V = edgeTo.length;
   EdgeWeightedDigraph spt = new EdgeWeightedDigraph(V);
@@ -1489,27 +1597,33 @@ Certain properties of strings and alphabets can make for more efficient sorting 
 
 Counting sort, also known as key-indexed counting, essentially involves computing a histogram of the number of occurrences of each character, then regenerating the array in sorted order using that information.
 
-``` java
-int N = a.length;
+``` cpp
+int N = a.size();
 
-int[] aux = new String[N];
+auto aux = std::string(a);
 int[] count = new int[R + 1];
 
 // count occurrences
-for (int i = 0; i < N; i++)
+for (int i = 0; i < N; i++) {
   count[a[i].key() + 1]++;
+}
 
 // compute key ranges
-for (int r = 0; r < R; r++)
+for (int r = 0; r < R; r++) {
   count[r + 1] += count[r];
+}
 
 // populate sorted array
-for (int i = 0; i < N; i++)
-  aux[count[a[i].key()]++] = a[i];
+for (int i = 0; i < N; i++) {
+  int count = count[a[i].key()]++;
+
+  aux[count] = a[i];
+}
 
 // copy back to original array
-for (int i = 0; i < N; i++)
+for (int i = 0; i < N; i++) {
   a[i] aux[i];
+}
 ```
 
 ### Least Significant Digit Sort

@@ -585,6 +585,13 @@ Converting strings with no reasonable integer equivalent to integers with `to_i`
 The `to_str` function should be defined and used when an object needs to become a string, usually because they are string-like, compared to `to_s` which simply provides a string _representation_ of the object. For example, `String#+` uses `to_str` for converting the object to a string for the purpose of string concatenation, if it's defined.
 
 Similarly, objects can act as arrays if they define `to_ary`, to facilitate operations where the object must behave like an array, such as in array concatenation.
+
+`true` and `false` are actually unique instances of `TrueClass` and `FalseClass` respectively.
+
+Regarding truthiness, the only objects that have a Boolean value of false are `false` and `nil`.
+
+`nil` is an instance of `NilClass`.
+
 # Strings
 
 Negative indices wrap around.

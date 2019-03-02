@@ -158,6 +158,27 @@ Objects can be duplicated using the `dup` method. An object can be frozen with t
 Object comparison through `==` by default only compares pointers. By convention, `==` may be redefined by `equal?` is left alone to allow comparing pointers.
 
 It's easy to enable object comparison by mixing in the `Comparable` module and defining the `<=>` (spaceship) method. All other comparison methods are defined in terms of it.
+
+## Introspection
+
+The `#methods` method can be used to get a list of an object's methods, including its singleton methods.
+
+The `#singleton_methods` method shows only the singleton methods of an object.
+
+The `#instance_methods` method shows only the instance methods of a class, including inherited ones. Inherited methods can be excluded by passing a `false` argument.
+
+Other object introspection methods include:
+
+* `#private_methods`
+* `#public_methods`
+* `#protected_methods`
+
+Class introspection methods include:
+
+* `.private_instance_methods`
+* `.protected_instance_methods`
+* `.public_instance_methods` (synonym for `#protected_methods`)
+
 # Classes
 
 Classes are named with constants, which begin with an uppercase letter.

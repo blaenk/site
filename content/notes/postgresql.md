@@ -2702,6 +2702,7 @@ The partitioning process typically involves:
     -- Range partitioning:
     CHECK ( outletID >= 100 AND outletID < 200 )
     ```
+
 4. Create an index on the key column(s) for each child.
 5. Optionally create a trigger or rule to redirect data inserted into the master table to the correct partition.
 6. Ensure that `constraint_exclusion` is disabled.

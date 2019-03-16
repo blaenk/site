@@ -1711,7 +1711,7 @@ def sortedArrayToBST(self, nums):
 
 **Approach 2 - Union-Find**: Use the [Union-Find algorithm].
 
-[Union-Find algorithm]: https://www.blaenkdenum.com/notes/algorithms/#dynamic-connectivity
+[Union-Find algorithm]: /notes/algorithms/#dynamic-connectivity
 
 ## Determine Lexical Order
 

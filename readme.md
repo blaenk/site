@@ -1,1 +1,1 @@
-This is my [website](https://www.blaenkdenum.com) built with Hugo.
+This is my [website](https://www.jip.dev) built with Hugo.

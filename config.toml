@@ -1,8 +1,8 @@
-baseURL = "https://www.blaenkdenum.com/"
+baseURL = "https://www.jip.dev/"
 languageCode = "en-us"
 title = "Jorge Israel Peña"
 
-theme = "blaenk"
+theme = "jip"
 
 enableGitInfo = true
 pygmentsCodeFences = true

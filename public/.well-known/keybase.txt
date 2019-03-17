@@ -1,0 +1,67 @@
+==================================================================
+https://keybase.io/blaenk
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of https://jip.dev
+  * I am blaenk (https://keybase.io/blaenk) on keybase.
+  * I have a public key with fingerprint 0324 9632 F22C 4F6E FA62  0DE9 5329 FB13 CBCA D5BE
+
+To do so, I am signing this object:
+
+{
+  "body": {
+    "key": {
+      "eldest_kid": "01208d8bb9e0c48309c4ae1969f26e090a418890363119b76adf7e9d6f0b91daf9150a",
+      "fingerprint": "03249632f22c4f6efa620de95329fb13cbcad5be",
+      "host": "keybase.io",
+      "key_id": "5329fb13cbcad5be",
+      "kid": "01017f5af40ccfd2a52c54c2ab40f986bbda892e9c4da9535956aaf5eb05b643297a0a",
+      "uid": "943f195e4a161fb8e2fbb906fa1f8019",
+      "username": "blaenk"
+    },
+    "service": {
+      "hostname": "jip.dev",
+      "protocol": "https:"
+    },
+    "type": "web_service_binding",
+    "version": 1
+  },
+  "ctime": 1552804399,
+  "expire_in": 157680000,
+  "prev": "1aa3754dce7199e6a782f3261f707458fd9dad9f828371d442add79f19555e04",
+  "seqno": 33,
+  "tag": "signature"
+}
+
+which yields the signature:
+
+-----BEGIN PGP MESSAGE-----
+
+owFtUl1oFUcYvfdG21uLwRoJgVTUVaShFzMzOzO7czWap4o/tLRCA231OrMzEzdJ
+d2/urreaEI2IoUYvKoqEWkqLYtSaKoVCi6m0FBFj60PBNPigtGhpJEYIfbGtP7PB
+vHVehvnmnPOd8/EdnluVyqY3Nfxbc33k5uX09XGR+qByf2W3JUK508p3W+1q+lId
+UkVxod2XVt4CEAFXukIwBTzs2oB5mCvIKNOIKsAAx9B1GbCpDSETDuVSO4pJqoFg
+UHLNIAHcylnaD1pVqVjygziRtRFm1EYaIQ9rqjSnCEjFiI2YFtD2hMclEcoQt4VR
+wjDmBI/UCj80NfMoTNv7H/yMbwAdTbjGwPO0RJwgj2APcYGBZi4VQnKXIWXiSG7a
+EkYo55ooAYig2Mg6fNr39mk5hm0NGVGYQwq1cBXSZiSAag61CyBLgJEqBfxDZdCi
+g6ug3erJWaZW9j2VjDXJ8fy/zS+ukKpsSMVSGIde2GGK2+K4GOUTUryzmKA+UqLw
+nF8QfiDNAA2jrEqRHwZWHhqkF/uJICQEuQDbjOUstaPol1TBTxDEoS4wJ+lj2uUt
+yLntECw95UDG3lGUOy7SNjKZHOBg4mrJJJdMu8i1HSgxRlxKhyXZCVEAW0mkziC0
+8rZtjPJWIxr5rQGPt5eU1TNnf9qelUpnUwtrl8yqWnYcTeXeCv4Rc8dntm52Jlm5
+1JyX5s1UGqpefPr2qT0b9q651EtT5w++8lv36QsnU2cejTWiS1UNXVOLfu28sbJ5
+eHCV93DwwNCquiuVi49eHnrt9sDk1LWPv+svj9wbnejJ5j/revXz6poLT35Y4K3X
+E0fEg8rYyJbNd3q/+Pr78++fvfrCt3+N7ll+9Ku1G9/oq+vYn318kfatObZp2eCJ
+vU+GFtafuB/2BWfmlyuxyvavXtDZmytsqGkbrf5md/tPtV39Sxdtrf1xoOX3T4br
+2ppvNi6Omg5t3cyG50WHSqv/qBuv/nTsvS8bT87PNa27teXPN5/uSi/NZK6cu/v6
+7PrRluzySua/msrBXW7L5MRu3TwZXP67ciezo/7nJuuXfTfWDrzrPQM=
+=9mqt
+-----END PGP MESSAGE-----
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/blaenk
+
+==================================================================

@@ -318,6 +318,8 @@ SELECT 3 * 4;
 SELECT a, b + c FROM table1;
 ```
 
+The command `TABLE name` is equivalent to `SELECT * FROM name`.
+
 ## Table Expressions
 
 A _table expression_ computes a table. Table expressions can be as simple as `some_table` which reads just one table, or more complex constructs of base tables, joins, and subqueries.

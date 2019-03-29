@@ -445,11 +445,9 @@ The `NATURAL` clause is a shorthand equivalent to `USING` on all column names th
 
 ### Inner Joins
 
-For each row `R1` of `T1`, the joined table has a row for each row in `T2` that satisfies the join condition with `R1`.
-
 * For each row `R1` of `T1`:
     * For each row `R2` of `T2`:
-        * If `R1` satisfies the join condition with `R2`, add concatenated row from `R1` and `R2` to joined table
+        * If `condition(R1, R2)`: add row `R1` + `R2`
 
 The join condition of an inner join can be written either in the `WHERE` clause or in the `JOIN` clause.
 
@@ -462,33 +460,35 @@ FROM a INNER JOIN b ON (a.id = b.id) WHERE b.val > 5;
 
 ### Left Outer Join
 
-Perform an inner join. Then for each row in `T1` that does not satisfy the join condition with any row in `T2`, a joined row is added with `NULL` values in columns of `T2`. This means that the joined table always has at least one row for each row in `T1`, i.e. at least `$N$` rows.
-
-* Inner join
 * For each row `R1` of `T1`:
-    * If no row `R2` of `T2` satisfied the join condition with `R1`, add concatenated row to joined table from `R1` with `NULL` values in columns of `T2`
+    * For each row `R2` of `T2`:
+        * If `condition(R1, R2)`: add row: `R1` + `R2`
+    * If no row was added: add row: `R1` + `T2` row with `NULL` values
+
+Like an inner join, except that if the condition is not satisfied between `R1` and _any_ `R2`, a row is still added for `R1` and `T2` with `NULL` columns. This means that the joined table always has at least one row for each row in `T1`, i.e. at least `$N$` rows.
 
 ### Right Outer Join
 
-Perform an inner join. Then for each row in `T2` that does not satisfy the join condition with any row in `T2`, a joined row is added with `NULL` values in columns of `T2`. This means that the joined table always has at least one row for each row in `T2`, i.e. at least `$M$` rows.
-
-This is essentially a flipped left outer join.
-
-* Inner join
 * For each row `R2` of `T2`:
-    * If no row `R1` of `T1` satisfied the join condition with `R2`, add concatenated row to joined table from `R2` with `NULL` values in columns of `T1`
+    * For each row `R1` of `T1`:
+        * If `condition(R1, R2)`: add row: `R1` + `R2`
+    * If no row was added: add row: `T1` row with `NULL` values + `R2`
+
+Like an inner join, except that if the condition is not satisfied between `R2` and _any_ `R1`, a row is still added for `R2` and `T1` with `NULL` columns. This means that the joined table always has at least one row for each row in `T2`, i.e. at least `$M$` rows.
 
 ### Full Outer Join
 
-Perform an inner join. Then for each row in `T1` that does not satisfy the join condition with any row in `T2`, a joined row is added with `NULL` values in columns of `T2`. Also for each row of `T2` that does not satisfy the join condition with any row in `T1`, a joined row is added with `NULL` values in the columns of `T1`. This results in at least `$N \cdot M$` rows.
-
-This is essentially an inner join followed by the post-inner join parts of left outer join and right outer join.
-
-* Inner join
 * For each row `R1` of `T1`:
-    * If no row `R2` of `T2` satisfied the join condition with `R1`, add concatenated row to joined table from `R1` with `NULL` values in columns of `T2`
+    * For each row `R2` of `T2`:
+        * If `condition(R1, R2)`: add row: `R1` + `R2`
+    * If no row was added: add row: `R1` + `T2` row with `NULL` values
 * For each row `R2` of `T2`:
-    * If no row `R1` of `T1` satisfied the join condition with `R2`, add concatenated row to joined table from `R2` with `NULL` values in columns of `T1`
+    * For each row `R1` of `T1`:
+        * If `condition(R1, R2)`: add row: `R1` + `R2`
+    * If no row was added: add row: `T1` row with `NULL` values + `R2`
+* Ensure there is only one row for any `R1` + `R2`
+
+This ensures that every row in each table is represented regardless of whether the condition is satisfied, resulting in at least `$N \cdot M$` rows.
 
 ## Derived Table Subqueries
 

@@ -443,7 +443,7 @@ The `ON` clause produces all columns from `T1` followed by those in `T2`, while 
 
 The `NATURAL` clause is a shorthand equivalent to `USING` on all column names that appear in both input tables. If there are no common column names, then `NATURAL` behaves like a `CROSS JOIN`. Note that the use of `NATURAL` is risky as future changes to either table can manifest a new matching column name.
 
-### Inner Joins
+### Inner Join
 
 * For each row `R1` of `T1`:
     * For each row `R2` of `T2`:

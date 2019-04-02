@@ -469,6 +469,8 @@ FROM a INNER JOIN b ON (a.id = b.id) WHERE b.val > 5;
 
 Like an inner join, except that if the condition is not satisfied between `R1` and _any_ `R2`, a row is still added for `R1` and `T2` with `NULL` columns. This means that the joined table always has at least one row for each row in `T1`, i.e. at least `$N$` rows.
 
+Be careful with `WHERE` filters. Since they apply to all rows produced by joins, if you refer only to `T2` columns, then when there is no corresponding `T2` row for any `T1` row, the column won't exist and so the condition may yield `false`, filtering the row out and essentially negating the effects of the left outer join, where a row in `T1` is represented regardless of a corresponding row in `T2`.
+
 ### Right Outer Join
 
 * For each row `R2` of `T2`:
@@ -477,6 +479,8 @@ Like an inner join, except that if the condition is not satisfied between `R1` a
     * If no row was added: add row: `T1` row with `NULL` values + `R2`
 
 Like an inner join, except that if the condition is not satisfied between `R2` and _any_ `R1`, a row is still added for `R2` and `T1` with `NULL` columns. This means that the joined table always has at least one row for each row in `T2`, i.e. at least `$M$` rows.
+
+Be careful with `WHERE` filters. Since they apply to all rows produced by joins, if you refer only to `T1` columns, then when there is no corresponding `T1` row for any `T2` row, the column won't exist and so the condition may yield `false`, filtering the row out and essentially negating the effects of the right outer join, where a row in `T2` is represented regardless of a corresponding row in `T1`.
 
 ### Full Outer Join
 

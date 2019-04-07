@@ -2218,6 +2218,87 @@ Translation is done by adding or subtracting a `POINT`.
 Scaling and rotation is done by multiplying by a `POINT`.
 
 Note that [PostGIS](#postgis) has other geometric functions.
+
+## JSON Functions and Operators
+
+`->` gets an array element indexed at 0 (negative indices wrap around), or an object field by key. `->>` does the same but gets the result as `TEXT`.
+
+`#>` gets the JSON object at the specified path specified as an array of `TEXT` with an element for each path component. `#>>` does the same but gets the result as `TEXT`. If the path doesn't exist the result is `NULL`.
+
+``` postgresql
+'{"a": {"b":{"c": "foo"}}}'::json #> '{a,b}' -- => {"c": "foo"}
+
+'{"a":[1,2,3],"b":[4,5,6]}'::json #>> '{a,2}' -- => 3
+```
+
+There are variants of these operators for the `JSONB` type as well as for `JSON`.
+
+Comparison operators are only available for `JSONB`.
+
+There are also some `JSONB`-only operators:
+
+`@>` is the general containment operator and works as expected with `JSON`B types, testing whether the left value contains the right path or value entries at the _top level_. `<@` is the same but with the operands flipped.
+
+`?` checks if the right-operand string exists as a top-level key in the left `JSONB` value. `?|` is similar but checks if _any_ of the string keys in an array are present, while `?&` checks if _all_ of them exist.
+
+`||` merges two `JSONB` values. Note that this is a shallow, top-level merge. It is _not_ recursive.
+
+`-` deletes the key/value pair or key string from the left operand, with key/value pairs matched by their key. It also accepts an array of `TEXT` key/value pairs or string keys. It also accepts integer indices to remove elements from an array.
+
+`#-` is like `#>` except it deletes the value at the path.
+
+`to_json` and `to_jsonb` converts the value to `JSON` or `JSONB`. This is done recursively, using casts if available. There are also `array_to_json` and `row_to_json`, but they are the same except for these offering a pretty-printing option.
+
+`json_build_object` takes a variadic argument list of alternating key-value arguments.
+
+`json_each` expands the outer-most object into rows of key-value pairs. There is a `json_each_text` variant that converts each value to `TEXT`.
+
+`json_populate_record` maps each top-level key-value pair to matching columns of a given row type and produces one row of that type. JSON fields that don't appear in the target row type are omitted, and fields that don't exist for a corresponding target row type column will be `NULL`. This function is typically used in the `FROM` clause with the JSON column. `json_populate_recordset` does the same but for an array of objects, producing multiple rows for each object.
+
+`json_to_record` and `json_to_recordset` are similar except they can build an arbitrary record (or records) from a JSON object (or array of objects), so the caller must explicitly define the structure with an `AS` clause.
+
+``` postgresql
+SELECT json_field_1, json_field_2
+FROM json_populate_record(NULL::myrowtype, table.json_column);
+
+SELECT json_field_1, json_field_2
+FROM json_to_record(
+  '{"a":1,"b":[1,2,3],"c":[1,2,3],"e":"bar","r": {"a": 123, "b": "a b c"}}'
+  ) AS x(a INT, b TEXT, c INT[], d TEXT, r myrowtype);
+```
+
+`json_array_elements` is similar but it expands a JSON array to rows of values. The `json_array_elements_text` variant encodes each value as `TEXT`.
+
+`json_typeof` returns the type of the outermost JSON value as a `TEXT` string, which can be `object`, `array`, `string`, `number`, `boolean`, or `null`.
+
+`json_strip_nulls` removes all _object_ fields that have null values.
+
+`jsonb_set` returns the JSON value with the value at the specified path replaced with a new value, or the value is added unless the `create_missing` parameter is set to `FALSE`. However, every value in the path except the final component must already exist, that is, only the target would be added.
+
+``` postgresql
+jsonb_set('[{"f1":1,"f2":null},2,null,3]', -- JSON object
+          '{0,f1}',                        -- target path
+          '[2,3,4]',                       -- new value
+          false)                           -- don't create if missing
+-- [{"f1":[2,3,4],"f2":null},2,null,3]
+
+-- create_missing is TRUE by default
+jsonb_set('[{"f1":1,"f2":null},2]', '{0,f3}','[2,3,4]')
+-- [{"f1": 1, "f2": null, "f3": [2, 3, 4]}, 2]
+```
+
+`jsonb_insert` can be used to insert into JSON arrays. The value is inserted before the target unless the `insert_after` argument is `TRUE`. In JSON objects, the value is only inserted if it doesn't already exist.
+
+``` postgresql
+jsonb_insert('{"a": [0,1,2]}', '{a, 1}', '"new_value"')
+-- {"a": [0, "new_value", 1, 2]}
+
+jsonb_insert('{"a": [0,1,2]}', '{a, 1}', '"new_value"', true)
+-- {"a": [0, 1, "new_value", 2]}
+```
+
+`jsonb_pretty` can format the given JSON value to be human readable.
+
 # Collation Expressions
 
 _Collation_ refers to the set of rules that determine how data is compared and sorted. The collation of a particular expression can be overridden using a `COLLATE` clause.

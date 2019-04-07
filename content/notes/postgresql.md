@@ -2208,6 +2208,15 @@ PostgreSQL additionally provides functions which give the time at other points i
 * `now()` --- equivalent to `transaction_timestamp()`
 
 All date/time data types also accept the special literal `now` to specify the current date and time, which is interpreted as the transaction start time. However, **do not** use this in a `DEFAULT` clause when creating a table, since the system will convert it to a timestamp as soon as it is parsed, so the default value will actually take on the value of the start of the transaction that created the table.
+
+## Geometric Functions and Operators
+
+The "same as" operator `~=` represents equality for point, box, polygon, and circle types. Some of those types also have a `=` operator but it compares for equal _areas_ only, just like `<=` and other scalar comparison operators.
+
+Translation is done by adding or subtracting a `POINT`.
+
+Scaling and rotation is done by multiplying by a `POINT`.
+
 # Collation Expressions
 
 _Collation_ refers to the set of rules that determine how data is compared and sorted. The collation of a particular expression can be overridden using a `COLLATE` clause.

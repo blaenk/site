@@ -2313,6 +2313,54 @@ Sequence objects (AKA _sequence generators_ AKA _sequences_) are single-row tabl
 The sequence to operate on is specified by a `regclass` which is the `OID` of the sequence in the `pg_class` system catalog, which can be obtained by just writing it as a literal so that the `regclass` data type input converter computes it, i.e. `nextval('somesequence')`.
 
 This is an "early binding" to the OID because it becomes a constant of type `regclass` which is just an `OID`, so when used for sequence references in column defaults and views it will continue to refer to the same sequence even after the sequence has been renamed, schema reassignment, etc. "Late binding" where the reference is resolved at run time can be forced by explicitly coercing the sequence name to `TEXT`.
+
+## Conditional Expressions
+
+### CASE
+
+Note that if the following conditional expressions are too restricting, it's recommended to write a stored procedure in a more expressive language.
+
+`CASE` is similar to `if` statements. It can be used wherever an expression is valid. If there is no `ELSE` clause and no condition is `TRUE` then the result is `NULL`. Note that the data types of all result expressions <span class="highlight">must be convertible to a single output type</span>.
+
+``` postgres
+CASE WHEN condition THEN result
+  [WHEN …]
+  [ELSE result]
+END
+```
+
+There is another form which computes the expression and compares its value to the value of every `WHEN` clause, similar to a switch statement.
+
+``` postgresql
+CASE expression
+  WHEN value THEN result
+  [WHEN …]
+  [ELSE result]
+END
+```
+
+`CASE` expressions don't evaluate any subexpressions that it doesn't need to evaluate to determine the result.
+
+### COALESCE
+
+`COALESCE` returns the first of its arguments that is not `NULL`, or `NULL` if none are.
+
+`COALESCE` only evaluates the arguments that are needed to evaluate the result.
+
+### NULLIF
+
+`NULLIF` returns `NULL` if both arguments are equal, otherwise the first argument is returned. This is an inverse of `COALESCE`.
+
+``` postgresql
+NULLIF(value, '(none)') -- NULL if value = '(none)'
+```
+
+### GREATEST and LEAST
+
+`GREATEST` and `LEAST` return the largest or smallest argument provided. The expressions must all be convertible to a common data type which will also be the type of the result.
+
+They return `NULL` if all expressions evaluate to `NULL`.
+
 # Collation Expressions
 
 _Collation_ refers to the set of rules that determine how data is compared and sorted. The collation of a particular expression can be overridden using a `COLLATE` clause.

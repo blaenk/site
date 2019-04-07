@@ -1974,6 +1974,12 @@ SQL uses a three-valued logic system with `true`, `false`, and `null`.
 | F    | T     |
 | NULL | NULL  |
 
+Schema-qualified operators can be written by using the `OPERATOR` keyword. Note that the effective operator's precedence is the same regardless of the precedence of the operator passed as the argument.
+
+``` postgresql
+SELECT 3 OPERATOR(pg_catalog.+) 4;
+```
+
 ## Comparison Operators
 
 There are two "not equal" comparison operators, `<>` and `!=`, with the `!=` operator being converted to `<>` in the parser stage, so it's not possible to implement each one to do different things.
@@ -2044,14 +2050,6 @@ WHERE a > 'foo' COLLATE "C";
 Note that even though the `COLLATE` expression above is attached to the `'foo'` argument of the `>` operator when we intend to affect the collation of the `>` operator itself, this doesn't matter because the collation used by operators and functions is derived by considering all arguments, and an explicit` COLLATE` clause overrides the collations of all other arguments. By extension, attaching non-matching `COLLATE` clauses to multiple arguments is an error.
 
 This means, in fact, that the `COLLATE` expression _must_ be attached to an argument, since parenthesizing the operation and attaching it to the parenthesized group would attempt to apply it to the _result_ of the operation, which in this case is of non-collatable data type `boolean`.
-
-# Operators
-
-Schema-qualified operators can be written by using the `OPERATOR` keyword. Note that the effective operator's precedence is the same regardless of the precedence of the operator passed as the argument.
-
-``` postgresql
-SELECT 3 OPERATOR(pg_catalog.+) 4;
-```
 
 # Data Definition
 

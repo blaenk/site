@@ -2300,6 +2300,19 @@ jsonb_insert('{"a": [0,1,2]}', '{a, 1}', '"new_value"', TRUE)
 
 `jsonb_pretty` can format the given JSON value to be human readable.
 
+## Sequence Manipulation Functions
+
+Sequence objects (AKA _sequence generators_ AKA _sequences_) are single-row tables typically used to generate unique identifiers for rows of a table.
+
+`currval` returns the value most recently obtained with `nextval` for the given sequence <span class="highlight">in the current session</span>, while `lastval` does the same for any sequence. This returns a session-local value that is predictable whether or not other sessions have executed `nextval` since the current session did.
+
+`nextval` advances the the given sequence and returns the new value in one atomic operation. `nextval` operations are <span class="highlight">never rolled back</span> to avoid blocking concurrent transactions that obtain numbers from the same sequence. This means that any one returned value will be considered used and will never be returned again, even if the surrounding transaction aborts for example. This means that sequence objects cannot produce "gapless" sequences.
+
+`setval` sets the sequence's current value.
+
+The sequence to operate on is specified by a `regclass` which is the `OID` of the sequence in the `pg_class` system catalog, which can be obtained by just writing it as a literal so that the `regclass` data type input converter computes it, i.e. `nextval('somesequence')`.
+
+This is an "early binding" to the OID because it becomes a constant of type `regclass` which is just an `OID`, so when used for sequence references in column defaults and views it will continue to refer to the same sequence even after the sequence has been renamed, schema reassignment, etc. "Late binding" where the reference is resolved at run time can be forced by explicitly coercing the sequence name to `TEXT`.
 # Collation Expressions
 
 _Collation_ refers to the set of rules that determine how data is compared and sorted. The collation of a particular expression can be overridden using a `COLLATE` clause.

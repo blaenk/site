@@ -2217,6 +2217,7 @@ Translation is done by adding or subtracting a `POINT`.
 
 Scaling and rotation is done by multiplying by a `POINT`.
 
+Note that [PostGIS](#postgis) has other geometric functions.
 # Collation Expressions
 
 _Collation_ refers to the set of rules that determine how data is compared and sorted. The collation of a particular expression can be overridden using a `COLLATE` clause.

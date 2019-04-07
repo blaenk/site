@@ -2393,6 +2393,32 @@ Comparison checks compare the lower bounds first and only compare the upper boun
 
 The union of a range can be computed with `+`, the range intersection with `*` (i.e., the range that overlaps both ranges), and the difference with `-`. The union `+` and difference `-` operators fail if the resulting range would need to contain two disjoint sub-ranges.
 
+## Aggregate Functions
+
+Aggregate functions compute a single result from a set of input values.
+
+These functions (except for `count`) return `NULL` when no rows are selected, so e.g. `sum` would return `NULL` not 0, so `COALESCE` may be used in conjunction.
+
+Aggregate functions that support "partial mode" may participate in various optimizations such as parallel aggregation.
+
+`array_agg` produces an array of the argument type.
+
+`json_agg` produces a `JSON` array.
+
+`json_object_agg(name, value, …)` produces an object with the given key-value pairs.
+
+`string_agg(expr, delimiter)` concatenates all input values into a string separated by the given delimiter.
+
+`avg` computes the average of all input values.
+
+`max` computes the maximum expression, while `min` computes the minimum expression.
+
+`sum` computes the sum of the expression across all input rows.
+
+`count` computes the number of input rows for which the value of the expression is not `NULL`, unless `*` is the argument.
+
+`bool_and` is `TRUE` if all input values are `TRUE`, while `bool_or` is `TRUE` if _any_ input value is `TRUE`. `every` is synonymous to `bool_and`.
+
 # Collation Expressions
 
 _Collation_ refers to the set of rules that determine how data is compared and sorted. The collation of a particular expression can be overridden using a `COLLATE` clause.

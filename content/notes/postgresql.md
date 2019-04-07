@@ -2361,6 +2361,30 @@ NULLIF(value, '(none)') -- NULL if value = '(none)'
 
 They return `NULL` if all expressions evaluate to `NULL`.
 
+## Array Functions
+
+Array comparison operators operate pair-wise.
+
+The concatenation operator `||` can be used to concatenate arrays, add an array to a higher dimension array, or prepending or appending an element.
+
+`array_length` can obtain the length of a <span class="highlight">specific dimension</span> of an array.
+
+`array_position` finds the index of the first occurrence of the given target optionally starting from a specific index.
+
+`array_to_string` joins an array with a given delimiter and optionally replaces `NULL` with a given string.
+
+``` postgresql
+array_to_string(ARRAY[1, 2, 3, NULL, 5], ',', '*') -- 1,2,3,*,5
+```
+
+`string_to_array` performs the reverse action, splitting a string into an array of elements with a specified delimiter and string to treat as `NULL`.
+
+``` postgresql
+string_to_array('xx~^~yy~^~zz', '~^~', 'yy') -- {xx,NULL,zz}
+```
+
+`unnest` expands an array to a set of rows for each element. Multiple arrays can be provided in which case their elements are mapped to distinct columns.
+
 # Collation Expressions
 
 _Collation_ refers to the set of rules that determine how data is compared and sorted. The collation of a particular expression can be overridden using a `COLLATE` clause.

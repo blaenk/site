@@ -2055,6 +2055,66 @@ concat_ws(', ', VARIADIC ARRAY['one', 'two']) -- 'one, two'
 ## Bit String Functions and Operators
 
 The operands of `&`, `|`, and `#` must be of equal length. Bit shifting preserves the original length of the string.
+
+## Pattern Matching
+
+Pattern matching can be done with `LIKE`, `SIMILAR TO`, or POSIX regular expressions. Pattern matching that goes beyond this can be implemented with a user-defined function written in Perl (for PCRE).
+
+Note that regular expressions can take arbitrary time to execute, so they shouldn't be accepted from users and if they are then a statement timeout should be imposed. The same goes for `SIMILAR TO`.
+
+### LIKE
+
+In a `LIKE` expression, `_` stands for any character (like `.` in regular expressions) and `%` stands for any sequence of zero or more characters (like `.*` in regular expressions). These can be escaped with the escape character which is `\` by default unless selected with the `ESCAPE` clause. To match the escape character itself, write it twice.
+
+A `LIKE` expression covers the entire string, so a pattern without `%` or `_` is treated like string equality.
+
+`ILIKE` is a case-insensitive `LIKE`, based on the active locale.
+
+There are some aliases:
+
+| Operator | Keyword |
+| :------- | :------ |
+| `~~`     | `LIKE`  |
+| `!~~`    | `NOT LIKE` |
+| `~~*`    | `ILIKE` |
+| `!~~*`   | `NOT ILIKE` |
+
+### SIMILAR TO
+
+The `SIMILAR TO` operator is similar to `LIKE` except that it uses the SQL standard's definition of a regular expression. It also uses `%` and `_` from `LIKE`, as well as `|`, `*`, `+`, `?`, `{m}`, `{m,}`, `{m,n}`, `()`, and `[…]`. Note that instead of the regular expression period `.`, the `_` character is used.
+
+`substring` can extract a string matched by a `SIMILAR TO` pattern. The part of the string to be extracted should be surrounded by the escape character followed by a double quote.
+
+``` postgresql
+substring('foobar' FROM '%#"o_b#"%' FOR '#') -- => oob
+```
+
+### POSIX Regular Expressions
+
+Unlike `LIKE` and `SIMILAR TO` patterns, POSIX Regular Expressions can match any part of the string, unless explicitly anchored.
+
+There are some operators for matching on POSIX Regular Expressions.
+
+| Operator | Purpose |
+| :------  | :------ |
+| `~`      | case-sensitive match |
+| `~*`     | case-insensitive match |
+| `!~`     | case-sensitive negative match |
+| `!~*`    | case-insensitive negative match |
+
+`substring` works with POSIX Regular Expressions but it returns the portion of the text that matched, or the first parenthetical group if any exists. The whole pattern can be parenthesized to avoid this behavior, or non-capturing parentheses can be used.
+
+`regexp_replace` can substitute matches of a string. The replacement string can contain back-references to capture groups denoted with `\n`, with `\&` denoting the entire match should be inserted. It takes an optional flags parameter denoting e.g. case-insensitivity with `i`, global matching with `g`, etc.
+
+`regexp_matches` returns an array of all captured groups. If the `g` flag was used then the result will be a row of such an array for each match. If there are no capture groups in the pattern then each row is a single-element text array consisting of the substring matching the whole pattern.
+
+`regexp_split_to_table` splits a string with a given pattern delimiter into rows.
+
+`regexp_split_to_array` is similar except it returns an array of text instead.
+
+PostgreSQL regular expressions (Advanced Regular Expressions (AREs)) can begin with an embedded options sequence of the form `(?xyz)`.
+
+The `x` option can be used in regular expressions to enable expanded syntax where whitespace is not significant and where comments are allowed. A whitespace character or `#` comment delimiter can be treated literally by escaping it. Comments can also occur inline with the form `(?#text)`.
 # Collation Expressions
 
 _Collation_ refers to the set of rules that determine how data is compared and sorted. The collation of a particular expression can be overridden using a `COLLATE` clause.

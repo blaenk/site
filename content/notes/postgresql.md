@@ -2385,6 +2385,14 @@ string_to_array('xx~^~yy~^~zz', '~^~', 'yy') -- {xx,NULL,zz}
 
 `unnest` expands an array to a set of rows for each element. Multiple arrays can be provided in which case their elements are mapped to distinct columns.
 
+## Range Functions and Operators
+
+Ranges can be tested for equality, comparison, containment (e.g. `@>`), overlap `&&`, strictly left of `<<` and right of `>>` checks, "does not extend to the left of" `&<` or "right of" `&>` tests, and adjacent tests `-|-`.
+
+Comparison checks compare the lower bounds first and only compare the upper bounds if the lower bounds are equal.
+
+The union of a range can be computed with `+`, the range intersection with `*` (i.e., the range that overlaps both ranges), and the difference with `-`. The union `+` and difference `-` operators fail if the resulting range would need to contain two disjoint sub-ranges.
+
 # Collation Expressions
 
 _Collation_ refers to the set of rules that determine how data is compared and sorted. The collation of a particular expression can be overridden using a `COLLATE` clause.

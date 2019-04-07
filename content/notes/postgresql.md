@@ -2020,6 +2020,41 @@ bool_expr IS UNKNOWN
 bool_expr IS NOT UNKNOWN
 ```
 
+## Mathematical Operators
+
+Some of the mathematical operators even include the square root operator `|/`, cube root operator `||/`, factorial operator `!`, exponentiation `^`.
+
+## String Functions and Operators
+
+`regexp_match` returns the captured substrings matching a POSIX regular expression.
+
+`regexp_split_to_array` and `regexp_split_to_table` split a string using a POSIX regular expression.
+
+`split_part` splits a string on a given delimiter and returns the specified piece.
+
+`format` is similar to the C function `sprintf`.
+
+`concat` will concatenate all arguments, ignoring those that are `NULL`.
+
+`concat_ws` will concatenate all arguments using the separator specified as the first argument.
+
+`concat`, `concat_ws`, and `format` are variadic functions, so arrays can use the `VARIADIC` keyword to pass all elements are function arguments.
+
+``` postgresql
+format('You are %s years old', 20) -- 'You are 20 years old'
+concat_ws(' ', 'john', 'smith', 'doe') -- 'john smith doe'
+concat_ws(', ', VARIADIC ARRAY['one', 'two']) -- 'one, two'
+```
+
+## Binary String Functions and Operators
+
+`octet_length` counts the number of bytes in a `BYTEA` binary string.
+
+`get_bit` and `get_byte` can be used to obtain the corresponding bit or byte. There are also `set_bit` and `set_byte`. Note that unlike 1-based array indexing, these functions are 0-based.
+
+## Bit String Functions and Operators
+
+The operands of `&`, `|`, and `#` must be of equal length. Bit shifting preserves the original length of the string.
 # Collation Expressions
 
 _Collation_ refers to the set of rules that determine how data is compared and sorted. The collation of a particular expression can be overridden using a `COLLATE` clause.

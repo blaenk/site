@@ -2115,6 +2115,99 @@ There are some operators for matching on POSIX Regular Expressions.
 PostgreSQL regular expressions (Advanced Regular Expressions (AREs)) can begin with an embedded options sequence of the form `(?xyz)`.
 
 The `x` option can be used in regular expressions to enable expanded syntax where whitespace is not significant and where comments are allowed. A whitespace character or `#` comment delimiter can be treated literally by escaping it. Comments can also occur inline with the form `(?#text)`.
+
+## Data Type Formatting
+
+`to_char` converts to `TEXT`.
+
+`to_date` converts `TEXT` TO `DATE`.
+
+`to_number` converts `TEXT` to `NUMERIC`.
+
+`to_timestamp` converts `TEXT` to `TIMESTAMP`.
+
+## Date and Time Functions and Operators
+
+`INTERVAL`s, `DATE`s, and `TIME`s can be added and doing so has the expected effect.
+
+``` postgresql
+DATE '2001-09-28' + INTERVAL '1 hour' -- TIMESTAMP '2001-09-28 01:00:00'
+21 * INTERVAL '1 day' -- INTERVAL '21 days'
+```
+
+`age` subtracts two timestamps and produces a written-out description of the result. When only one argument is given, it uses the `current_date` as the other.
+
+``` postgresql
+age(timestamp '2001-04-10', timestamp '1957-06-13') -- 43 years 9 mons 27 days
+```
+
+`current_timestamp` gets the current date and time <span class="highlight">at the start of the transaction</span>.
+
+`clock_timestamp` gets the current date and time, this changes during statement execution.
+
+`to_timestamp` converts a Unix epoch to a `TIMESTAMP`.
+
+`make_date`, `make_interval`, `make_time`, `make_timestamp`, and `make_timestampz` can be used to create the corresponding type from component types.
+
+``` postgresql
+make_interval(days => 10) -- INTERVAL '10 days'
+```
+
+`extract` gets an arbitrary field from a given `TIMESTAMP`, `TIME`, or `INTERVAL`. `DATE`s are cast to `TIMESTAMP`. The possible field names are:
+
+* `CENTURY`
+* `DAY`
+* `DECADE`
+* `DOW` --- day of the week, Sunday is 0
+* `DOY` --- day of the year
+* `EPOCH`
+* `HOUR`
+* `ISODOW` --- day of the week per ISO 8601 numbering, Monday is 0
+* `ISOYEAR` --- week-numbering year per ISO 8601
+* `MICROSECONDS`
+* `MILLENNIUM`
+* `MILLISECONDS`
+* `MINUTE`
+* `MONTH`
+* `QUARTER` --- quarter of the year
+* `SECOND`
+* `TIMEZONE` --- UTC offset
+* `TIMEZONE_HOUR`
+* `TIMEZONE_MINUTE`
+* `WEEK`
+* `YEAR`
+
+`date_trunc` truncates the `TIMESTAMP` or `INTERVAL` such that any field less significant than the specified field is set to zero.
+
+The `OVERLAPS` operator checks if two time periods, defined by their endpoints, overlap. The endpoints can pairs of dates, times, or timestamps; or one of those plus an interval as the end-point.
+
+The time period is interpreted as the half-open interval `$\left[\text{start}, \text{end}\right)$` unless both times are the same, then it is considered an instant in time. This means that two periods with only an end-point in common will _not_ be considered as overlapping.
+
+Note that adding an interval to a `TIMESTAMPZ`, the `days` component ignores timezone changes such as daylight saving time, while the `hours` component obeys it, so that adding `'24 hours'` may end up adding 25 when done across a timezone change, while adding `'1 day'` will just.
+
+``` postgresql
+(start1, end1) OVERLAPS (start2, end2)
+(start1, length1) OVERLAPS (start2, length2)
+```
+
+The `AT TIME ZONE` construct can be used to convert timestamps to different time zones, or to give a `TIMESTAMP WITHOUT TIME ZONE` a time zone. The time zone can be expressed as a text string like `PST` or an interval like `INTERVAL '-08:00'`.
+
+Some time functions return a time from the start of the current transaction. This is deliberate so that the entire transaction can have a consistent view of time. The functions are:
+
+* `CURRENT_TIME`
+* `CURRENT_TIMESTAMP`
+* `LOCALTIME`
+* `LOCAL_TIMESTAMP`
+
+PostgreSQL additionally provides functions which give the time at other points in time:
+
+* `transaction_timestamp()` --- synonymous with `CURRENT_TIMESTAMP` but more explicit
+* `statement_timestamp()` --- start time of the current statement
+* `clock_timestamp()` --- actual current time which may vary within a single SQL command
+* `timeofday()` --- same as `clock_timestamp()` but formatted as a string
+* `now()` --- equivalent to `transaction_timestamp()`
+
+All date/time data types also accept the special literal `now` to specify the current date and time, which is interpreted as the transaction start time. However, **do not** use this in a `DEFAULT` clause when creating a table, since the system will convert it to a timestamp as soon as it is parsed, so the default value will actually take on the value of the start of the transaction that created the table.
 # Collation Expressions
 
 _Collation_ refers to the set of rules that determine how data is compared and sorted. The collation of a particular expression can be overridden using a `COLLATE` clause.

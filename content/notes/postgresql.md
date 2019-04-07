@@ -2279,7 +2279,7 @@ FROM json_to_record(
 jsonb_set('[{"f1":1,"f2":null},2,null,3]', -- JSON object
           '{0,f1}',                        -- target path
           '[2,3,4]',                       -- new value
-          false)                           -- don't create if missing
+          FALSE)                           -- don't create if missing
 -- [{"f1":[2,3,4],"f2":null},2,null,3]
 
 -- create_missing is TRUE by default
@@ -2290,10 +2290,11 @@ jsonb_set('[{"f1":1,"f2":null},2]', '{0,f3}','[2,3,4]')
 `jsonb_insert` can be used to insert into JSON arrays. The value is inserted before the target unless the `insert_after` argument is `TRUE`. In JSON objects, the value is only inserted if it doesn't already exist.
 
 ``` postgresql
+-- insert_after is FALSE by default
 jsonb_insert('{"a": [0,1,2]}', '{a, 1}', '"new_value"')
 -- {"a": [0, "new_value", 1, 2]}
 
-jsonb_insert('{"a": [0,1,2]}', '{a, 1}', '"new_value"', true)
+jsonb_insert('{"a": [0,1,2]}', '{a, 1}', '"new_value"', TRUE)
 -- {"a": [0, 1, "new_value", 2]}
 ```
 

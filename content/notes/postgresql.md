@@ -30,8 +30,6 @@ The `\i` command reads in commands from a given file.
 
 # SQL
 
-## Syntax
-
 Comments are denoted by two dashes `--`. Multi-line comments can be written similar to C-style multi-line comments. Unlike C, multi-line comments can be nested.
 
 SQL is case insensitive except when identifiers are double-quoted to preserve case, which are known as _quoted identifiers_ or _delimited identifiers_. Quoted identifiers can be used to explicitly force something to be an identifier regardless of whether or not it is also a keyword. Furthermore, they can contain any character (except the null character). A double quote can be included by writing two successive double quotes `""`.
@@ -123,8 +121,6 @@ Some types can also be constructed using function-like type coercion:
 ``` postgresql
 typename ( 'string' );
 ```
-
-## Concepts
 
 A _relation_ is a mathematical term for table. Each table is a named collection of rows, each with a set of named columns, each with a specific data type. Columns have a fixed order within rows, but rows don't have a guaranteed order.
 

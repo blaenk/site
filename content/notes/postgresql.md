@@ -2419,6 +2419,10 @@ Aggregate functions that support "partial mode" may participate in various optim
 
 `bool_and` is `TRUE` if all input values are `TRUE`, while `bool_or` is `TRUE` if _any_ input value is `TRUE`. `every` is synonymous to `bool_and`.
 
+## Window Functions
+
+Window functions perform calculations across sets of rows that are realted to the query row. Window functions _must_ be invoked with an `OVER` clause. Any built-in or user-defined normal aggregate function can be used as a window function.
+
 # Collation Expressions
 
 _Collation_ refers to the set of rules that determine how data is compared and sorted. The collation of a particular expression can be overridden using a `COLLATE` clause.

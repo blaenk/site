@@ -2423,6 +2423,69 @@ Aggregate functions that support "partial mode" may participate in various optim
 
 Window functions perform calculations across sets of rows that are realted to the query row. Window functions _must_ be invoked with an `OVER` clause. Any built-in or user-defined normal aggregate function can be used as a window function.
 
+## Subquery Expressions
+
+### EXISTS
+
+`EXISTS` takes an arbitrary subquery that is evaluated to determine whether it returns _any_ rows.
+
+The subquery can refer to variables from the surrounding query, in which case they act as constants during any one evaluation of the subquery. The subquery usually executes long enough to determine whether at least one row is returned. Since row existence is all that matters, a common idiom is to `SELECT 1`. 
+
+`EXISTS` can be used to perform something like an inner join producing _at most_ one output row for each left table row even if there are multiple matching rows in the right table.
+
+``` postgresql
+SELECT col
+FROM left_table
+WHERE EXISTS (SELECT 1
+              FROM right_table
+              WHERE left_table.col = right_table.col);
+```
+
+### IN
+
+An `IN` expression can take a subquery that returns exactly one column. If the left expression is `NULL` or if there are no equal values in the right and at least one right value is `NULL`, then the result is `NULL` _not_ `FALSE`.
+
+``` postgresql
+expression IN (subquery)
+```
+
+There is another form where the left side is a row constructor, in which case it checks to see if the right hand subquery produces at least one row with the same columns and values. Two rows are only considered equal if all of their corresponding members are non-`NULL` and equal, or otherwise considered unequal if all of their corresponding members are non-`NULL` and unequal. The result of the comparison is `NULL` (unknown) otherwise. If all of the per-row results are unequal or `NULL` with at least one `NULL` then the result is `NULL`.
+
+``` postgresql
+row_constructor IN (subquery)
+```
+
+`NOT IN …` has the inverse effect. If the left expression yields `NULL` or therea re no equal right values and at least one right value is `NULL`, then the result is `NULL`.
+
+### ANY and SOME
+
+With `ANY` and `SOME` the right side is a subquery which must return exactly one column and th eleft side is evaluated and compared to each row of the subquery using the given Boolean-yielding operator. `SOME` is a synonym of `ALL`.
+
+Note that `IN` is equivalent to `= ANY`.
+
+``` postgresql
+expression operator ANY (subquery)
+expression operator SOME (subquery)
+```
+
+If there are no successes and there is at least one `NULL` produced by the operator's result, then the result of the `ANY` will be `NULL` not `FALSE`.
+
+There are also row constructor variants in which case the subquery must produce the same columns, and the columns are compared paire-wise with the specified operator.
+
+### ALL
+
+The `ALL` construct is similar to `ANY` except that it only returns `TRUE` if _all_ values produced by the subquery return `TRUE` for the given operator against the left expression. There is also a row constructor variant.
+
+`NOT IN` is equivalent to `<> ALL`.
+
+### Single-Row Comparison
+
+A row constructor can be used to produce a row compared against a subquery that produces at most one row with the same columns.
+
+``` postgresql
+row_constructor operator (subquery)
+```
+
 # Collation Expressions
 
 _Collation_ refers to the set of rules that determine how data is compared and sorted. The collation of a particular expression can be overridden using a `COLLATE` clause.

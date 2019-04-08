@@ -2423,7 +2423,7 @@ Aggregate functions that support "partial mode" may participate in various optim
 
 Window functions perform calculations across sets of rows that are realted to the query row. Window functions _must_ be invoked with an `OVER` clause. Any built-in or user-defined normal aggregate function can be used as a window function.
 
-## Subquery Expressions
+## Membership Tests
 
 ### EXISTS
 
@@ -2455,7 +2455,18 @@ There is another form where the left side is a row constructor, in which case it
 row_constructor IN (subquery)
 ```
 
+There is also a variant that takes a parenthesized list of scalar expressions instead of a subquery. It is a shorthand notation for doing an explicit equality test for each value in the list `OR`ed together.
+
+``` postgresql
+number IN (1, 2, 3)
+
+-- Equivalent to:
+number = 1 OR number = 2 OR number = 3
+```
+
 `NOT IN …` has the inverse effect. If the left expression yields `NULL` or therea re no equal right values and at least one right value is `NULL`, then the result is `NULL`.
+
+There is also a variant of `NOT IN …` that takes a parenthesized list of scalar expressions instead of a subquery. It is a shorthand notation for doing an explicit equality test for each value in the list `OR`ed together.
 
 ### ANY and SOME
 

@@ -2501,6 +2501,16 @@ A row constructor can be used to produce a row compared against a subquery that 
 row_constructor operator (subquery)
 ```
 
+A single row constructor can also be compared to another. Both row values must have the same number of fields, and each element must be of a type which has a default B-tree operator class. Incompatibilities may be averted if the comparison is determined by earlier compatible elements.
+
+For equality operators `=` and `<>`:
+
+* If _all_ corresponding members are non-`NULL` and equal, the rows are equal
+* If _any_ corresponding members are non-`NULL` and unequal, the rows are unequal
+* Otherwise the comparison result is `NULL` (unknown)
+
+For the other comparison operators, row elements are compared left-to-right, stopping as soon as an unequal or `NULL` pair of elements is found. If either of this pair is `NULL`, the comparison result is `NULL`. Otherwise the comparison of the elements determines the result.
+
 # Collation Expressions
 
 _Collation_ refers to the set of rules that determine how data is compared and sorted. The collation of a particular expression can be overridden using a `COLLATE` clause.

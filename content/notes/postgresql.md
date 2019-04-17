@@ -2483,11 +2483,15 @@ If there are no successes and there is at least one `NULL` produced by the opera
 
 There are also row constructor variants in which case the subquery must produce the same columns, and the columns are compared paire-wise with the specified operator.
 
+There is also a variant that takes a parenthesized expression that must yield an array value.
+
 ### ALL
 
 The `ALL` construct is similar to `ANY` except that it only returns `TRUE` if _all_ values produced by the subquery return `TRUE` for the given operator against the left expression. There is also a row constructor variant.
 
 `NOT IN` is equivalent to `<> ALL`.
+
+There is also a variant that takes a parenthesized expression that must yield an array value.
 
 ### Single-Row Comparison
 

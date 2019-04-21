@@ -32,7 +32,7 @@ The values `undefined` and `null` have their own respective types with the same 
 
 The `never` type represents the types of values that never occur, such as for a function that always throws an exception, or one that never returns [^rust_never]. The `never` type is a subtype of every type.
 
-^[rust_never]: Similar to Rust's `!` type.
+[^rust_never]: Similar to Rust's `!` type.
 
 # Type Assertions
 

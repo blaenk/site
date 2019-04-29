@@ -6,6 +6,8 @@ date = 2017-08-07
 kind = "technology"
 +++
 
+[PostgreSQL](https://www.postgresql.org/) is an extremely robust and popular open source relational database management system (RDBMS). The third-party open source [PostGIS](https://postgis.net/) extension further adds geospatial capabilities.
+
 <nav id="toc"></nav>
 
 # Architecture

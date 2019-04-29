@@ -3222,3 +3222,80 @@ Constraint exclusion has a few caveats:
 The creation of database objects often implies dependencies between those objects. PostgreSQL prevents dropping objects that are being depended on unless explicitly specified via `CASCADE`, in which case the dependent objects are dropped recursively as well. The default behavior is `RESTRICT`.
 
 Dependency tracking for functions is based on the arguments and result types, but not the function body.
+
+# PostGIS
+
+Functions with the `ST_` prefix are from the SQL/MM specification, while older functions from the OGC/SFSQL specifications lack the prefix.
+
+The `geometry` type is planar and uses Cartesian math. PostGIS autocasts a `geometry` to its bounding box when needed.
+
+The `geography` type is spheroidal and geodetic, with lines and polygons drawn on a curved surface. It assumes that all data is based on a geodetic coordinate system, specifically WGS 84 lon/lat SRID 4326, unless otherwise specified.
+
+The `raster` type is a multiband cell and they're used to model space as a grid of rectangular cells each containing a numeric array of values. They organize information using _pixels_, AKA _cells_. A pixel is just a space holder for data with no physical dimension. Pixels are organized in rows and columns to form tiles. They are only positional designations, the actual data is stored in _bands_, AKA _channels_ or _dimensions_. A _tile_ has a width and height measured in pixels and is usually stored in each row. Each raster can have multiple bands, but must have at least one. Each band can only store numeric values. Pixel types specify the type of numbers that a given band can store.
+
+A _georeferenced raster_ corresponds to actual geographical locations, so that the physical size of a pixel takes on a real unit of measure, which can be measured with `ST_PixelWidth` and `ST_PixelHeight`. Georeferenced rasters have an assigned SRID to denote the SRS.
+
+Referencing a particular pixel on a raster requires a pixel-numbering convention relative to spatial coordinates, which is usually positive in the X direction and negative in the Y direction of the coordinate space, starting at the top-left corner of the tile rectangle.
+
+`ST_DWithin` checks if the minimum distance between two geometries is within the specified distance.
+
+`ST_Buffer` takes a geometry and radially expands it by a specified number of units, resulting in a _buffer zone_ or _corridor_.
+
+Type modifiers (aka _typmods_) are used when specifying the length of a `varchar(8)` or the precision in `numeric(8,2)`. Check constraints can be used to achieve the same effect, such as a check constraint that limits the length of a `varchar` column to 8.
+
+The `geometry` and `geography` types have hierarchical structures, so it's possible (and eoucraged) to be more specific where possible and use the subtypes. Although the subtypes are not data types, they can be enforced through type modifiers, such as `geometry(POINT, 4326)` specifies the `POINT` subtype type modifier and the 4326 SRID type modifier.
+
+All data types have a _spatial reference identifier_ (SRID). Only objects with the same SRID can have spatial relationships between them, such as their distance or whether one is contained in another.
+
+A _simple linestring_ is one that doesn't cross itself, and can be checked with `ST_IsSimple`.
+
+A _closed linestring_ is one that ends where it begins, otherwise it's considered to be open. When a closed linestring outlines the boundary of a polygon it's called the polygon's exterior ring. A polygon must have exactly one exterior ring, but may have one or more inner rings, each creating a hole in the overall polygon.
+
+The well-known text (WKT) representation of a polygon is a set of closed linstrings, with the first designating the exterior ring and subsequent ones designating the inner rings.
+
+For a polygon to be considered valid:
+
+* the rings may not overlap each other
+* two rings can't share a common boundary
+* inner rings cannot lie partly outside its exterior ring
+
+Many GEOS-based functions in PostGIS behave unpredictably with invalid geometries, so care should be taken to ensure that geometries are valid. `ST_IsValid` can determine validity, and `ST_IsValidReason` can explain the first validity offense.
+
+PostGIS has many geometry collection types such as `MULTIPOLYGON` which can store multiple polygons. It also has a `GEOMETRYCOLLECTION` type is a heterogeneous collection of geometries as long as all geometries have the same saptial reference system and coordinate dimensions. This is unlike multigeometries which are homogeneous.
+
+Multilinestrings are simple if all contained linestrings are simple and they don't intersect each other except at boundary points.
+
+Multipolygons are valid if all contained polygons are valid and they don't overlap.
+
+A spatial reference identifier (SRID) is a foreign key into the `spatial_ref_sys` table, which is a catalog of the spatial reference systems available to the database, including its name, projection parameters, and the originating organization. The SRID column is user-input, so SRID 4326 can't be guaranteed to correspond go the global SRS EPSG:4326 in every other database.
+
+Functions that expect an SRID but find it missing will default to the unknown value.
+
+Switching SRIDs doesn't alter the fact that the coordinate system underlying the geometry data type is always cartesian.
+
+Geodetics is the science of measuring and modeling the earth, while cartography is the science of representing it on flat maps.
+
+A spatial reference system is comprised of an ellipsoid, datum, and projection.
+
+A geoid is produced by taking gravity readings at various sea levels to arrive at a consensus and then use that constant gravitational force to map an equigravitational surface.
+
+An ellipsoid is composed of three radii: a and b are equatorial (along the X and Y axes) and c is the polar radius (along the Z axis). One ellipsoid may fit the curvature of one spot better than it would another spot, so there are a multitude of ellipsoids in use today.
+
+The datum is an "anchor" point on the earth where the axix arrives at the surface, i.e. the poles. Even if two reference systems use the same ellipsoid, they may have different anchors (datum). A horizontal datum specifies where on the plane of the earth to pin down the ellipsoid, and a vertical datum specifies the height.
+
+The most popular coordinate reference system is the geographical coordinate system (lon/lat) with longitude lines connecting the poles and latitude lines parallel to the equator.
+
+All data serve in the form of latitude and longitude is unprojected. Designing a projection is a balance of four conflicting features:
+
+* measurement accuracy
+* shape (angle representation)
+* direction (is north really north)
+* range of area supported
+
+Using a `geometry` type that is SRID 4326 data will actually project it onto a flat surface, treating longitude as X and latitude as Y. Some functions that work with `geography` actually piggyback on `geometry`, such as `ST_Buffer`, so caution should be taken when using them for large areas where the curvature of the earth becomes a concern.
+
+Note that `ST_Transform` is not a lossless function, as it introduces floating-point errors that can quickly accumulate.
+
+`ST_NPoints` is a PostGIS-specific function that returns the number of points in a geometry. The `ST_NumPoints` function is standard but only works on linestrings.
+
+`ST_Boundary` returns the geometry that determines the separation between points in the geometry and the rest of the coordinate space.

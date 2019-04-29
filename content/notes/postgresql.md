@@ -275,10 +275,6 @@ SELECT sum(salary) OVER w, avg(salary) OVER w
   WINDOW w AS (PARTITION BY depname ORDER BY salary DESC);
 ```
 
-# Inheritance
-
-Inheritance in PostgreSQL is similar to the concept with the same name from object oriented programming languages. In PostgreSQL, a table can inherit from zero or more tables.
-
 # Queries
 
 Expressions can be written in the `SELECT` output list.
@@ -3101,6 +3097,8 @@ CREATE POLICY account_managers ON accounts TO managers
 Row security should be turned off when doing a backup to avoid certain rows from being omitted in the backup.
 
 # Inheritance
+
+Inheritance in PostgreSQL is similar to the concept with the same name from object oriented programming languages.
 
 In PostgreSQL a table can inherit from zero or more tables.
 

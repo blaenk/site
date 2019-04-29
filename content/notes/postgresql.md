@@ -30,6 +30,8 @@ Internal commands are denoted by a backslash `\` prefix, such as `\h` which prov
 
 The `\i` command reads in commands from a given file.
 
+An interesting trick is to us the `\COPY sometable FROM STDIN` meta-command, then all subsequent lines are interpreted as data, terminated by the `\.` meta-command. This allows SQL and data to be mixed in the same file, and is something that `pg_dump` itself does when outputting SQL. Note that this only works when feeding commands into standard in.
+
 # SQL
 
 Comments are denoted by two dashes `--`. Multi-line comments can be written similar to C-style multi-line comments. Unlike C, multi-line comments can be nested.

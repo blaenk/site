@@ -30,6 +30,8 @@ lazy val root = (project in file("."))
   )
 ```
 
+## Settings
+
 Settings consist of _setting expressions_ which are of the form `someKey := { expression }`. Keys can be:
 
 | Type | Purpose |
@@ -38,13 +40,35 @@ Settings consist of _setting expressions_ which are of the form `someKey := { ex
 | `TaskKey[T]` | (aka _task_) has to be recomputed each time |
 | `InputKey[T]` | key for _task_ with CLI args as input |
 
-Built-in keys are fields from an object `sbt.Keys` whose fields are implicitly imported with `import sbt.Keys._` so that e.g. `sbt.Keys.name` can be referred to as `name`.
+In the shell, typing the name of a setting key prints its value, while typing the name of a task key runs that task but doesn't print its return value, although this can be achieved with `show taskName`. The `inspect taskName` command can be used to display information about a task key.
+
+`TaskKey[T]` defines a task, which is an operation such as `compile` and `package` which may return `Unit`, or for example `package` is of type `TaskKey[File]` because it returns the path to the JAR file it creates.
+
+Built-in keys are fields from an object `sbt.Keys` whose fields are implicitly imported with `import sbt.Keys._` so that e.g. `sbt.Keys.name` can be referred to as `name`. There is also an implicit `import sbt._`.
 
 Custom keys can be defined with corresponding methods `settingKey`, `taskKey`, `inputKey`, and they each require an explicit type of the value associated with the key and a description:
 
 ``` scala
 lazy val hello = taskKey[Unit]("An example task")
 ```
+
+After defining the task or setting, it can be given a value through a setting either on a project or at the top-level, aka "bare style."
+
+``` scala
+lazy val hello = taskKey[Unit]("An example task")
+
+lazy val root = (project in file("."))
+  .settings(
+    hello := { println("Hello!") }
+  )
+
+// "Bare style"
+ThisBuild / version := "1.0"
+```
+
+Note that `lazy val`s are typically used to avoid initialization order problems.
+
+`val`s and `def`s in an <span class="path">.sbt</span> file are evaluated before settings regardless of where they are in a file.
 
 Placing a tilde `~` before a command causes it to re-execute on file changes.
 
@@ -62,6 +86,60 @@ Batch mode allows passing sbt commands from the command line, such as:
 
 ``` console
 $ sbt clean "testOnly HelloSpec"
+```
+
+Some sbt operators include:
+
+* `+=` appends to a key's old value
+* `%` constructs an Ivy module ID
+
+## Projects
+
+A project is defined with a `lazy val` of type `Project`. The name of the project's base directory can be omitted if it's the same as the `val` name.
+
+``` scala
+lazy val util = (project in file("util"))
+```
+
+Common settings can be set through the `ThisBuild` top-level "bare style" configuration, or by defining a `Seq` of the settings and passing it to the `Project.settings` method.
+
+One project can depend on another through the `.dependsOn` method. This implies that the `compile` task in one depends on the `compile` task in another. This can be written explicitly with a dependency specifier `"taskA->taskB"` meaning taskA in the current project depends on taskB in the dependency. Omitting the right-hand task dependency implies `"compile"`. Multiple dependencies can be separated by semicolons.
+
+``` scala
+lazy val core = project.dependsOn(util)
+
+// Equivalent:
+lazy val core = project.dependsOn(util % "compile->compile")
+
+// core "test" depends on util "compile"
+lazy val core = project.dependsOn(util % "test")
+
+// core "test" depends on util "test"
+// Enables placing test utilities in util
+lazy val core = project.dependsOn(util % "test->test")
+
+// Multiple dependencies
+lazy val core = project.dependsOn(util % "test->test;compile->compile")
+```
+
+## Dependencies
+
+Dependencies take the form:
+
+``` scala
+libraryDependencies += groupID % artifactID % revision
+
+// Or:
+libraryDependencies += groupID % artifactID % revision % configuration
+libraryDependencies += groupID % artifactID % revision % "test"
+libraryDependencies += groupID % artifactID % revision % Test
+
+// Adds Scala version via %%:
+libraryDependencies groupID %% artifactID % revision
+
+// Equivalent when running Scala 2.11.1:
+libraryDependencies += "org.scala-tools" % "scala-stm_2.11" % "0.3"
+libraryDependencies += "org.scala-tools" %% "scala-stm" % "0.3"
 ```
 
 # Basics

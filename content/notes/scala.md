@@ -10,6 +10,60 @@ I've been meaning to learn Scala for some time. Haskell has really left me wanti
 
 <nav id="toc"></nav>
 
+# sbt
+
+[sbt](https://www.scala-sbt.org) is the Scala Build Tool. A project's configuration is defined in the file <span class="path">build.sbt</span>. A <span class="path">project/</span> directory can contain helper objects and one-off plugins, such as <span class="path">Dependencies.scala</span>.
+
+The sbt version can be specified in a <span class="path">project/build.properties</span> file:
+
+``` scala
+sbt.version=1.2.8
+```
+
+A given build definition may look like:
+
+``` scala
+lazy val root = (project in file("."))
+  .settings(
+    name := "Hello",
+    scalaVersion := "2.12.7"
+  )
+```
+
+Settings consist of _setting expressions_ which are of the form `someKey := { expression }`. Keys can be:
+
+| Type | Purpose |
+| :--- | :------ |
+| `SettingKey[T]` | computed once on subproject load |
+| `TaskKey[T]` | (aka _task_) has to be recomputed each time |
+| `InputKey[T]` | key for _task_ with CLI args as input |
+
+Built-in keys are fields from an object `sbt.Keys` whose fields are implicitly imported with `import sbt.Keys._` so that e.g. `sbt.Keys.name` can be referred to as `name`.
+
+Custom keys can be defined with corresponding methods `settingKey`, `taskKey`, `inputKey`, and they each require an explicit type of the value associated with the key and a description:
+
+``` scala
+lazy val hello = taskKey[Unit]("An example task")
+```
+
+Placing a tilde `~` before a command causes it to re-execute on file changes.
+
+The `reload` command causes `build.sbt` to be re-read and its settings applied.
+
+The `~testQuick` command can be used to run incremental tests continuously. Press <kbd>Enter</kbd> to stop.
+
+Subprojects can be listed with `projects`, and a specific project can be invoked for example with `someproject/compile`.
+
+If a subproject is added to a parent project's `aggregate`, then any command sent to the parent project will be broadcast to the subproject.
+
+One subproject can depend on another via `.dependsOn`.
+
+Batch mode allows passing sbt commands from the command line, such as:
+
+``` console
+$ sbt clean "testOnly HelloSpec"
+```
+
 # Basics
 
 The syntax for a function definition is:

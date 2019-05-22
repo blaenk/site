@@ -271,6 +271,8 @@ object Singleton {
 }
 ```
 
+Since an `object` is a "stable path", its members can be imported with the `import` statement.
+
 When a singleton object is named after an existing class, it is referred to as the class' _companion object_ [^companion_ruby]. They must both be defined in the same source file. They can access each other's private members.
 
 [^companion_ruby]: Reminds me of Ruby's 'EigenClasses', but I'm not quite sure yet if it's indeed similar, or if companion objects truly are just a separation for specifying class-wide values/methods.
@@ -383,6 +385,19 @@ val three  = curriedSum(1)(2)
 
 def equivalentSum(x: Int) = (y: Int) => x = y
 val three_ = equivalentSum(1)(2)
+```
+
+This also makes it possible for the compiler to infer the type of a function's parameters as in the case of:
+
+``` scala
+def foldLeft[B](z: B)(op: (B, A) => B): B
+
+// Types of m and n are needed here
+numbers.foldLeft(0, (m: Int, n: Int) => m + n)
+
+// Compiler can infer parameters because 0 infers type param B
+// and _ refers to B
+numbers.foldLeft(0)(_ + _)
 ```
 
 Explicitly defining multiple parameter lists allows using braces for the last parameter:
@@ -681,7 +696,7 @@ case class BinOp(operator: String, left: Expr, right: Expr) extends Expr
 
 These case classes define:
 
-* factory methods to avoid having to explicitly write `new`
+* factory methods to avoid having to explicitly write `new`, through an `apply` method
 * fields for the data
 * simple `toString` implementations, 
 * a `copy` method that is very similar to Haskell's record syntax

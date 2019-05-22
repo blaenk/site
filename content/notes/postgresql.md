@@ -219,7 +219,7 @@ A window function is syntactically different from a regular or aggregate functio
 
 Window functions are only permitted in the `SELECT` list and the `ORDER BY` clause of a query.
 
-The `PARTITION BY` sub-clause partitions (groups) the rows sharing the same values for the provided expression. These partitions are processed separately by the window function. The `PARTITION BY` clause is similar to `GROUP BY` except its values are always expressions, not output-column names or numbers The `ORDER BY` sub-clause can be used to order each resulting partition. Then, for each row, the window function is computed across the rows that are in the same partition.
+The `PARTITION BY` sub-clause partitions (groups) the rows sharing the same values for the provided expression. These partitions are processed separately by the window function. The `PARTITION BY` clause is similar to `GROUP BY` except its values are always expressions, not output-column names or numbers. The `ORDER BY` sub-clause can be used to order each resulting partition. Then, for each row, the window function is computed across the rows that are in the same partition.
 
 If the `PARTITION BY` clause is omitted then there will only be one resulting partition containing all of the rows.
 

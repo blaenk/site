@@ -1071,6 +1071,21 @@ auto QuickSelect(Iter begin, Iter end, std::size_t i) -> decltype(*begin) {
 }
 ```
 
+``` python
+def quick_select(items, i):
+    if len(items) == 1: return items[0]
+
+    pivot = partition(items)
+
+    if pivot == i:
+        return items[i]
+    elif i > pivot:
+        # -1 to shift past the pivot
+        return quick_select(items[pivot + 1 :], i - pivot - 1)
+    else:
+        return quick_select(items[: pivot], i)
+```
+
 ## In-Place Reverse Words
 
 **Problem**: Given an exploded string---i.e. `str.split('')`---which is an array consisting of the letters of the words in a phrase, reverse the _words_ in the array in-place.

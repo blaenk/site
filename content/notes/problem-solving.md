@@ -24,7 +24,7 @@ These are notes on the general problem solving techniques through the applicatio
         * <span class="highlight">Outputs</span>: types, error handling
         * Compare the inputs to the outputs
 
-    2. Design <span class="highlight">simple test cases</span> (<span class="highlight">expected</span>, <span class="highlight">edge</span>, and <span class="highlight">failure</span> inputs)
+    2. Design and confirm <span class="highlight">simple test cases</span> (<span class="highlight">expected</span>, <span class="highlight">edge</span>, and <span class="highlight">failure</span> inputs)
     
         * Especially if the provided test cases are overwhelming
 
@@ -38,7 +38,7 @@ These are notes on the general problem solving techniques through the applicatio
 
 2. Implementation
 
-    1. Implement
+    1. Implement at a high-level, top-down. Focus on the algorithm, fill in the rest later
     2. <span class="highlight">Trace</span> through implementation with test cases
     3. Complexity
     4. Optimizations
@@ -46,16 +46,22 @@ These are notes on the general problem solving techniques through the applicatio
 3. Reflect
 
     1. Approaches taken
-    2. Lessons learned
-    
+    2. Identify patterns and tricks
+    3. Lessons learned
+
         * Pitfalls, misunderstandings, mistakes, overthinking
-    
-    3. Further optimizations
+
+    4. Further optimizations
 
 4. Retain
 
-    1. Add an entry here
-    2. Create Anki flash card for the entry
+    1. Add an entry here for:
+        1. The problem
+        2. [Tricks](#tricks)
+        3. [Patterns](#patterns)
+        4. [Best Practices](#best-practices)
+        5. [Pitfalls](#pitfalls)
+        6. [Modeling](#modeling)
 
 ## System Design
 
@@ -88,7 +94,7 @@ These are notes on the general problem solving techniques through the applicatio
 Designing algorithms that scale:
 
 1. Ask questions
-2. Imagine there are no limitaitons
+2. Imagine there are no limitations
 
     * Infinite memory, storage
 
@@ -131,25 +137,109 @@ Use the STAR format. Be careful to focus on what _you_ did, not the group: use _
 3. <span class="highlight">Action</span>: Describe the actions taken to achieve the goals.
 4. <span class="highlight">Result</span>: Describe the outcome. What did you learn?
 
-# Strategies
+# Best Practices
 
-Some general strategies to approaching a given problem:
+## Work Top-Bottom
 
-* <span class="highlight">Concrete examples</span>: manually solve concrete instances and build a general solution
-* <span class="highlight">Case analysis</span>: split the input/execution into a number of cases and solve each in isolation
-* <span class="highlight">Iterative refinement</span>: brute-force and improve upon it
-* <span class="highlight">Reduction</span>: use well-known solution to another problem as subroutine
-* <span class="highlight">Graph modeling</span>: model the problem as a graph
+Don't waste time on trivial aspects like finding the maximum of an array. Focus on the high-level algorithm implementation, <span class="highlight">details can be filled in later if necessary</span>.
 
-## Techniques
+## Employ Abstractions
 
-* <span class="highlight">Divide-and-conquer</span>: <span class="highlight">decompose</span> the problem into two or more sub-problems until they are simple enough to solve directly, <span class="highlight">then combine the results</span>
+As software engineers we make complex problems manageable by breaking them down into abstractions. Why throw this out during interviews? It puts you at a disadvantage. <span class="highlight">Create types and functions</span>.
 
-    The problem is often solved in the combination phase. For example, merge sort divides the problem and actually solves (i.e. sorts) it during the merge phase.
+Abstractions signal the acknowledgment that code exists but can be filled in later in order to focus on the meat of solving precisely what is being asked.
 
-* <span class="highlight">Greedy algorithms</span>: make locally optimum, seemed-like-a-good-idea-at-the-time decisions in stages and never change them (don't backtrack). This won't always yield the optimum solution.
+The cleaner code that comes from this will greatly help you as you reason about the code mid-way and later on when you seek to optimize it.
 
-## Modeling
+The cleaner code will also make a better impression on the interviewer.
+
+## Codify Invariants
+
+When a problem specifies conditions or predicates under which a solution satisfies the problem, codify those conditions in code to make it easier to reason about the solution.
+
+## Simplify Test Cases
+
+It's easy to get overwhelmed or confused with the test case(s) provided by the problem. Other times instead of giving many small manageable test cases, they give one large test case that exhibits each of the edge cases that will be tested for. Trying to mentally model a solution for that large, comprehensive test case can be daunting and time consuming.
+
+<span class="highlight">Try to reduce the test case to multiple minimal test cases</span>, but be careful to ensure that you are still representing the problem. Seek confirmation if possible.
+
+Once a solution is designed, make sure it works for the original test case and not just the minimal test cases you decomposed it to.
+
+## Assume Valid Inputs
+
+Don't waste time on validating every edge case of an input, but make these assumptions clear to the interviewer. An invalid input is for example a numeric string containing non-numeric characters.
+
+## Acknowledge Pathological Inputs
+
+Make it clear to the interviewer that you are aware of pathological inputs and can address them if required. Write unit tests for these if there is time. For example, a pathological input might be one that causes the algorithm to index an array out of bounds.
+
+## Theoretical Solutions
+
+Do mention theoretical approaches even if they're not eventually implemented. For example, if an algorithm would only work if a BigNum type were used, to prevent overflows, mention it. It will communicate that you're at least aware of that approach, even if you don't or can't ultimately use it.
+
+In other words, try to lose the "not invented here" (NIH) horse-blinders often associated with algorithm puzzle solutions, where we limit our search space to what we can implement from scratch.
+
+# Pitfalls
+
+## Premature Optimization
+
+Don't fall for the trap of premature optimization. It's true that solutions should preferably be optimal, but thinking about the solution _and_ making it optimal from the beginning can be overwhelming. You may end up doing both poorly, or not at all.
+
+## "Not Invented Here"
+
+Don't fall into the trap of assuming that everything in your solution must be written from scratch.
+
+Instead of biasing from that direction, bias from the direction of not reinventing the wheel. If the interviewer wants you to implement something you're delegating to, you can do so, but otherwise you will have saved yourself a lot of time.
+
+## Apparent Impossibility
+
+If a problem seems impossible, you are very likely overthinking it. Ask for examples and clarifying questions and try to think about it a different way. Maybe you misunderstood a simple component of the problem.
+
+On the other hand, <span class="highlight">don't confuse intractability with impossibility</span>. Even if a problem is intractable and the (possibly brute-force) solution can't run in any reasonable amount of time for large inputs, it is still a solution, and a solution is better than none.
+
+It is also possible, maybe even likely, that there is a subtle fact about the problem that unlocks an embarrassingly efficient solution.
+
+## Daunting Complexity
+
+Similar to impossibility, if a problem seems overly complex or it seems like a solution would be really long, it is likely an indication that you are overthinking the problem and need to reconsider your approach. Maybe you misunderstood a simple component of the problem.
+
+Consider that a reasonable interviewer wouldn't ask something too complex to reason about, implement, _and_ have them verify within a ~45 minute interview.
+
+_Maybe_ the interviewer is knowingly giving you an "impossible" problem without actually expecting you to solve it, instead wanting to see how you approach the problem and handle a seemingly-impossible situation---a so-called "stress interview". I think this is unlikely, but it emphasizes the importance of establishing consensus on what the problem is and conveying your ideas for the approach before you begin and as you go.
+
+## The Einstellung Effect
+
+The [Einstellung effect](https://en.wikipedia.org/wiki/Einstellung_effect) refers to a situation in which when you become fixated on one misguided approach to solving a problem
+
+In my experience, I have gravely blown up a simple geometric problem involving cells on a grid to one involving Bresenham rasterization or A* path-finding. I allowed the prestige of the company to psyche me out into believing that the company would reasonably expect a typical candidate to solve something that complicated or niche.
+
+# Tricks
+
+## Dummy Head
+
+In linked list problems sometimes we need to produce a new list from others, but we're not yet sure which node to make the head. We can side-step this decision by simply creating a "dummy" head node and then link it to the actual head. When we return the "new" list, we return `dummy.next`.
+
+# Patterns
+
+## Slow-Fast Iteration
+
+The "normal" iterator iterates one element at a time, while the "fast" iterator either starts ahead at the same pace or at a faster pace. There can also be a "slow" iterator---instead of a "fast" one---that lags behind the normal iterator.
+
+One thing to remember is that slow and fast are relative terms. Most times one is slow or fast relative to the other, rarely are both slow and fast.
+
+Examples:
+
+* Remove Duplicates
+
+## Double-Ended Iteration
+
+The "left" iterator iterates from the left-to-right of the array and the "right" iterator iterates right-to-left of the array.
+
+Examples:
+
+* Remove Element
+
+# Modeling
 
 | Model | Examples |
 | :---- | :------- |
@@ -160,40 +250,6 @@ Some general strategies to approaching a given problem:
 | points | sites, positions, data records, locations |
 | polygons | shapes, regions, configurations, boundaries |
 | strings | text, characters, patterns, labels |
-
-## Creating Types
-
-Designing and creating types can help by:
-
-* Enabling the assumption that methods exist, to be filled-in later.
-* Provides a clearer intent through cleaner, higher-level code.
-* There are smaller, less hairy functions.
-
-## Codifying Invariants
-
-When a problem specifies conditions or predicates under which a solution satisfies the problem, codify those conditions in code to make it easier to reason about the solution.
-
-## Impossibility
-
-If a problem seems impossible, consider that you may be overthinking it. Ask clarifying questions or try to think about it a different way.
-
-## Premature Optimization
-
-Don't fall for the trap of premature optimization. It's true that solutions should preferably be optimal, but thinking about the solution _and_ optimality from the beginning can be overwhelming.
-
-## Theoretical Solutions
-
-Do mention theoretical approaches even if they're not eventually implemented. For example, if an algorithm would only work if a BigNum type were used, to prevent overflows, mention it. It will communicate that you're at least aware of that approach, even if you don't or can't ultimately use it.
-
-In other words, try to lose the "not invented here" (NIH) horse-blinders often associated with algorithm puzzle solutions, where we limit our search space to what we can implement from scratch.
-
-## Simpler Test Cases
-
-It's easy to get overwhelmed or confused with the test case provided by the problem. Sometimes instead of giving many small manageable test cases, they give one large test case that exhibits each of the edge cases that will be tested for. Trying to mentally model a solution for that large, comprehensive test case can be daunting and time consuming.
-
-Try to reduce the test case to multiple minimal test cases, but _be careful_ to ensure that you are still representing the problem. Seek confirmation if possible.
-
-Once a solution is designed, make sure it works for the original test case and not just the minimal test cases you came up with.
 
 # Complexity
 
@@ -419,8 +475,8 @@ $$\frac {(b - a)} 2 + a$$
 
 XOR can be replicated without actually using XOR by simply writing out what XOR means, i.e. exclusive OR: (a AND NOT b) OR (NOT a AND b)
 
-``` cpp
-// emulate XOR
+``` python
+# emulate XOR
 x ^ y == (x & ~y) | (~x & y)
 ```
 
@@ -428,7 +484,7 @@ x ^ y == (x & ~y) | (~x & y)
 
 The least significant set bit can be obtained with:
 
-``` cpp
+``` python
 x = 0101 0100
 least_significant_set_bit = x & ~(x - 1)
 ```
@@ -437,20 +493,20 @@ The way this works is:
 
 1. all bits up-to-and-including the least significant set bit are flipped
 
-    ``` cpp
+    ``` python
     (x - 1)  = 0101 0011
                      →
     ```
 
 2. flip _all_ bits so that only the previously-least significant set bit will pass when ANDed with the original value
 
-    ``` cpp
+    ``` python
     ~(x - 1) = 1010 1100
     ```
 
 3. AND with the original value so that only the least significant set bit passes
 
-    ``` cpp
+    ``` python
     x & ~(x - 1) = 0000 0100
     ```
 
@@ -458,7 +514,7 @@ The way this works is:
 
 The least significant set bit can be unset with:
 
-``` cpp
+``` python
 x = 0101 0100
 least_significant_set_bit_unset = x & (x - 1)
 ```
@@ -483,7 +539,7 @@ For each number in the array, it will be added to the `ones` set if it has been 
 
 First, the number being considered is checked to see if it has already been seen once so far:
 
-``` java
+```
 ones & num
 ```
 
@@ -491,7 +547,7 @@ This would mean that this is the second time that this number has been seen. If 
 
 The result of the above expression can directly be used to add the number to the `twos` set using the OR operation, which adds the number to the set, or does nothing if the number is 0.
 
-``` java
+```
 twos |= ones & num
 ```
 
@@ -499,7 +555,7 @@ The number is then _conditionally_ added to or removed from the `ones` set using
 
 Therefore, we can add the number to the `ones` set if it wasn't already contained, or remove it if it was contained.
 
-``` java
+```
 ones ^= num
 ```
 
@@ -509,35 +565,32 @@ In this case, the number should be removed from both sets. This would ensure tha
 
 However, the `ones` set and the `twos` set may contain various numbers. We know that the one that appears in both is the one that has appeared three times, and hence the one we want to remove, so we can obtain this number by intersecting both sets.
 
-``` java
+```
 int threes = twos & ones;
 ```
 
 We then want to remove this number from both sets:
 
-``` java
+```
 twos &= ~threes;
 ones &= ~threes;
 ```
 
 Here is the full algorithm.
 
-``` java
-public int singleNumber(int[] nums) {
-  int ones, twos;
-  ones = twos = 0;
+``` python
+def single_number(nums):
+  ones = twos = 0
 
-  for (int num : nums) {
-    twos |= ones & num;
-    ones ^= num;
+  for num in nums:
+    twos |= ones & num
+    ones ^= num
 
-    int threes = twos & ones;
-    twos &= ~threes;
-    ones &= ~threes;
-  }
+    threes = twos & ones
+    twos &= ~threes
+    ones &= ~threes
 
-  return ones;
-}
+  return ones
 ```
 
 # Strings
@@ -867,18 +920,16 @@ The brute-force approach would be to check if this is true for all possible pair
 
 Another approach is to iterate from both ends of the array. For example, at first, the first and last elements will be used. If their sum is greater than the target, the right end will be iterated leftward so as to attempt to obtain a smaller element. If instead their sum is less than the target, the left end will be iterated rightward in hopes of increasing their sum.
 
-``` cpp
-while (left < right) {
+``` python
+while left < right:
   sum = A[i] + A[j]
 
-  if (sum > k) {
-    right--
-  } else if (sum < K) {
-    left++
-  } else {
+  if sum > k:
+    right -= 1
+  elif sum < K:
+    left +- 1
+  else:
     return true
-  }
-}
 ```
 
 ## Two Sum Of Sorted Array

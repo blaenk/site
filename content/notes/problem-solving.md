@@ -215,9 +215,9 @@ In my experience, I have gravely blown up a simple geometric problem involving c
 
 ## The God Loop
 
-Sometimes it's easy to let a simple loop grow into a "God Loop" that does too much, maybe as more conditions need to be handled, making the code messier and more difficult for you to reason about.
+Sometimes it's easy to let a simple loop grow into a "God Loop" that does too much with ever increasing edge case conditions that need to be handled, making the code messier and more difficult for you to reason about.
 
-Consider if it might be easier to split up while still being the same complexity class, noting to the interviewer that the loops can be optimized by combining them.
+Consider if it might be easier to split it up into separate loops while still being the same complexity class (see [Sum of Bounds](/notes/algorithms/#sum-of-bounds)), noting to the interviewer that the loops can be optimized by combining them.
 
 Another option is to factor the body out to separate functions.
 

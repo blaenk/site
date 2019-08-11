@@ -255,16 +255,16 @@ Sometimes we want to merge two sorted sequences, such as with merge sort. This i
 
 ``` python
 while left is not None or right is not None:
-    if right is None: # Right is empty
+    if right is None:           # Right is empty
         merged.next = left
         left = left.next
-    elif left is None: # Left is empty
+    elif left is None:          # Left is empty
         merged.next = right
         right = right.next
     elif left.val <= right.val: # Left and right non-empty, left head smaller
         merged.next = left
         left = left.next
-    else: # Left and right non-empty, right head smaller or equal
+    else:                       # Left and right non-empty, right head smaller or equal
         merged.next = right
         right = right.next
 ```

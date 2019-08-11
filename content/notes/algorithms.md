@@ -73,7 +73,7 @@ When analyzing an algorithm it is common to produce an expression of bounds whic
 
 ### Sum of Bounds
 
-For example, is an algorithm first sorts its input and then prints each element, then that's a sorting operation of `$O(n \log n)$` followed by a linear printing operation of `$O(n)$`, essentially becoming `$O(n \log n + n)$`. However, the linearithmic term clearly dominates the linear term, so simplifying it to `$O(n \log n)$` still leaves an accurate bound.
+For example, if an algorithm first sorts its input and then prints each element, then that's a sorting operation of `$O(n \log n)$` followed by a linear printing operation of `$O(n)$`, essentially becoming `$O(n \log n + n)$`. However, the linearithmic term clearly dominates the linear term, so simplifying it to `$O(n \log n)$` still leaves an accurate bound.
 
 <div>$$ O(f(n)) + O(g(n)) → O(\max (f(n), g(n))) $$</div>
 

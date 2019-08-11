@@ -1399,7 +1399,8 @@ def merge_and_count(seq, aux, lo, mid, hi):
         elif aux[left] < aux[right]:
             seq[i] = aux[left]
             left += 1
-        else: # Inversion
+        else: # Inversion: Taking from the right while left is not yet empty
+            # Inversion for every remaining element on the left
             inversions += (mid - left)
             seq[i] = aux[right]
             right += 1

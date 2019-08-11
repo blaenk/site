@@ -209,7 +209,7 @@ _Maybe_ the interviewer is knowingly giving you an "impossible" problem without 
 
 ## The Einstellung Effect
 
-The [Einstellung effect](https://en.wikipedia.org/wiki/Einstellung_effect) refers to a situation in which when you become fixated on one misguided approach to solving a problem
+The [Einstellung effect](https://en.wikipedia.org/wiki/Einstellung_effect) refers to a situation in which you become fixated on one misguided approach to solving a problem
 
 In my experience, I have gravely blown up a simple geometric problem involving cells on a grid to one involving Bresenham rasterization or A* path-finding. I allowed the prestige of the company to psyche me out into believing that the company would reasonably expect a typical candidate to solve something that complicated or niche.
 

@@ -289,27 +289,27 @@ This is a _stable_ algorithm and the first algorithm that is linearithmic in com
 
 The main drawback is that it has `$O(n)$` space complexity because an auxiliary sequence has to be created to facilitate the merging process.
 
-``` cpp
-template<typename T>
-void merge(std::vector<T> &sequence, int lo, int mid, int hi) {
-  int i = lo;
-  int j = mid + 1;
+``` python
+def merge(seq, aux, lo, mid, hi):
+    for i in range(lo, hi):
+        aux[i] = seq[i]
 
-  for (int k = lo; k <= hi; k++)
-    aux[k] = sequence[k];
+    left = lo
+    right = mid
+    i = lo
 
-  for (int k = lo; k <= hi; k++) {
-    if (i > mid) {
-      sequence[k] = aux[j++];
-    } else if (j > hi) {
-      sequence[k] = aux[i++];
-    } else if (aux[j] < aux[i]) {
-      sequence[k] = aux[j++];
-    } else {
-      sequence[k] = aux[i++];
-    }
-  }
-}
+    while left < mid or right < hi:
+        both = left < mid and right < hi
+
+        if right == hi or (both and aux[left] < aux[right]):
+            seq[i] = aux[left]
+            left += 1
+
+        else:
+            seq[i] = aux[right]
+            right += 1
+
+        i += 1
 ```
 
 The complexity is `$O(n \log n)$` because the number of subproblems is doubling at each level (i.e. the two recursive calls), but the work to be done by those subproblems is halving. That is, for a given level `$j$`, the amount of work done is:

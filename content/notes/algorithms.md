@@ -353,27 +353,23 @@ SortAndCount(array A, length n)
 
 This is a recursive approach that works by splitting the array into two pieces until the pieces consist of pairs of elements. On each recurrence, the two pieces that were split for that recurrence are merged back.
 
-``` cpp
-template<typename T>
-void sort(std::vector<T> &sequence) {
-  aux = std::vector<T>(sequence.size());
+``` python
+def mergesort(seq):
+    aux = seq[:]
 
-  sort(sequence, 0, sequence.size() - 1);
-}
+    sort(seq, aux, 0, len(seq))
 
-template<typename T>
-void sort(std::vector<T> &sequence, int lo, int hi) {
-  if (hi <= lo) {
-    return;
-  }
+    return seq
 
-  int mid = lo + (hi - lo) / 2;
+def sort(seq, aux, lo, hi):
+    if (hi - lo) <= 1: return
 
-  sort(sequence, lo, mid);
-  sort(sequence, mid + 1, hi);
+    mid = lo + ((hi - lo) // 2)
 
-  merge(sequence, lo, mid, hi);
-}
+    sort(seq, aux, lo, mid)
+    sort(seq, aux, mid, hi)
+
+    merge(seq, aux, lo, mid, hi)
 ```
 
 There are a couple of improvements that can be made to top-down merge sort:

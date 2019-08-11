@@ -295,7 +295,7 @@ One thing to remember is that slow and fast are relative terms. Most times one i
 
 Examples:
 
-* Remove Duplicates
+* [Remove Duplicates](#remove-duplicates)
 
 ## Double-Ended Iteration
 

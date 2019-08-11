@@ -318,37 +318,6 @@ The complexity is `$O(n \log n)$` because the number of subproblems is doubling 
 
 Given an input size of `$n$`, the number of levels in the recursion tree is `$\log_2 n$`, which means that at each of the `$\log_2 n$` levels in the tree there is `$n$` work being done, hence `$n \log n$`.
 
-The number of _inversions_ in an array can be counted in `$O(n \log n)$` by reducing the problem to merge sort. Specifically, during a merge, each time an element from the right half is merged and there are elements remaining in the left half, then the chosen element from the right half represents an inversion between each of the elements remaining on the left half.
-
-``` cpp
-left: [1, 2, 12, 13] right: [6, 8, 9, 10]
-
-// after merging two from the left
-merged: [1, 2, _, _, _, _, _, _]
-
-left: [12, 13] right: [6, 8, 9, 10]
-
-// the ones on the right are lesser, e.g. merge 6
-merged: [1, 2, 6, _, _, _, _, _]
-
-left: [12, 13] right: [8, 9, 10]
-
-// the act of having merged 6 instead of [12, 13] means that
-// the original array had two inversions concerning 6: 12⟷6 and 13⟷6
-```
-
-A possible implementation would have merge return the inversions it encountered, which has to be passed up the recursion tree by having the sort functions return the sum of the recursive sorts and merges.
-
-``` cpp
-SortAndCount(array A, length n)
-  if n = 1 return 0
-  else
-    (B, x) = SortAndCount(1st half of A, n/2)
-    (C, y) = SortAndCount(2nd half of A, n/2)
-    (D, z) = MergeAndCountSplitInv(B, C, n)
-  return x + y + z
-```
-
 ### Top-Down
 
 This is a recursive approach that works by splitting the array into two pieces until the pieces consist of pairs of elements. On each recurrence, the two pieces that were split for that recurrence are merged back.

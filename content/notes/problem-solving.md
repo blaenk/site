@@ -249,6 +249,42 @@ while some_condition:
 return dummy.next
 ```
 
+## Sorted Sequence Merge
+
+Sometimes we want to merge two sorted sequences, such as with merge sort. This is a pretty straightforward operation, but the loop that accomplishes this can end up with at least four branches---two for the case where one sequence is empty and two for picking the smaller element of the two non-empty sequences.
+
+``` python
+while left is not None or right is not None:
+    if right is None: # Right is empty
+        merged.next = left
+        left = left.next
+    elif left is None: # Left is empty
+        merged.next = right
+        right = right.next
+    elif left.val <= right.val: # Left and right non-empty, left head smaller
+        merged.next = left
+        left = left.next
+    else: # Left and right non-empty, right head smaller or equal
+        merged.next = right
+        right = right.next
+```
+
+This can be simplified by iterating as long as one sequence is non-empty, then taking from the left sequence if the right one is empty or if both are non-empty and the left one's head is smaller.
+
+``` python
+while left is not None or right is not None:
+    both = left is not None and right is not None
+
+    if right is None or (both and left.val <= right.val):
+        merged.next = left
+        left = left.next
+    else:
+        merged.next = right
+        right = right.next
+    
+    merged = merged.next
+```
+
 # Patterns
 
 ## Slow-Fast Iteration

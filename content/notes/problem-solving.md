@@ -225,7 +225,29 @@ Another option is to factor the body out to separate functions.
 
 ## Dummy Head
 
-In linked list problems sometimes we need to produce a new list from others, but we're not yet sure which node to make the head. We can side-step this decision by simply creating a "dummy" head node and then link it to the actual head. When we return the "new" list, we return `dummy.next`.
+Sometimes in linked list problems we need to produce a new list from others, but we're not yet sure which node to make the head. Naively, this would entail "unrolling" the first iteration of the loop to determine the head, to then be able to attach the rest of the elements within the loop:
+
+``` python
+seq = take_from_one_of_many_lists()
+
+while some_condition:
+    if first_iteration: continue
+
+    seq.next = take_from_one_of_many_lists()
+    seq = seq.next
+```
+
+We can side-step this decision and simplify things by simply creating a "dummy" head node and then link it to the actual head. When we return the "new" list, we return `dummy.next`.
+
+``` python
+dummy = ListNode(-1)
+
+while some_condition:
+    dummy.next = take_from_one_of_many_lists()
+    dummy = dummy.next
+
+return dummy.next
+```
 
 # Patterns
 

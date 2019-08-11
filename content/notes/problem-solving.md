@@ -213,6 +213,14 @@ The [Einstellung effect](https://en.wikipedia.org/wiki/Einstellung_effect) refer
 
 In my experience, I have gravely blown up a simple geometric problem involving cells on a grid to one involving Bresenham rasterization or A* path-finding. I allowed the prestige of the company to psyche me out into believing that the company would reasonably expect a typical candidate to solve something that complicated or niche.
 
+## The God Loop
+
+Sometimes it's easy to let a simple loop grow into a "God Loop" that does too much, maybe as more conditions need to be handled, making the code messier and more difficult for you to reason about.
+
+Consider if it might be easier to split up while still being the same complexity class, noting to the interviewer that the loops can be optimized by combining them.
+
+Another option is to factor the body out to separate functions.
+
 # Tricks
 
 ## Dummy Head

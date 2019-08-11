@@ -314,7 +314,7 @@ def merge(seq, aux, lo, mid, hi):
 
 The complexity is `$O(n \log n)$` because the number of subproblems is doubling at each level (i.e. the two recursive calls), but the work to be done by those subproblems is halving. That is, for a given level `$j$`, the amount of work done is:
 
-<div>$$ 2^j \left( \frac n 2^j \right) = n $$</div>
+<div>$$ 2^j \left( \frac n {2^j} \right) = n $$</div>
 
 Given an input size of `$n$`, the number of levels in the recursion tree is `$\log_2 n$`, which means that at each of the `$\log_2 n$` levels in the tree there is `$n$` work being done, hence `$n \log n$`.
 

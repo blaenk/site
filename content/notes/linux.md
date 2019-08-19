@@ -470,7 +470,7 @@ The Linux O(1) scheduler mitigates process starvation by ensuring that all tasks
 
 ## Completely Fair Scheduler
 
-The Linux Completely Fair Scheduler (CFS) works by ordering processes by their _virtual run-time_ (aka _vruntime_), which is the amount of time in nanoseconds that the process has spent running on the CPU. To keep processes ordered by vruntime, it uses a [red-black tree](/notes/algorithms#red-black-trees). CFS always schedules the left-most node, the one which has spent the least amount of time running, by removing it from the tree and sending it for execution.
+The Linux Completely Fair Scheduler (CFS) works by ordering processes by their _virtual run-time_ (aka _vruntime_), which is the amount of time in nanoseconds that the process has spent running on the CPU. To keep processes ordered by vruntime, it uses a [red-black tree](/notes/data-structures#red-black-trees). CFS always schedules the left-most node, the one which has spent the least amount of time running, by removing it from the tree and sending it for execution.
 
 <img src="//i.stack.imgur.com/ZlNeJ.png" class="center" />
 

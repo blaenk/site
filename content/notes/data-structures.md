@@ -1,7 +1,6 @@
 +++
 title = "Data Structures"
 date = 2018-10-16T10:43:48-07:00
-draft = true
 
 [note]
 kind = "concept"

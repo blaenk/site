@@ -11,3 +11,7 @@ FootnoteReturnLinkContents = '<i class="fas fa-level-up-alt"></i>'
 
 [blackfriday]
 fractions = false
+
+[taxonomies]
+category = "categories"
+tag = "tags"

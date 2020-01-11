@@ -1,3 +1,19 @@
+{{ if or .Params.categories .Params.tags }}
+<div class="meta">
+  {{ with .Params.categories }}
+  <div class="meta-component">
+    <i class="fas fa-tag"></i>
+    {{ delimit (apply (apply (sort .) "partial" "post-category-link" ".") "chomp" ".") ", " }}
+  </div>
+  {{ end }}
+  {{ with .Params.tags }}
+  <div class="meta-component">
+    <i class="fas fa-hashtag"></i>
+    {{ delimit (apply (apply (sort .) "partial" "post-category-link" ".") "chomp" ".") ", " }}
+  </div>
+  {{ end }}
+</div>
+{{ end }}
 <div class="meta">
   <div class="meta-component">
     <i class="far fa-calendar-alt fa-fw"></i>

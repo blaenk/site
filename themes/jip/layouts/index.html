@@ -1,8 +1,8 @@
 {{ define "content" }}
 <ul class="archive">
-  {{ range where .Data.Pages.ByDate.Reverse "Section" "posts" }}
+  {{ range where .Site.RegularPages.ByDate.Reverse "Section" "posts" }}
     <li class="archive-item">
-      <a class="item-link" href="{{ .URL }}">{{ .Title }}</a>
+      <a class="item-link" href="{{ .RelPermalink }}">{{ .Title }}</a>
     </li>
   {{ end }}
 </ul>

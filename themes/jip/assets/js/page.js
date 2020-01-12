@@ -61,6 +61,7 @@ $(function() {
     });
 
   $('a[href^="#fnref"]')
+    .html('<i class="fas fa-level-up-alt"></i>')
     .click(function() {
       $footnotes.stop(true, true);
     });

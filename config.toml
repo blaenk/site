@@ -7,7 +7,6 @@ theme = "jip"
 enableGitInfo = true
 pygmentsCodeFences = true
 pygmentsUseClasses = true
-FootnoteReturnLinkContents = '<i class="fas fa-level-up-alt"></i>'
 
 [blackfriday]
 fractions = false
@@ -15,3 +14,22 @@ fractions = false
 [taxonomies]
 category = "categories"
 tag = "tags"
+
+[markup.goldmark.extensions]
+definitionList = true
+footnote = true
+linkify = true
+strikethrough = true
+table = true
+taskList = true
+typographer = true
+
+[markup.goldmark.parser]
+attribute = true
+autoHeadingID = true
+autoHeadingIDType = "github"
+
+[markup.goldmark.renderer]
+hardWraps = false
+unsafe = true
+xHTML = false

@@ -8,7 +8,7 @@
   <ul class="archive">
     {{ range $concepts }}
     <li class="archive-item">
-      <a class="item-link" href="{{ .URL }}">{{ .Title }}</a>
+      <a class="item-link" href="{{ .RelPermalink }}">{{ .Title }}</a>
     </li>
     {{ end }}
   </ul>
@@ -20,7 +20,7 @@
   <ul class="archive">
     {{ range $languages }}
     <li class="archive-item">
-      <a class="item-link" href="{{ .URL }}">{{ .Title }}</a>
+      <a class="item-link" href="{{ .RelPermalink }}">{{ .Title }}</a>
     </li>
     {{ end }}
   </ul>
@@ -32,7 +32,7 @@
   <ul class="archive">
     {{ range $technologies }}
     <li class="archive-item">
-      <a class="item-link" href="{{ .URL }}">{{ .Title }}</a>
+      <a class="item-link" href="{{ .RelPermalink }}">{{ .Title }}</a>
     </li>
     {{ end }}
   </ul>

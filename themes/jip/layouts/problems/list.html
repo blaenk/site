@@ -2,15 +2,17 @@
   {{ .Title }} · {{ .Site.Title }}
 {{ end }}
 {{ define "content" }}
-<div class="page-group">
   {{ range $key, $taxonomy := .Site.Taxonomies.categories }}
-  <h2>{{ humanize $key }}</h2>
-  <ul class="archive">
-    {{ $problemsOfCategory := where $taxonomy.Pages ".Section" "==" "problems" }}
-    {{ range $problemsOfCategory }}
-    <li><a href="{{ .URL }}">{{ .LinkTitle }}</a></li>
-    {{ end }}
-  </ul>
+  <div class="page-group">
+    <h2>{{ humanize $key }}</h2>
+    <ul class="archive">
+      {{ $problemsOfCategory := where $taxonomy.Pages ".Section" "==" "problems" }}
+      {{ range $problemsOfCategory }}
+      <li class="archive-item">
+        <a class="item-link" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+      </li>
+      {{ end }}
+    </ul>
+  </div>
   {{ end }}
-</div>
 {{ end }}

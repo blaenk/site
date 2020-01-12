@@ -8,7 +8,7 @@
     {{ range .Data.Pages.ByTitle }}
     {{ if eq .Params.work.kind "project" }}
     <li class="archive-item">
-      <a class="item-link" href="{{ .URL }}">{{ .Title }}</a>
+      <a class="item-link" href="{{ .RelPermalink }}">{{ .Title }}</a>
     </li>
     {{ end }}
     {{ end }}
@@ -21,7 +21,7 @@
     {{ range .Data.Pages.ByTitle }}
     {{ if eq .Params.work.kind "contribution" }}
     <li class="archive-item">
-      <a class="item-link" href="{{ .URL }}">{{ .Title }}</a>
+      <a class="item-link" href="{{ .RelPermalink }}">{{ .Title }}</a>
     </li>
     {{ end }}
     {{ end }}

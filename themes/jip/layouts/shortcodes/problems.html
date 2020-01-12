@@ -4,7 +4,7 @@
 {{ $problemsOfTag := where $ofTag ".Section" "==" "problems" }}
 <ul>
   {{ range $problemsOfTag }}
-  <li><a href="{{ .URL }}">{{ .LinkTitle }}</a></li>
+  <li><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></li>
   {{ end }}
 </ul>
 {{ else }}
@@ -13,7 +13,7 @@
 {{ $problemsOfCategory := where $ofCategory ".Section" "==" "problems" }}
 <ul>
   {{ range sort $problemsOfCategory "Title" }}
-  <li><a href="{{ .URL }}">{{ .LinkTitle }}</a></li>
+  <li><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></li>
   {{ end }}
 </ul>
 {{ end }}

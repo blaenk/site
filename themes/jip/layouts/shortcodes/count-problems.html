@@ -1,0 +1,11 @@
+{{ if .IsNamedParams }}
+{{ $tag := .Get "tag" }}
+{{ $ofTag := index .Site.Taxonomies.tags $tag }}
+{{ $problemsOfTag := where $ofTag ".Section" "==" "problems" }}
+<a href="#{{ $tag }}"><code class="path">{{ $tag }}</code></a> ({{ len $problemsOfTag }})
+{{ else }}
+{{ $category := .Get 0 }}
+{{ $ofCategory := index .Site.Taxonomies.categories $category }}
+{{ $problemsOfCategory := where $ofCategory ".Section" "==" "problems" }}
+<a href="#{{ $category }}"><code class="path">{{ $category }}</code class="bare"></a> ({{ len $problemsOfCategory }})
+{{ end }}

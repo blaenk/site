@@ -1,0 +1,16 @@
+{{ define "title" }}
+  {{ .Title }} · {{ .Site.Title }}
+{{ end }}
+{{ define "content" }}
+<div class="page-group">
+  {{ range $key, $taxonomy := .Site.Taxonomies.categories }}
+  <h2>{{ humanize $key }}</h2>
+  <ul class="archive">
+    {{ $problemsOfCategory := where $taxonomy.Pages ".Section" "==" "problems" }}
+    {{ range $problemsOfCategory }}
+    <li><a href="{{ .URL }}">{{ .LinkTitle }}</a></li>
+    {{ end }}
+  </ul>
+  {{ end }}
+</div>
+{{ end }}

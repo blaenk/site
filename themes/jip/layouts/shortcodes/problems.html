@@ -1,0 +1,19 @@
+{{ if .IsNamedParams }}
+{{ $tag := .Get "tag" }}
+{{ $ofTag := index .Site.Taxonomies.tags $tag }}
+{{ $problemsOfTag := where $ofTag ".Section" "==" "problems" }}
+<ul>
+  {{ range $problemsOfTag }}
+  <li><a href="{{ .URL }}">{{ .LinkTitle }}</a></li>
+  {{ end }}
+</ul>
+{{ else }}
+{{ $category := .Get 0 }}
+{{ $ofCategory := index .Site.Taxonomies.categories $category }}
+{{ $problemsOfCategory := where $ofCategory ".Section" "==" "problems" }}
+<ul>
+  {{ range sort $problemsOfCategory "Title" }}
+  <li><a href="{{ .URL }}">{{ .LinkTitle }}</a></li>
+  {{ end }}
+</ul>
+{{ end }}

@@ -70,24 +70,24 @@ These are notes on the general problem solving techniques through the applicatio
     * Use cases
     * Constraints
 
-2. Make <span class="highlight">reasonable assumptions</span>
+2. Make reasonable assumptions
 
-    * <span class="highlight">Capacity estimation</span>
+    * Capacity planning
     * Load parameters
     * Percentiles
     * How much traffic is being served
     * How much data needs to be stored
     * Data consistency requirements
 
-3. Draw <span class="highlight">major components</span> on the whiteboard
+3. Draw major components on the whiteboard
 
     * Front-end servers, back-end servers, databases, etc.
 
-4. Identify <span class="highlight">key issues</span>
+4. Identify key issues
 
     * Bottlenecks, challenges
 
-5. <span class="highlight">Redesign</span> for key issues
+5. Redesign for key issues
 
     * Be open about limitations
 
@@ -132,10 +132,10 @@ _"Can you tell me about a time when …"_
 
 Use the STAR format. Be careful to focus on what _you_ did, not the group: use _I_ not _we_.
 
-1. <span class="highlight">Situation</span>: Describe the situation.
-2. <span class="highlight">Task/Target</span>: Describe the tasks/goals you were required to achieve.
-3. <span class="highlight">Action</span>: Describe the actions taken to achieve the goals.
-4. <span class="highlight">Result</span>: Describe the outcome. What did you learn?
+1. Situation: Describe the situation.
+2. Task/Target: Describe the tasks/goals you were required to achieve.
+3. Action: Describe the actions taken to achieve the goals.
+4. Result: Describe the outcome. What did you learn?
 
 # Best Practices
 

@@ -1236,3 +1236,7 @@ A _replication topology_ describes the communication paths for write propagation
 In circular and star topologies, the nodes need to forward writes, so the flow of replication messages can be interrupted if just one node fails, requiring topology reconfiguration to reroute around the failed node.
 
 To prevent infinite replication loops, each node has a unique identifier which is used to tag each write when it has passed through a node, so that a node can ignore a write that is tagged with its own identifier.
+
+A single node's failure can interrupt the flow of replication messages between other nodes in a circular and star topology.
+
+More densely connected topologies have better fault tolerance since they avoid a single point of failure but they are not without their issues. For example, if a network link is faster than others then its messages can overtake others, possibly arriving out of order and leading to causality issues. Analogously, circular and star topologies enforce a degree of parallelism which introduces parallelism pitfalls such as race conditions which can introduce causality issues.

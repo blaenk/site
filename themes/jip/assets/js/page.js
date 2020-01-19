@@ -9,7 +9,7 @@ $(function() {
 
   mobilenav.on('click', '.menu .button', function(e){
     if (!$(this).hasClass('on')) {
-      var width = $(this).width() + 42;
+      var width = $(this).width() + 70;
       $(this).addClass('on').next().css({width: width}).show();
     } else {
       $(this).removeClass('on').next().hide();

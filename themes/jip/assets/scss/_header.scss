@@ -154,7 +154,7 @@
 
       &.on {
         color: $color-gray01;
-        border-radius: 5px 5px 5px 0;
+        border-radius: 5px 5px 0 0;
 
         &:before {
           content: "\f077";
@@ -168,7 +168,7 @@
         line-height: 30px;
         position: absolute;
         top: 0;
-        right: 40px;
+        right: 10px;
       }
     }
 

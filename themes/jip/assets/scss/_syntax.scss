@@ -209,7 +209,7 @@ code:not(.mathjax) {
   .x { color: $solar-orange }  // Other
 }
 
-.entry-content > pre {
+.entry-content pre {
   margin: 15px 0;
   cursor: default;
   overflow-x: auto;

@@ -137,10 +137,8 @@ article {
     }
 
     div.mathjax {
-      @media screen and (max-width: 600px) {
-        display: block;
-        overflow-x: auto;
-      }
+      display: block;
+      overflow-x: auto;
     }
 
     .MathJax_Display {

@@ -1242,3 +1242,115 @@ To prevent infinite replication loops, each node has a unique identifier which i
 A single node's failure can interrupt the flow of replication messages between other nodes in a circular and star topology.
 
 More densely connected topologies have better fault tolerance since they avoid a single point of failure but they are not without their issues. For example, if a network link is faster than others then its messages can overtake others, possibly arriving out of order and leading to causality issues. Analogously, circular and star topologies enforce a degree of parallelism which introduces parallelism pitfalls such as race conditions which can introduce causality issues.
+
+## Leaderless Replication
+
+Leaderless replication systems allow any replica to directly accept writes from clients. Leaderless replication is used in Amazon Dynamo, Riak, Cassandra, and Voldemort. In some systems the client sends writes to several replicas while in others a coordinator node does this for the client but it does not enforce a write order.
+
+For any one write the client performs writes to a certain set of nodes and considers the write successful if a number of nodes confirm success. This is resilient to nodes being unavailable as long as there is a sufficient number of nodes still available that confirm write success. To mitigate stale reads from a newly-available node, users perform reads from multiple nodes in parallel and use version numbers are used to determine the newest value.
+
+Newly-available nodes achieve eventual consistency by two means in Dynamoc-style datastores.
+
+* **Read repair**: When a client detects a stale value during a multi-node read, it writes the new value to the stale node. This mainly works for values that are frequently read.
+* **Anti-entropy process**: Background processes look for differences between replicas and copy missing data. This is unlike a replication log in leader-based replication because writes are not replicated in any order, only the current latest values, and this process may be delayed and periodic rather than streaming and real-time.
+
+    Durability is decreased without this process because values that are rarely read may be missing entirely from replicas that were unavailable while the value was written.
+
+Leaderless replication is an option when requiring high availability and low latency, while tolerating occasional stale reads.
+
+Leaderless replication is an option for multi-datacenter configurations, one taken by systems like Cassandra and Voldemort. The number of replicas `$n$` consists of nodes across all datacenters. Writes are sent to all replicas in this set, but only those in the local datacenter are waited on. Riak instead keeps client-database communication local to one datacenter and then performs asynchronous cross-datacenter replication in the background.
+
+### Quorums
+
+_Quorom reads and writes_ (strict quorums) are ones that satisfy the **Quorum Condition** and can therefore guarantee reading an up-to-date value if there are `$n$` replicas and every write is confirmed by `$w$` nodes and reads query at least `$r$` nodes, and the sum of reads and writes is greater than the number of nodes:
+
+<div>$$ w + r > n $$</div>
+
+This is because the set of nodes written to and read from must overlap, so at least one node will have the latest value.
+
+Quorums are assembled and reached for a particular value, that is, a given value has `$n$` "home" nodes. In a (typical) cluster with many more than `$n$` nodes, an outage can prevent a client from connecting to enough of the necessary nodes to assemble a quorum.
+
+Note that quorums don't have to be majorities.
+
+A common configuration is to pick an odd number for `$n$` and set:
+
+<div>$$ w = r = \frac {(n + 1)} {2} $$</div>
+
+`$n$` does not represent the total number of nodes in the cluster, but rather the fact that the value is only stored on `$n$` nodes, enabling support for datasets larger than can fit in one node.
+
+The quorum condition `$w + r > n$` enables varying levels of fault tolerance:
+
+* `$w < n$` can still process writes if a node is unavailable (e.g. `$n = 4$`, `$w = 3$` and one node goes down, we can still satisfy `$w$`).
+* `$r < n$` can still process reads if a node is unavailable
+* `$r > \frac n 2$` and `$w > \frac n 2$` (majorities) can tolerate up to `$\frac n 2$` node failures
+
+If fewer than the required `$w$` or `$r$` nodes are available then reads or writes fail.
+
+The Quorum Condition can be avoided, `$w + r \le n$`, for lower latency and higher availability but greater likelihood of stale values. There is lower latency because fewer nodes are waited on and higher availability because fewer nodes are required to write to and read from.
+
+Stale values can still be read despite the Quorum Condition in certain edge cases:
+
+* In Sloppy Quorums writes may end up on different nodes than the `$r$` reads so there is no longer guaranteed overlap between `$r$` and `$w$` nodes
+* It is not clear which write happened first between concurrent writes. The only safe route is to merge the concurrent writes
+* Writes concurrent with reads may be reflected on only some of the replicas, so it is undetermined whether the read gets the new value
+* Writes that are partially successful on fewer than the `$w$` replicas are not rolled back, so subsequent reads may return that write's value
+* The number of replicas storing a new value may fall below `$w$` if it fails and its data is restored from a replica with an old value, breaking the Quorum Condition
+* Edge cases with timing
+
+When a quorum cannot be reached for a given value due to an outage, either errors can be returned or writes can be accepted to be performed partially on some "overflow" nodes that aren't among the `$n$` "home" nodes, known as a _sloppy quorum_.
+
+In a _sloppy quorum_, `$r$` and `$w$` nodes may be comprise of nodes outside of the `$n$` "home" nodes for a given value in the event of an outage.
+
+When the outage is resolved, _hinted handoff_ ensures that any writes committed to "overflow" nodes (that aren't part of the "home" nodes) are sent to the appropriate "home" nodes.
+
+Sloppy quorums increase _write_ availability but decrease the likelihood of reading the latest value since it may have been written to a node outside of the `$n$` "home" nodes.
+
+Because of this, a sloppy quorum isn't really a quorum but rather an assurance that the data is stored on `$w$` nodes _somewhere_ without guaranteeing that a read of `$r$` nodes will reflect the write until hinted handoff has run.
+
+### Detecting Concurrent Writes
+
+In Dynamo-style databases concurrent writes can also happen through read repair or hinted handoff.
+
+Indiscriminately updating the value on each write would lead to permanent inconsistency. For eventual consistency, the replicas must eventually converge toward the same value.
+
+_Last write wins_ (LWW) resolves conflicts through an attached timestamp and is the only conflict resolution method support by Cassandra. Durability suffers because several concurrent writes may report as successful to the client even though only one of them actually survives LWW conflict resolution. This may be acceptable in certain situations like caching. LWW is only safe with a write-once, immutable-thereafter access pattern. Cassandra recommends using a UUID as the key to accomplish this "write-once" aspect.
+
+A write B is _casually dependent_ on write A if its operation builds on A's operation.
+
+Two writes are no causally dependent if separate clients start the operation without knowing that another client is also performing an operation on the same key.
+
+An operation A _happens before_ B if B:
+
+* knows about A
+* depends on A
+* builds on A in some way
+
+Two operations are _concurrent_ if neither happens before the other (neither knows about the other).
+
+Given two operations A and B, either:
+
+* A happened before B
+* B happened before A
+* A and B are concurrent
+
+Only concurrent operations require conflict resolution.
+
+The server can keep a version number for every key and increment it whenever the key is written to, storing both the new version number and the new value.
+
+When a client reads a key the server returns all non-overwritten values as well as the latest version number.
+
+A key must be read before writing, and the write must then include the version number from that prior read in addition to merging the values it returned. The server can then confidently overwrite all values with that version number or below since they will have been merged by the client, but it must retain all values with a higher version number since they will have been from concurrent writes.
+
+The inclusion of the version number from the prior read determines the previous state that the write is based on. A write without a version number will not overwrite anything but will be given a version number and included in future reads.
+
+Concurrent values to be merged are referred to as _siblings_ by Riak. The merge operation can be for example a union in the case of a list.
+
+Simple merging (such as a union operation) poses a problem with deletion, where a union of siblings may reintroduce a deleted value if one sibling deleted it but the other still has it. This can be mitigated with a special _tombstone_ deletion marker with a corresponding version number. CRDTs are data structures that have built-in merging behavior.
+
+### Version Vectors
+
+Per-replica version numbers can be used when there are multiple replicas that accept writes. Each replica keeps track of the version numbers it has seen from other replicas. The collection of version numbers from all replicas is the _version vector_ and it indicates which values to overwrite and which to keep as siblings. When processing a write, it increments its own per-replica version number.
+
+Version vectors are sent to client during reads and to database during writes (Riak calls the write direction a _causal context_), which enables the database to distinguish from overwrites and concurrent writes. Version vectors make it possible to read from one replica and write to another. Even if siblings are created, no data is lost as long as they're merged correctly.
+
+Note that version vectors are different from version clocks.

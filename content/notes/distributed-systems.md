@@ -53,7 +53,7 @@ Response time should be thought of as a distribution of measurable values, not a
 
 To get an idea of a typical response time, it's better to use percentiles than an arithmetic mean.
 
-Higher percentiles are even more important in backend services that are called multiple times as part of serving a single end-user request, since, even if they're called in parallel, the end-user has to wait for the slowest of the calls to complete. Even if only a small percentage of backend calls are slow, the chance of getting a slow call increases with an increase in backend calls, so a higher proportion of end-user requests end up being slow.
+Higher percentiles are even more important in backend services that are called multiple times as part of serving a single end-user request, since, even if they're called in parallel, the end-user has to wait for the slowest of the calls to complete. Even if only a small percentage of backend calls are slow, the chance of getting a slow call increases with an increase in backend calls, so a higher proportion of end-user requests end up being slow. This is known as _tail latency amplification_.
 
 Latency is the duration that a request is waiting to be handled, during which it is latent (awaiting service).
 
@@ -84,7 +84,7 @@ An operations team may be responsible for:
 * anticipating future problems, e.g. capacity planning
 * establishing best practices, e.g. for deployment and configuration management
 * performing maintenance tasks, e.g. moving application to another platform
-* definite operations processes
+* defining operations processes
 * preserving system knowledge
 
 Good operability is facilitated by:
@@ -157,7 +157,7 @@ The document model can be a good fit if an application's data has a document-lik
 
 A limitation of the document model is the inability to refer directly to a nested item within a document. Instead, it is referred by saying for example "the second item in the list of positions for user 251."
 
-Another limitation of the document model is when the application data uses many-to-many relationships. Joins may be reduced by denormalized but that increases the complexity of keeping the denormalized data consistent. Joins can be emulated in application code through multiple requests but that increases application complexity and is often slower than a join performed by the database. Overall these issues can lead to more complexity and decreased performance.
+Another limitation of the document model is when the application data uses many-to-many relationships. Joins may be reduced by denormalization but that increases the complexity of keeping the denormalized data consistent. Joins can be emulated in application code through multiple requests but that increases application complexity and is often slower than a join performed by the database. Overall these issues can lead to more complexity and decreased performance.
 
 ## Graph Model
 
@@ -200,7 +200,7 @@ Datomic is an example of a triple-store.
 
 ## Schema-on-Read vs Schema-on-Write
 
-Document databases are sometimes considered _schemaless_ but the truth is that although it's not an explicit schema enforced by the database upfront, there _is_ an implicit schema assumed by readers of the data. A more accurate term may therefore be _schema-on-read_, whereas _schema-on-write_ might refer to an explicit, upfront schema that is used to ensure that writes conform to it. Schema-on-read is similar to dynamic type checking performed at run-time whereas schema-on-write is similar to static type checking performed at compile-time.
+Document databases are sometimes considered _schemaless_ but the truth is that although there isn't an explicit schema enforced by the database upfront, there _is_ an implicit schema assumed by readers of the data. A more accurate term may therefore be _schema-on-read_, whereas _schema-on-write_ might refer to an explicit, upfront schema that is used to ensure that writes conform to it. Schema-on-read is similar to dynamic type checking performed at run-time whereas schema-on-write is similar to static type checking performed at compile-time.
 
 ### Schema Flexibility
 
@@ -472,7 +472,7 @@ JOIN lives_in_europe ON vertices.vertex_id = lives_in_europe.vertex_id;
 
 # Storage and Retrieval
 
-An index is a separate structure derived from the primary data, to maintaining it has an overhead, such as on writes, since the index has to be updated as well. Appropriate indexes speed up read queries but slow down writes, which is why databases don't index everything by default.
+An index is a separate structure derived from the primary data, so maintaining it has an overhead, such as on writes, since the index has to be updated as well. Appropriate indexes speed up read queries but slow down writes, which is why databases don't index everything by default.
 
 ## Log-Structured Storage
 
@@ -1354,3 +1354,88 @@ Per-replica version numbers can be used when there are multiple replicas that ac
 Version vectors are sent to client during reads and to database during writes (Riak calls the write direction a _causal context_), which enables the database to distinguish from overwrites and concurrent writes. Version vectors make it possible to read from one replica and write to another. Even if siblings are created, no data is lost as long as they're merged correctly.
 
 Note that version vectors are different from version clocks.
+
+# Partitioning
+
+Partitioning (aka _sharding_) entails breaking datasets into smaller pieces (partitions or shards). They're known as:
+
+* _shards_ in MongoDB, Elasticsearch, and SolrCloud
+* _regions_ in HBase
+* _tablets_ in BigTable
+* _vnode_ in Cassandra and Riak
+* _vBucket_ in Couchbase
+
+Usually partitions are chosen so that each record belongs to exactly one.
+
+Partitioning aids scalability because different partitions can be put on different nodes, distributing its disk use and query load across many processors.
+
+Multiple partitions may be assigned to the same node, and in a leader-follower replication model the node may be the leader for some partitions and follower for other partitions.
+
+Partitions are _skewed_ when some partitions have more data or queries than others. A partition with a particularly high load is a _hot spot_.
+
+## Key Range Partitioning
+
+Key range partitioning sorts the keys and partitions ranges of keys. It has the benefit that range queries are efficient since records in a range are next to each other.
+
+Key range partitioning may not be balanced due to the distribution of the data, so the partition boundaries need to adapt to the data in order to remain balanced.
+
+## Hash Partitioning
+
+One common way to mitigate hot spots is to use a hash function to partition keys. Partitions can be assigned a range of hashes (or of prefixes of them, like the first two bytes), where the boundaries can be evenly spaced or chosen pseudorandomly, known as _consistent hashing_. Consistent hashing is "consistent" because it operates independently of the number of servers or objects by assigning them a position in a _hash ring_. It's rarely used by databases because it doesn't work very well in practice.
+
+Hash partitioning loses the ability to perform efficient range queries. One way to mitigate this is to use a _compound primary key_, so that only the first column of the key is hashed to determine the partition, but the other columns are used as a concatenated index for sorting data in the underlying sorted string tables (SSTables). While a range query cannot be done over the first column, it can be done over the rest of the columns. This works well if the first column is fixed, consisting of something like an identifier. This maps well to one-to-many relationships, for example given the key (user_id, created_at), all of a user's posts within a certain time range can be retrieved efficiently from a single partition.
+
+Some outliers can result in hot spots despite hash partitioning, such as celebrity accounts on social media websites.
+
+## Secondary Indexes
+
+Secondary indexes make it much more complicated to partition data.
+
+### Document-Partitioned Secondary Indexes
+
+In document-based partitioning, using a _local index_, each partition is completely separate and maintains its own secondary indexes covering only the documents it contains. However, it's likely that not all documents satisfying the secondary index criteria are on a single partition (e.g. all _red_ cars), so the query needs to be sent to _all_ partitions and the results combined. This is known as scatter/gather and it is susceptible to tail latency amplification.
+
+### Term-Partitioned Secondary Indexes
+
+In term-based partitioning, a _global index_ is constructed and it is also partitioned, e.g. partition 0 contains the global index partition that points to cars with colors that start with the letters A through R. This is term-based partitioning because the term we're looking for determines the partition of the index, e.g. we are looking for "red" cars so we look in partition 0. Reads are more efficient than with document-based partitioning because index reads only have to be sent to the partition with that index partition instead of to all partitions. Writes are less efficient than with document-based partitioning because a write to a single document may now affect multiple partitions of the index for every changed term. Furthermore, in practice updates to global secondary indexes are asynchronous.
+
+## Partition Rebalancing
+
+Partition rebalancing is the process of moving load from one node in a cluster to another. Generally the database should continue to accept reads and writes during rebalancing.
+
+Fully-automated partition rebalancing can be dangerous with automatic failure detection, such as if an overloaded and slow node is deemed dead or unhealthy, so the automated partition rebalancing decides to rebalance the partition to distribute load, but doing so puts even more load on the already-overloaded node as well as on other nodes on which the partition is rebalanced, and overall may have a detrimental impact on the network. This can lead to cascading failure.
+
+### Modular Hashing
+
+The eventual need for partition rebalancing is why modular arithmetic, such as in `hash(key) % node_count`, is a bad idea for hash partitioning, because if the number of nodes changes then most keys will need to be moved from one node to another because the result will be different for the same key.
+
+### Fixed Partitioning
+
+One rebalancing-friendly scheme is to create many more partitions than there are nodes and assign several partitions to each node. When a node is added to the cluster, it can steal a few partitions from every existing node such that each node has about the same number of partitions. The existing partitioning scheme continues to be used for reads and writes while the partitions are transferred to the new node, and only then switched, allowing for seamless online rebalancing.
+
+This partitioning scheme also enables scaling partitions with the underlying node capacity, giving more partitions to more powerful nodes.
+
+In fixed partitioning, the number of partitions is usually fixed at database setup time, so a future-proof high number should be chosen, but partition management also has overhead. Coming up with an ideal number of partitions can be difficult if the dataset size varies.
+
+### Dynamic Partitioning
+
+Fixed partitioning may not be the best approach for key range-partitioned databases (that are key range-partitioned perhaps to optimize for range scans) because of the likelihood for hot spots and empty partitions. For this reason some key range-partitioned databases like HBase create partitions dynamically: when a partition exceeds some configured maximum size it is split in half, and if it shrinks below some threshold it can be merged with an adjacent partition. Like with fixed partitioning, a node can have multiple partitions. If a partition is split, one of the halves can go to a node with capacity.
+
+To prevent the rest of the cluster from sitting idle while the dataset size is such that it fits in a single partition, databases like HBase allow configuring an initial set of partitions, known as _pre-splitting_, which requires knowing what the key distribution will look like.
+
+Dynamic partitioning can also be useful with hash-partitioned data.
+
+### Node-Proportional Partitioning
+
+Another strategy is to have a fixed number of partitions per node. When a new node is added, it randomly chooses that same fixed number of partitions to split in half and takes ownership of one half. This can lead to unfair splits, but on average over a large number of partitions the new node takes a fair share.
+
+## Request Routing
+
+_Service discovery_ concerns the problem of knowing where different services are available.
+
+Apache ZooKeeper is one way that distributed data systems can keep track of this cluster metadata. A node registers itself with ZooKeeper and interested actors can subscribe to the information to get notifications for example when a partition changes ownership or a node is added or removed. This way a request router can know which node to route a partition to.
+
+Other systems use a gossip protocol on the nodes so that they spread any changes in cluster state. This way, any node can receive a request and it forwards it to the correct node.
+
+DNS is sufficient to determine the actual IP address of a node since IP addresses aren't likely to change as often as partitions.
+

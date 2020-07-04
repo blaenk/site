@@ -1441,3 +1441,162 @@ Other systems use a gossip protocol on the nodes so that they spread any changes
 
 DNS is sufficient to determine the actual IP address of a node since IP addresses aren't likely to change as often as partitions.
 
+# Transactions
+
+Transactions can group operations into a single unit that either completely succeeds or completely fails, removing the need to handle partial failure.
+
+The acronym ACID stands for Atomicity, Consistency, Isolation, and Durability. In practice, its meaning has become diluted into a vague marketing term.
+
+## ACID
+
+### Atomicity
+
+Atomicity refers to the "all or nothing" nature of a transaction: either it succeeds (commits) entirely or fails (aborts) completely. There is no partial failure.
+
+Atomicity does not pertain to concurrency, unlike an "atomic operation" in multi-threaded programs, where another thread can only see the state before or after the atomic operation.
+
+### Consistency
+
+Consistency refers to the database being in a valid state for some definition of "valid" that is application-specific.
+
+Consistency is up to the application to ensure. The database may be facilitate ensuring some invariants such as uniqueness constraints, but maintaining consistency is generally the application's responsibility. For this reason, some believe "Consistency" doesn't really belong in ACID. Apparently, the "C" was thrown in to make the acronym work.
+
+### Isolation
+
+Isolation refers to the property that concurrently executing transactions are isolated from each other: they cannot step on each other's toes or view partial modifications.
+
+Serializability means that each transaction can pretend that it is the only running transaction, the database ensuring that the result is the same as if they had run serially. In practice, this carries a heavy performance penalty so it is rarely used or not even implemented.
+
+### Durability
+
+Durability is the promise that data will not be lost once it has been considered to have been written, even in the event of a hardware fault or a database crash.
+
+This is conceptually accomplished by only acknowledging a write as being successful after the database can guarantee that it has indeed been successful.
+
+In a single-node database this may take the form of writing to an append-only, write-ahead log.
+
+In a replicated database, this may take the form of ensuring that the write has been replicated to some number of nodes before confirming the write as successful.
+
+## Isolation Levels
+
+Concurrency issues are relevant when a read by one transaction happens concurrently with a modification by another.
+
+_Serializable isolation_ is the strongest isolation level. It guarantees that transactions have the same effect as if they ran serially. This has a performance cost, so weaker levels of isolation are more used, ones that protect against only some concurrency issues.
+
+Note that the SQL standard is ambiguous and imprecise about isolation levels.
+
+### Read Committed
+
+The _Read committed_ isolation level guarantees:
+
+1. Will only read data that has already been committed (i.e. no _dirty reads_)
+2. Will only overwrite data that has already been committed (i.e. no _dirty writes_)
+
+It is a very popular isolation level set as the default in Oracle, PostgreSQL, SQL Server, MemSQL, and many others.
+
+A _dirty read_ is a read where a transaction reads data that has been written by a transaction that has not yet committed or aborted. This is wrong because the value may yet be rolled back if the transaction is aborted, causing the read to have been invalid.
+
+<div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant TX 1
+    participant Table
+    participant TX 2
+    TX 1->>Table: Write = "1"
+    Table->>TX 2: Read = "1"
+    Table-->>TX 1: Abort
+    Note right of Table: "1" is now invalid
+</div>
+
+Dirty reads are not usually prevented with row-level locks because one long-running transaction would end up blocking many other reads until it completed. Instead, most databases prevent dirty reads by remembering the original value as well as the newly-written value. Concurrent transactions that read the value are simply served the old value. Once the transaction that wrote the new value commits, transactions begin reading that new value.
+
+A _dirty write_ is one where a transaction overwrites a value overwritten by an earlier transaction that had not yet committed. This is a problem when updating multiple objects because it can result in 'partial updates' of those multiple objects.
+
+For example two transactions that each must write to tables A and B together for a particular update, but one of the transactions performs the writes in between the two writes of the other transaction:
+
+<div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant TX 1
+    participant A
+    participant B
+    participant TX 2
+    TX 1->>A: Write "1A"
+    TX 2->>A: Write "2A"
+    TX 2->>B: Write "2B"
+    TX 1->>B: Write "1B"
+    Note over A, B: A = "2A", B = "1B"<br>Should be either 1A, 1B or 2A, 2B
+</div>
+
+Now tables A and B have writes from each transaction even though the intent was to write to both for any one update: table A has TX 2's write and table B has TX 1's write.
+
+In the example above, the values ultimately written should instead be the result of any given _single_ transaction: either 1A and 1B, or 2A and 2B.
+
+In the Read Committed isolation level, dirty writes are usually avoided by delaying later writes until earlier transactions have committed.
+
+Dirty writes are usually prevented with row-level locks which a transaction acquires in order to write to it, and it holds the lock until the transaction is committed or aborted. Since only one transaction can hold a lock for a given transaction, all others attempting to acquire it must wait.
+
+### Snapshot Isolation
+
+A _nonrepeatable read_ (or _read skew_) is a temporary inconsistency (i.e. nonrepeatable) that occurs when a single transaction reads different values for a given object because it sees the changes applied by a separate transaction that committed during the original transaction's lifetime.
+
+For example, transaction 1 reads a row, then it is updated and committed by transaction 2, and transaction 1 sees that updated value if it reads it again, thus reading different values for the same object during the same transaction.
+
+<div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant TX 1
+    participant Table
+    participant TX 2
+    Table->>TX 1: Read = "1"
+    TX 2->>Table: Write = "2"
+    Table->>TX 1: Read = "2"
+    Note right of TX 1: "2" ≠ "1"
+</div>
+
+Read skew is problematic for example if performing a long-running database backup while the database is running, so the backup could end up with some parts being old and others being new, then restoring from this backup will make these inconsistencies permanent.
+
+The _Snapshot Isolation_ level (aka _repeatable read_ in PostgreSQL) solves this problem by allowing each transaction to read from a _consistent snapshot_ of the database: all of the data that was committed into the database by the start of the transaction, so that the transaction continues to see that snapshot even if changes are subsequently committed by other transactions.
+
+Snapshot isolation is usually implemented with multi-version concurrency control (MVCC), where the database keeps several different committed versions of an object to enable many in-progress transactions.
+
+In fact, storage engines usually implement Read Committed Isolation with MVCC as well, using a separate snapshot for each query, whereas Snapshot Isolation would use the same snapshot for the entire transaction.
+
+In PostgreSQL, a transaction is given a monotonically increasing unique transaction ID (`txid`), and writes are tagged with the transaction ID of the writer. Rows have `created_by` and `deleted_by` fields containing the transaction ID responsible for the respective action. Rows aren't outright deleted, but instead garbage collected when no ongoing transaction could possibly read the data. Updates are internally translated into a pair of delete and create actions.
+
+When a transaction reads from a database, the transaction ID is used to determine which objects are visible to it (i.e. the snapshot).
+
+1. Writes by ongoing transactions since the start of the transaction are ignored even if they commit.
+2. Writes by aborted transactions are ignored.
+3. Writes by later transactions are ignored.
+4. All other writes are visible.
+
+In other words an object is visible if:
+
+1. The transaction that wrote the object had already committed by the time the reading transaction began
+2. The object is not marked for deletion, or the deleting transaction did not commit before the reading transaction began
+
+Indexes can be made to work in a multi-version database with a variety of different approaches:
+
+* The index points to all versions of the indexed object, and an index query filters out object versions that are not visible to the transaction. Garbage collection removes old index entries when the values are deleted.
+* Using immutable, persistent data structures like append-only/copy-on-write B-Trees, where every write transaction creates a new B-Tree root, with each such B-Tree root representing a consistent snapshot. Since the tree is immutable, subsequent writes cannot alter an existing tree. This requires compaction and garbage collection.
+
+The imprecision and ambiguity of the SQL standard with respect to isolation levels means that nobody really knows what repeatable reads means.
+
+## Lost Updates
+
+A lost update can occur from two concurrent read-modify-write cycles, if the second write doesn't include the first modification.
+
+<div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant TX 1
+    participant Table
+    participant TX 2
+    Table->>TX 1: Read = "1"
+    Table->>TX 2: Read = "1"
+    TX 1->>Table: Write 1 + 1 = "2"
+    TX 2->>Table: Write 1 + 1 = "2"
+    Note over Table: Should be 3
+</div>
+

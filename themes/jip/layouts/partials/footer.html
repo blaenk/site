@@ -21,5 +21,12 @@
   </div>
 </footer>
 
-<script src="https://unpkg.com/mermaid@8.4.0/dist/mermaid.min.js"></script>
-<script>mermaid.initialize({startOnLoad:true});</script>
+<script src="https://unpkg.com/mermaid@8.5.2/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({
+    startOnLoad:true,
+    sequence: {
+      mirrorActors: false
+    }
+  });
+</script>

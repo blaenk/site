@@ -566,7 +566,7 @@ Instead of overwriting pages and maintaining a WAL, some databases such as LMDB 
 
 [^persistent_data_structures]: This reminds me of persistent data structures.
 
-Careful concurrency control is required to coordinate the in-plage modification of pages from multiple threads, otherwise a certain thread may see the tree in an inconsistent state. This is often accomplished with _latches_ (light-weight locks).
+Careful concurrency control is required to coordinate the in-place modification of pages from multiple threads, otherwise a certain thread may see the tree in an inconsistent state. This is often accomplished with _latches_ (light-weight locks).
 
 Pages can save space by abbreviating keys, storing just enough information to act as boundaries between key ranges, allowing a tree to have a higher branch factor and thus fewer levels. This optimization was originally part of a B+ Tree, but the optimization is now very commonplace.
 
@@ -582,7 +582,7 @@ Fractal Trees are B-Tree variants which borrow log-structured ideas to reduce di
 
 LSM-Trees are usually faster for writes and B-Trees are thought to be faster for reads. LSM-Tree reads are often slower due to having to check various different structures and SSTables at different stages of compaction. However, specific workloads should be tested.
 
-A B-Tree index has to write every piece of data to both the write-ahead log and the tree page itself, and perhaps further if the pages are split, as well as the overhead of having to write entire pages at a time even if few bytes have changed. In fact, certain storage engines write the page twice to avoid partially updates pages in case of power loss. However, LSM-Trees also rewrite the same data multiple times due to compaction and merging of SSTables.
+A B-Tree index has to write every piece of data to both the write-ahead log and the tree page itself, and perhaps further if the pages are split, as well as the overhead of having to write entire pages at a time even if few bytes have changed. In fact, certain storage engines write the page twice to avoid partially updated pages in case of power loss. However, LSM-Trees also rewrite the same data multiple times due to compaction and merging of SSTables.
 
 _Write amplification_ refers to the effect in which a single write to a database results in multiple writes to disk over the database's lifetime. This is especially concerning on SSDs which can only overwrite blocks a limited number of times. The more a storage engine writes to disk the lower write throughput it can handle with the given disk bandwidth. LSM-Trees can usually sustain higher write throughput because they sometimes have lower write amplification and because they sequentially write compact SSTable files rather than overwriting several tree pages.
 
@@ -1377,7 +1377,9 @@ Partitions are _skewed_ when some partitions have more data or queries than othe
 
 Key range partitioning sorts the keys and partitions ranges of keys. It has the benefit that range queries are efficient since records in a range are next to each other.
 
-Key range partitioning may not be balanced due to the distribution of the data, so the partition boundaries need to adapt to the data in order to remain balanced.
+The partitions may not be balanced due to the distribution of the data, so the partition boundaries need to adapt to the data in order to remain balanced.
+
+If a partition grows too large it can be split in two.
 
 ## Hash Partitioning
 

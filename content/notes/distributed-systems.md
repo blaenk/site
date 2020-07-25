@@ -1585,7 +1585,9 @@ The imprecision and ambiguity of the SQL standard with respect to isolation leve
 
 ## Lost Updates
 
-A lost update can occur from two concurrent read-modify-write cycles, if the second write doesn't include the first modification.
+A lost update can occur from two concurrent read-modify-write cycles, if the second write doesn't include the first modification. In this case, the second write _clobbered_ the first write.
+
+Imagine a counter value that is meant to be incremented by transactions.
 
 <div class="mermaid">
 sequenceDiagram
@@ -1599,4 +1601,88 @@ sequenceDiagram
     TX 2->>Table: Write 1 + 1 = "2"
     Note over Table: Should be 3
 </div>
+
+Lost updates can happen in scenarios such as updating a counter, updating a complex structure such as a JSON document, or two users editing a wiki page at the same time with each overwriting the entire page contents.
+
+### Atomic Writes
+
+Atomic updates remove the need to implement read-modify-write cycles in applications. In SQL they take the form of `UPDATE … SET x = y`.
+
+Atomic operations are usually implemented with an exclusive lock on the object during the operation. This method is known as _cursor stability_. Another implementation option is to preform all atomic operations on a single thread.
+
+ORMs sometimes produce read-modify-write cycle code rather than atomic updates.
+
+### Explicit Locking
+
+An alternative to built-in atomic operations is to explicitly acquire a lock on the affected data, such as by using `SELECT … FOR UPDATE`.
+
+### Detecting Lost Updates
+
+Instead of preemptively trying to avoid lost updates, the database can detect them when they occur and abort the offending (clobbering) transaction to force a retry. This can be done efficiently with snapshot isolation.
+
+The advantage of detecting lost updates is that it eliminates the cognitive load and responsibility of the developer, who may forget to acquire certain locks or to perform certain atomic operations.
+
+Some argue that a database must prevent lost updates in order to qualify as providing snapshot isolation. PostgreSQL's repeatable read and other databases do this, but not MySQL/InnoDB's repeatable read.
+
+### Compare-and-Set
+
+Compare-and-set atomic operations are ones that perform the set only if the value has not changed since it was read, otherwise it has no effect and must be retried.
+
+In SQL, this _may_ be done by comparing that the value remains the same, but whether or not it's correct depends on the database. For example, if the database allows the `WHERE` clause to read from the old snapshot, then this may always be true and so may not be preventing lost updates.
+
+``` sql
+UPDATE pages
+SET content = 'edited'
+WHERE id = 123 AND content = 'old';
+```
+
+### Conflict Resolution and Replication
+
+The problem of lost updates is also relevant in replicated databases, since updates may occur concurrently on different nodes, so any conflicts need to be resolved.
+
+A common workaround is to allow concurrent writes to create conflicting versions of a value (aka _siblings_) which are then resolved either in the application or by special database data structures.
+
+_Last write wins_ (LWW) is the default conflict resolution strategy in many replicated databases.
+
+## Write Skew and Phantoms
+
+_Write skew_ occurs when two transactions read the same objects but then update some of those objects, with each one possibly modifying a separate object.
+
+This can be seen as a generalization of "lost updates", where the specific case where the transactions modify the same objects may result in dirty writes or lost updates.
+
+Imagine a table that keeps track of which doctors are "on call" with each record corresponding to a specific doctor with a column for whether or not they're on call.
+
+A constraint can be that there must be at least one doctor on call at any moment. Each doctor can start a transaction to first confirm the constraint—that there is more than one doctor currently on call—before proceeding to mark themselves as "not on call".
+
+<div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant TX 1
+    participant Table
+    participant TX 2
+    Table->>TX 1: Num. Dr's on call = "2"
+    Table->>TX 2: Num. Dr's on call = "2"
+    TX 1->>Table: Set self not on call
+    TX 2->>Table: Set self not on call
+    Note over Table: Nobody on call!
+</div>
+
+Another case where write skew can occur is when trying to prevent double-spending: separate transactions, unaware of each other, check to make sure that the user can afford some purchase and determine the purchase valid in isolation, but the combination of purchases made by the separate transactions exceeds the available funds.
+
+This is somewhat similar to [lost updates](#lost-updates) except that the updates are affecting separate rows, therefore it is not so clearly a conflict as it is a race condition: if the transactions had occurred serially, this would not have happened. Write skew can be seen as a generalization of lost updates.
+
+The general pattern is:
+
+1. Read to ensure a requirement is satisfied (e.g. at least 2 doctors on call, no existing bookings)
+2. A write (insert, update, or delete) is possibly made and committed _based on_ the result. This changes the result of the precondition in #1
+
+Automatically preventing write skew requires true serializable isolation. Otherwise, explicitly locking the rows that a transaction depends on can help. However, rows need to exist in order for them to be locked.
+
+If instead read has to check for the absence of rows, and the subsequent write adds a row that matches that criteria, then there is the potential for _phantoms_.
+
+A _phantom_ is when a write in one transaction changes the result of a search query in another, which then alters that second transaction's behavior in such a way that would not have happened had they occurred serially.
+
+Snapshot isolation prevents phantoms in read-only queries, but read-write transactions may lead to write skew.
+
+A problem with mitigating phantoms is that there is nothing to acquire a lock on because we are expecting the absence of some record in the first place. One workaround to this problem is to flip the situation by _materializing conflicts_, in other words, having physical records that represent the "absence", for example records for "empty slots" in a booking system.
 

@@ -96,7 +96,7 @@ Disks are divided into partitions, each of which may contain a file system. Each
 
 Since inodes contain pointers to data blocks and an inode's size is fixed, inodes inherently limit how many data blocks there can be, and by extension they limit the maximum size that a file may be. This maximum can be increased by using indirect pointers, which are pointers to other blocks that are full of pointers to data blocks. There can be multiple levels of these indirect pointers, similar to a hierarchical page table, essentially creating a tree.
 
-<img src="//i.imgur.com/QMqFCdO.png" class="center" />
+<img src="/images/imgur/QMqFCdO.png" class="center" />
 
 A superblock is an abstraction that provides file system-specific information regarding the file system's layout. It maintains an overall map of all disk blocks, specifying whether each block is an inode, data, or free.
 
@@ -222,7 +222,7 @@ On a larger virtual address space, such as a 64-bit system, the virtual address 
 
 For this reason, a level of indirection is introduced in order to facilitate a sparse page table. Specifically, an outer page table contains pointers to internal (real) page tables. The internal page tables are only created for valid virtual memory regions, allowing holes to exist.
 
-<img src="//i.imgur.com/hcTHpmE.png" class="center" />
+<img src="/images/imgur/hcTHpmE.png" class="center" />
 
 This is known as a _hierarchical page table_. It is indexed by:
 
@@ -231,7 +231,7 @@ This is known as a _hierarchical page table_. It is indexed by:
 3. index into the internal page table with `$p_2$` to obtain the page
 4. index into the page with the offset `$d$` to obtain the physical address
 
-<img src="//i.imgur.com/pNJ2kfY.png" class="center" />
+<img src="/images/imgur/pNJ2kfY.png" class="center" />
 
 The actual virtual-to-physical address translation is done by hardware (the MMU), which means that the hardware has certain expectations about the structure of the tables, and consequently dictates what kinds of memory management modes are supported, the kind of pages there can be, and the virtual and physical address format.
 
@@ -247,7 +247,7 @@ A valid bit of 1 means that the page is indeed in memory and the mapping is vali
 
 Since virtual memory is often much larger than physical memory, there's a possibility that a virtual memory page is not present in physical memory. _Demand paging_ allows pages to be swapped in and out of memory and a swap partition on the disk, which handles this situation.
 
-<img src="//i.imgur.com/0KOnKwo.png" class="center" />
+<img src="/images/imgur/0KOnKwo.png" class="center" />
 
 A page can be pinned to physical memory so that it won't be swapped to disk. This is useful for when interacting with devices via direct memory access (DMA).
 
@@ -263,7 +263,7 @@ The _translation look-aside buffer_ (TLB) is a cache of valid virtual-to-physica
 
 To convert a virtual address to a physical address, the virtual page number of the address is used to index into the page table to obtain the physical frame number. Then the virtual address' offset if concatenated to the physical frame number to arrive at the complete physical address.
 
-<img src="//i.imgur.com/txR0SJ0.png" class="center" />
+<img src="/images/imgur/txR0SJ0.png" class="center" />
 
 A common operating system optimization is _allocation on first touch_, where the memory for a virtual address space is allocated until it's first accessed.
 
@@ -287,7 +287,7 @@ A kernel-level memory allocator is responsible for allocating memory regions for
 
 The kernel-level _buddy allocator_ works by starting with `$2^x$` chunk of pages. On each request, one of the chunks is subdivided into another `$2^y$` chunk until the smallest such chunk is found that can satisfy the request. When freeing, the "buddy," the adjacent chunk, is checked to see if it's also free in order to aggregate them both into a larger chunk.
 
-<img src="//i.imgur.com/VHwkAhY.png" class="center" />
+<img src="/images/imgur/VHwkAhY.png" class="center" />
 
 In the example above, an allocation request of size 8 is received. The region is subdivided until a chunk of size 8 is found to allocate. Then another chunk of size 8 is allocated (on the buddy of the previously allocated chunk). Then an allocation request of size 4 is received which requires subdividing other chunks. Then the second allocated chunk of 8 is deallocated and its buddy is checked to see if it's free in order to merge with it, but it's not. Then the first allocated chunk of 8 is deallocated and its buddy is checked to see if it's free in order to merge with it. It is, so they merge into a chunk of 16.
 
@@ -295,7 +295,7 @@ Since the buddy allocator specifically allocates at a `$2^x$` granularity, it in
 
 The kernel-level _slab allocator_ works by using object caches backed by physically contiguous pages, or _slabs_, of a size that is a multiple of the object size.
 
-<img src="//i.imgur.com/UKovDuV.png" class="center" />
+<img src="/images/imgur/UKovDuV.png" class="center" />
 
 _Checkpointing_ is the process of taking a snapshot of a running application in order to resume it at a later point or transfer it to another machine. This can work by Copy-on-Write'ing the process' virtual memory and then periodically storing diffs of the dirtied pages for incremental checkpoints.
 
@@ -409,7 +409,7 @@ In order to run a different process, the operating system must preempt the curre
 
 A _timeslice_ is the maximum amount of uninterrupted time given to a task, aka a _quantum_.
 
-<img src="//i.imgur.com/kvGf7P3.png" class="center" />
+<img src="/images/imgur/kvGf7P3.png" class="center" />
 
 A process can be deferred and placed on a ready queue if:
 
@@ -444,7 +444,7 @@ A _Multi-Level Feedback Queue_ is a run-queue data structure that adaptively giv
 * if the task yields voluntarily, it's kept at the same timeslice level
 * tasks in lower queues get priority boosts when repeatedly releasing the CPU due to I/O waits
 
-<img src="//i.imgur.com/vOS2Wcp.png" class="center" />
+<img src="/images/imgur/vOS2Wcp.png" class="center" />
 
 _Cache affinity_ refers to keeping a task on the same CPU as much as possible in order to keep that cache hot. This can be achieved by scheduling processes so that there are per-CPU run-queues and schedulers onto which processes are load-balanced. The per-CPU schedulers try to repeatedly schedule tasks onto the same CPU. Load-balancing can be based on the per-CPU run-queue length, or when the CPU is idle it can [_steal work_](https://en.wikipedia.org/wiki/Work_stealing) from other per-CPU run-queues.
 
@@ -472,7 +472,7 @@ The Linux O(1) scheduler mitigates process starvation by ensuring that all tasks
 
 The Linux Completely Fair Scheduler (CFS) works by ordering processes by their _virtual run-time_ (aka _vruntime_), which is the amount of time in nanoseconds that the process has spent running on the CPU. To keep processes ordered by vruntime, it uses a [red-black tree](/notes/data-structures#red-black-trees). CFS always schedules the left-most node, the one which has spent the least amount of time running, by removing it from the tree and sending it for execution.
 
-<img src="//i.stack.imgur.com/ZlNeJ.png" class="center" />
+<img src="/images/imgur/ZlNeJ.png" class="center" />
 
 Periodically, CFS updates the current process' vruntime and compares it to the left-most node in the tree. If the current process' vruntime is less than the left-most node's vruntime, the current process continues running. Otherwise if the current process' vruntime is now greater than the left-most node's vruntime, the current process is preempted and re-inserted into the red-black tree, and the left-most node is scheduled.
 

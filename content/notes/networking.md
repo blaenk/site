@@ -22,7 +22,7 @@ The spanning tree of the network topology can be constructed in a distributed ma
 
 In the image below, the top orange node is the root. The blue links are part of the spanning tree. Some links have the distance to the root shown in orange.
 
-<img src="//i.imgur.com/GpjILZs.png" class="center" />
+<img src="/images/imgur/GpjILZs.png" class="center" />
 
 To determine the root of the spanning tree, switches run an election process to determine the switch with the smallest ID. Whenever a switch learns of another switch with a smaller ID, it updates its view of the root, computing the distance to that new root. This way when neighbors receive this new information, they can determine their distance to the new root by adding one to the neighboring node's distance to the root.
 

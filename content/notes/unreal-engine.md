@@ -150,7 +150,7 @@ The base `GameState` class is `AGameStateBase`. Some of the functionality that t
 
 The `PlayerState` contains information specific to a particular player, be it a human player or bot simulating a player (not non-player AI), This information can be the player's name, score, or health. Each player's `PlayerState` is replicated from the server to each client.
 
-![class-diagram](https://i.imgur.com/GtaF8os.jpg)
+![class-diagram](/images/imgur/GtaF8os.jpg)
 
 # User Interface
 

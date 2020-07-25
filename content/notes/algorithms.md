@@ -106,19 +106,19 @@ Then the run-time complexity of an algorithm can be determined based on the valu
 
     The same amount of work `$n^d$` is being done at each level, of which there are `$\log n$`.
 
-    <img src="/images/notes/algorithms/master-theorem/a-equal-b-d.png" />
+    <img src="/images/notes/algorithms/master-theorem/a-equal-b-d.png" class="center" />
 
 * when `$a < b^d$`, the complexity is `$O\left(n^d\right)$`
 
     Most of the work is done at the root, as if only at a single level.
 
-    <img src="/images/notes/algorithms/master-theorem/a-less-than-b-d.png" />
+    <img src="/images/notes/algorithms/master-theorem/a-less-than-b-d.png" class="center" />
 
 * when `$a > b^d$`, the complexity is `$O\left(n^{\log_b a}\right)$`
 
     It's equivalent to the number of leaves in the recursion tree, since most of the work is done at the bottom of the tree.
 
-    <img src="/images/notes/algorithms/master-theorem/a-greater-than-b-d.png" />
+    <img src="/images/notes/algorithms/master-theorem/a-greater-than-b-d.png" class="center" />
 
 Essentially, the master theorem is a tug-of-war between:
 

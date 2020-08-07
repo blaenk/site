@@ -194,6 +194,16 @@ Make it clear to the interviewer that you are aware of pathological inputs.
 
 Do mention theoretical approaches even if they're not eventually implemented. For example, if an algorithm would only work if a BigNum type were used, to prevent overflows, mention it. It will communicate that you're at least aware of that approach, even if you don't or can't ultimately use it.
 
+## Consider Perspectives
+
+It's easy to become fixated on looking at a problem from a particular perspective, when looking at it another way may very well clearly reveal the problem. Sometimes this can be as simple as "inverting" the perspective.
+
+For example, a problem that requires nested iteration through an array may be possible to do linearly if iterated in reverse.
+
+The general way to invert a problem is to define success, invert it so as to define what would guarantee failure, and then consider solutions for that failure.
+
+See [The Einstellung Effect](#the-einstellung-effect).
+
 # Pitfalls
 
 ## Premature Optimization

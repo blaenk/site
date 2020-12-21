@@ -2791,7 +2791,7 @@ CREATE TABLE products (
 
 Note that columns may have more than one constraint, written in any order, which doesn't necessarily determine the order in which they are checked.
 
-There is an inverse to the `NULL` constraint, `NOT NULL`, which explicitly specifies the default constraint that the value _may be_ `NULL`.
+There is an inverse to the `NOT NULL` constraint, `NULL`, which explicitly specifies the default constraint that the value _may be_ `NULL`.
 
 It is generally a good idea to mark the majority of columns `NOT NULL`.
 

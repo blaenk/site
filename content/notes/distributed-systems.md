@@ -1583,6 +1583,85 @@ Indexes can be made to work in a multi-version database with a variety of differ
 
 The imprecision and ambiguity of the SQL standard with respect to isolation levels means that nobody really knows what repeatable reads means.
 
+### Serializability
+
+Serializable isolation is the strongest isolation level, which guarantees that the results of parallel transactions are as if they had executed serially, one at a time.
+
+Most implementations of serializability are implemented in one of three ways:
+
+* Executing all transactions in serial order
+* Two-phase locking
+* Serializable snapshot isolation (SSI)
+
+#### Serial Execution
+
+Concurrency problems can be avoided simply by removing concurrency and executing transactions one at a time. To be viable, transactions must be small and fast, since a single slow transaction slows all transactions.
+
+This strategy is taken in Redis.
+
+This strategy only recently became viable with the advent of cheap RAM making it possible to keep an entire dataset in memory, and the realization that OLTP transactions are usually short and make a small number of reads and writes.
+
+If a transaction needs data not in memory, it may be best to abort it and then asynchronously fetch it into memory while processing other transactions, then restarting the transaction when the data has been loaded. This is known as anti-caching.
+
+Single-threaded execution can sometimes perform better from being able to avoid concurrency overhead (e.g. locking), although throughput is constricted.
+
+To keep transactions short given the single-threaded bottleneck, interactive transactions are not allowed or discouraged, and instead transactions are submitted ahead of time as stored procedures, which eliminates the need to wait on I/O.
+
+One way to increase throughput is to partition data so that each partition has its own transaction processing thread running independently. However, the transactions need to be performed in lock-step across all partitions, and cross-partition coordination adds additional overhead which may make them slower than single-partition transactions.
+
+#### Two-Phase Locking (2PL)
+
+Traditionally the main way to implement serializability was through _two-phase locking_ (2PL) (note: not two-phase commit). Since it implements serializability, it protects against all race conditions including lost updates and write skew.
+
+Two-phase locking allows concurrent reads to the same object, but writing requires exclusive access. This means that a transaction wanting to write must wait until all reading transactions have committed or aborted, and once the writing transaction has begun, all transactions wanting to read must wait until the writing transaction has committed or aborted.
+
+Blockinf of readers and writers can be implemented by having a lock on each database object which can be either in shared or exclusive mode.
+
+Two-Phase locking is so named because the first phase is when the lock is acquired, mid-transaction, and the second phase is when the lock is released at the end of the transaction.
+
+Given the number of locks in play, deadlocks may arise, in which case the database detects it and aborts one of the transactions. This can lead to performance issues since all work on that transaction is wasted and has to be redone.
+
+Transaction throughput and response times are significantly worse than in weak isolation, due to reduced concurrency and lock overhead. Even if transactions are kept short, a queue can form if several need to write to the same object. A single slow transaction or one that acquires many locks may grind the rest of the system to a halt, leading to very slow latencies at high percentiles.
+
+##### Predicate Locks
+
+Two-Phase locking can prevent phantoms by using _predicate locks_, which are locks shared by all objects that match some search condition.
+
+If a transaction wants to read all objects for a given query (e.g. bookings within a time range), it first acquires a predicate lock matching the query's condition (e.g. the time range). The transaction must wait if another transaction has an exclusive lock on any of the objects matching the range.
+
+If a transaction wants to write (insert, update, delete) _any_ object, it must first check whether the _old or new_ value matches an existing predicate lock. If so, it must wait until the transaction holding that lock is completed.
+
+##### Index-Range Locks
+
+Predicate locks don't perform well since having many predicate locks means having to check many locks. Instead most databases implement an approximation called _index-range locking_ (aka _next-key locking_).
+
+For example, if the subject is bookings for a given room on a given day and time, a coarser number of locks can be derived by rounding up to a lock per room on a given day at _any_ time, or even one lock for _all_ rooms at a given time. This will lead to more transactions potentially being blocked unnecessarily, but fewer locks to check for any given write.
+
+Index-Range locks can be implemented as locks on the index structure. For example, a shared lock on the `room_id` index or on the range of index values on the time index. If there is no suitable index for this purpose, the database can apply a shared lock on the entire table, which is safe albeit not good for performance.
+
+#### Serializable Snapshot Isolation
+
+Two-Phase locking is pessimistic in nature, leaning toward locking if anything might possibly go wrong.
+
+Serializable Snapshot Isolation (SSI) is optimistic in that transactions carry on even in dangerous situations, and when a transaction wants to commit, it checks whether isolation was violated and only if so, aborts the transaction.
+
+SSI performs poorly if many transactions are trying to access the same objects, since it means a higher proportion of transactions need to abort. If the system is near max throughput, the increased load of retried transactions can make things worse.
+
+This is used in the serializable isolation level of PostgreSQL.
+
+SSI can prevent write skew (decisions based on an outdated premise) by:
+
+* detecting reads of stale MVCC versions
+* detecting writes that affect prior reads
+
+To detect reads of stale MVCC versions, the database tracks when a transaction ignores another transaction's writes due to MVCC visibility (i.e. that transaction has not yet committed by the time the read is initiated). When the transaction wants to commit it checks whether any ignored writes have now been committed, which would signify an outdated premise, so the transaction must be aborted.
+
+To detect writes that affect prior reads, the database can track at the index or table level, what rows were read by what currently uncommitted transactions. When another transaction writes to a row and commits, the database checks this value to know what transactions must be aborted, since the information they read may no longer be up to date.
+
+As with Index-Range Locking, granularity presents a tradeoff where more detailed tracking can be precise about which transactions to abort, but takes a larger hit to performance, whereas coarser tracking can be faster but may lead to more transactions being aborted than necessary.
+
+Naturally, a transaction that reads and writes over a long period of time is likely to run into conflicts and abort.
+
 ## Lost Updates
 
 A lost update can occur from two concurrent read-modify-write cycles, if the second write doesn't include the first modification. In this case, the second write _clobbered_ the first write.
@@ -1686,3 +1765,40 @@ Snapshot isolation prevents phantoms in read-only queries, but read-write transa
 
 A problem with mitigating phantoms is that there is nothing to acquire a lock on because we are expecting the absence of some record in the first place. One workaround to this problem is to flip the situation by _materializing conflicts_, in other words, having physical records that represent the "absence", for example records for "empty slots" in a booking system.
 
+In this strategy, the table is purely a collection of locks, used to turn a phantom into a concrete lock conflict on a set of rows. However, materializing conflicts can be difficult, so it is considered a last resort and serializable isolation is preferred.
+
+## Race Conditions
+
+In summary, the race conditions are:
+
+* Dirty reads: Reading another write before it has been committed. Prevented by: read committed isolation level and stronger.
+* Dirty writes: Overwriting a value that another client wrote but had not yet committed. Prevented by almost all transaction implementations.
+* Read skew (non-repeatable reads): Client sees different parts of the database at different points in time. Prevented by snapshot isolation, usually implemented with multi-version concurrency control (MVCC).
+* Lost updates: Two clients perform read-modify-write cycles, where one overwrites other's write without incorporating its changes, losing data. Some snapshot isolation prevents this, otherwise requires a manual lock e.g. `SELECT FOR UPDATE`.
+* Write skew: Transaction reads a value, decides based on its value, then writes the effect to the database. Before the write is made, the premise of the decision is no longer true. Prevented only by serializable isolation.
+* Phantom reads: Transaction reads objects matching a search condition, then another client writes objects affecting the results of the original search (e.g. insertion, deletion). Prevented by snapshot isolation in straightforward phantom reads, otherwise in context of write skew requires index-range locks.
+
+Weak isolation levels prevent against some while requiring explicit locking for others.
+
+Serializable isolation prevents against all issues.
+
+# Distributed System Issues
+
+## Faults and Partial Failures
+
+In an asynchronous network, it is impossible to distinguish a lost request from a remote node being down from a response being lost.
+
+A network partition (aka netsplit, aka network fault) is when part of the network is cut off from the rest due to a network fault.
+
+Even if network faults are/were rare, software needs to be designed to anticipate and handle them, or it may react in unexpected ways such as inducing data loss or permanently being unable to serve requests even when the network recovers.
+
+Some ways in which a client can detect that a node is not working include:
+
+* The process crashed but the node is otherwise reachable, in which case the operating system closes or refuses TCP connections with RST or FIN packets. If it crashed while handling a request, the client can't know how much data was processed.
+* If the process crashed (or was killed) but the operating system remains, a script can notify other nodes about the crash to preempt timeout expirations. HBase does this.
+
+A positive response from the application is necessary to be certain of a request's success.
+
+Timeout durations pose a tradeoff between quick fault detection and increased false-positive when a node is simply slowed down, against slower fault detection but fewer false-positives. False positives in detecting a node failure can lead to interrupted processing that may need to be repeated. Failover itself places additional load on the nodes and the network, which can exacerbate issues leading to even more false-positive failure detections leading to cascading failure, with the extreme being all nodes declaring all other nodes dead.
+
+Variability of packet delays on networks is usually due to queueing.

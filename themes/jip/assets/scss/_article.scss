@@ -29,9 +29,10 @@ article {
       text-align: center;
     }
 
-    span.highlight {
+    span.highlight, mark {
       background-color: rgb(255, 233, 168);
       padding: 2px;
+      color: inherit;
     }
 
     div.note {

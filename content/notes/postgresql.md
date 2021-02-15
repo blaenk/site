@@ -2141,7 +2141,7 @@ DATE '2001-09-28' + INTERVAL '1 hour' -- TIMESTAMP '2001-09-28 01:00:00'
 age(timestamp '2001-04-10', timestamp '1957-06-13') -- 43 years 9 mons 27 days
 ```
 
-`current_timestamp` gets the current date and time <span class="highlight">at the start of the transaction</span>.
+`current_timestamp` gets the current date and time <mark>at the start of the transaction</mark>.
 
 `clock_timestamp` gets the current date and time, this changes during statement execution.
 
@@ -2304,9 +2304,9 @@ jsonb_insert('{"a": [0,1,2]}', '{a, 1}', '"new_value"', TRUE)
 
 Sequence objects (AKA _sequence generators_ AKA _sequences_) are single-row tables typically used to generate unique identifiers for rows of a table.
 
-`currval` returns the value most recently obtained with `nextval` for the given sequence <span class="highlight">in the current session</span>, while `lastval` does the same for any sequence. This returns a session-local value that is predictable whether or not other sessions have executed `nextval` since the current session did.
+`currval` returns the value most recently obtained with `nextval` for the given sequence <mark>in the current session</mark>, while `lastval` does the same for any sequence. This returns a session-local value that is predictable whether or not other sessions have executed `nextval` since the current session did.
 
-`nextval` advances the the given sequence and returns the new value in one atomic operation. `nextval` operations are <span class="highlight">never rolled back</span> to avoid blocking concurrent transactions that obtain numbers from the same sequence. This means that any one returned value will be considered used and will never be returned again, even if the surrounding transaction aborts for example. This means that sequence objects cannot produce "gapless" sequences.
+`nextval` advances the the given sequence and returns the new value in one atomic operation. `nextval` operations are <mark>never rolled back</mark> to avoid blocking concurrent transactions that obtain numbers from the same sequence. This means that any one returned value will be considered used and will never be returned again, even if the surrounding transaction aborts for example. This means that sequence objects cannot produce "gapless" sequences.
 
 `setval` sets the sequence's current value.
 
@@ -2320,7 +2320,7 @@ This is an "early binding" to the OID because it becomes a constant of type `reg
 
 Note that if the following conditional expressions are too restricting, it's recommended to write a stored procedure in a more expressive language.
 
-`CASE` is similar to `if` statements. It can be used wherever an expression is valid. If there is no `ELSE` clause and no condition is `TRUE` then the result is `NULL`. Note that the data types of all result expressions <span class="highlight">must be convertible to a single output type</span>.
+`CASE` is similar to `if` statements. It can be used wherever an expression is valid. If there is no `ELSE` clause and no condition is `TRUE` then the result is `NULL`. Note that the data types of all result expressions <mark>must be convertible to a single output type</mark>.
 
 ``` postgres
 CASE WHEN condition THEN result
@@ -2367,7 +2367,7 @@ Array comparison operators operate pair-wise.
 
 The concatenation operator `||` can be used to concatenate arrays, add an array to a higher dimension array, or prepending or appending an element.
 
-`array_length` can obtain the length of a <span class="highlight">specific dimension</span> of an array.
+`array_length` can obtain the length of a <mark>specific dimension</mark> of an array.
 
 `array_position` finds the index of the first occurrence of the given target optionally starting from a specific index.
 

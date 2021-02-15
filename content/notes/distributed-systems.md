@@ -1615,7 +1615,7 @@ Traditionally the main way to implement serializability was through _two-phase l
 
 Two-phase locking allows concurrent reads to the same object, but writing requires exclusive access. This means that a transaction wanting to write must wait until all reading transactions have committed or aborted, and once the writing transaction has begun, all transactions wanting to read must wait until the writing transaction has committed or aborted.
 
-Blockinf of readers and writers can be implemented by having a lock on each database object which can be either in shared or exclusive mode.
+Blocking of readers and writers can be implemented by having a lock on each database object which can be either in shared or exclusive mode.
 
 Two-Phase locking is so named because the first phase is when the lock is acquired, mid-transaction, and the second phase is when the lock is released at the end of the transaction.
 
@@ -1801,4 +1801,309 @@ A positive response from the application is necessary to be certain of a request
 
 Timeout durations pose a tradeoff between quick fault detection and increased false-positive when a node is simply slowed down, against slower fault detection but fewer false-positives. False positives in detecting a node failure can lead to interrupted processing that may need to be repeated. Failover itself places additional load on the nodes and the network, which can exacerbate issues leading to even more false-positive failure detections leading to cascading failure, with the extreme being all nodes declaring all other nodes dead.
 
-Variability of packet delays on networks is usually due to queueing.
+Variability of packet delays on networks is usually due to queueing:
+
+* Network congestion is caused by congestion in a network switch queue. If the queue fills up then additional packets received are dropped, which causes the packet to be resent.
+* On arrival at the node, the request may be queued by the operating system.
+* If a virtual machine, the virtual machine may be paused while another virtual machine uses the CPU, so the incoming data is queued/buffered by the virtual machine monitor.
+* TCP flow control aka congestion avoidance aka backpressure limits the rate of sending to avoid overloading the network or receiving node, and it does this by queuing data.
+
+Since UDP does not perform flow control or packet retransmission, it is good for situations where delayed data is worthless (e.g. audio or video calls), since it gets rid of some of the reasons for network delay variability.
+
+In public clouds and multi-tenant datacenters, network variability can be very high due to a noisy neighbor using a lot of resources.
+
+A synchronous network, such as an ISDN network, establishes a circuit consisting of a guaranteed fixed amount of bandwidth allocated along the route between two callers, so there is no need to wait in a queue. This provides a maximum end-to-end latency called a bounded delay. This shows that variable delays in networks are a deliberate cost/benefit trade-off and not an inherent property of networks.
+
+## Unreliable Clocks
+
+Since transmitting a message across a network takes a variable amount of time, it can be difficult to determine the order of events.
+
+Measuring elapsed time with time-of-day clocks can be inaccurate because they may be forcibly reset to an earlier time when synchronizing with NTP and because they often ignore leap seconds.
+
+Monotonic clocks are guaranteed to always move forward and so are suitable for measuring durations.
+
+Clock slew is when NTP adjusts the frequency at which a monotonic clock moves forward to better match the NTP server, causing the clock rate to be sped up or slowed down by up to 0.05%. Montonic clocks do not outright jump forward or backward, however.
+
+Clock synchronization is fraught with issues:
+
+* Quartz clocks in a computer can be inaccurate. Clock drift refers to running faster or slower than it should, which depends on the machine temperature.
+* If a computer clock is too different from NTP it can refuse to synchronize or be forcibly reset.
+* Nodes can be accidentally firewalled off from NTP servers.
+* NTP synchronization can only be as good as the network delay.
+* Smearing is when NTP servers lie about the time in order to perform leap second adjustment over the course of a day.
+* When virtual machines are paused and then resumed, an application sees that as the clock suddenly jumping forward.
+
+If distributed software requires synchronized clocks, clock offsets between machines should be monitored and those that have drifted too far should be declared dead.
+
+If the conflict resolution strategy Last Write Wins (LWW) is used, there are a few problems that could occur related to unreliable clocks:
+
+* A node with a lagging clock will be unable to overwrite values previously written by a node with a faster clock until the clock skew has elapsed. This can lead to data being silently dropped without error.
+* LWW cannot distinguish between writes in quick succession and those occurring concurrently.
+* Two nodes can independently generate a write with the same timestamp.
+
+A _locical clock_ is a better option for ordering events compared to timestamps derived from unreliable clocks (which the majority are). Logical clocks measure the relative ordering of events rather than _physical clocks_ measuring wall-clock time.
+
+Snapshot isolation is generally implemented with a monotonically increasing ID, so that a consistent snapshot of the database for a given ID doesn't show any changes from IDs greater (later) than it. However, it is more difficult to generate and maintain a distributed monotonically increasing ID. Therefore, such a distributed ID must reflect causality, so that if transaction B reads a value written by transaction A, B must have a higher transaction ID than A.
+
+Many small and quick transactions would create a bottleneck in creating distributed IDs.
+
+Leaders in a distributed system need a way to ensure that they are still considered the leaders by the rest of the system, and so are safe to accept writes. One way to do this would be by acquiring a lease with an expiry from the other nodes, so that if the leader goes down, it would fail to renew the lease and another node could take over.
+
+Consider the following code that performs lease renewal prior to processing requests:
+
+``` python
+while True:
+  req = get_request()
+
+  # Ensure there is at least 10 seconds remaining,
+  # which we hope is enough time to process the request.
+  if lease.expires_in_less_than_ten_seconds():
+    lease = lease.renew()
+
+  # <-- Possible process pause!
+
+  if lease.is_valid:
+    process(request)
+```
+
+A process pause can happen after checking that we have at least ten seconds left on the lease (which we hope is enough to process the request, and normally is more than enough) but _before_ the request is actually processed. If the pause is long enough, the request may go on to be processed despite having an expired lease, likely signifying that the node is no longer the leader and so should _not_ accept writes.
+
+Process pauses like this may occur because of:
+
+* Garbage collectors that operate in an "stop-the-world" fashion
+* Suspended and resumed virtual machines, such as due to live migration
+* Operating system context switching
+* Hypervisor switching virtual machines. The CPU time spent in other virtual machines is known as _steal time_
+* End-user device suspension
+* Asynchronous disk access where the thread is paused while waiting for slow disk I/O. Can happen even when code doesn't appear to read from disk, e.g. the Java classloader lazily loading class files when they are first used.
+* Paging/swapping to disk. In extreme cases, most of the time is spent swapping pages in and out of disk, aka thrashing. For this reason, paging is often disabled on servers, where one would prefer to kill a process to free up memory rather than risk thrashing.
+* Pausing with the `SIGSTOP` signal.
+
+Because of this, a distributed system node must assume that it can be paused at any point for any length of time, during which it can be deemed dead by the rest of the system, and without the node knowing until it checks the clock.
+
+One way to limit the impact of garbage collection would be for the runtime to warn the process of impending collection, allowing it to drain and complete ongoing requests and effectively taking it "offline" such that no further requests are sent to the node while it performs garbage collection.
+
+Another approach may be to only use garbage collection for short-lived objects (quick to collect), and restart the process periodically before they accumulate many long-lived objects which would require a full garbage collection. This can be done in a manner similar to a rolling release with traffic shifted away from the node prior to the restart.
+
+## Majorities
+
+A distributed system cannot rely on a single node since it can fail, so most distributed algorithms rely on quorums, which involves the nodes voting. For example, if a quorum of nodes declares another dead, it must be considered dead whether or not it's true, and the "dead" node must step down.
+
+The most common quorum configuration is an absolute majority of more than half of the nodes, and prevents the case of multiple majorities with conflicting decisions: there can only be one majority.
+
+Implementing exclusive ownership (e.g. a lock) in a distributed system is difficult, because a node may believe it holds the lock even if the quorum disagrees, such as if it was indeed the owner (e.g. leader) but was since demoted due to a network interruption, such that another leader was elected.
+
+The problem of a node mistakenly believing that it is still the holder of the lock can be prevented by _fencing_. Every time the lock server provides a lock or lease it will also provide a _fencing token_ which is a number that increases every time the lock is granted. Then, when a write is being processed by a service, it will know to only accept writes with fencing tokens greater than or equal to what it has currently seen. This way, even if an ex-lock-holder believes it still holds the lock, it will provide a lower fencing token which the service will reject.
+
+## Byzantine Faults
+
+Byzantine faults are when nodes may lie by sending faulty or corrupted responses. Reaching consensus in this environment is known as the Byzantine Generals Problem. A system is Byzantine fault-tolerant if it operates correctly even if some nodes malfunction and don't obey the protocol or even if malicious attackers are interfering.
+
+# Consistency and Consensus
+
+The preferred way of building fault-tolerant systems is by finding general-purpose abstractions with useful guarantees, implementing them, and then writing applications that rely on their guarantees.
+
+Consensus involves getting all nodes to agree on something. This is a general-purpose abstraction that can be used for many purposes, such as leader election on failover. If consensus on a single leader was not guaranteed, _split brain_ could occur where two nodes believe they are the leader, leading to data loss.
+
+_Eventual consistency_ means that if writes stopped, then after some amount of time, eventually all future read requests would return the same value. This means that the inconsistency is temporary and eventually resolves itself. Another way to think of this is that all replicas eventually converge to the same values. Note that this is a weak guarantee that doesn't say _when_ convergence will be reached.
+
+Note that transaction isolation is primarily about avoiding race conditions from concurrent transactions, whereas distributed consistency is primarily about coordinating the state of replicas despite delays and faults.
+
+## Linearizability
+
+Linearizability (aka atomic consistency, aka strong consistency, aka immediate consistency, aka external consistency) aims to make a system appear as if there is only one copy of the data, with all operations being atomic. As soon as one client successfully writes, all other clients must be able to read the value that was just written.
+
+More specifically:
+
+* If a read begins before a write has completed, it must read the value from before the write
+* If a read begins after a write has completed, it must read the value from after the write
+* If a read begins sometime during a write, it may return either the old _or_ the new value. _However_, as soon as one read reads the new value, all future reads must read the new value as well, aka the _recency guarantee_.
+
+Note that linearizability is a different guarantee from serializability.
+
+* Serializability guarantees that transactions behave the same as if they had executed in _some_ serial order.
+* Linearizability is a recency guarantee on reads and writes of an individual object. Since operations aren't grouped together into transactions, it doesn't prevent problems like write skew.
+
+A database may provide both guarantees, the combination of which is often known as _strict serializability_ (aka strong one-copy serializability). Serializability implemented with two-phase locking or serial execution are usually linearizable. Serializable snapshot isolation is not linearizable by design, since the whole point is that reads from a consistent snapshot that does not include writes newer than the snapshot, in order to avoid lock contention between readers and writers.
+
+Coordination services like Apache ZooKeeper and etcd are often used to implement distributed locks and leader election. Libraries like Apache Curator provide higher-level recipes over ZooKeeper. Linearizable storage is the basic foundation for such coordination.
+
+Uniqueness constraints can only be enforced at write time with linearizability.
+
+Linearizability is often implemented with replication.
+
+* Single-leader replication may be linearizable if reads are made against the leader or from synchronously replicated followers.
+* Consensus algorithms can be linearizable, which is how ZooKeeper and etcd work.
+* Multi-leader replication is generally not linearizable due to concurrent writes, which can produce conflicting writes.
+* Leaderless replication is probably not linearizable (safe to assume not). Quorums can be made linearizable if readers perform read repair synchronously before returning results to the application, and writers read the latest state of a quorum of nodes before sending writes. A linearizable compare-and-set operation is not supported.
+
+If an application requires linearizability and some replicas are disconnected from others due to a network problem, then some replicas cannot process requests, they must either wait or return an error.
+
+If an application does not require linearizability, then replicas can process requests independently. Applications that don't require linearizability can be more tolerant of network problems.
+
+The Consistency, Availability, Partition tolerance (CAP) theorem may be better phrased as "either Consistent or Available when Partitioned."
+
+## Causal Consistency
+
+Usually when linearizability is not provided by a database, it is deliberately done with the aim to improve performance, not necessarily for fault tolerance.
+
+In a linearizable consistency model, operations have a total order. In a causality consistency model, operations are partially ordered: events are incomparable unless they are themselves causally related. Since linearizability implies causality, any system that is linearizable will preserve causality.
+
+Causal consistency is the strongest consistency model that doesn't slow down due to network delays and remains available despite network failures. Often, systems that appear to require linearizability only require causal consistency.
+
+One way to causally order events would be to use incrementing sequence numbers, with concurrent events arbitrarily ordered. A replication log in single-leader replication also defines a total order of write operations, where each operation is given an increasing number.
+
+Lamport timestamps can generate sequence numbers that are consistent with causality. Each node is given a unique identifier and keeps a counter of the operations it has processed, where the pair of both items is the Lamport timestamp: `(counter, node_id)`. These timestamps are ordered pairwise, first comparing `counter`s and tie-breaking with `node_id`. Every node _and_ client tracks the maximum counter value it has seen and includes it on every request. If a node receives a request with a greater maximum than the one it tracks, it increases its maximum counter to that value. Since every operation carries the maximum counter, every causal dependency results in an increased timestamp, preserving causality consistency.
+
+The difference between version vectors and Lamport clocks is that version vectors can detect whether two operations are concurrent or causally dependent, but doesn't provide a total order of operations, whereas Lamport clocks provide the reverse.
+
+## Total Order Broadcast
+
+Total order broadcast is a protocol for exchanging messages between nodes that ensures that if a message is delivered to one node then it is delivered to _all_ nodes, and that all messages are delivered in the same order. These guarantees must hold even if the nodes or the network are faulty. Consensus services like ZooKeeper and etcd implement Total Order Broadcast.
+
+Total order broadcast is necessary for replication, so that all replicas process the same writes in the same order in order to remain consistent with each other and attain _state machine replication_.
+
+In a similar manner, total order broadcast can be used to implement serializable transactions.
+
+Message order in total order broadcast is fixed when messages are delivered, so a message cannot be inserted into an earlier position as could happen with timestamp ordering. For this reason, total order broadcast can be seen as a way of constructing a log, with a message delivery appending to the log.
+
+Linearizability can be implemented on top of total order broadcast by implementing a compare-and-set operation for unique username registration with the following process which preserves linearizable writes:
+
+1. Append to the log a request to claim the username
+2. Wait for the message to be delivered
+3. Find the first message in the log claiming the username. If it was you, then you succeeded. Otherwise abort the registration.
+
+Linearizable reads can be implemented by:
+
+* Append to the log and wait for the entry to appear in it, representing the point in time at which the read happens
+* Linearizable read of the latest log message position, then wait for all entries up to that position to appear in the log, then read
+* Read from a synchronous replica
+
+Total order broadcast can be implemented on top of linearizable storage with either increment-and-get or compare-and-set operations. For every message sent, increment-and-get a  linearizable integer and use the result as a sequence number before sending to all nodes, which recipients receive by consecutive sequence number. Unlike Lamport timestamps, these sequence numbers would have no gaps so recipients would know to wait on out-of-order messages.
+
+A linearizable compare-and-set or increment-and-get register and total order broadcast are both equivalent to consensus.
+
+## Distributed Transactions and Consensus
+
+The idea of consensus is to get nodes to agree on something, such as:
+
+* Leader election: As in single-leader replication. A network fault may cause the leader position to become contested, so consensus is necessary to prevent a split brain situation which would lead to data divergence, inconsistency, and data loss.
+* Atomic commit: If a transaction spans nodes or partitions, it can fail on some nodes but succeed on others. Consensus ensures that either they all abort or they all commit.
+
+Some problems are reducible to consensus and are equivalent to each other:
+
+* Linearizable compare-and-set register: the register needs to atomically decide whether to set its value, based on whether its current value equals the parameter given in the operation.
+* Atomic transaction commit: the database must decide whether to commit or abort a distributed transaction
+* Total order broadcast: the messaging system must decide on the order in which to deliver messages
+* Locking and coordination: when several clients race to acquire a lock, the lock must decide which one successfully acquired it. Combined with a failure detector, a system must decide when to declare a client dead because its session timed out.
+
+## Two-Phase Commit (2PC)
+
+Remember that Two-Phase Commit (2PC) is completely unrelated to [Two-Phase Locking (2PL)](#two-phase-locking-2pl).
+
+Two-Phase Commit splits the commit/abort process into two phases. A _coordinator_ (aka _transaction manager_) usually runs as part of the process requesting the transaction, but it can also be a separate service.
+
+When ready to commit a transaction, the coordinator begins Phase 1, where the coordinator sends a "prepare" request to each of the nodes asking if they are ready to commit. If and when all participants confirm, then the coordinator sends a "commit" request as Phase 2 and the commit takes place. If any participant denies being ready to commit, then the coordinator sends an "abort" request to all nodes in Phase 2.
+
+Specifically:
+
+1. When the application wants to begin a transaction, it requests a globally unique transaction ID from the coordinator.
+2. The application begins single-node transaction (tagged with the transaction ID) on each participant. If any read or write fails, the coordinator or any participant can abort.
+3. When the application is ready to commit, the coordinator sends a "prepare" request (tagged with the transaction ID) to all participants.
+4. When a participant receives a "prepare" request, it ensures it can _definitely_ commit the transaction in all circumstances, which involves writing all transaction data to disk and checking for conflicts or constraint violations. If a participant replies "yes" to being ready in response to the "prepare" request, it guarantees being able to commit without error if requested, giving up the right to abort.
+5. When the coordinator has received responses to all "prepare" requests, it decides whether to commit (if all answered "yes") or otherwise abort. This decision must be persisted to its transaction log on disk for durability in case of a crash, marking the _commit point_.
+6. After writing the decision to disk, the coordinator sends the commit or abort request to all participants. If the request fails or times out, it must retry forever until it succeeds—there is no going back.
+
+If the coordinator crashes before sending a "commit" request to a node, the node must wait until the coordinator recovers and sends it, since the node alone cannot know what the ultimate decision for the transaction was. When the coordinator recovers, any transaction in the transaction log without a commit record is aborted.
+
+Two-Phase Commit is considered a _blocking_ atomic commit protocol because it can get stuck waiting for the coordinator to recover. Three-Phase Commit (3PC) is a proposed alternative to 2PC but it requires a network with bounded delays.
+
+Generally, non-blocking atomic commit requires a perfect failure detector, which isn't possible in a network with unbounded delays since a timeout can be triggered due to a network problem, even if the node is fine.
+
+## Distributed Transactions in Practice
+
+Distributed transactions are generally not implemented by cloud services because of the operational problems they cause and for killing performance. For example, MySQL distributed transactions are 10 times slower. This is due to the additional `fsync()`ing for durability and network round-trips.
+
+Database-internal distributed transactions are those internal among the nodes of the database.
+
+Heterogeneous distributed transactions are those where participants are two or more different technologies, such as two different databases or a database and a message queue. Database-internal transactions can use any protocol and optimizations specific to themselves without worrying about having to be compatible, so they usually perform well. For example, these kinds of transactions could enable a message from a message queue to only be acknowledged as processed if a database transaction has committed.
+
+## XA Transactions
+
+X/Open XA (extended architecture) is a standard for heterogeneous two-phase commit that is widely implemented in systems like PostgreSQL, MySQL, SQL Server, Oracle, ActiveMQ, etc.
+
+The time during which the database is in doubt because the coordinator hasn't sent it the commit or abort decision, is time that the database needs to hold row-level exclusive locks on modified rows (to prevent dirty writes) and shared locks on read rows (to ensure serializable isolation). If the coordinator log were somehow lost, then the locks would have to be held forever, requiring manual intervention. Meanwhile, no other transactions can write to those rows, possibly even unable to read the rows.
+
+Manual intervention would involve an administrator checking how other participants may have already responded and applying the same outcome for the rest. Many XA implementations have escape hatches for situations that would require manual intervention, called heuristic decisions which allow a participant to unilaterally decide to abort or commit an in-doubt transaction without the coordinator. Notably, this heuristic can potentially break atomicity.
+
+A coordinator that isn't replicated and runs on a single machine becomes a single point of failure for the entire system.
+
+Since XA is a lowest common denominator protocol meant to be very compatible, it has no way to, for example, detect deadlocks, and doesn't support serializable snapshot isolation.
+
+XA has a tendency of amplifying failures, since any one failure in any part of the system causes the entire overall transaction to fail.
+
+## Fault-Tolerant Consensus
+
+Consensus is when one or more nodes propose values and the algorithm decides on one of the values. Specifically, a consensus algorithm must satisfy:
+
+* Uniform agreement: no two nodes decide differently
+* Integrity: no node decides twice
+* Validity: a node can only decide on a value that was actually proposed by a node
+* Termination: every node that does not crash must eventually decide the same value
+
+Everyone decides on the same outcome, and once decided, there's no changing your mind.
+
+Any consensus algorithm needs at least a majority of nodes to remain functioning correctly in order to terminate the consensus process. Even so, most consensus implementations ensure agreement, integrity, and validity even if a majority of nodes fail or there is a severe network problem, so even if consensus is stopped, the system cannot become corrupted by making invalid decisions.
+
+The best-known fault-tolerant consensus algorithms are:
+
+* Viewstamped Replication (VSR)
+* Paxos
+* Raft
+* Zab
+
+Total Order Broadcast is equivalent to multiple rounds of consensus, overall deciding on a sequence of values. Total Order Broadcast is implemented directly by Viewstamped Replication, Raft, Zab, and Paxos (Multi-Paxos) because it is more efficient than repeated rounds of one-value-at-a-time consensus.
+
+Internally, protocols define an epoch number (ballot number in Paxos, view number in Viewstamped Replication, term number in Raft). Whenever the current leader is believed dead, an election between the nodes begins with an incremented epoch number, so epoch numbers are totally ordered and monotonically increasing.
+
+If a new leader is elected and the previous epoch's leader still believes it is leader, the higher epoch number takes precedence. Before a leader is allowed to decide anything it must first check that there isn't another leader with a higher epoch number.
+
+Since a node believing it is leader cannot trust its own judgment, for any decision it would like to make, it must send the proposed value to the other nodes and wait for a majority of nodes (quorum) to agree. A node only agrees to the proposal if it's not aware of another leader with a higher epoch.
+
+Consensus algorithms are a huge breakthrough but voting usually happens similar to synchronous replication, whereas databases tend to opt for asynchronous replication for the performance tradeoff.
+
+Most consensus algorithms assume a fixed set of nodes participating in voting, so it's not trivial to simply add or remove nodes.
+
+In networks with highly variable network delays such as geographically distributed systems, it often happens that a node falsely believes the leader to have died, resulting in more frequent leader elections which degrade performance, since most of the time is spent on choosing a leader rather than doing meaningful work.
+
+## ZooKeeper and etcd
+
+ZooKeeper and etcd are described as distributed key-value stores, coordination and configuration services. ZooKeeper can be used by an application to outsource consensus, failure detection, and membership services. They are meant to hold small amounts of data that can fit entirely into memory. This data is replicated across all nodes using fault-tolerant total order broadcast.
+
+ZooKeeper also implements:
+
+* Linearizable atomic operations: An atomic compare-and-set operation can be used to implement a lock.
+* Total ordering of operations: Using locks to protect a resource requires _fencing tokens_ to guard against multiple clients conflicting due to e.g. a process pause. The fencing token is a number that monotonically increases whenever the lock is acquired. ZooKeeper provides this by ordering all operations by giving each operation a monotonically increasing transaction ID.
+* Failure detection: Clients maintain long-lived connections to the ZooKeeper servers with heartbeats. If ZooKeeper declares the session dead if the heartbeat times out. Any locks held by the session can be configured to be automatically deleted in this case. ZooKeeper calls these ephemeral nodes.
+* Event notifications: A client can read locks and values created by other clients and also watch them for changes. For example, a client can know when another client joins the cluster based on a value written to ZooKeeper, or if a client fails (due to ephemeral nodes disappearing on session timeout). This removes the need to continually poll for changes.
+
+The use of ZooKeeper can be useful when the system requires a leader with automatic fail-over (e.g. job schedulers), or for assigning partitions to nodes as they join and leave the cluster.
+
+Using ZooKeeper can be complicated and low-level, so libraries like Apache Curator provider higher-level tools on top. This is all much better than attempting to manually implement consensus.
+
+ZooKeeper typically runs on a fixed number of nodes (usually 3 or 5) which participate in voting, while supporting many more clients.
+
+The information typically stored on ZooKeeper is slow-changing such as "the node on 10.1.1.23 is the leader of partition 7", it is _not_ meant for the run-time state of an application. Replicating application state can instead be done with something like Apache BookKeeper.
+
+ZooKeeper, etcd, and Consule are also often used for service discovery, to find out the IP address to reach a particular service. The way this works is that when a node starts a service, it registers itself in a service registry.
+
+A membership service determines which nodes are currently active and live members of a cluster. Unbounded network delays make it impossible to reliably detect failure, but coupling it with consensus lets nodes come to an agreement as to which nodes are alive and which aren't. A node can still incorrectly be marked dead by consensus, but it is still useful to use consensus for this because it makes something like leader selection easy (e.g. simply picking the lowest numbered node among the current members).
+
+## Handling Fail-over
+
+When a single leader fails or a network failure makes it unreachable, fail-over must occur to select a new leader, which can happen in one of three ways:
+
+1. Wait, accepting that the system will be blocked in the meantime. This happens in many XA/JTA transaction coordinators. This can leave the system blocked indefinitely.
+2. Manually intervene by choosing a new leader node and reconfiguring the system to use it.
+3. Automatically choose a new leader with a consensus algorithm.
+

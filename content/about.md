@@ -33,7 +33,7 @@ I was pretty much computer illiterate before the age of 12. All of my life I had
 
 However, by the age of 11 I was at a point in school where computers were a necessity. Without a computer, I had to go to the library to type up school assignments, which wasn't always possible on the more frequent short-notice assignments. I had to write my assignments in _perfect_, inked cursive, being forced to appease draconian requirements which demanded no mistakes at all---no white-out allowed.
 
-As the only student in the class without a computer capable of producing neatly printed assignments, I was inconveniencing _the teacher_. So while other students could lazily type up assignments in a matter of minutes, I had to meticulously obsess over my writing.
+As the only student in the class without a computer capable of producing neatly computer-printed assignments, I was inconveniencing _the teacher_. So while other students could lazily type up assignments in a matter of minutes, I had to meticulously obsess over my writing.
 
 This led to late nights, many rewrites, and stress---since I always cared for doing things right in school. I was tired of it, and somewhat embarrassed for not being "with the times."
 

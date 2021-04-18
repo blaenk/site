@@ -12,31 +12,35 @@
       <li><a href="/notes/">Notes</a></li>
       <li><a href="/work/">Work</a></li>
       <li><a href="/lately/">Lately</a></li>
-      <li><a id="search_btn">Search</a></li>
+      <img src="/images/dark-mode.svg" height="32" width="32" class="theme_btn" />
     </ul>
   </nav>
-  <nav id="mobile-nav">
-    <div class="menu">
-      <a class="button">Menu</a>
-      <div class="container">
-        <ul class="main">
-          <li><a href="/about/">About</a></li>
-          <li><a href="/notes/">Notes</a></li>
-          <li><a href="/work/">Work</a></li>
-          <li><a href="/lately/">Lately</a></li>
-        </ul>
+  <img src="/images/dark-mode.svg" height="32" width="32" class="theme_btn" />
+  <div class="mobile-header">
+    <nav id="mobile-nav">
+      <div class="menu">
+        <a class="button">Menu</a>
+        <div class="container">
+          <ul class="main">
+            <li><a href="/about/">About</a></li>
+            <li><a href="/notes/">Notes</a></li>
+            <li><a href="/work/">Work</a></li>
+            <li><a href="/lately/">Lately</a></li>
+          </ul>
+        </div>
       </div>
-    </div>
-    <div class="search_box">
-      <a class="button"></a>
-      <div class="container">
-        <form action="//google.com/search" method="get">
-          <input type="text" name="q" results="0">
-          <input type="hidden" name="q" value="site:jip.dev">
-        </form>
+      <div class="search_box">
+        <a class="button"></a>
+        <div class="container">
+          <form action="//google.com/search" method="get">
+            <input type="text" name="q" results="0">
+            <input type="hidden" name="q" value="site:jip.dev">
+          </form>
+        </div>
       </div>
-    </div>
-  </nav>
+    </nav>
+    <img src="/images/dark-mode.svg" height="32" width="32" class="theme_btn" />
+  </div>
 </header>
 <form class="desk_search" action="//google.com/search" method="get">
   <input id="search_box" type="text" name="q" results="0" placeholder="Search" autocomplete="off" spellcheck="false">

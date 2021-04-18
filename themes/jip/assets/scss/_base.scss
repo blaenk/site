@@ -9,6 +9,10 @@ $font-sans: 'Noto Sans', Helvetica, Arial, sans-serif;
 $font-mono: Menlo, Monaco, 'DejaVu Sans Mono', Consolas, monospace;
 $font-icon: "Font Awesome 5 Free";
 
+$dark-background: #22272e;
+$dark-text: #adbac7;
+$dark-link: #539bf5;
+
 * {
   margin: 0;
   padding: 0;
@@ -25,9 +29,61 @@ body {
   -webkit-text-size-adjust: 100%;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+}
 
-  @media screen and (max-width: 600px) {
-    font-size: 14px;
+.theme_btn {
+  float: right;
+  cursor: pointer;
+  filter: invert(23%) sepia(19%) saturate(3512%) hue-rotate(214deg) brightness(87%) contrast(103%);
+}
+
+#main-nav .main .theme_btn, .mobile-header .theme_btn {
+  display: none;
+}
+
+@media screen and (max-width: 766px) {
+  #main-nav .main .theme_btn {
+    display: block;
+  }
+
+  .mobile-header .theme_btn, #header > .theme_btn {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .mobile-header .theme_btn {
+    display: block;
+  }
+
+  #main-nav .main .theme_btn, #header > .theme_btn {
+    display: none;
+  }
+  
+  .mobile-header {
+    display: flex;
+
+    #mobile-nav {
+      display: flex;
+      flex-basis: auto;
+      flex-grow: 1;
+      flex-shrink: 0;
+    }
+
+    .theme_btn {
+      padding-left: 15px;
+    }
+  }
+}
+
+html.dark {
+  body {
+    background-color: $dark-background;
+    color: $dark-text;
+  }
+
+  .theme_btn {
+    filter: invert(74%) sepia(60%) saturate(607%) hue-rotate(349deg) brightness(100%) contrast(98%);
   }
 }
 
@@ -40,7 +96,6 @@ body {
     width: auto;
   }
 }
-
 
 h1 {
   font-size: 1.6em;

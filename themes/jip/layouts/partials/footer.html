@@ -1,13 +1,13 @@
 <footer id="footer">
   <div id="social">
     <a href="https://www.linkedin.com/in/jorge-israel-p/" title="linkedin"><i class="fab fa-linkedin"></i></a>
-    &middot;
+    <span class="footer-separator">&middot;</span>
     <a href="https://stackoverflow.com/users/101090/jorge-israel-pena" title="stackoverflow"><i class="fab fa-stack-overflow"></i></a>
-    &middot;
+    <span class="footer-separator">&middot;</span>
     <a href="https://github.com/blaenk" title="github"><i class="fab fa-github-alt"></i></a>
-    &middot;
+    <span class="footer-separator">&middot;</span>
     <a href="mailto:jorge.israel.p@gmail.com" title="email"><i class="far fa-envelope"></i></a>
-    &middot;
+    <span class="footer-separator">&middot;</span>
     {{ with .OutputFormats.Get "rss" -}}
       {{ printf `<a title="rss" href="%s"><i class="fa fa-rss-square"></i></a>` .RelPermalink | safeHTML }}
     {{ else }}

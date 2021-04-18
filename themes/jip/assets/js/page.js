@@ -1,4 +1,38 @@
 $(function() {
+  function userWantsDarkMode() {
+    return localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  }
+
+  function setTheme() {
+    const buttons = document.querySelectorAll(".theme_btn");
+
+    if (userWantsDarkMode()) {
+      document.documentElement.classList.add('dark');
+      buttons.forEach(function(el) {
+        el.src = "/images/light-mode.svg";
+      });
+    } else {
+      document.documentElement.classList.remove('dark');
+      buttons.forEach(function(el) {
+        el.src = "/images/dark-mode.svg";
+      });
+    }
+  }
+
+  setTheme();
+
+  $(".theme_btn").click(function(event) {
+    var wasDark = userWantsDarkMode();
+
+    if (wasDark) {
+      localStorage.theme = "light";
+    } else {
+      localStorage.theme = "dark";
+    }
+
+    setTheme();
+  });
+
   var mobilenav = $('#mobile-nav');
 
   $('html').click(function(){

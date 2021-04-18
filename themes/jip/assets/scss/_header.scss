@@ -2,6 +2,7 @@
   height: 30px;
   padding: 25px 0;
   border-bottom: 1px solid #efefef;
+  transition: border-bottom-color 0.5s;
 
   @media screen and (max-width: 766px) {
     text-align: center;
@@ -56,6 +57,11 @@
 html.dark {
   #header {
     border-bottom-color: #373e47;
+    transition: border-bottom-color 0.5s;
+  }
+
+  #header #name a {
+    color: #d7d7d7;
   }
 
   #header a {

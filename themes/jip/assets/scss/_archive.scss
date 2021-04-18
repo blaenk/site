@@ -25,6 +25,7 @@
     font-size: 16px;
     padding: 5px 0;
     border-bottom: 1px solid #efefef;
+    transition: border-bottom-color 0.5s;
   }
 }
 
@@ -54,6 +55,7 @@
 html.dark {
   .archive > li {
     border-bottom-color: #373e47;
+    transition: border-bottom-color 0.5s;
   }
 
   .archive-item .item-link {

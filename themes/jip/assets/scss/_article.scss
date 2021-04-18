@@ -152,6 +152,7 @@ article {
 
     hr {
       background-color: #efefef;
+      transition: background-color 0.5s, color 0.5s;
       border: 0;
       height: 1px;
       color: #cccccc;
@@ -307,6 +308,7 @@ article {
           font-size: 1.8em;
           padding: 0 0.25em;
           background: white;
+          transition: background-color 0.5s;
           top: -0.8em;
         }
       }
@@ -403,7 +405,7 @@ article {
       }
     }
 
-    h1, h2, h3, h4, h5, {
+    h1, h2, h3, h4, h5 {
       overflow: hidden;
       position: static;
       font-weight: 400;
@@ -517,6 +519,7 @@ article {
     width: 230px;
     padding: 10px 0;
     border-top: 1px solid #efefef;
+    transition: border-top-color 0.5s;
     clear: both;
     position: static;
     width: auto;
@@ -605,15 +608,18 @@ html.dark {
 
   article .entry-content .footnotes hr {
     background-color: #373e47;
+    transition: background-color 0.5s, color 0.5s;
     color: $dark-text;
 
     &:after {
       background-color: $dark-background;
+      transition: background-color 0.5s;
     }
   }
 
   article .meta {
     border-top-color: #373e47;
+    transition: border-top-color 0.5s;
     color: $dark-text;
 
     .meta-component i {

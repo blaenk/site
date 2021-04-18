@@ -1,5 +1,6 @@
 #footer {
   border-top: 1px solid #efefef;
+  transition: border-top-color 0.5s;
   padding: 15px 0;
   text-align: center;
   cursor: default;
@@ -73,6 +74,7 @@
 html.dark {
   #footer {
     border-top-color: #373e47;
+    transition: border-top-color 0.5s;
 
     #social a {
       color: $dark-text;

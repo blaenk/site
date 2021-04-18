@@ -468,6 +468,7 @@ div.highlight {
   pre {
     overflow-x: auto;
     background: $base3;
+    transition: background-color 0.5s;
     color: $base01;
     font-size: 0.8em;
     line-height: 1.5;
@@ -492,6 +493,7 @@ div.highlight {
 
 html.dark div.highlight pre {
   background-color: #2d333b;
+  transition: background-color 0.5s;
 }
 
 html.dark code, html.dark .entry-content pre {

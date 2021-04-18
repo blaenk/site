@@ -888,7 +888,7 @@ int find(int site) {
   return id[site];
 }
 
-void union(int p, int q) {
+void unionSites(int p, int q) {
   int pID = find(p);
   int qID = find(q);
 
@@ -926,7 +926,7 @@ int find(int p) {
   return p;
 }
 
-void union(int p, int q) {
+void unionSites(int p, int q) {
   int i = find(p);
   int j = find(q);
 
@@ -962,7 +962,7 @@ Weighted Quick-Union fixes this by keeping track of each component's size in a s
 In the example above, by step 2, component 1 is size 2, so component 2, being size 1, is merged under component 1 and not the other way around.
 
 ``` cpp
-void union(int p, int q) {
+void unionSites(int p, int q) {
   int i = find(p);
   int j = find(q);
 
@@ -1195,7 +1195,7 @@ void kruskal(EdgeWeightedGraph G) {
       continue; // check if already connected
     }
 
-    uf.union(v, w); // if not, merge them in the union-find data structure
+    uf.unionSites(v, w); // if not, merge them in the union-find data structure
     mst.enqueue(e); // add the edge to result
   }
 }

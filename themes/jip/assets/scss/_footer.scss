@@ -70,3 +70,12 @@
   }
 }
 
+html.dark {
+  #footer {
+    border-top-color: #373e47;
+
+    #social a {
+      color: $dark-text;
+    }
+  }
+}

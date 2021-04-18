@@ -52,6 +52,21 @@
     }
   }
 }
+
+html.dark {
+  #header {
+    border-bottom-color: #373e47;
+  }
+
+  #header a {
+    color: $dark-text;
+
+    &:hover {
+      color: $dark-link;
+    }
+  }
+}
+
 #main-nav {
   float: left;
   margin-left: 25px;

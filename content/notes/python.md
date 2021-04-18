@@ -1041,9 +1041,10 @@ The usual lookup semantics of checking `__dict__`, `__slots__`, the class attrib
 
 The difference between `__getattr__` and `__getattribute__` is that `__getattr__` is only called during [instance attribute lookup] as a fallback when the attribute can't be found via `__getattribute__` [^method_missing], whereas `__getattribute__` is called _before_ performing the lookup, on every access.
 
+[`method_missing`]: https://ruby-doc.org/core/BasicObject.html#method-i-method_missing
+
 [instance attribute lookup]: #instance-attribute-lookup
 [^method_missing]: Similar to Ruby's [`method_missing`] but for attributes in general.
-[`method_missing`]: https://ruby-doc.org/core/BasicObject.html#method-i-method_missing
 
 Note that overriding `__getattribute__` can slow attribute accesses since it's invoked on every attribute access.
 

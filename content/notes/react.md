@@ -16,7 +16,7 @@ kind = "technology"
 
 Components are the unit for composing user interfaces in React and are essentially state machines. They can be viewed as functions that take in `props` and `state` and render HTML. Components can only render a single root node, so that multiple nodes must be wrapped in a single root node to be returned. The `renderComponent` function is used to render a React component into the DOM within the given container, known as _mounting_ in React. The `render` method should be pure.
 
-``` javascript
+``` react
 var HelloMessage = React.createClass({
   render: function() {
     return <div>Hello {this.props.name}</div>;
@@ -41,7 +41,7 @@ Components can be given a key that identifies them so that their state is kept w
 
 Default properties can be defined with the `getDefaultProps` method so that if the parent component doesn't specify them they take on the default value.
 
-``` javascript
+``` react
 var ComponentWithDefaultProps = React.createClass({
   getDefaultProps: function() {
     return {
@@ -53,7 +53,7 @@ var ComponentWithDefaultProps = React.createClass({
 
 A React component that extends a basic HTML element can pass on its properties to the extended HTML element with `transferPropsTo`.
 
-``` javascript
+``` react
 var Avatar = React.createClass({
   render: function() {
     return this.transferPropsTo(
@@ -67,7 +67,7 @@ var Avatar = React.createClass({
 
 It's possible to specify validations for properties using `React.PropTypes`. For example, `React.PropTypes.component.isRequired` can be used to enforce that only one child is passed to a component as children.
 
-``` javascript
+``` react
 var MyComponent = React.createClass({
   propTypes: {
     children: React.PropTypes.component.isRequired
@@ -82,7 +82,7 @@ var MyComponent = React.createClass({
 
 Mixins can be used to share common functionality between components. If multiple mixins define the same lifecycle method, each one is guaranteed to be called.
 
-``` javascript
+``` react
 var SetIntervalMixin = {
   componentWillMount: function() { this.intervals = []; },
   setInterval: function() {
@@ -147,7 +147,7 @@ To interact with the actual browser DOM, a reference to a DOM node reference mus
 
 Since what's returned by `render` are _not_ the rendered, _backing_ instances and instead are descriptions of the component's sub-hierarchy, it's not possible to obtain references to components in the following manner:
 
-``` javascript
+``` react
 render: function() {
   var input = <input />;
   this.savedRef = input;
@@ -157,7 +157,7 @@ render: function() {
 
 Instead, components can be referenced by giving them a `ref` property which makes the component's backing instance accessible via `this.refs`. Once a reference to the component is attained, a DOM node reference can be retrieved with the `getDOMNode` method.
 
-``` javascript
+``` react
 var MyComponent = React.createClass({
   handleClick: function() {
     this.refs.textInput.getDOMNode().focus();
@@ -189,7 +189,7 @@ Although in HTML the value of `textarea` is set via children, it should be set v
 
 If an `input` component has a `value` property set, then it is considered a _controlled component_, so that the rendered component _always_ reflects the `value` property; user input has no effect. In order for a controlled component to reflect user input, it should explicitly set the value in response to the change.
 
-``` javascript
+``` react
 getInitialState: function() { return {value: 'Hello!'} },
 handleChange: function(e) { this.setState({value: e.target.value}) },
 render: function() {
@@ -200,7 +200,7 @@ render: function() {
 
 If an `input` component doesn't supply a `value` property, then it's _uncontrolled_ and so the rendered element reflects user input. A default value can be provided without making the component controlled by setting the `defaultValue` prop. There's also a `defaultChecked` that can be used with checkboxes.
 
-``` javascript
+``` react
 render: function() {
   return <input type="text" defaultValue="Hello!" />;
 }
@@ -210,13 +210,13 @@ render: function() {
 
 JSX is an optional HTML-like syntax that can be used for function calls that generate markup. A special comment header pragma is required to denote that the file should be processed by the JSX transformer.
 
-``` javascript
+``` react
 /** @jsx React.DOM */
 ```
 
 JSX can be used to construct instances of React DOM components and composite components created with `createClass`. It's important to realize that JSX has no notion of the DOM, and instead transforms elements into function calls.
 
-``` javascript
+``` react
 var app = <Nav color="blue"><Profile>click</Profile></Nav>;
 var app = Nav({color: "blue"}, Profile(null, "click"));
 
@@ -226,7 +226,7 @@ var app = <MyComponent someProperty={true} />;
 
 JavaScript expressions can be embedded into JSX with curly braces `{}` within attributes and as children. Comments should also be contained within expressions.
 
-``` javascript
+``` react
 var person = <Person name={window.isLoggedIn ? window.name : ''} />;
 var person = Person({name: window.isLoggedIn ? window.name : ''});
 
@@ -236,7 +236,7 @@ var content = Container(null, window.isLoggedIn ? Nav(null) : Login(null));
 
 Raw HTML can be inserted with a specific API.
 
-``` javascript
+``` react
 <div dangerouslySetInnerHTML={{__html: 'First &middot; Second'}} />
 ```
 
@@ -261,7 +261,7 @@ The dispatcher exposes a method that allows a view to trigger a dispatch to the 
 
 The dispatcher can manage the dependencies between stores using the `waitFor` method which specifies a list of dispatcher registry indexes and a final callback to call after the callbacks at the given indexes have completed.
 
-``` javascript
+``` react
 case 'TODO_CREATE':
   Dispatcher.waitFor([
     PrependedTextStore.dispatcherIndex,

@@ -12,10 +12,13 @@ article {
       display: inline-block;
       width: 100%;
 
+      &:hover {
+        color: $color-main;
+      }
+
       @media not screen and (max-width: 600px), not screen and (max-width: 766px) {
         &:hover {
           text-decoration: underline;
-          color: $color-main;
         }
       }
     }
@@ -31,7 +34,7 @@ article {
 
     span.highlight, mark {
       background-color: rgb(255, 233, 168);
-      padding: 2px;
+      padding: 2px 5px;
       color: inherit;
     }
 
@@ -106,6 +109,7 @@ article {
     img, video {
       max-width: 100%;
       height: auto;
+      margin-top: 15px;
     }
 
     img.center {
@@ -529,10 +533,13 @@ article {
       color: $color-gray02;
       transition: color 0.3s;
 
+      &:hover {
+        color: $color-gray01;
+      }
+
       @media not screen and (max-width: 600px), not screen and (max-width: 766px) {
         &:hover {
           text-decoration: underline;
-          color: $color-gray01;
         }
       }
     }
@@ -565,6 +572,60 @@ article {
   }
 }
 
+html.dark {
+  article .entry-content kbd {
+    background-image: none;
+    background-color: #2d333b;
+    border: none;
+  }
+
+  article .entry-content sup[id^="fnref"] a {
+    color: #EF4444;
+  }
+
+  article h2.title a {
+    color: $dark-text;
+
+    &:hover {
+      color: $dark-link;
+    }
+  }
+
+  .meta a:hover {
+    color: $dark-link;
+  }
+
+  article .entry-content .span.highlight, article .entry-content mark {
+    background-color: #831843;
+  }
+
+  article .entry-content strong {
+    color: #d7d7d7;
+  }
+
+  article .entry-content .footnotes hr {
+    background-color: #373e47;
+    color: $dark-text;
+
+    &:after {
+      background-color: $dark-background;
+    }
+  }
+
+  article .meta {
+    border-top-color: #373e47;
+    color: $dark-text;
+
+    .meta-component i {
+      color: $dark-text;
+    }
+
+    a {
+      color: $dark-text;
+    }
+  }
+}
+
 #comment {
   padding: 10px 0;
   border-top: 1px solid #efefef;
@@ -577,3 +638,25 @@ article.page h1.title {
   font-weight: 400;
 }
 
+html.dark {
+  table {
+    background: #2d333b;
+    color: #adbac7;
+    border: 1px solid #444c56;
+
+    code { color: #adbac7; }
+
+    th {
+      background: #2d333b;
+      color: #adbac7;
+    }
+
+    thead th {
+      background-color: #22272e;
+    }
+
+    td { color: #adbac7; }
+
+    tr:nth-of-type(2n) { background: #2d333b; }
+  }
+}

@@ -1250,7 +1250,7 @@ References are essentially boxes that hold a value which can be changed by certa
 <table>
   <thead>
     <tr>
-      <td style="background-color: #D0E9FF"></td>
+      <td></td>
       <th>coordinated</th>
       <th>uncoordinated</th>
     </tr>

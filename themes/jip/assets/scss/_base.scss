@@ -25,6 +25,7 @@ body {
   font-size: 18px;
   line-height: 1.6;
   background: white;
+  transition: background-color 0.5s;
   color: $color-gray01;
   -webkit-text-size-adjust: 100%;
   text-rendering: optimizeLegibility;
@@ -73,17 +74,6 @@ body {
     .theme_btn {
       padding-left: 15px;
     }
-  }
-}
-
-html.dark {
-  body {
-    background-color: $dark-background;
-    color: $dark-text;
-  }
-
-  .theme_btn {
-    filter: invert(74%) sepia(60%) saturate(607%) hue-rotate(349deg) brightness(100%) contrast(98%);
   }
 }
 
@@ -166,3 +156,32 @@ p.notfound {
 select,   textarea,   input[type="text"],   input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search_box"], input[type="tel"], input[type="color"] {
   font-size: 16px;
 }
+
+html.dark {
+  color-scheme: dark;
+
+  body {
+    background-color: $dark-background;
+    color: $dark-text;
+    border-top-color: #1E3A8A;
+  }
+
+  .theme_btn {
+    filter: invert(74%) sepia(60%) saturate(607%) hue-rotate(349deg) brightness(100%) contrast(98%);
+  }
+
+  a {
+    color: $dark-link;
+  }
+}
+
+// @media (prefers-color-scheme: dark) {
+//   html {
+//     color-scheme: dark;
+//   }
+
+//   body {
+//     background-color: $dark-background;
+//     color: $dark-text;
+//   }
+// }

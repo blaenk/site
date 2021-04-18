@@ -39,11 +39,28 @@
     font-weight: normal;
     padding-top: 4px;
 
+    &:hover {
+      color: $color-main;
+    }
+
     @media not screen and (max-width: 600px), not screen and (max-width: 766px) {
       &:hover {
-        color: $color-main;
         text-decoration: underline;
       }
+    }
+  }
+}
+
+html.dark {
+  .archive > li {
+    border-bottom-color: #373e47;
+  }
+
+  .archive-item .item-link {
+    color: $dark-text;
+
+    &:hover {
+      color: $dark-link;
     }
   }
 }

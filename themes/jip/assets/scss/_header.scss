@@ -65,6 +65,11 @@ html.dark {
       color: $dark-link;
     }
   }
+
+  #mobile-nav .menu .button, #mobile-nav .menu .container {
+    background-color: #373e47;
+    border-color: #444c56;
+  }
 }
 
 #main-nav {

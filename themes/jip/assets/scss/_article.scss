@@ -319,6 +319,7 @@ article {
       text-align: center;
       width: 50%;
       background-color: #efefef;
+      transition: background-color 0.5s, color 0.5s;
       margin: 30px auto;
       height: 1px;
       overflow: visible;
@@ -332,6 +333,7 @@ article {
         position: relative;
         font-size: 1.3em;
         background: white;
+        transition: background-color 0.5s;
         top: -0.7em;
       }
     }
@@ -610,6 +612,17 @@ html.dark {
     background-color: #373e47;
     transition: background-color 0.5s, color 0.5s;
     color: $dark-text;
+
+    &:after {
+      background-color: $dark-background;
+      transition: background-color 0.5s;
+    }
+  }
+
+  article .entry-content hr.book {
+    color: $dark-text;
+    background-color: #373e47;
+    transition: background-color 0.5s, color 0.5s;
 
     &:after {
       background-color: $dark-background;

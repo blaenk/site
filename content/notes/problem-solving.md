@@ -160,6 +160,8 @@ It also applies to algorithm questions. Don't waste time on trivial aspects like
 
 As software engineers we make complex problems manageable by breaking them down into abstractions. Why throw this out during interviews? It puts you at a disadvantage. Create types and functions.
 
+Abstractions can be code that you didn't write at all or yet.
+
 Abstractions signal the acknowledgment that code exists but can be filled in later in order to focus on the meat of solving precisely what is being asked.
 
 The cleaner code that comes from this will greatly help you as you reason about the code mid-way and later on when you seek to optimize it.
@@ -235,6 +237,8 @@ It is also possible, maybe even likely, that there is a subtle fact about the pr
 Similar to impossibility, if a problem seems overly complex or it seems like a solution would be really long, it is likely an indication that you are overthinking the problem and need to reconsider your approach. Maybe you misunderstood a simple component of the problem.
 
 Consider that a reasonable interviewer wouldn't ask something too complex to reason about, implement, _and_ have them verify within a ~45 minute interview.
+
+For example, a question may ask to implement a database transaction. Don't automatically jump to most complicated aspects like multi-version concurrency control or write-ahead logs. Do acknowledge them but then try to steer at least the first-pass implementation toward the simplest, most straightforward implementation. If the complicated topics are requested on the first implementation, heavily rely on pseudocode and code that doesn't yet exist, then flesh them out as requested.
 
 _Maybe_ the interviewer is knowingly giving you an "impossible" problem without actually expecting you to solve it, instead wanting to see how you approach the problem and handle a seemingly-impossible situation---a so-called "stress interview". I think this is unlikely, but it emphasizes the importance of establishing consensus on what the problem is and conveying your ideas for the approach before you begin and as you go.
 

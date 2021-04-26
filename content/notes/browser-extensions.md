@@ -85,7 +85,7 @@ The manifest file is only read when the extension is loaded, so it is necessary 
 
 Extensions are packaged up into a ZIP archive with a `.crx` extension.
 
-# Testing
+## Testing
 
 There isn't a clear, straightforward way to test browser extensions. [Puppeteer](https://developers.google.com/web/tools/puppeteer) can be used to some extent. With Puppeteer, an extension can be loaded, but _only_ when headless mode is turned off.
 

@@ -84,3 +84,23 @@ The manifest file is only read when the extension is loaded, so it is necessary 
 ## Distribution
 
 Extensions are packaged up into a ZIP archive with a `.crx` extension.
+
+# Testing
+
+There isn't a clear, straightforward way to test browser extensions. [Puppeteer](https://developers.google.com/web/tools/puppeteer) can be used to some extent. With Puppeteer, an extension can be loaded, but _only_ when headless mode is turned off.
+
+Content scripts can be tested with Puppeteer by:
+
+* Evaluating some marker like `window.PUPPETEER = true;`
+* Modifying the content script so that if this flag is true, then only expose the module for use by tests:
+
+    ``` typescript
+    if (window.PUPPETEER !== undefined) {
+      window.testedModule = testedModule;
+    } else {
+      // Typical content script code
+    }
+    ```
+
+* Injecting the content script within a script tag in the page after navigating.
+* Evaluating calls to functions and then asserting their outcome

@@ -6,6 +6,8 @@ date = 2018-04-29
 kind = "language"
 +++
 
+<nav id="toc"></nav>
+
 # Basic Types
 
 They're all lowercase. There is `boolean`, `number`, and `string`.

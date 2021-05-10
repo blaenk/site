@@ -142,9 +142,9 @@ _"Can you tell me about a time when …"_
 Use the STAR format. Be careful to focus on what _you_ did, not the group: use _I_ not _we_.
 
 1. Situation: Describe the situation.
-2. Task/Target: Describe the tasks/goals you were required to achieve.
+2. Task/Target: Describe the tasks/goals you were required to achieve and took _initiative_ in doing.
 3. Action: Describe the actions taken to achieve the goals.
-4. Result: Describe the outcome. What did you learn?
+4. Result: Describe the outcome that exceeded expectations. What did you learn?
 
 # Best Practices
 

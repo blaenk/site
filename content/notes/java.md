@@ -216,7 +216,7 @@ Fields can be `final`, which means that they cannot be reassigned [^final_const]
 
 Fields can be `transient`, which means that they should not be persisted when the object is stored.
 
-Variable-length arguments are specified by threep periods and makes the arguments available as an array.
+Variable-length arguments are specified by three periods and makes the arguments available as an array.
 
 ``` java
 void printArgs(int ...v) {
@@ -248,7 +248,7 @@ A local class is one that is defined within a method. It has access to the varia
 
 ## Anonymous Classes
 
-It's possible to instantiate an _anonymous class_ that defines an instantiates an object that extends a given class or implements a given interface.
+It's possible to instantiate an _anonymous class_ that defines and instantiates an object that extends a given class or implements a given interface.
 
 ``` java
 // anonymous subclass deriving ArrayList
@@ -338,7 +338,12 @@ fruits[0] = new Fruit();
 
 Generics only work with reference types, so that a primitive type such as `int` can't be a type argument to a type parameter, instead necessitating a boxed type such as `Integer`.
 
-It's not possible to create an instance of a type parameter, since the compiler won't know what type to actually create. By extension, it's not possible to instantiate arrays whose element type is a type parameter. It's also not possible to create arrays of a specific generic type, since after type erasure it becomes a raw type and would allow any type of object. However, it is possible to create arrays of references to a generic type via a [wildcard](#wildcards). It's also not possible to create generic exception classes.
+It's not possible to:
+
+* create an instance of a type parameter, since the compiler won't know what type to actually create
+* instantiate arrays whose element type is a type parameter
+* create arrays of a specific generic type, since after type erasure it becomes a raw type and would allow any type of object. However, it is possible to create arrays of references to a generic type via a [wildcard](#wildcards)
+* create generic exception classes
 
 ``` java
 class T<A> {
@@ -648,8 +653,8 @@ Packages serve as containers for classes and serve a similar purpose to namespac
 Packages are created by specifying a `package` declaration at the beginning of a source file, which has the effect of putting all classes declared within that file to belong to the package.
 
 ``` java
-package MyPackage;
-package Some.Hierarchy.Here;
+package mypackage;
+package some.hierarchy.here;
 ```
 
 Multiple source files may contain the same `package` declaration, allowing packages to be spread across many source files. Packages map to directories on the file system.
@@ -727,16 +732,16 @@ Interfaces may inherit from each other, such that the derived interface requires
 
 ``` java
 interface A {
-  void meth();
+  void method();
 }
 
 interface B extends A {
-  void meth2();
+  void method2();
 }
 
 class SomeClass implements B {
-  public void meth() { /* ... */ }
-  public void meth2() { /* ... */ }
+  public void method() { /* ... */ }
+  public void method2() { /* ... */ }
 }
 ```
 
@@ -1079,11 +1084,11 @@ Annotations with `RUNTIME` retention policies can be obtained at run-time via re
 
 class Meta {
   @MyAnno(str = "test", val = 3)
-  public static void myMeth(String str, int i) {
+  public static void myMethod(String str, int i) {
     Class<?> c = Meta.class;
     // or str.getClass()
     // or Class.forName("String")
-    Method m = c.getMethod("myMeth", String.class, int.class);
+    Method m = c.getMethod("myMethod", String.class, int.class);
     MyAnno anno = m.getAnnotation(MyAnno.class);
 
     System.out.println("str: " + anno.str() + ", val: " + anno.val());
@@ -1143,7 +1148,7 @@ Beginning with JDK 8, annotations can also be placed in most cases in which a ty
 To annotate the type of `this`, known as the _receiver_, JDK 8 allows explicitly declaring `this` as the first parameter of a method in which case it should take on the type of the class the method belongs to.
 
 ``` java
-int myMeth(@TypeAnno SomeClass this, int i, int j) {}
+int myMethod(@TypeAnno SomeClass this, int i, int j) {}
 ```
 
 When annotating return types, it's not possible to annotate a return type of `void`.
@@ -1286,7 +1291,7 @@ The `toLowerCase` and `toUpperCase` methods can be used to convert an entire str
 
 The `StringBuffer` class represents a growable, thread-safe mutable string. JDK 5 added `StringBuilder` which is similar but not thread-safe, making it inadvertently faster.
 
-Constructors exist for creating one with a given capacity size or to build one from an existing from an existing string plus an additional 16 characters in capacity. The default constructor only reserves 16 characters for its capacity.
+Constructors exist for creating one with a given capacity size or to build one from an existing string plus an additional 16 characters in capacity. The default constructor only reserves 16 characters for its capacity.
 
 It's possible to ensure a certain capacity is available with the `ensureCapacity` method which is given the minimum size that the buffer should have. The `setLength` method can be used to either extend the string by adding null characters or to truncate the string.
 
@@ -1346,10 +1351,10 @@ Generally `equals` methods should perform a variety of checks:
 4. check if same type with `getClass` or `instanceof`
 5. cast to appropriate type
 6. compare:
-  * primitives: `==`
-  * arrays: `Arrays.equals`
-  * doubles: `Double.equals`
-  * objects: `Objects.equals`
+    * primitives: `==`
+    * arrays: `Arrays.equals`
+    * doubles: `Double.equals`
+    * objects: `Objects.equals`
 
 It's preferable that `equals` implementations are symmetrical so that `x.equals(y)` is the same as `y.equals(x)`. For this reason, comparing subclasses to a superclass wouldn't work since `subclass.equals(x)` would attempt to check non-existent data or methods on the superclass.
 
@@ -1398,7 +1403,7 @@ try (URLClassLoader loader = new URLClassLoader(urls)) {
 
 ### Class Loader Inversion
 
-A phenomenon_class loader inversion_ occurs when classes loaded by separate class loaders invoke methods on each other that themselves load classes, thereby becoming detached from the context of their own class loader.
+A phenomenon _class loader inversion_ occurs when classes loaded by separate class loaders invoke methods on each other that themselves load classes, thereby becoming detached from the context of their own class loader.
 
 ``` java
 public class A {
@@ -1724,7 +1729,7 @@ The default method `reverse` returns a comparator that is the reverse of the inv
 
 The static methods `naturalOrder` and `reverseOrder` provide comparators for the natural ordering and the reverse of it respectively.
 
-The static methods `nullsFirst` and `nullsLast` adapts an existing comparator so that can handle null values and considers them to be first or last in the order respectively. If the comparator passed is `null`, then all non-`null` values are considered equivalent.
+The static methods `nullsFirst` and `nullsLast` adapts an existing comparator so that it can handle null values and considers them to be first or last in the order respectively. If the comparator passed is `null`, then all non-`null` values are considered equivalent.
 
 The default method `thenComparing` returns a comparator that chains a comparator in the event that the invoking comparator considers two values to be equivalent. Two additional overloads accept a function for selecting the next comparison key to compare as well as the comparator to use. There are also specialized versions for primitives such as `thenComparingInt`.
 
@@ -1738,7 +1743,7 @@ Arrays.sort(people,
 
 The static method `comparing` takes a function to select a comparison key and returns a comparator that compares based on that key. The second overload accepts an arbitrary comparator and adapts it accordingly. As with `thenComparing`, there are specialized versions of `comparing` for primitives, such as `comparingInt`.
 
-Since `Comparator` only requires one method to be implemented---the reset being default or static methods---it is possible to use a lambda to instantiate a comparator.
+Since `Comparator` only requires one method to be implemented---the rest being default or static methods---it is possible to use a lambda to instantiate a comparator.
 
 ## Collection Algorithms
 
@@ -2053,7 +2058,7 @@ The `Reader` and `Writer` abstract classes are analogs to the `InputStream` and 
 
 ### Reader
 
-The `Reader` abstract class represents streaming character input. The `read` method returns an integer representation of the next available character. There are also overloads for reading into a `char[]`, as well as writing into a provided `CharBuffer`. There is also an abstract `read` method that takes a `char[], an offset into it, and a number of characters to read into it. The `ready` method returns true if the next read would not block.
+The `Reader` abstract class represents streaming character input. The `read` method returns an integer representation of the next available character. There are also overloads for reading into a `char[]`, as well as writing into a provided `CharBuffer`. There is also an abstract `read` method that takes a `char[]`, an offset into it, and a number of characters to read into it. The `ready` method returns true if the next read would not block.
 
 A `Reader` can be created from any `InputStream` by using the `InputStreamReader` adapter.
 
@@ -2182,7 +2187,7 @@ The `Paths` class provides methods for retrieving a concrete class that implemen
 
 ### File System Traversal
 
-NIO provides better facilities for performing information about a file and its path. It's possible to read a directory's contents using a directory stream which can be obtained with `newDirectoryStream` on `Files` with the `Path` to the directory. This returns a `DirectoryStream<Path>` which implements `Iterable<Path>`, allowing a regular for-each loop to iterate over the directory contents, however, the iterator can only be obtained once over the lifetime of the directory stream.
+NIO provides better facilities for getting information about a file and its path. It's possible to read a directory's contents using a directory stream which can be obtained with `newDirectoryStream` on `Files` with the `Path` to the directory. This returns a `DirectoryStream<Path>` which implements `Iterable<Path>`, allowing a regular for-each loop to iterate over the directory contents, however, the iterator can only be obtained once over the lifetime of the directory stream.
 
 ``` java
 DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get("/home"));
@@ -2239,7 +2244,7 @@ The `OpenOption` interface is used for specifying how a file should be opened [^
 
 ## File Attributes
 
-Attributes such as wetter a file is a directory, a file's size, and so on are represented by a variety of interfaces in `java.nio.file.attribute` with the top interface being `BasicFileAttributes` which encapsulates common file attributes via methods such as `creationTime`, `isDirectory`, `lastModifiedTime`, and so on.
+Attributes such as whether a file is a directory, a file's size, and so on are represented by a variety of interfaces in `java.nio.file.attribute` with the top interface being `BasicFileAttributes` which encapsulates common file attributes via methods such as `creationTime`, `isDirectory`, `lastModifiedTime`, and so on.
 
 Platform specific file attributes are represented by interfaces that derive from `BasicFileAttributes` such as `DosFileAttributes` for FAT file systems, such as `isSystem`, and `PosixFileAttributes` for POSIX file attributes, such as `permissions`.
 
@@ -2533,7 +2538,7 @@ CompletableFuture<List<URL>> links = contents.thenApply(Parser::getLinks);
 
 The `thenCompose` method runs a function that operates on the value in the future and returns another future---this is like `bind`, `>>=`.
 
-the `handle` method runs a function that is passed both the result and the exception, where either one is `null` if it isn't present, and returns a value that will be used as the result.
+The `handle` method runs a function that is passed both the result and the exception, where either one is `null` if it isn't present, and returns a value that will be used as the result.
 
 The `thenCombine`, `thenAcceptBoth`, and `runAfterBoth` complete the futures in parallel and then combine the results or run a `Runnable` afterward.
 
@@ -2732,7 +2737,7 @@ If a thread is interrupted while waiting or sleeping, it will be reactivated imm
 
 If the thread was interrupted elsewhere and it attempts to sleep, the interrupted status will have been set and the `InterruptedException` will be thrown as soon as it attempts to sleep.
 
-The `reinitialize` method on `ForkJoinTask` reinitializes the state of the task so taht it can be re-run.
+The `reinitialize` method on `ForkJoinTask` reinitializes the state of the task so that it can be re-run.
 
 A `Runnable` or `Callable` can be converted into a `ForkJoinTask` by calling the `adapt` method on `ForkJoinTask`.
 
@@ -2752,7 +2757,7 @@ The `Stream` interface derives from `BaseStream`. The `count` method returns the
 
 A stream can be sourced from a specific set of elements using the `of` static method which takes a variable argument list of elements with which to source the stream.
 
-A stream can also be sourced from function using the `generate` method, which takes a `Supplier`, which defines a function that takes no arguments and returns a value.
+A stream can also be sourced from a function using the `generate` method, which takes a `Supplier`, which defines a function that takes no arguments and returns a value.
 
 ```java
 Stream<Double> randomDoubles = Stream.generate(Math::random);
@@ -2774,7 +2779,7 @@ The `limit` method is like `take` in that it ends the stream after a certain amo
 The `concat` static method can chain two streams together.
 
 ```java
-Stream<String> = Streams.concat(a, b);
+Stream<String> = Stream.concat(a, b);
 ```
 
 The `distinct` method returns a stream that yields unique elements, i.e. no duplicates.
@@ -2955,7 +2960,7 @@ true == matcher.find();
 
 There's also a `split` method that takes an input stream and splits it into a return `String[]`. The `splitAsStream` returns a stream that lazily splits the string.
 
-There's also a convenience static method `matches` on `Pattern` that takes a a string pattern and an input string to attempt to match on, and returns whether there was a match. There's also a `matches` method on `String` which takes a string pattern.
+There's also a convenience static method `matches` on `Pattern` that takes a string pattern and an input string to attempt to match on, and returns whether there was a match. There's also a `matches` method on `String` which takes a string pattern.
 
 The behavior of regular expressions can be set at pattern compile-time or for a particular capture group with the `(?flag:pattern)` syntax.
 

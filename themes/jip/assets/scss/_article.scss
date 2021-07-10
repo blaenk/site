@@ -584,12 +584,20 @@ html.dark {
     border: none;
   }
 
+  article .entry-content {
+    h1, h2, h3, h4, h5 {
+      a {
+        color: $dark-header;
+      }
+    }
+  }
+
   article .entry-content sup[id^="fnref"] a {
     color: #EF4444;
   }
 
   article h2.title a {
-    color: $dark-text;
+    color: $dark-header;
 
     &:hover {
       color: $dark-link;

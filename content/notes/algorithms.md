@@ -884,15 +884,15 @@ Union operates as follows:
 3. decrements the number of components in the disjoint-set
 
 ``` cpp
-int find(int site) {
+int find(int[] id, int site) {
   return id[site];
 }
 
-void unionSites(int p, int q) {
+void unionSites(int[] id, int count, int p, int q) {
   int pID = find(p);
   int qID = find(q);
 
-  if (pID == qID) return;
+  if (pID == qID) return count;
 
   for (int i = 0; i < id.length; i++) {
     if (id[i] == pID) {
@@ -900,7 +900,7 @@ void unionSites(int p, int q) {
     }
   }
 
-  count--;
+  return count - 1;
 }
 ```
 
@@ -918,7 +918,7 @@ This is accomplished by creating a tree-like relationship between sites. With a 
 As a result of this, the `find()` operation needs to walk up the tree from any given site to find the root note which designates the component to which the given site belongs to. The walk is terminated when it encounters a site whose component is itself.
 
 ``` cpp
-int find(int p) {
+int find(int[] id, int p) {
   while (p != id[p]) {
     p = id[p];
   }
@@ -926,17 +926,17 @@ int find(int p) {
   return p;
 }
 
-void unionSites(int p, int q) {
+void unionSites(int[] id, int count, int p, int q) {
   int i = find(p);
   int j = find(q);
 
   if (i == j) {
-    return;
+    return count;
   }
 
   id[i] = j;
 
-  count--;
+  return count - 1;
 }
 ```
 

@@ -3,6 +3,7 @@ languageCode = "en-us"
 title = "Jorge Israel Peña"
 
 theme = "jip"
+rssLimit = 20
 
 enableGitInfo = true
 pygmentsCodeFences = true

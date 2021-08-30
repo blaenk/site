@@ -5,6 +5,10 @@ date = 2012-09-19
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent dolor nisi, feugiat sit amet egestas sit amet, mattis sit amet velit. Proin quis metus id mi vulputate adipiscing eget et **sapien**. Sed iaculis auctor sem ac convallis [^1]. Cras nisi libero, dignissim quis facilisis et, bibendum eget enim. Vivamus est leo, tristique ut adipiscing vitae, malesuada adipiscing tellus. Integer nec aliquam justo. Nam ac lacus erat. In ***hac habitasse platea*** dictumst. Donec pharetra, lectus sit amet ultrices fringilla, metus mi auctor ligula, in hendrerit dui arcu eu leo.
 
+{{< hn image=true >}}
+Who needs DropBox when the average Joe can use `tar` and `rsync`? Your business is doomed.
+{{</ hn >}}
+
 Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Nulla facilisi. Vestibulum consectetur nulla eget erat _fermentum malesuada_. Nullam ultricies nulla ut eros vulputate sed cursus tortor faucibus. Cras ac risus mauris. Suspendisse molestie elementum luctus. Vestibulum [venenatis blandit](http://www.google.com) velit ac pretium. Press <kbd>CTRL</kbd> + <kbd>X</kbd>.
 
 <div>

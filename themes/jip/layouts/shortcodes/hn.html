@@ -1,0 +1,69 @@
+<div class="hn-comment">
+  <div class="hn-mast">
+    <div class="hn-banner">
+      <a href="https://news.ycombinator.com"
+        ><img
+          src="https://news.ycombinator.com/y18.gif"
+          width="18"
+          height="18"
+          style="border: 1px white solid"
+      /></a>
+    </div>
+    <div class="pagetop">
+      <b class="hnname"
+        ><a href="https://news.ycombinator.com/news">Hacker News</a></b
+      >
+    </div>
+    <div class="hn-mast-center-links">
+      <span class="pagetop">
+        <a href="https://news.ycombinator.com/newest">new</a> |
+        <a href="https://news.ycombinator.com/front">past</a> |
+        <a href="https://news.ycombinator.com/newcomments">comments</a> |
+        <a href="https://news.ycombinator.com/ask">ask</a> |
+        <a href="https://news.ycombinator.com/show">show</a> |
+        <a href="https://news.ycombinator.com/jobs">jobs</a> |
+        <a href="https://news.ycombinator.com/submit">submit</a>
+      </span>
+    </div>
+    <div class="hn-mast-center-links" style="float: right">
+      <span class="pagetop">
+        <a href="https://news.ycombinator.com/login">login</a>
+      </span>
+    </div>
+  </div>
+
+  <div class="hn-comment-area">
+    <div class="hn-comment-meta">
+      <span class="hn-comhead">
+        <a href="javascript:void(0)" class="hnuser"
+          >{{ .Get "name" | default "Milton_From_OfficeSpace" }}</a
+        >
+        <span class="age" title="2021-08-29T21:58:50"
+          ><a href="javascript:void(0)"
+            >moments ago</a
+          ></span
+        >
+        <span id="unv_28350852"></span><span class="par"></span>
+        <a
+          class="togg"
+          n="2"
+          href="javascript:void(0)"
+          onclick="return toggle(event, 28350852)"
+          >[–]</a
+        >
+        <span class="storyon"></span>
+      </span>
+    </div>
+    <div class="hn-comment-body">{{ .Inner | markdownify }}</div>
+
+    <div class="hn-comment-reply">
+      <u><a href="javascript:void(0)">reply</a></u>
+    </div>
+  </div>
+
+  {{ with .Get "image" }}
+  <div class="hn-image">
+    <img src="/images/milton.jpg">
+  </div>
+  {{ end }} 
+</div>

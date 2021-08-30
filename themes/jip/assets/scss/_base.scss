@@ -246,6 +246,12 @@ html.dark {
   color: #000 !important;
 }
 
+html.dark .hn-comment-body code, html.dark .entry-content .hn-comment-body pre {
+  background-color: #EEE !important;
+  padding: 1px 5px !important;
+  color: #000 !important;
+}
+
 .hn-comment-body p {
   margin-top: 5px !important;
 }

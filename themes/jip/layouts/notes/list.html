@@ -3,7 +3,7 @@
 {{ end }}
 {{ define "content" }}
 <div class="page-group">
-  <h2 id="concepts">Concepts</h2>
+  <h1 id="concepts">Concepts</h1>
   {{ $concepts := where .Data.Pages.ByTitle "Params.note.kind" "concept" }}
   <ul class="archive">
     {{ range $concepts }}
@@ -15,7 +15,7 @@
 </div>
 
 <div class="page-group">
-  <h2 id="languages">Languages</h2>
+  <h1 id="languages">Languages</h1>
   {{ $languages := where .Data.Pages.ByTitle "Params.note.kind" "language" }}
   <ul class="archive">
     {{ range $languages }}
@@ -27,7 +27,7 @@
 </div>
 
 <div class="page-group">
-  <h2 id="technologies">Technologies</h2>
+  <h1 id="technologies">Technologies</h1>
   {{ $technologies := where .Data.Pages.ByTitle "Params.note.kind" "technology" }}
   <ul class="archive">
     {{ range $technologies }}

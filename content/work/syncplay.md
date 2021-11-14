@@ -3,7 +3,7 @@ title = "Syncplay"
 date = 2015-08-27
 
 [work]
-kind = "project"
+kind = "contribution"
 +++
 
 One of my most used programs is a little program called [syncplay] which works with different media players---I use [MPC-HC] on Windows and [mpv] on Linux---and makes it easy to watch movies and shows with others, automatically synchronized, so that regardless of whether someone pauses, seeks, etc., everyone else's position will be synchronized. This allows me to watch movies and shows regularly with distant friends and family.

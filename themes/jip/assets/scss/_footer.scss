@@ -37,36 +37,37 @@
         padding: 10px;
       }
 
-      @media not screen and (max-width: 600px), not screen and (max-width: 766px) {
+      @media not screen and (max-width: 600px),
+        not screen and (max-width: 766px) {
         &:hover {
           color: $color-gray01;
         }
       }
     }
 
-    a[title="twitter"]:hover {
+    a[title="twitter"] {
       color: #2eb8e7;
     }
 
-    a[title="github"]:hover {
-      color: #286da3;
+    a[title="github"] {
+      color: #286da3 !important;
     }
 
-    a[title="linkedin"]:hover {
-      color: #0077B5;
+    a[title="linkedin"] {
+      color: #0077b5 !important;
     }
 
-    a[title="gitlab"]:hover {
-      color: #292961;
+    a[title="gitlab"] {
+      color: #292961 !important;
     }
 
-    a[title="stackoverflow"]:hover,
-    a[title="rss"]:hover {
-      color: #d85620;
+    a[title="stackoverflow"],
+    a[title="rss"] {
+      color: #d85620 !important;
     }
 
-    a[title="email"]:hover {
-      color: #f66;
+    a[title="email"] {
+      color: #f66 !important;
     }
   }
 }

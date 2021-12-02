@@ -19,6 +19,11 @@ $dark-link: #539bf5;
   padding: 0;
 }
 
+details {
+  margin-top: 15px;
+  cursor: pointer;
+}
+
 body {
   border-top: 3px solid #08b5e5;
   font-family: $font-default;

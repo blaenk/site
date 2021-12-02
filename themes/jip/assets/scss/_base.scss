@@ -4,9 +4,9 @@ $color-gray02: #999999;
 $color-gray03: #cccccc;
 $color-gray04: #dddddd;
 
-$font-default: 'Merriweather', Georgia, serif;
-$font-sans: 'Noto Sans', Helvetica, Arial, sans-serif;
-$font-mono: Menlo, Monaco, 'DejaVu Sans Mono', Consolas, monospace;
+$font-default: "Merriweather", Georgia, serif;
+$font-sans: "Noto Sans", Helvetica, Arial, sans-serif;
+$font-mono: Menlo, Monaco, "DejaVu Sans Mono", Consolas, monospace;
 $font-icon: "Font Awesome 5 Free";
 
 $dark-background: #22272e;
@@ -41,10 +41,12 @@ body {
 .theme_btn {
   float: right;
   cursor: pointer;
-  filter: invert(23%) sepia(19%) saturate(3512%) hue-rotate(214deg) brightness(87%) contrast(103%);
+  filter: invert(23%) sepia(19%) saturate(3512%) hue-rotate(214deg)
+    brightness(87%) contrast(103%);
 }
 
-#main-nav .main .theme_btn, .mobile-header .theme_btn {
+#main-nav .main .theme_btn,
+.mobile-header .theme_btn {
   display: none;
 }
 
@@ -53,7 +55,8 @@ body {
     display: block;
   }
 
-  .mobile-header .theme_btn, #header > .theme_btn {
+  .mobile-header .theme_btn,
+  #header > .theme_btn {
     display: none;
   }
 }
@@ -63,10 +66,11 @@ body {
     display: block;
   }
 
-  #main-nav .main .theme_btn, #header > .theme_btn {
+  #main-nav .main .theme_btn,
+  #header > .theme_btn {
     display: none;
   }
-  
+
   .mobile-header {
     display: flex;
 
@@ -117,9 +121,11 @@ a {
 
 h1.notfound {
   margin-top: 25px;
-  font-size: 4em; }
+  font-size: 4em;
+}
 p.notfound {
-  margin: 35px 0 20px 0; }
+  margin: 35px 0 20px 0;
+}
 
 .center {
   margin-left: auto;
@@ -134,7 +140,9 @@ p.notfound {
   float: left;
   margin-right: 1.5em;
   margin-bottom: 15px;
-  & > * { margin-top: 10px !important; }
+  & > * {
+    margin-top: 10px !important;
+  }
 
   @media screen and (max-width: 600px) {
     float: none;
@@ -148,7 +156,9 @@ p.notfound {
   float: right;
   margin-left: 1.5em;
   margin-bottom: 15px;
-  & > * { margin-top: 10px !important; }
+  & > * {
+    margin-top: 10px !important;
+  }
 
   @media screen and (max-width: 600px) {
     float: none;
@@ -159,7 +169,22 @@ p.notfound {
 }
 
 // so that iOS doesn't zoom in on input
-select,   textarea,   input[type="text"],   input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search_box"], input[type="tel"], input[type="color"] {
+select,
+textarea,
+input[type="text"],
+input[type="password"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="date"],
+input[type="month"],
+input[type="time"],
+input[type="week"],
+input[type="number"],
+input[type="email"],
+input[type="url"],
+input[type="search_box"],
+input[type="tel"],
+input[type="color"] {
   font-size: 16px;
 }
 
@@ -169,11 +194,12 @@ html.dark {
   body {
     background-color: $dark-background;
     color: $dark-text;
-    border-top-color: #1E3A8A;
+    border-top-color: #1e3a8a;
   }
 
   .theme_btn {
-    filter: invert(74%) sepia(60%) saturate(607%) hue-rotate(349deg) brightness(100%) contrast(98%);
+    filter: invert(74%) sepia(60%) saturate(607%) hue-rotate(349deg)
+      brightness(100%) contrast(98%);
   }
 
   a {
@@ -200,7 +226,8 @@ html.dark {
   padding-right: 4px !important;
 }
 
-.hn-mast a:link, .hn-mast a:visited {
+.hn-mast a:link,
+.hn-mast a:visited {
   color: #000000 !important;
   text-decoration: none !important;
 }
@@ -243,7 +270,10 @@ html.dark {
   color: #828282 !important;
 }
 
-.hn-comhead a:link, .hn-comhead a:visited, .hn-subtext a:link, .hn-subtext a:visited {
+.hn-comhead a:link,
+.hn-comhead a:visited,
+.hn-subtext a:link,
+.hn-subtext a:visited {
   color: #828282 !important;
 }
 
@@ -252,8 +282,9 @@ html.dark {
   color: #000 !important;
 }
 
-html.dark .hn-comment-body code, html.dark .entry-content .hn-comment-body pre {
-  background-color: #EEE !important;
+html.dark .hn-comment-body code,
+html.dark .entry-content .hn-comment-body pre {
+  background-color: #eee !important;
   padding: 1px 5px !important;
   color: #000 !important;
 }

@@ -54,7 +54,7 @@ See the full list [here](https://jip.dev/work/).
 
 I was computer illiterate until I was 11, when, while on the job with my dad (carpentry; real work, not just sitting around), during lunch, having nothing else to entertain me over the course of the many days I was there, I would flip through a "computer part ad magazine" (no content, just ads) that my dad got, and began to infer what parts were critical to a working computer and where to find them cheapest. I struck a deal with my dad to earn money to build our first computer.
 
-I accomplished this soon after turning 12 and next I began to wonder how graphical applications were made: what caused a button to react to a click? Eventually, during one of my first few times on the Internet (itself a feat made possible by free AOL trials), I came across a post using words I had _never_ heard before: Visual Studio, C++, source code, compiler. I was extremely intrigued and wanted to learn everything I could about "programming."
+I accomplished this soon after turning 12 and next I began to wonder how software applications were made: what caused a button to react to a click? Eventually, during one of my first few times on the Internet (itself a feat made possible by free AOL trials), I came across a post using words I had _never_ heard before: Visual Studio, C++, source code, compiler. I was extremely intrigued and wanted to learn everything I could about "programming."
 
 I couldn't ~~get ripped off by Game Stop~~ sell my video games quickly enough to buy used programming books, to my little brother's horror.
 

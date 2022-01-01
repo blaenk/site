@@ -3,23 +3,25 @@ title = "About"
 date = 2012-09-21
 +++
 
-<img src="/images/me.png" class="right" width="128" id="me">
-
-You can find my contact information at the [bottom of this page](#footer).
+<p align="center">
+  <a href="https://stackoverflow.com/users/101090/jorge-israel-pe%c3%b1a">stackoverflow</a> · <a href="https://www.linkedin.com/in/jorge-israel-p/">linkedin</a> · <a href="mailto:jorge.israel.p@gmail.com">jorge.israel.p@gmail.com</a>
+</p>
 
 🙋🏻‍♂️ I am a versatile, self-directed engineer with +3 years of professional experience and +16 years of overall software engineering experience.
+
+❤️ I have a passion for software engineering that naturally drives me to [help others](https://stackoverflow.com/users/101090/jorge-israel-pe%c3%b1a), [read and learn new things](https://jip.dev/reads/), [write about what I learn](https://jip.dev/notes/), and put what I learn to action both in [personal projects](https://github.com/blaenk) (see below) and [at work](https://www.linkedin.com/in/jorge-israel-p/).
+
+👷🏻‍♂️ I have a proven record for designing, planning, leading, and developing complex projects, both greenfield projects as well as those involving major sweeping changes to critical, complex, interdependent legacy systems.
 
 🚀 I consistently clear obstacles. If something is broken or lacking, I dive in to investigate, file a thorough ticket, and most of the time fix or implement the feature myself (see example [issue](https://github.com/aws/aws-cdk/issues/10921) and [PR](https://github.com/aws/aws-cdk/pull/10922)), and if what I need doesn't exist yet, [I will build it](https://github.com/blaenk/hoedown#readme).
 
 🐞 I love the thrill of the chase of debugging. This has led me to diagnose and address subtle and elusive bugs in all manner of previously-unfamiliar, complex, and diverse projects (see below), and all have been tremendous learning opportunities.
 
+⚡ My thrill for debugging has allowed me to develop an acute ability to dive deep into unfamiliar projects and quickly make meaningful contributions (see below).
+
 🧘🏻‍♂️ I am practical. I dive deep into niches like emacs, vim, and zsh (see extensive [dotfiles](https://github.com/blaenk/dots)), or state-of-the-art technologies like Rust, or perspective-expanding technologies like Haskell and Clojure—but I always remain grounded and pick the right tool for the job even if others may consider it boring. I always appreciate what each tool has to offer and its trade-offs.
 
 👀 I keep up with the latest developments and constantly read and learn new things, preferring source material like documentation and manuals, if available. See my extensive [notes](/notes/) and my recent [reading list](/reads/).
-
-⚡ I dive deep into unfamiliar projects and quickly make meaningful contributions (see below).
-
-👷🏻‍♂️ I have a proven record for designing, planning, leading, and developing complex projects from the ground up.
 
 <details>
 <summary align="center"><strong>🔽 Click here to expand some of my varied open source contributions 🔽</strong></summary>

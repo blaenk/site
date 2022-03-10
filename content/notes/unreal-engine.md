@@ -1263,10 +1263,10 @@ class FMyClass
 
   void DoThing() {
     // Do some things.
-    WriteToLogDelegate.Execute(Text("Did some things.));
+    WriteToLogDelegate.Execute(Text("Did some things."));
 
     // Safer when appropriate.
-    WriteToLogDelegate.ExecuteIfBound(Text("Did some things.));
+    WriteToLogDelegate.ExecuteIfBound(Text("Did some things."));
   }
 };
 ```

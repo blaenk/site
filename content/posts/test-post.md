@@ -3,7 +3,7 @@ title = "Test Post"
 date = 2012-09-19
 +++
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent dolor nisi, feugiat sit amet egestas sit amet, mattis sit amet velit. Proin quis metus id mi vulputate adipiscing eget et **sapien**. Sed iaculis auctor sem ac convallis [^1]. Cras nisi libero, dignissim quis facilisis et, bibendum eget enim. Vivamus est leo, tristique ut adipiscing vitae, malesuada adipiscing tellus. Integer nec aliquam justo. Nam ac lacus erat. In ***hac habitasse platea*** dictumst. Donec pharetra, lectus sit amet ultrices fringilla, metus mi auctor ligula, in hendrerit dui arcu eu leo.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent dolor nisi, feugiat sit amet egestas sit amet, mattis sit amet velit. Proin quis metus id mi vulputate adipiscing eget et **sapien**. Sed iaculis auctor sem ac convallis [^1]. Cras nisi libero, dignissim quis facilisis et, bibendum eget enim. Vivamus est leo, tristique ut adipiscing vitae, malesuada adipiscing tellus. Integer nec aliquam justo. Nam ac lacus erat. In **_hac habitasse platea_** dictumst. Donec pharetra, lectus sit amet ultrices fringilla, metus mi auctor ligula, in hendrerit dui arcu eu leo.
 
 {{< hn image=true >}}
 Who needs DropBox when the average Joe can use `tar` and `rsync`? Your business is doomed.
@@ -30,7 +30,7 @@ $$R_{ab} - {\textstyle 1 \over 2}R\,g_{ab} + \Lambda\ g_{ab} = \kappa\, T_{ab}$$
 
 Nulla facilisi. Cras lectus velit, rhoncus et mollis eget, ultricies quis ligula. Integer ornare nibh in est molestie tempus. Praesent bibendum placerat diam id gravida. Fusce et velit eget dui laoreet interdum eget id arcu. Ut et massa nibh, ut mollis augue. In hac habitasse platea dictumst. Sed massa orci, venenatis vitae dapibus sit amet, varius ut nibh. Ut vel enim leo, at posuere nisi. In elementum sem vel nibh malesuada sagittis.
 
-``` ruby
+```ruby
 require 'base64'
 
 File.open('favicon.png', 'wb') do |f|
@@ -42,7 +42,7 @@ Donec vitae turpis non augue pulvinar imperdiet eu non erat. Integer mollis diam
 
 <img src="//placekitten.com/720/250" class="center">
 
-# Immortal Words #
+# Immortal Words
 
 As you can see, there’s lots of work to do! Aenean mauris augue, faucibus vel sagittis nec, viverra sit amet sapien. Etiam neque nisi, molestie vel lacinia a, scelerisque eget justo. Suspendisse imperdiet lectus eu metus malesuada vel vehicula libero rutrum. Nulla facilisi. Cras lectus velit, rhoncus et mollis eget, ultricies quis ligula. Integer ornare nibh in est molestie tempus. Praesent bibendum placerat diam id gravida. Fusce et velit eget dui laoreet interdum eget id arcu.
 
@@ -52,7 +52,7 @@ As you can see, there’s lots of work to do! Aenean mauris augue, faucibus vel 
 
 Aenean mauris augue, faucibus vel sagittis nec, viverra sit amet sapien. Etiam neque nisi, molestie vel lacinia a, scelerisque eget justo. Suspendisse imperdiet lectus eu metus malesuada vel vehicula libero rutrum. Nulla facilisi.
 
-## The Meaning of Life ##
+## The Meaning of Life
 
 <img src="//placekitten.com/150/100" class="right" title="Place Kitten #3">
 
@@ -66,11 +66,11 @@ $$
 
 Aenean mauris augue, faucibus vel sagittis nec, viverra sit amet sapien. Etiam neque nisi, molestie vel lacinia a, scelerisque eget justo. Suspendisse imperdiet lectus eu metus malesuada vel vehicula libero rutrum. Nulla facilisi. In lectus nisl, semper ac imperdiet eu, ultricies luctus erat. Sed ultrices lectus in `massa tincidunt` fringilla. Aenean lectus tortor, tempus a sagittis vitae, hendrerit eget lacus.
 
-### Things to do ###
+### Things to do
 
-* first do this
-* then do this other thing
-* then maybe, if you're not tired, do this last thing
+- first do this
+- then do this other thing
+- then maybe, if you're not tired, do this last thing
 
 Here it is numbered for you:
 
@@ -80,5 +80,5 @@ Here it is numbered for you:
 
 As you can see, there's lots of work to do! Aenean mauris augue, faucibus vel sagittis nec, viverra sit amet sapien. Etiam neque nisi, molestie vel lacinia a, scelerisque eget justo. Suspendisse imperdiet lectus eu metus malesuada vel vehicula libero rutrum. Nulla facilisi. In lectus nisl, semper ac imperdiet eu, ultricies luctus erat. Sed ultrices lectus in `massa tincidunt` fringilla. Aenean lectus tortor, tempus a sagittis vitae, hendrerit eget lacus.
 
-[^1]: Cras nibh elit, mollis eu eleifend sed, faucibus in velit. 
-[^2]: This is the awesome constant 
+[^1]: Cras nibh elit, mollis eu eleifend sed, faucibus in velit.
+[^2]: This is the awesome constant

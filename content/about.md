@@ -4,8 +4,12 @@ date = 2012-09-21
 +++
 
 <p align="center">
-  <a href="https://stackoverflow.com/users/101090/jorge-israel-pe%c3%b1a">stackoverflow</a> · <a href="https://www.linkedin.com/in/jorge-israel-p/">linkedin</a> · <a href="mailto:jorge.israel.p@gmail.com">jorge.israel.p@gmail.com</a>
+  <img src="https://github.com/blaenk/blaenk/raw/master/static/masthead-dark-alpha.png#gh-dark-mode-only">
+  <img src="https://github.com/blaenk/blaenk/raw/master/static/masthead-light-alpha.png#gh-light-mode-only"><br>
+  <a href="https://jip.dev">jip.dev</a> · <a href="https://stackoverflow.com/users/101090/jorge-israel-pe%c3%b1a">stackoverflow</a> (top 0.74%) · <a href="https://www.linkedin.com/in/jorge-israel-p/">linkedin</a>
 </p>
+
+<p align="center">★★★★★</p>
 
 🙋🏻‍♂️ I am a versatile, self-directed engineer with +3 years of professional experience and +16 years of overall software engineering experience.
 
@@ -13,15 +17,25 @@ date = 2012-09-21
 
 👷🏻‍♂️ I have a proven record for designing, planning, leading, and developing complex projects, both greenfield projects as well as those involving major sweeping changes to critical, complex, interdependent legacy systems.
 
+<!-- --- -->
+<!-- <p align="center">▲▼▲▼▲</p> -->
+<p align="center">…</p>
+
 🚀 I consistently clear obstacles. If something is broken or lacking, I dive in to investigate, file a thorough ticket, and most of the time fix or implement the feature myself (see example [issue](https://github.com/aws/aws-cdk/issues/10921) and [PR](https://github.com/aws/aws-cdk/pull/10922)), and if what I need doesn't exist yet, [I will build it](https://github.com/blaenk/hoedown#readme).
 
 🐞 I love the thrill of the chase of debugging. This has led me to diagnose and address subtle and elusive bugs in all manner of previously-unfamiliar, complex, and diverse projects (see below), and all have been tremendous learning opportunities.
 
 ⚡ My thrill for debugging has allowed me to develop an acute ability to dive deep into unfamiliar projects and quickly make meaningful contributions (see below).
 
+<!-- --- -->
+<!-- <p align="center">▼▲▼▲▼</p> -->
+<p align="center">…</p>
+
 🧘🏻‍♂️ I am practical. I dive deep into niches like emacs, vim, and zsh (see extensive [dotfiles](https://github.com/blaenk/dots)), or state-of-the-art technologies like Rust, or perspective-expanding technologies like Haskell and Clojure—but I always remain grounded and pick the right tool for the job even if others may consider it boring. I always appreciate what each tool has to offer and its trade-offs.
 
-👀 I keep up with the latest developments and constantly read and learn new things, preferring source material like documentation and manuals, if available. See my extensive [notes](/notes/) and my recent [reading list](/reads/).
+👀 I keep up with the latest developments and constantly read and learn new things, preferring source material like documentation and manuals, if available. See my extensive [notes](https://jip.dev/notes/) and my recent [reading list](https://jip.dev/reads/).
+
+<p align="center">✶✶✶✶✶</p>
 
 <details>
 <summary align="center"><strong>🔽 Click here to expand some of my varied open source contributions 🔽</strong></summary>

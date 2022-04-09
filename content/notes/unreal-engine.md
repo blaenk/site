@@ -38,59 +38,59 @@ maps are stored as <span class="path">.umap</span> files within the Content fold
 
 The root directory contains the following directories as well as a directory for each game project:
 
-* <span class="path">Engine</span>: engine source, content, etc.
-* <span class="path">Templates</span>: project templates
-* <span class="path">GenerateProjectFiles.bat</span>: creates UE4 Visual Studio solution
-* <span class="path">UE4Games.uprojectdirs</span>: tells UnrealBuildTool where to find projects
+- <span class="path">Engine</span>: engine source, content, etc.
+- <span class="path">Templates</span>: project templates
+- <span class="path">GenerateProjectFiles.bat</span>: creates UE4 Visual Studio solution
+- <span class="path">UE4Games.uprojectdirs</span>: tells UnrealBuildTool where to find projects
 
 Both the Engine and game project directories have some directories in common:
 
-* <span class="path">Binaries</span>: built binaries and other built objects
-* <span class="path">Build</span>: build files
-* <span class="path">Config</span>: configuration files for engine settings. Those in game project configuration files override those in the Engine directory.
-* <span class="path">Content</span>: engine and game content, including asset packages and maps
-* <span class="path">DerivedDataCache</span>: cached derived data files generated on-load
-* <span class="path">Intermediate</span>: temporary build files, such as shaders in game directories
-* <span class="path">Saved</span>: autosaves, configuration files, and logs. The Engine's directory also contains crash logs, hardware information, and more.
-* <span class="path">Source</span>: contains engine and game source, tools, gameplay classes, etc.
-    * <span class="path">Engine</span>:
-        * <span class="path">Developer</span>: source common to editor and engine
-        * <span class="path">Editor</span>: editor source
-        * <span class="path">Programs</span>: external tools used by engine and editor
-        * <span class="path">Runtime</span>: engine source
-    * <span class="path">Game</span>: organized with a directory per module, each containing:
-        * <span class="path">Classes</span>: gameplay class headers (.h)
-        * <span class="path">Private</span>: gameplay class and module implementations (.cpp)
-        * <span class="path">Public</span>: module header
+- <span class="path">Binaries</span>: built binaries and other built objects
+- <span class="path">Build</span>: build files
+- <span class="path">Config</span>: configuration files for engine settings. Those in game project configuration files override those in the Engine directory.
+- <span class="path">Content</span>: engine and game content, including asset packages and maps
+- <span class="path">DerivedDataCache</span>: cached derived data files generated on-load
+- <span class="path">Intermediate</span>: temporary build files, such as shaders in game directories
+- <span class="path">Saved</span>: autosaves, configuration files, and logs. The Engine's directory also contains crash logs, hardware information, and more.
+- <span class="path">Source</span>: contains engine and game source, tools, gameplay classes, etc.
+  - <span class="path">Engine</span>:
+    - <span class="path">Developer</span>: source common to editor and engine
+    - <span class="path">Editor</span>: editor source
+    - <span class="path">Programs</span>: external tools used by engine and editor
+    - <span class="path">Runtime</span>: engine source
+  - <span class="path">Game</span>: organized with a directory per module, each containing:
+    - <span class="path">Classes</span>: gameplay class headers (.h)
+    - <span class="path">Private</span>: gameplay class and module implementations (.cpp)
+    - <span class="path">Public</span>: module header
 
 The <span class="path">Engine</span> directory also contains:
 
-* <span class="path">Documentation</span>: source markdown and published HTML documentation
-* <span class="path">Extras</span>: helper and utility files
-* <span class="path">Plugins</span>: engine plugins
-* <span class="path">Programs</span>: configuration files and logs for root projects such as UnrealFrontEnd and UnrealHeaderTool
-* <span class="path">Shaders</span>: shader source files (.usf)
+- <span class="path">Documentation</span>: source markdown and published HTML documentation
+- <span class="path">Extras</span>: helper and utility files
+- <span class="path">Plugins</span>: engine plugins
+- <span class="path">Programs</span>: configuration files and logs for root projects such as UnrealFrontEnd and UnrealHeaderTool
+- <span class="path">Shaders</span>: shader source files (.usf)
 
 Each game project directory contains:
 
-* <span class="path">Binaries</span>: built binaries
-* <span class="path">Config: </span>default game settings
-* <span class="path">Content:</span> engine or game content, including asset packages and maps
-* <span class="path">External dependencies</span>: public engine headers (Visual Studio)
-* <span class="path">Intermediate</span>: files generated by UnrealBuildTool such as Visual Studio projects
-* <span class="path">Saved</span>: configuration files and logs
-* <span class="path">Source</span>:
-    * <span class="path">Classes</span>: game object class definitions (.h)
-    * <span class="path">Private</span>: private game object class implementations (.cpp)
-    * <span class="path">Public</span>: public game object class implementations (.cpp)
+- <span class="path">Binaries</span>: built binaries
+- <span class="path">Config: </span>default game settings
+- <span class="path">Content:</span> engine or game content, including asset packages and maps
+- <span class="path">External dependencies</span>: public engine headers (Visual Studio)
+- <span class="path">Intermediate</span>: files generated by UnrealBuildTool such as Visual Studio projects
+- <span class="path">Saved</span>: configuration files and logs
+- <span class="path">Source</span>:
+  - <span class="path">Classes</span>: game object class definitions (.h)
+  - <span class="path">Private</span>: private game object class implementations (.cpp)
+  - <span class="path">Public</span>: public game object class implementations (.cpp)
 
 Solution directories contain:
 
-* <span class="path">Classes</span>: game object class definitions (.h)
-* <span class="path">Config</span>: default game settings
-* <span class="path">External dependencies</span>: public engine headers (Visual Studio)
-* <span class="path">Private</span>: private game object class implementations (.cpp)
-* <span class="path">Public</span>: public game object class implementations (.cpp)
+- <span class="path">Classes</span>: game object class definitions (.h)
+- <span class="path">Config</span>: default game settings
+- <span class="path">External dependencies</span>: public engine headers (Visual Studio)
+- <span class="path">Private</span>: private game object class implementations (.cpp)
+- <span class="path">Public</span>: public game object class implementations (.cpp)
 
 # Terminology
 
@@ -130,7 +130,7 @@ A _GameMode_ is responsible for setting the game rules, such as the maximum numb
 
 The default game mode for all maps in a project can be set in the <span class="path">/Script/EngineSettings.GameMapsSettings</span> section of the <span class="path">DefaultEngine.ini</span> configuration file. A specific map's GameMode can be set through the **World Settings** tab with the **GameMode Override** setting. It's also possible to override the game used via the `game` query parameter to the map path given to the game when the `-game` argument is passed. It's also possible to register game modes with map name prefixes. For example, the map name prefix "DM" can be associated with a game mode `UTDMGameMode` by specifying it in the <span class="path">/Script/EngineSettings.GameMapSettings</span> section of the <span class="path">DefaultEngine.ini</span> configuration file with the `+GameModeMapPrefixes` and `+GameModeClassAliases` settings:
 
-``` ini
+```ini
 [/Script/EngineSettings.GameMapsSettings]
 +GameModeMapPrefixes=(Name="DM",GameMode="/Script/UnrealTournament.UTDMGameMode")
 +GameModeClassAliases=(Name="DM",GameMode="/Script/UnrealTournament.UTDMGameMode")
@@ -154,7 +154,7 @@ The `PlayerState` contains information specific to a particular player, be it a 
 
 # User Interface
 
-Heads-up displays (HUD) are generally for non-interactive  game state, while user interfaces are for interactive elements drawn on the screen (like a HUD) or onto a surface in the world.
+Heads-up displays (HUD) are generally for non-interactive game state, while user interfaces are for interactive elements drawn on the screen (like a HUD) or onto a surface in the world.
 
 The `HUD` class is the base object for displaying elements overlaid on the screen. Each human-controlled player has their own instance of the `AHUD` class which draws to their individual Viewport. For example, while a split-screen multiplayer game may have multiple Viewports sharing the same screen, each HUD draws to its own Viewport.
 
@@ -170,14 +170,14 @@ It appears that the use of Slate is now preferred over the use of UMG.
 
 Many classes have a prefix character that denotes their expected usage or lineage. Type definitions should have a prefix corresponding to the prefix that would be used on for underlying type. These prefixes are actually expected by UnrealHeaderTool.
 
-* `T`: Template class
-* `U`: Inherits from `UObject`
-* `A`: Inherits from `AActor`
-* `S`: Inherits from `SWidget`
-* `I`: Abstract interface
-* `E`: Enum
-* `b`: Boolean variable
-* `F`: most other classes
+- `T`: Template class
+- `U`: Inherits from `UObject`
+- `A`: Inherits from `AActor`
+- `S`: Inherits from `SWidget`
+- `I`: Abstract interface
+- `E`: Enum
+- `b`: Boolean variable
+- `F`: most other classes
 
 The Unreal Engine source code style is to keep each brace on its own line.
 
@@ -191,11 +191,11 @@ The Unreal Build System's build process executes _independently_ of IDE project 
 
 The UnrealBuildTool (UBT) supports the following targets:
 
-* Game: standalone game, requires cooked data
-* Client: "Game" target without server code; for network clients
-* Server: "Game" target without client code; for dedicated servers
-* Editor: for extending the Unreal Editor
-* Program: for standalone utility programs built on UE
+- Game: standalone game, requires cooked data
+- Client: "Game" target without server code; for network clients
+- Server: "Game" target without client code; for dedicated servers
+- Editor: for extending the Unreal Editor
+- Program: for standalone utility programs built on UE
 
 Targets are declared in <span class="path">.target.cs</span> files within the <span class="path">Source/</span> directory. Such a file declares a class deriving from the `TargetRules` class, with properties set in its constructor for how it should be built. When UBT is asked to build a target, it compiles the eponymous file and instantiates the class to determine its settings.
 
@@ -231,7 +231,7 @@ It's also possible to configure the amount of time between collections, which ge
 
 `UObjects` know their `UClass`, which facilitates run-time type checking and casting.
 
-``` cpp
+```cpp
 class ALegendaryWeapon : public AWeapon
 {
   void SlayMegaBoss()
@@ -254,7 +254,7 @@ class ALegendaryWeapon : public AWeapon
 
 Each `UObject` has a `typedef` named `Super` that is set to its parent class, which can be used to invoke behavior in the parent class.
 
-``` cpp
+```cpp
 class AEnemy : public ACharacter
 {
   virtual void Speak()
@@ -290,7 +290,7 @@ Multiple gameplay modules may result in better link times and faster code iterat
 
 <span class="path">MyGame/Source/MyModule/Public/MyModule.h</span>:
 
-``` cpp
+```cpp
 #include "Engine.h"
 #include "EnginePrivate.h"
 #include "MyModuleClasses.h" // UHT-generated
@@ -298,7 +298,7 @@ Multiple gameplay modules may result in better link times and faster code iterat
 
 <span class="path">MyGame/Source/MyModule/Private/MyModule.cpp</span>:
 
-``` cpp
+```cpp
 // Include our game's header file
 #include "MyModule.h"
 
@@ -308,7 +308,7 @@ IMPLEMENT_PRIMARY_GAME_MODULE(MyModule, "MyGame");
 
 <span class="path">MyGame/Source/MyModule/MyModule.build.cs</span>:
 
-``` csharp
+```csharp
 using UnrealBuildTool;
 
 public class MyModule : ModuleRules
@@ -325,21 +325,21 @@ The module must then be registered in the <span class="path">DefaultEngine.ini</
 
 In the `EditPackages` array of the `UnrealEd.EditorEngine` section:
 
-``` ini
+```ini
 [UnrealEd.EditorEngine]
 +EditPackages=MyModule
 ```
 
 The `Launch` section:
 
-``` ini
+```ini
 [Launch]
 Module=MyModule
 ```
 
 And the `NativePackages` array of the <span class="path">/Script/Engine.UObjectPackages</span> section:
 
-``` ini
+```ini
 [/Script/Engine.UObjectPackages]
 +NativePackages=MyModule
 ```
@@ -390,7 +390,7 @@ Objects are automatically garbage collected. The `MarkPendingKill` function null
 
 The `UClass` and the CDO can be retrieved for any object, but they should be considered read-only. The `UClass` is accessible through the `GetClass` function.
 
-``` cpp
+```cpp
 UCLASS([specifier, …], [meta(key=value, …)])
 class ClassName : public ParentName
 {
@@ -402,7 +402,7 @@ The constructors are used to set default values for properties and necessary ini
 
 A constructor variant can take an `FObjectInitializer` which can be used to override properties and sub-objects. For example, the following prevents the superclass of `AMyObject` from creating the sub-objects named `"SomeComponent"` and `"SomeOtherComponent"`.
 
-``` cpp
+```cpp
 AMyObject::AMyObject(const FObjectInitializer& ObjectInitializer)
   : Super(ObjectInitializer
             .DoNotCreateDefaultSubobject(TEXT("SomeComponent"))
@@ -414,21 +414,21 @@ AMyObject::AMyObject(const FObjectInitializer& ObjectInitializer)
 
 `UObject` provides the following functionality:
 
-* garbage collection
-* reference updating
-* reflection
-* serialization
-* automatic updating of default property changes
-* automatic property initialization
-* editor integration
-* run-time type information
-* network replication
+- garbage collection
+- reference updating
+- reflection
+- serialization
+- automatic updating of default property changes
+- automatic property initialization
+- editor integration
+- run-time type information
+- network replication
 
 `UObject`s can be instantiated in a variety of ways.
 
 The `NewObject<Type>()` function instantiates with an auto-generated name and takes as optional parameters the object's `Outer` and the `UClass` to instantiate, which by default is determined by the template type parameter.
 
-``` cpp
+```cpp
 template<class T>
 T *NewObject
 (
@@ -442,7 +442,7 @@ T *NewObject
 
 The `NewNamedObject<Type>()` function instantiates with the specified name. It takes as parmeters the object's `Outer`, the name to use, optional object flags, and the template object to use as the CDO. It asserts that the name conflicts with the instance's `Outer`.
 
-``` cpp
+```cpp
 template<class T>
 T *NewNamedObject
 (
@@ -461,7 +461,7 @@ T *NewNamedObject
 
 The `ConstructObject<Type>()` function instantiates with all available creation options for maximum flexibility. It calls `StaticConstructionObject` which allocates the object, calls its `ClassConstructor`, and performs any further initialization such as loading configuration or localization properties and instancing components.
 
-``` cpp
+```cpp
 template<class T>
 T* ConstructObject
 (
@@ -486,7 +486,7 @@ It's also possible to instantiate a `UObject` using a direct `new` operator invo
 
 Hard-coded asset references are discouraged due to their brittle nature. To avoid looking-up assets on each constructor call (which involves searching), it is done once and cached through a `ConstructorStatics` struct, which is created once and then simply referenced by subsequent instantiations. The `ConstructorHelpers` namespace contains the `FObjectFinder` function which can be used to find an asset.
 
-``` cpp
+```cpp
 ATimelineTestActor::ATimelineTestActor()
 {
   // One-time initialization
@@ -505,7 +505,7 @@ ATimelineTestActor::ATimelineTestActor()
 
 Similarly, the `ConstructorHelper::FClassFinder` can be used to find a reference to a particular `UClass`. Although it's usually possible and easier to just use the class's `StaticClass` function which yields the `UClass`, e.g. `USomeClass::StaticClass()`, unless it's a cross-module reference.
 
-``` cpp
+```cpp
 APylon::APylon(const class FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
 {
@@ -526,7 +526,7 @@ APylon::APylon(const class FObjectInitializer& ObjectInitializer)
 
 When an Actor is spawned, all of its components are cloned from the CDO, so they must be added to the object graph, so that they may be properly garbage collected, by keeping a reference to them within the class, which should be stored as a `UPROPERTY`.
 
-``` cpp
+```cpp
 UCLASS()
 class AWindPointSource : public AActor
 {
@@ -543,7 +543,7 @@ class AWindPointSource : public AActor
 
 It's then possible to create component sub-objects and attach them to the Actor's hierarchy. It's also possible to access and/or modify the parent components via `GetAttachParent`, `GetParentComponents`, `GetNumChildrenComponents`, `GetChildrenComponents`, and `GetChildComponent` on any `USceneComponent` including the root component.
 
-``` cpp
+```cpp
 AWindPointSource::AWindPointSource()
 {
   // Create a new component named "WindPointSourceComponent0.
@@ -582,12 +582,12 @@ AWindPointSource::AWindPointSource()
 
 Functions can be marked up with the `UFUNCTION` macro which, like `UCLASS`, accepts function specifiers. Assuming that the appropriate function specifiers are set, these functions could be:
 
-* called and overridden from Blueprints.
-* assigned as delegates within the default properties of a class.
-* used as replication callbacks, which are invoked when the associated variable changes.
-* executed through the console.
+- called and overridden from Blueprints.
+- assigned as delegates within the default properties of a class.
+- used as replication callbacks, which are invoked when the associated variable changes.
+- executed through the console.
 
-``` cpp
+```cpp
 UFUNCTION([specifier, …], [meta(key=value, …)])
 ReturnType FunctionName([Parameter, …])
 ```
@@ -644,7 +644,7 @@ The `UnsafeDuringActorConstruction` function metadata specifier marks the functi
 
 Structs can be marked with the `USTRUCT` macro. The generated body is inserted via the `GENERATED_BODY` macro.
 
-``` cpp
+```cpp
 USTRUCT([Specifier, …])
 struct StructName
 {
@@ -662,7 +662,7 @@ The `NoExport` struct specifier indicates that no code be generated for the stru
 
 Interfaces are declared with a regular `U`-prefixed class that inherits from the `UInterface` class and is marked with the `UINTERFACE` macro.
 
-``` cpp
+```cpp
 UINTERFACE([specifier, …], [meta(key=value, …)])
 class UClassName : public UInterface
 {
@@ -672,7 +672,7 @@ class UClassName : public UInterface
 
 This class is not an actual interface, but merely an empty class that simply exists for Unreal Engine's reflection system's purposes. The actual implementation for the interface is expected in a class named with an `I` prefix instead of a `U` prefix.
 
-``` cpp
+```cpp
 #pragma once
 
 #include "ReactToTriggerInterface.generated.h"
@@ -699,7 +699,7 @@ public:
 
 Any class wishing to implement the interface must derive from the interface implementation class with the `I`-prefix.
 
-``` cpp
+```cpp
 class ATrap : public AActor, public IReactToTriggerInterface
 {
   GENERATED_BODY()
@@ -711,7 +711,7 @@ public:
 
 It's possible to dynamically test if a given class implements an interface via the `U`-prefix interface's `UClass`'s `ImplementsInterface` function or by attempting to cast to the interface's _implementation_ type (`I`-prefix).
 
-``` cpp
+```cpp
 bool bIsImplemented = Object->GetClass()->ImplementsInterface(UReactToTriggerInterface::StaticClass());
 
 // null if it doesn't implement the interface
@@ -720,7 +720,7 @@ IReactToTriggerInterface* ReactingObject = Cast<IReactToTriggerInterface>(Object
 
 More generally, it's possible to cast from one interface to another provided that the object implements both.
 
-``` cpp
+```cpp
 // ReactingObject will be non-null if the interface is implemented.
 IReactToTriggerInterface* ReactingObject = Cast<IReactToTriggerInterface>(Object);
 
@@ -737,7 +737,7 @@ The `CannotImplementInterfaceInBlueprint` interface metadata specifier prevents 
 
 Class properties can be marked up with the `UPROPERTY` macro.
 
-``` cpp
+```cpp
 UPROPERTY([specifier, …], [meta(key=value, …)])
 VariableType VariableName;
 ```
@@ -748,7 +748,7 @@ Integer properties can be exposed to the Editor as bitmasks by using the `Meta` 
 
 An integer property designated as a `Bitmask` can also be associated with an enumeration, so that each enumeration is displayed in the drop-down.
 
-``` cpp
+```cpp
 UENUM(Meta = (Bitflags))
 enum class EColorBits
 {
@@ -766,9 +766,9 @@ The Editor interprets Boolean values to be `bool` or a bit-field.
 
 Four core string types are supported.
 
-* `FString` which is a dynamically-sized string similar to `std::string`
-* `FName` which is an interned, immutable, case-insensitive string
-* `FText` which is a robust string representation that supports localization
+- `FString` which is a dynamically-sized string similar to `std::string`
+- `FName` which is an interned, immutable, case-insensitive string
+- `FText` which is a robust string representation that supports localization
 
 The `TCHAR` type is used for characters. The `TEXT()` macro is used to denote string literals made up of `TCHAR`.
 
@@ -780,7 +780,7 @@ The `AssetRegistrySearchable` property specifier automatically adds the property
 
 The `BlueprintAssignable` property specifier only applies to multi-cast delegates and serves to expose the property for assigning in Blueprints.
 
-``` cpp
+```cpp
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnItemRemoved, FItemStruct, RemovedItem);
 
 UCLASS(meta=(BlueprintSpawnableComponent))
@@ -862,7 +862,7 @@ The `Transient` property specifier indicates that the property is transient and 
 
 Enumerations can be marked up with the `UENUM` macro. Generally the `BlueprintType` enum specifier is provided to expose the enumeration type to the editor. Individual enumerations can be marked up with the `UMETA` macro, which is useful for setting the `DisplayName` meta specifier, which specifies the name that the enumeration should appear as in the editor.
 
-``` cpp
+```cpp
 UENUM(BlueprintType)
 enum class EDamageElement : uint8
 {
@@ -876,7 +876,7 @@ The `ENUM_CLASS_FLAGS` macro can be used to automatically define all bitwise ope
 
 An enumeration can be marked as a `UPROPERTY` as long as it is based on a `uint8`.
 
-``` cpp
+```cpp
 // Old way.
 UPROPERTY()
 TEnumAsByte<EDamageElement> MyProperty;
@@ -908,9 +908,9 @@ An Actor can be loaded from disk when it's already in a level, via `LoadMap` or 
 2. `PostLoad` called by serialized Actors when they're finished loading. Custom versioning and fixup occurs here. It's mutually exclusive with `PostActorCreated`.
 3. `InitializeActorsForPlay`
 4. `RouteActorInitialize` is called for any non-initialized Actor in order to cover seamless travel carry-over.
-    1. `PreInitializeComponents` is called before `InitializeComponent` is called on the Actor's Components
-    2. `InitializeComponent` is a helper function for the creation of each component defined on the Actor
-    3. `PostInitializeComponents` is called after the Actor's components have been initialized.
+   1. `PreInitializeComponents` is called before `InitializeComponent` is called on the Actor's Components
+   2. `InitializeComponent` is a helper function for the creation of each component defined on the Actor
+   3. `PostInitializeComponents` is called after the Actor's components have been initialized.
 5. `BeginPlay` is called when the level is started
 
 When an actor is instantiated for Play-in-Editor, the Actors in the Editor are duplicated into a new World and `PostDuplicate` is called, then the process follows as with step #3 of the loading-from-disk process.
@@ -921,11 +921,11 @@ When an Actor is spawned, the following process is followed:
 2. `PostSpawnInitialize`
 3. `PostActorCreated` is called for spawned Actors after their creation, so initialization go there. It's mutually exclusive with `PostLoad`.
 4. `ExecuteConstruction`
-    1. `OnConstruction` is the construction of the Actor, where Blueprint Actors create their components and initialize their Blueprint variables
+   1. `OnConstruction` is the construction of the Actor, where Blueprint Actors create their components and initialize their Blueprint variables
 5. `PostActorConstruction`
-    1. `PreInitializeComponents` is called before `InitializeComponent` is called on the Actor's Components
-    2. `InitializeComponent` is a helper function for the creation of each component defined on the Actor
-    3. `PostInitializeComponents` is called after the Actor's components have been initialized.
+   1. `PreInitializeComponents` is called before `InitializeComponent` is called on the Actor's Components
+   2. `InitializeComponent` is a helper function for the creation of each component defined on the Actor
+   3. `PostInitializeComponents` is called after the Actor's components have been initialized.
 6. `OnActorSpawned` is broadcast on the `UWorld`
 7. `BeginPlay` is called
 
@@ -933,18 +933,18 @@ It's possible for an Actor to be Deferred Spawned by setting any property to "Ex
 
 1. `SpawnActorDeferred` is called and is meant to spawn procedural Actors, allowing for additional setup before the Blueprint construction
 2. Everything in `SpawnActor` occurs, then after `PostActorCreated`:
-    1. Call various initializers with the valid but incomplete Actor instance
-    2. `FinishSpawningActor` is called to finalize the Actor
-    3. Continue at the `ExecuteConstruction`
+   1. Call various initializers with the valid but incomplete Actor instance
+   2. `FinishSpawningActor` is called to finalize the Actor
+   3. Continue at the `ExecuteConstruction`
 
 The `EndPlay` function guarantees that an Actor's life is coming to an end by marking it as `RF_PendingKill` so that it's removed on the next garbage collection cycle. It is called in many places such as:
 
-* the `Destroy` function
-* Play-in-Editor ended
-* Level Transitions, be it seamless travel or load map
-* when a streaming level containing the Actor is unloaded
-* Actor's lifetime has expired
-* application shutdown
+- the `Destroy` function
+- Play-in-Editor ended
+- Level Transitions, be it seamless travel or load map
+- when a streaming level containing the Actor is unloaded
+- Actor's lifetime has expired
+- application shutdown
 
 To check if an Actor is pending kill, an attempt should be made to acquire a weak pointer `FWeakObjectPtr<TheActor>`.
 
@@ -953,6 +953,8 @@ During destruction, while an object is being garbage collected, the following pr
 1. `BeginDestroy` is called to allow the Actor to free any resources. Gameplay-related destruction behavior should occur in `EndPlay`
 2. `IsReadyForFinishDestroy` is called by the garbage collector to determine whether the object is ready to be deallocated, which means that the object can return `false` to defer its destruction until the next GC pass.
 3. `FinishDestroy` is called when the object is finally going to be destroyed and is the final chance to free up internal data structures
+
+You can use `GetActorForwardVector()` to get the Actor's forward vector.
 
 # Components
 
@@ -966,15 +968,15 @@ Components are registered in a scene with the `RegisterComponent` function, so t
 
 ActorComponents are automatically registered when their owning Actor is spawned as long as they are created as sub-objects and were added to the `Components` array in the Actor's default properties. Otherwise they can be registered dynamically via `RegisterComponent`. A Component can override the following registration callbacks:
 
-* `OnRegister` which allows for additional component initialization
-* `CreateRenderState` which initializes the Component's render state
-* `OnCreatePhysicsState` which initializes the Component's physics state
+- `OnRegister` which allows for additional component initialization
+- `CreateRenderState` which initializes the Component's render state
+- `OnCreatePhysicsState` which initializes the Component's physics state
 
 A Component can be unregistered to prevent it from being updated, simulated, or rendered by calling the `UnregisterComponent` function, which triggers the following callbacks:
 
-* `OnUnRegister` which allows for additional actions to occur when unregistering
-* `DestroyRenderState` which uninitializes the Component's render state
-* `OnDestroyPhysicsState` which uninitializes the Component's physics state
+- `OnUnRegister` which allows for additional actions to occur when unregistering
+- `DestroyRenderState` which uninitializes the Component's render state
+- `OnDestroyPhysicsState` which uninitializes the Component's physics state
 
 A Component can be updated each frame as long as they are registered, are set to tick by disabling `bComponentNEverTicks`, and define the `TickComponent` function.
 
@@ -994,14 +996,14 @@ A PrimitiveComponent contains an `FPrimitiveSceneProxy` which encapsulates scene
 
 The canonical Actor-spawning function is on `UWorld` and takes a variety of arguments for fine-grained spawning configuration. The only required argument is the `UClass` of the Actor to spawn. Some optional arguments include:
 
-* a name to give the Actor
-* a location and rotation
-* a template Actor whose properties should be copied (instead of the CDO)
-* whether to fail the spawn if it collides
-* who the Actor's owner will be
-* the instigator: the Actor will be responsible for damage caused by the spawned Actor
+- a name to give the Actor
+- a location and rotation
+- a template Actor whose properties should be copied (instead of the CDO)
+- whether to fail the spawn if it collides
+- who the Actor's owner will be
+- the instigator: the Actor will be responsible for damage caused by the spawned Actor
 
-``` cpp
+```cpp
 AActor* UWorld::SpawnActor
 (
   UClass*         Class,
@@ -1026,7 +1028,7 @@ Several templated functions exist for common spawning cases.
 
 One exists which spawns an Actor at the location and rotation of the Actor performing the spawn, and automatically returns a pointer of the Actor's type so no casting is necessary.
 
-``` cpp
+```cpp
 template<class T>
 T* SpawnActor (
   AActor* Owner = NULL,
@@ -1051,7 +1053,7 @@ AHUD *MyHUD = SpawnActor<AHUD>(this, Instigator);
 
 There's also a variant like this one which takes an explicit Location and Rotation:
 
-``` cpp
+```cpp
 template<class T>
 T* SpawnActor (
   FVector const& Location,
@@ -1082,7 +1084,7 @@ AController *Controller = SpawnActor<AController>(GetLocation(),
 
 There are also variants of each of the above variants which take a `UClass` and automatically cast to the correct type.
 
-``` cpp
+```cpp
 AHUD *MyHUD = SpawnActor<AHUD>(NewHUDClass, this, Instigator);
 
 // With explicit location + rotation
@@ -1104,30 +1106,34 @@ Components, Actors, or entire Tick Groups can declare tick dependencies so that 
 The available tick groups are:
 
 1. `TG_PrePhysics`: beginning of frame
-    * This tick group ensures that an Actor's movement is complete and ready to be factored into the physics simulation.
-    * Physics data is one frame old (which was used to render the previous frame).
-    * Appropriate for physics object and physics-based attachments.
+
+   - This tick group ensures that an Actor's movement is complete and ready to be factored into the physics simulation.
+   - Physics data is one frame old (which was used to render the previous frame).
+   - Appropriate for physics object and physics-based attachments.
 
 2. `TG_DuringPhysics`: beginning of physics simulation.
-    * Runs during physics simulation, so physics data may be from the previous or current frame.
-    * Simulation may finish and update engine physics data at any time, even before this group finishes ticking, without indication.
-    * Appropriate for:
-        * physics-independent logic
-        * logic that can afford to be one frame off, such as updating inventory screens or mini-maps, where physics data is irrelevant or coarse enough for one-frame-off to be indistinguishable.
+
+   - Runs during physics simulation, so physics data may be from the previous or current frame.
+   - Simulation may finish and update engine physics data at any time, even before this group finishes ticking, without indication.
+   - Appropriate for:
+     - physics-independent logic
+     - logic that can afford to be one frame off, such as updating inventory screens or mini-maps, where physics data is irrelevant or coarse enough for one-frame-off to be indistinguishable.
 
 3. `TG_PostPhysics`: end of physics simulation.
-    * Engine now using current frame's data.
-    * Appropriate for weapon or movement traces, such as a laser sight, since the final positions of physics objects are now known.
+
+   - Engine now using current frame's data.
+   - Appropriate for weapon or movement traces, such as a laser sight, since the final positions of physics objects are now known.
 
 4. N/A: for latent actions, ticking world timer manager, camera updates, update level streaming volumes and streaming operations
 
-4. `TG_PostUpdateWork`: after cameras are updated.
-    * Historically for feeding last-possible-moment data to particle systems.
-    * Appropriate for:
-        * effects that depend on where the camera is pointed.
-        * logic intended to run after everything else in the frame, such as resolution of characters trying to perform a mutually exclusive action on the same frame.
+5. `TG_PostUpdateWork`: after cameras are updated.
 
-5. N/A: deferred Actor spawns created earlier in the frame.
+   - Historically for feeding last-possible-moment data to particle systems.
+   - Appropriate for:
+     - effects that depend on where the camera is pointed.
+     - logic intended to run after everything else in the frame, such as resolution of characters trying to perform a mutually exclusive action on the same frame.
+
+6. N/A: deferred Actor spawns created earlier in the frame.
 
 The `AddTickPrerequisiteActor` and `AddTickPrerequisiteComponent` functions can be used to declare tick dependencies, so that the calling Actor or Component's tick function doesn't begin until the specified Actor or Component's tick has completed.
 
@@ -1135,7 +1141,7 @@ Tick dependencies are especially useful when one Actor or Component prepares dat
 
 An Actor's tick function's settings (the tick group to run in, whether to run at all) is usually set in the constructor via the `PrimaryActorTick` property. These properties are then registered to take effect in `BeginPlay`.
 
-``` cpp
+```cpp
 PrimaryActorTick.bCanEverTick = true;
 PrimaryActorTick.bTickEvenWhenPaused = true;
 PrimaryActorTick.TickGroup = TG_PrePhysics;
@@ -1143,7 +1149,7 @@ PrimaryActorTick.TickGroup = TG_PrePhysics;
 
 An Actor's Components all tick during the Actor's tick by default, but components can specify their own tick settings via `PrimaryComponentTick`, in which case the Components are added to lists corresponding to the tick group they belong to.
 
-``` cpp
+```cpp
 PrimaryComponentTick.bCanEverTick = true;
 PrimaryComponentTick.bTickEvenWhenPaused = true;
 PrimaryComponentTick.TickGroup = TG_PrePhysics;
@@ -1171,21 +1177,21 @@ Delegates are safe to copy and should generally be passed by reference.
 
 Delegates are declared via a delegate declaration macro depending on the function's kind of signature. This has the effect of defining a new type that represents a delegate that can bind to a function of that type. The following types are supported:
 
-* those returning a value
-* those with up to four "payload" arguments
-* those with up to eight function parameters
-* those declared as `const`
+- those returning a value
+- those with up to four "payload" arguments
+- those with up to eight function parameters
+- those declared as `const`
 
 Simple functions with no parameters or return values.
 
-``` cpp
+```cpp
 void Function();
 DECLARE_DELEGATE(Function);
 ```
 
 Functions with one or more parameters.
 
-``` cpp
+```cpp
 void Function(ParamType Param);
 DECLARE_DELEGATE_OneParam(Function, ParamType);
 
@@ -1195,7 +1201,7 @@ DECLARE_DELEGATE_TwoParams(Function, ParamType, OtherType);
 
 Functions with a return value.
 
-``` cpp
+```cpp
 ReturnType Function();
 DECLARE_DELEGATE_RetVal(ReturnType, Function);
 
@@ -1208,24 +1214,24 @@ DECLARE_DELEGATE_RetVal_TwoParams(ReturnType, Function, ParamType, OtherType);
 
 Variants of each of those delegate declaration macros exist for multi-cast, dynamic, and wrapped delegates.
 
-* `DECLARE_MULTICAST_DELEGATE_*`
-* `DECLARE_DYNAMIC_DELEGATE_*`
-* `DECLARE_DYNAMIC_MULTICAST_DELEGATE_*`
+- `DECLARE_MULTICAST_DELEGATE_*`
+- `DECLARE_DYNAMIC_DELEGATE_*`
+- `DECLARE_DYNAMIC_MULTICAST_DELEGATE_*`
 
 The delegate system has special handling for certain types of objects. For example, binding a delegate to a member of a `UObject` causes the delegate system to maintain a weak reference to the object so that `IsBound` or `ExecuteIfBound` can be used to only conditionally invoke the delegate when the `UObject` still exists.
 
 The different bind functions include:
 
-* `Bind` binds to an existing delegate object
-* `BindStatic` binds a native C++ global function
-* `BindRaw` binds a native C++ function pointer (so the pointer may dangle)
-* `BindSP` binds to a shared pointer object member function, so that a weak reference to the object is kept and `ExecuteIfBound` may be used
-* `BindUObject` binds a member function on a `UObject`, so that a weak reference to the object is kept and `ExecuteIfBound` may be used
-* `UnBind` unbinds the delegate
+- `Bind` binds to an existing delegate object
+- `BindStatic` binds a native C++ global function
+- `BindRaw` binds a native C++ function pointer (so the pointer may dangle)
+- `BindSP` binds to a shared pointer object member function, so that a weak reference to the object is kept and `ExecuteIfBound` may be used
+- `BindUObject` binds a member function on a `UObject`, so that a weak reference to the object is kept and `ExecuteIfBound` may be used
+- `UnBind` unbinds the delegate
 
 It's possible to pre-bind certain arguments by passing them to the `Bind*` calls, except for dynamic delegates.
 
-``` cpp
+```cpp
 MyDelegate.BindRaw(&MyFunction, true, 20);
 ```
 
@@ -1233,7 +1239,7 @@ A delegate can be invoked by calling its `Execute` function, although they shoul
 
 For example, assume that `FLogWriter::WriteToLog` is meant to be called via a delegate.
 
-``` cpp
+```cpp
 class FLogWriter
 {
   void WriteToLog(FString);
@@ -1242,13 +1248,13 @@ class FLogWriter
 
 A delegate type is created via the delegate declaration macro that matches the function's type.
 
-``` cpp
+```cpp
 DECLARE_DELEGATE_OneParam(FStringDelegate, FString);
 ```
 
 The delegate can then be added to a class. The delegate can then be bound to the function by specifying the class' type as a template parameter, the instance to invoke the function on, and a pointer to the member function.
 
-``` cpp
+```cpp
 class FMyClass
 {
   FStringDelegate WriteToLogDelegate;
@@ -1319,7 +1325,7 @@ Events are bound and invoked in a manner similar to multi-cast delegates.
 
 By convention, accessors for events should be named with an `On` prefix.
 
-``` cpp
+```cpp
 public:
   DECLARE_EVENT(FLayerViewModel, FChangedEvent)
   FChangedEvent& OnChanged() { return ChangedEvent; }
@@ -1330,7 +1336,7 @@ private:
 
 Note that it's possible to define an abstract event which can be inherited by derived classes. The derived class needs to specify that the event is derived with the `DECLARE_DERIVED_EVENT` macro which takes the name of the derived class, a member pointer to the event on the base class, and the new name of the event (which can remain the same).
 
-``` cpp
+```cpp
 // Base
 class IAssetRegistry
 {
@@ -1381,7 +1387,7 @@ Note that shared pointers are not compatible with Unreal `UObject`s.
 
 The `TSharedPtr` type is a reference-counted shared pointer similar to `std::shared_ptr`.
 
-``` cpp
+```cpp
 // Create an empty shared pointer
 TSharedPtr<FTreeNode> EmptyNode;
 
@@ -1395,13 +1401,13 @@ There are implicit conversions defined for shared references to shared pointers.
 
 Converting from a shared pointer to a shared reference is potentially unsafe since the shared pointer may be empty, so the `TSharedPtr::ToSharedRef` function asserts if the pointer is null.
 
-``` cpp
+```cpp
 TSharedRef<FTreeNode> NodeRef(new FTreeNode());
 ```
 
 The `TWeakPtr` type is a weak pointer, which is automatically emptied when the object is destroyed. The referenced object is only accessible by promoting the weak pointer to a shared pointer.
 
-``` cpp
+```cpp
 // Allocate a new tree node.
 TSharedRef<FTreeNode> NodeOwner(new FTreeNode());
 
@@ -1423,7 +1429,7 @@ The `TSharedFromthis` helper class can be derived to enable the acquisition of `
 
 [`std::enable_shared_from_this`]: http://en.cppreference.com/w/cpp/memory/enable_shared_from_this/shared_from_this
 
-``` cpp
+```cpp
 class FAnimation : public TSharedFromThis<FMyClass>
 {
   void Register()
@@ -1447,16 +1453,16 @@ The performance characteristics of shared pointers are that they are generally f
 
 There are thread-safe variants of the pointer types which use atomic reference counting, like `std::shared_ptr` does:
 
-* `TThreadSafeSharedPtr<T>`
-* `TThreadSafeSharedRef<T>`
-* `TThreadSafeWeakPtr<T>`
-* `TThreadSafeSharedFromThis<T>`
+- `TThreadSafeSharedPtr<T>`
+- `TThreadSafeSharedRef<T>`
+- `TThreadSafeWeakPtr<T>`
+- `TThreadSafeSharedFromThis<T>`
 
 # TSubclassOf
 
 the `TSubclassOf` type can be used to encode and enforce a reference to a type that is derived from a given type. This provides better guarantees than simply using a broad `UClass` pointer and hoping that the user provides an object of the appropriate kind.
 
-``` cpp
+```cpp
 // Too broad and dangerous.
 UPROPERTY(EditDefaultsOnly, Category=Damage)
 UClass* DamageType;
@@ -1470,7 +1476,7 @@ Specifically, assigning a `TSubclassOf` to another where the type parameter of t
 
 However, assigning a general `UClass` pointer to a `TSubclassOf` results in a run-time check, which results in a `nullptr` if the check fails.
 
-``` cpp
+```cpp
 TSubclassOf<UDamageType> damageType;
 TSubclassOf<UDamageType_Lava> lavaDamage;
 
@@ -1493,7 +1499,7 @@ It's recommended to put string literals in INT files instead of in the source co
 
 The `FName` type represents an interned, immutable string. Equality checks between two `FName`s simply compares their index into the intern table. The `FName::Compare` function can be used to compare the actual strings. Membership in the intern table can be tested by using an `FName` constructor overload.
 
-``` cpp
+```cpp
 FName TestHUDName = FName(TEXT("ThisIsMyTestFName"));
 
 if (FName(TEXT("needle"), FNAME_Find) != NAME_None) {
@@ -1503,7 +1509,7 @@ if (FName(TEXT("needle"), FNAME_Find) != NAME_None) {
 
 The `FString` type is the general, mutable string type. The `FString::Printf` function can be used to format `FString`s. An `FString` can be dereferenced to access the raw underlying string.
 
-``` cpp
+```cpp
 FString TestHUDString = FString(TEXT("This is my test FString."));
 ```
 
@@ -1511,13 +1517,13 @@ The `FText` type represents immutable text to display and has built-in support f
 
 For localization purposes, an `FText` needs to have a key set. The `NSLOCTEXT` macro can be used to construct an `FText` with an explicit namespace and key.
 
-``` cpp
+```cpp
 FText TestHUDText = NSLOCTEXT("My_Namespace", "My_Key", "My Text");
 ```
 
 Similarly, the `LOCTEXT` macro can be used to construct an `FText` with an explicit key and implicit namespace as defined by `LOCTEXT_NAMESPACE`.
 
-``` cpp
+```cpp
 #define LOCTEXT_NAMESPACE "My_Namespace"
 
 FText TestHUDText = LOCTEXT("My_Key", "My Text");
@@ -1547,7 +1553,7 @@ The `CreateIterator` and `CreateConstIterator` functions can be used to explicit
 
 C++'s ranged for can be used to iterate over a `TArray`.
 
-``` cpp
+```cpp
 FString JoinedStr;
 
 for (auto& Str : StrArr)
@@ -1623,7 +1629,7 @@ The `HeapPush` and `HeapPop` functions can be used to push and pop onto the heap
 
 The `AddUninitialized` and `InsertUninitialized` add the specified number of appropriately-sized "slots" for the given element type. These slots can then be filled in with a memory copy or placement new.
 
-``` cpp
+```cpp
 // Memory copy.
 int32 SrcInts[] = { 2, 3, 5, 7 };
 
@@ -1662,7 +1668,7 @@ the `Add` function is used to insert a key-value association. An overload exists
 
 There is also an equivalent `Emplace` function. Since it's used to construct the map value type `TPair`, `Emplace` can only be used for key and value types with single-argument constructors, as `Emplace` wouldn't otherwise know which parameters go to the key type constructor and which go to the value type constructor, for lack of something like [`std::piecewise_construct`](http://en.cppreference.com/w/cpp/utility/piecewise_construct).
 
-``` cpp
+```cpp
 TMap<int32, FString> FruitMap;
 
 FruitMap.Add(5, TEXT("Banana"));
@@ -1699,7 +1705,7 @@ The `Empty` function empties the entire map. It takes an optional slack value to
 
 As with `TArray`, `TMap` can be iterated with a ranged-for loop, and the key and value can be accessed via `Key` and `Value` properties. It's also possible to explicitly construct an iterator via `CreateIterator` or `CreateConstIterator`, each of which have `Key()` and `Value()` accessor functions.
 
-``` cpp
+```cpp
 for (auto& Elem : FruitMap)
 {
   FPlatformMisc::LocalPrint(
@@ -1730,26 +1736,26 @@ A `KeyFuncs` type requires the definition of two types and three static function
 
 Types:
 
-* `KeyInitType`: to pass the keys around, e.g. value or `const` reference
-* `ElementInitType`: to pass elements around, e.g. value or `const` reference of a `TPair`
+- `KeyInitType`: to pass the keys around, e.g. value or `const` reference
+- `ElementInitType`: to pass elements around, e.g. value or `const` reference of a `TPair`
 
 Functions:
 
-* `KeyInitType GetSetKey(ElementInitType Element)`
+- `KeyInitType GetSetKey(ElementInitType Element)`
 
-    returns the element's key
+  returns the element's key
 
-* `bool Matches(KeyInitType A, KeyInitType B)`
+- `bool Matches(KeyInitType A, KeyInitType B)`
 
-    checks if keys A and B are equivalent
+  checks if keys A and B are equivalent
 
-* `uint32 GetKeyHash(KeyInitType Key)`
+- `uint32 GetKeyHash(KeyInitType Key)`
 
-    computes key's hash
+  computes key's hash
 
 Here's an example implementation for a hypothetitcal type `FMyStruct` which has a `UniqueID` field which will be used for the key functionality. This type can then be passed as the fourth type parameter to `TMap`, after the allocator type (e.g. `FDefaultSetAllocator`).
 
-``` cpp
+```cpp
 template <typename ValueType>
 struct TMyStructMapKeyFuncs :
   BaseKeyFuncs<
@@ -1796,9 +1802,9 @@ Sets can be iterated with a ranged-for loop or by explicitly constructing an ite
 
 The `Num` function returns the number of contained elements.
 
-the `Index` function returns the index of the given value as an `FSetElementId` type,  or `INDEX_NONE` if it doesn't exist. This index can bhen be used to explicitly index into the set using the subscript operator.
+the `Index` function returns the index of the given value as an `FSetElementId` type, or `INDEX_NONE` if it doesn't exist. This index can bhen be used to explicitly index into the set using the subscript operator.
 
-``` cpp
+```cpp
 FSetElementId BananaIndex = FruitSet.Index(TEXT("Banana"));
 
 if (BananaIndex != INDEX_NONE)
@@ -1813,7 +1819,7 @@ The `Find` function finds an element and returns a pointer to it or `nullptr` if
 
 The `Array` function inserts a copy of each element in the set into the output parameter `TArray`, emptying it before insertion.
 
-The `Remove` function removes an element by index or by key for _all matching keys_, and returns the number of elements removed. Removing by index is primarily useful while iterating through elements. 
+The `Remove` function removes an element by index or by key for _all matching keys_, and returns the number of elements removed. Removing by index is primarily useful while iterating through elements.
 
 The `Empty` function empties the container and accepts an optional slack parameter which instructs it to reserve a minimum slack of the specified sizei _after_ emptying the set. The `Reset` function is similar but doesn't free memory previously used by elements.
 
@@ -1857,57 +1863,57 @@ The compilation process is as follows:
 
 1. Clean the class.
 
-    The same `UBlueprintGeneratedClass` is cleaned and reused for each compilation.
+   The same `UBlueprintGeneratedClass` is cleaned and reused for each compilation.
 
 2. Create Class Properties
 
-    Find all `UProperties` needed by the class and create them on the `UClass`' scope.
+   Find all `UProperties` needed by the class and create them on the `UClass`' scope.
 
 3. Create Function List
 
-    Create the function list for the class by processing the event graphs, regular function graphs, and then pre-compiling the functions.
+   Create the function list for the class by processing the event graphs, regular function graphs, and then pre-compiling the functions.
 
-    Processing the event graphs involves copying and merging all event graphs into a single graph, expanding its nodes, then creating function stubs for each Event node. An `FKismetFunctionContext` is created for each event graph.
+   Processing the event graphs involves copying and merging all event graphs into a single graph, expanding its nodes, then creating function stubs for each Event node. An `FKismetFunctionContext` is created for each event graph.
 
-    Processing the function graphs involves duplicating each graph to a temporary graph in order to expand the nodes. An `FKismetFunctionContext` is created for each function graph.
+   Processing the function graphs involves duplicating each graph to a temporary graph in order to expand the nodes. An `FKismetFunctionContext` is created for each function graph.
 
-    Pre-compiling functions involves:
+   Pre-compiling functions involves:
 
-      * scheduling execution and calculating data dependencies
-      * pruning nodes that are unscheduled or not data dependencies
-      * generating `FKismetTerms` for values in the function
-      * creating the `UFunction` and any associated properties
+   - scheduling execution and calculating data dependencies
+   - pruning nodes that are unscheduled or not data dependencies
+   - generating `FKismetTerms` for values in the function
+   - creating the `UFunction` and any associated properties
 
 4. Bind and Link the Class
 
-    The class is bound and linked now that all `UProperty`s and `UFunction`s are known. This essentially produces a class header and the Class Default Object.
+   The class is bound and linked now that all `UProperty`s and `UFunction`s are known. This essentially produces a class header and the Class Default Object.
 
 5. Compile Functions
 
-    Generates `FKismetCompiledStatement` objects for the remaining nodes.
+   Generates `FKismetCompiledStatement` objects for the remaining nodes.
 
-    This only occurs during a Full Compile.
+   This only occurs during a Full Compile.
 
 6. Finish Compiling Class
 
-    Finalizes the class flags and propagates flags and metadata from the parent class.
+   Finalizes the class flags and propagates flags and metadata from the parent class.
 
 7. Backend Emits Generated Code
 
-    Converts the statements from each function context into code using either of two backends:
+   Converts the statements from each function context into code using either of two backends:
 
-    * `FKismetCompilerVMBackend` which generates UnrealScript VM bytecode which are then serialized into the function's script array
-    * `FKismetCppBackend` which generates C++-like code for debugging purposes only
+   - `FKismetCompilerVMBackend` which generates UnrealScript VM bytecode which are then serialized into the function's script array
+   - `FKismetCppBackend` which generates C++-like code for debugging purposes only
 
-    This only occurs during a Full Compile.
+   This only occurs during a Full Compile.
 
 8. Copy Class Default Object Properties
 
-    Copies the values from the old CDO of the class into the new CDO. Components of the CDO are re-instanced and fixed-up.
+   Copies the values from the old CDO of the class into the new CDO. Components of the CDO are re-instanced and fixed-up.
 
 9. Re-instance
 
-    All objects are re-instanced with the newly compiled class since the class may have changed size and properties may have been added or removed.
+   All objects are re-instanced with the newly compiled class since the class may have changed size and properties may have been added or removed.
 
 ## Blueprints versus Native Code
 
@@ -1917,9 +1923,9 @@ Some things are better expressed in C++ than Blueprints, so complexity may be a 
 
 Some examples of divisions of labor include:
 
-* C++ `Character` class with custom events, which is extended to Blueprints assign meshes and set defaults
-* C++ base `Turret` class that is extended in Blueprints into concrete classes such as `ArrowTurret`
-* C++ `Pickup` class with `BlueprintImplementableEvent` functions `Collect` and `Respawn` which are overridden in Blueprints to spawn different particle emitters and sound effects
+- C++ `Character` class with custom events, which is extended to Blueprints assign meshes and set defaults
+- C++ base `Turret` class that is extended in Blueprints into concrete classes such as `ArrowTurret`
+- C++ `Pickup` class with `BlueprintImplementableEvent` functions `Collect` and `Respawn` which are overridden in Blueprints to spawn different particle emitters and sound effects
 
 ## Blueprint Nativization
 
@@ -1949,7 +1955,7 @@ Blueprint Function Libraries can be useful for collapsing multiple Blueprint nod
 
 See this example from `AnalyticsBlueprintLibrary.h`.
 
-``` cpp
+```cpp
 UCLASS()
 class UAnalyticsBlueprintLibrary :
   public UBlueprintFunctionLibrary
@@ -1991,7 +1997,7 @@ The `check()` macro evaluates the expression if `DO_CHECK` is defined and halts 
 
 The `checkf(expr, …)` is similar but takes a formatted string and its parameters.
 
-``` cpp
+```cpp
 checkf(WasDestroyed, TEXT("Failed to destroy Actor %s (%s)"),
                      *Actor->GetClass()->GetName(),
                      *Actor->GetActorLabel());
@@ -2017,9 +2023,9 @@ This class of assertions only evaluate their expressions when `DO_GUARD_SLOW` is
 
 The macros are variants of their non-slow counterparts and simply take on a `Slow` suffix:
 
-* `checkSlow()`
-* `checkfSlow()`
-* `verifySlow()`
+- `checkSlow()`
+- `checkfSlow()`
+- `verifySlow()`
 
 ## Call-Stack Assertions
 
@@ -2037,29 +2043,29 @@ To see logs, the game must be run with the `-Log` argument or the console comman
 
 Text can be logged with the `UE_LOG` macro. The macro takes a category, verbosity level, and the actual text. For example:
 
-``` cpp
+```cpp
 UE_LOG(LogTemp, Warning, TEXT("The message"));
 ```
 
 The verbosity levels are:
 
-* `Fatal`: Always appear in console and log files even if logging is disabled.
-* `Error`: Red. Appear in console and log files.
-* `Warning`: Yellow. Appear in console and log files.
-* `Display`: Appear in console and log files.
-* `Log`: Appear in log files.
-* `Verbose`: Appear in log files. Used for detailed logging and debugging.
-* `VeryVerbose`: Appear in log files. Used for very detailed logging (like trace)
+- `Fatal`: Always appear in console and log files even if logging is disabled.
+- `Error`: Red. Appear in console and log files.
+- `Warning`: Yellow. Appear in console and log files.
+- `Display`: Appear in console and log files.
+- `Log`: Appear in log files.
+- `Verbose`: Appear in log files. Used for detailed logging and debugging.
+- `VeryVerbose`: Appear in log files. Used for very detailed logging (like trace)
 
 A log category can be declared with the `DECLARE_LOG_CATEGORY_EXTERN` macro. It takes the category name, its default verbosity, and the compile-time verbosity. The default verbosity sets the threshold past which no logging occurs. The compile-time verbosity sets the threshold past which the logging macro doesn't compile into code.
 
-``` cpp
+```cpp
 DECLARE_LOG_CATEGORY_EXTERN(CategoryName, DefaultVerbosity, CompileTimeVerbosity);
 ```
 
 The log category should then be defined in the implementation file with the `DEFINE_LOG_CATEGORY` macro.
 
-``` cpp
+```cpp
 DEFINE_LOG_CATEGORY(CategoryName);
 ```
 
@@ -2067,13 +2073,13 @@ The `UE_LOG` takes variable arguments that can be used for formatting the log me
 
 [^fstring_printf]: This seems to be based on [`FString::Printf`](https://docs.unrealengine.com/latest/INT/API/Runtime/Core/Containers/FString/Printf/index.html).
 
-``` cpp
+```cpp
 UE_LOG(MyLog, Warning, TEXT("MyCharacter's Name is %s"), *(MyCharacter->GetName()));
 ```
 
 More directly, a message can be displayed on the screen with the [`UEngine::AddOnScreenDebugMessage`](https://docs.unrealengine.com/latest/INT/API/Runtime/Engine/Engine/UEngine/AddOnScreenDebugMessage/1/index.html) method. It takes a unique key (to prevent duplicates; -1 for a transient message), its display duration in seconds, the color to use, and the message as an `FString`.
 
-``` cpp
+```cpp
 #include <EngineGlobals.h>
 #include <Runtime/Engine/Classes/Engine/Engine.h>
 
@@ -2094,7 +2100,7 @@ A direct property asset reference is made by exposing the property via `UPROPERT
 
 A construction-time asset reference is one that is explicitly "hard-coded" during the object's construction through the use of `ConstructionHelpers`, which finds objects and classes.
 
-``` cpp
+```cpp
 UPROPERTY()
 class UTexture2D* BarFillTexture;
 
@@ -2119,7 +2125,7 @@ The `TSoftObjectPtr` type can be used to represent a soft reference to an asset.
 
 There is also a `TSoftClassPtr` type variant that works the same way.
 
-``` cpp
+```cpp
 UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=Building)
 TSoftObjectPtr<UStaticMesh> BaseMesh;
 
@@ -2146,13 +2152,13 @@ It's also possible to find or load objects by a string path.
 
 Given a string path to an already-loaded object, a pointer to it can be found with the `FindObject<T>` function.
 
-``` cpp
+```cpp
 AFunctionalTest* TestToRun = FindObject<AFunctionalTest>(TestsOuter, *TestName);
 ```
 
 Given a string path, it's possible to load an object and obtain a pointer to it with the `LoadObject<T>` function.
 
-``` cpp
+```cpp
 GridTexture = LoadObject<UTexture2D>(
     NULL,
     TEXT("/Engine/EngineMaterials/DefaultWhiteGrid.DefaultWhiteGrid"),
@@ -2163,7 +2169,7 @@ GridTexture = LoadObject<UTexture2D>(
 
 There is also a `LoadClass<T>` variant which is essentially equivalent to loading it with `LoadObject` and verifying its `UClass`.
 
-``` cpp
+```cpp
 DefaultPreviewPawnClass = LoadClass<APawn>(NULL, *PreviewPawnName, NULL, LOAD_None, NULL);
 
 // Equivalent
@@ -2183,13 +2189,13 @@ A property must be amrked with the `AssetRegistrySearchable` property specifier 
 
 Asset registry queries return objects of type `FAssetData` which contains information about the object, including:
 
-* `ObjectPath` in the form `Package.GroupNames.AssetName`
-* `PackageName` of the package containing the asset
-* `PackagePath` of the package containing the asset
-* `GroupNames` containing the asset, comma delimited
-* `AssetName` without package or groups
-* `AssetClass`, its `UClass`
-* `TMap<FName, FString> TagsAndValues` map of properties that were marked `AssetRegistrySearchable`
+- `ObjectPath` in the form `Package.GroupNames.AssetName`
+- `PackageName` of the package containing the asset
+- `PackagePath` of the package containing the asset
+- `GroupNames` containing the asset, comma delimited
+- `AssetName` without package or groups
+- `AssetClass`, its `UClass`
+- `TMap<FName, FString> TagsAndValues` map of properties that were marked `AssetRegistrySearchable`
 
 There are functions that can retrieve lists of assets based on certain properties, such as `GetAssetsByPackageName` or the more general `GetAllAssets`.
 
@@ -2197,7 +2203,7 @@ The `GetAsset` function can be used to load the asset (if it isn't already) and 
 
 An `ObjectLibrary` contains a list of loaded objects or `FAssetData` objects for unloaded objects. This can be used to designate a directory as an asset source instead of having to manually maintain a master list.
 
-``` cpp
+```cpp
 // Create the ObjectLibrary if it doesn't already exist.
 if (!ObjectLibrary)
 {
@@ -2217,7 +2223,7 @@ if (bFullyLoad)
 
 The assets known to the `ObjectLibrary` can then be queried.
 
-``` cpp
+```cpp
 TArray<FAssetData> AssetDatas;
 ObjectLibrary->GetAssetDataList(AssetDatas);
 
@@ -2238,7 +2244,7 @@ for (int32 i = 0; i < AssetDatas.Num(); ++i)
 
 Another way to access the asset registry is through the `FassetRegistryModule`. For example, a list of all assets of a specific class can be obtained.
 
-``` cpp
+```cpp
 // Load the AssetRegistry module.
 FAssetRegistryModule& AssetRegistryModule =
   FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
@@ -2254,17 +2260,17 @@ Asset registries have delegates that can be registered for when assets are disco
 
 The asset registry's `GetAssets` function can take a filter of type `FARFilter` which is capable of filtering by multiple criteria including:
 
-* PackageName
-* PackagePath
-* Collection
-* Class
-* Tag-Value pairs
+- PackageName
+- PackagePath
+- Collection
+- Class
+- Tag-Value pairs
 
 An asset satisfies a filter if it satisfies all of the components. Each individual component can have more than one element, and the component passes if _any_ element satisfies the filter [^farfilter].
 
 [^farfilter]: Think exterior AND, interior OR.
 
-``` cpp
+```cpp
 FAssetRegistryModule& AssetRegistryModule =
   FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
 
@@ -2288,7 +2294,7 @@ It's a good idea to put an `FStreamManager` in a global singleton object which c
 
 Note that the `FStreamableManager` maintains hard references to the loaded assets until the delegate is called, to prevent them from being garbage collected, but it releases those references after the delegate completes.
 
-``` cpp
+```cpp
 void UGameCheatManager::GrantItems()
 {
   TArray<FSoftObjectPath> ItemsToStream;
@@ -2329,18 +2335,18 @@ Build configuration names are comprised of two components: state and project.
 
 The available configuration states are:
 
-* `Debug`: Contains debug symbols. Builds both the Engine and Game in with `Debug` configuration. Opening the editor build with Debug configuration requires the `-debug` flag.
-* `DebugGame`: Builds optimized Engine, but Debug Engine. Ideal for only debugging game modules.
-* `Development`: Equivalent to `Release`. Enables Editor hot-reload.
-* `Shipping`: Fully optimized build. Strips out console commands, statistics, and profiling tools.
-* `Test`: Equivalent to `Shipping` but retains statistics, profiling tools, and certain console commands.
+- `Debug`: Contains debug symbols. Builds both the Engine and Game in with `Debug` configuration. Opening the editor build with Debug configuration requires the `-debug` flag.
+- `DebugGame`: Builds optimized Engine, but Debug Engine. Ideal for only debugging game modules.
+- `Development`: Equivalent to `Release`. Enables Editor hot-reload.
+- `Shipping`: Fully optimized build. Strips out console commands, statistics, and profiling tools.
+- `Test`: Equivalent to `Shipping` but retains statistics, profiling tools, and certain console commands.
 
 The available configuration targets are:
 
-* `[empty]`: Builds stand-alone executable. Requires platform-specific cooked content.
-* `Editor`: Enables Editor hot-reload.
-* `Client`: Designates project as being the Client in the client-server model. Enacts the <span class="path"><Game>Client.Target.cs</span> build file.
-* `Server`: Designates project as being the Server in the client-server model. Enacts the <span class="path"><Game>Server.Target.cs</span> build file.
+- `[empty]`: Builds stand-alone executable. Requires platform-specific cooked content.
+- `Editor`: Enables Editor hot-reload.
+- `Client`: Designates project as being the Client in the client-server model. Enacts the <span class="path"><Game>Client.Target.cs</span> build file.
+- `Server`: Designates project as being the Server in the client-server model. Enacts the <span class="path"><Game>Server.Target.cs</span> build file.
 
 ## Console
 
@@ -2350,7 +2356,7 @@ A console variable can be registered in any source file by defining a static var
 
 It's also possible to register a reference to a variable with `RegisterConsoleVariableRef` but it's use is discouraged because it bypasses various important features.
 
-``` cpp
+```cpp
 static TAutoConsoleVariable<int32> CVarRefractionQuality(
   // Name
   TEXT("r.RefractionQuality"),
@@ -2371,7 +2377,7 @@ static TAutoConsoleVariable<int32> CVarRefractionQuality(
 
 The state of a console variable can be retrieved by storing a pointer to the `IConsoleVariable` returned by the registration function or by using the `IConsoleManager::FindConsoleVariable` function to obtain a a pointer to the `IConsoleVariable` representing the console variable, then obtaining the underylng value with the `GetInt` function, for example. In the latter case, it's safe to store the `IConsoleVariable` in a static variable because the variable will never move and only gets destroyed on engine shutdown.
 
-``` cpp
+```cpp
 static const auto CVar = IConsoleManager::Get().FindConsoleVariable(TEXT("TonemapperType"));
 
 int32 Value = CVar->GetInt();
@@ -2383,7 +2389,7 @@ The first is to store the old value and check on each frame if the current value
 
 The second is to register a _console variable sink_ which is a callback function that is called whenever the console variable is changed by the user. Sinks are called at a specific point on the main thread before rendering. Multiple related changes should be coalesced into a single change by setting a flag, instead of depending on an undefined execution order.
 
-``` cpp
+```cpp
 static void MySinkFunction()
 {
   bool bNewAtmosphere = CVarAtmosphereRender.GetValueOnGameThread() != 0;
@@ -2404,7 +2410,7 @@ FAutoConsoleVariableSink CMyVarSink(FConsoleCommandDelegate::CreateStatic(&MySin
 
 Finally, it's possible to register a callback to fire when the variable changes. This is dangerous and discouraged compared to a sink because other console variables in the delegate can cause infinite loops.
 
-``` cpp
+```cpp
 void OnChangeResQuality(IConsoleVariable* Var)
 {
   SetResQualityLevel(Var->GetInt());
@@ -2416,7 +2422,7 @@ CVarResQuality.AsVariable()
 
 Developers can specify variable values to automatically load in `Engine/Config/ConsoleVariables.ini`, as well as in `Engine/Config/BaseEngine.ini`:
 
-``` cpp
+```cpp
 [SystemSettings]
 r.MyCvar = 2
 
@@ -2478,13 +2484,13 @@ During [patching], the engine compares all post-cook content to the originally r
 
 The automation system facilitates automated testing.
 
-* Unit Tests: API-level verification tests (e.g. <span class="path">TimespanTest.cpp</span>)
-* Feature Tests: System-level verification tests, such as verifying Play-In-Editor functions, correct in-game stats, changing of video resolution, etc. (e.g. <span class="path">EditorAutomationTests.cpp</span>)
-* Smoke Tests: Intended to be fast enough to run whenever the Editor, game, or commandlet starts.
-* Content Stress Tests: Testing system to its limits to avoid crashes, such as loading all maps or compiling all Blueprints. (e.g. <span class="path">EditorAutomationTests.cpp</span>)
-* [Screenshot Comparison]: Compare screenshots to detect rendering issues/disparities.
+- Unit Tests: API-level verification tests (e.g. <span class="path">TimespanTest.cpp</span>)
+- Feature Tests: System-level verification tests, such as verifying Play-In-Editor functions, correct in-game stats, changing of video resolution, etc. (e.g. <span class="path">EditorAutomationTests.cpp</span>)
+- Smoke Tests: Intended to be fast enough to run whenever the Editor, game, or commandlet starts.
+- Content Stress Tests: Testing system to its limits to avoid crashes, such as loading all maps or compiling all Blueprints. (e.g. <span class="path">EditorAutomationTests.cpp</span>)
+- [Screenshot Comparison]: Compare screenshots to detect rendering issues/disparities.
 
-[Screenshot Comparison]: https://docs.unrealengine.com/latest/INT/Programming/Automation/ScreenShotComparison/index.html
+[screenshot comparison]: https://docs.unrealengine.com/latest/INT/Programming/Automation/ScreenShotComparison/index.html
 
 ## Automation Tests
 
@@ -2492,21 +2498,21 @@ Automation tests are declared with macros and implemented by overriding function
 
 There are two types of tests: simple and complex, declared with `IMPLEMENT_SIMPLE_AUTOMATION_TEST` and `IMPLEMENT_COMPLEX_AUTOMATION_TEST`, respectively. Both macros take the following parameters:
 
-* `TClass`: The desired class name of the test.
-* `PrettyName`: A string specifying a hierarchical, period `.`-delimited test name to appear int eh UI.
-* `TFlags`: Combination of `EAutomationTestFlags` for specifying test requirements and behaviors.
+- `TClass`: The desired class name of the test.
+- `PrettyName`: A string specifying a hierarchical, period `.`-delimited test name to appear int eh UI.
+- `TFlags`: Combination of `EAutomationTestFlags` for specifying test requirements and behaviors.
 
 The following functions can be overridden.
 
-* `RunTest`: Performs the actual test, returning `true` if it passes.
-    * Parameter - `Parameters`: Can be parsed or passed-through to other functions.
-* `GetTests`: Must be overridden for Complex Tests.
-    * Parameter - `OutBeautifiedNames`: Array of strings that must be populated with the UI-visible `PrettyName` of each Test
-    * Parameter - `OutTestCommands`: Parallel of `OutBeautifiedNames` containing the `Parameters` passed to `RunTest`
+- `RunTest`: Performs the actual test, returning `true` if it passes.
+  - Parameter - `Parameters`: Can be parsed or passed-through to other functions.
+- `GetTests`: Must be overridden for Complex Tests.
+  - Parameter - `OutBeautifiedNames`: Array of strings that must be populated with the UI-visible `PrettyName` of each Test
+  - Parameter - `OutTestCommands`: Parallel of `OutBeautifiedNames` containing the `Parameters` passed to `RunTest`
 
 By convention, tests go into the <span class="path">Private/Tests</span> directory of the relevant module. If the test is for a specific class, it should be named after the class with a `Test` suffix.
 
-``` cpp
+```cpp
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
   FPlaceholderTest,
   "TestGroup.TestSubgroup.Placeholder Test",
@@ -2520,7 +2526,7 @@ bool FPlaceholderTest::RunTest(const FString& Parameters)
 
 Simple tests are appropriate for unit or feature tests. This example tests the `SetRes` command.
 
-``` cpp
+```cpp
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSetResTest, "Windows.SetResolution", ATF_Game);
 
 bool FSetResTest::RunTest(const FString& Parameters)
@@ -2543,7 +2549,7 @@ bool FSetResTest::RunTest(const FString& Parameters)
 
 Complex tests can run the same test on a range of inputs, and are usually appropriate for stress tests, such as loading all maps or compiling all Blueprints. This example loads all of the project's maps.
 
-``` cpp
+```cpp
 IMPLEMENT_COMPLEX_AUTOMATION_TEST(FLoadAllMapsInGameTest, "Maps.LoadAllInGame", ATF_Game)
 
 void FLoadAllMapsInGameTest::GetTests(TArray<FString>& OutBeautifiedNames,
@@ -2584,7 +2590,7 @@ Latent commands can be queued during a `RunTest` to run across multiple frames. 
 
 A Latent Command continues to execute until the `Update` command returns `true`, which is taken to mean that it is completed. A return value of `false` causes the Automation Test to stop executing immediately and try again next frame.
 
-``` cpp
+```cpp
 DEFINE_LATENT_AUTOMATION_COMMAND(FNUTWaitForUnitTests);
 
 bool FNUTWaitForUnitTests::Update()
@@ -2595,7 +2601,7 @@ bool FNUTWaitForUnitTests::Update()
 
 The `DEFINE_LATENT_AUTOMATION_COMMAND_ONE_PARAMETER` macro allows specifying a parameter type and name that will be defined on the class and accessible in the `Update` method.
 
-``` cpp
+```cpp
 DEFINE_LATENT_AUTOMATION_COMMAND_ONE_PARAMETER(
   FConnectLatentCommand,
   SourceControlAutomationCommon::FAsyncCommandHelper,
@@ -2627,7 +2633,7 @@ bool FConnectLatentCommand::Update()
 
 A Latent Command is executed by invoking `ADD_LATENT_AUTOMATION_COMMAND` with the Latent Command's constructor and parameter, if one was specified.
 
-``` cpp
+```cpp
 ADD_LATENT_AUTOMATION_COMMAND(FNUTWaitForUnitTests());
 ADD_LATENT_AUTOMATION_COMMAND(FConnectLatentCommand(SourceControlAutomationCommon::FAsyncCommandHelper()));
 ```
@@ -2642,17 +2648,17 @@ If the `PerObjectConfig` class specifier is used, per-instance properties can be
 
 The configuration categories are:
 
-* Compat
-* DeviceProfiles
-* Editor
-* EditorGameAgnostic
-* EditorKeyBindings
-* EditorUserSettings
-* Engine
-* Game
-* Input
-* Lightmass
-* Scalability
+- Compat
+- DeviceProfiles
+- Editor
+- EditorGameAgnostic
+- EditorKeyBindings
+- EditorUserSettings
+- Engine
+- Game
+- Input
+- Lightmass
+- Scalability
 
 The configuration files are read from the file system in a pre-defined order, with later, more specific files overriding values from earlier files. There are Engine-wide files that apply to all projects, project-specific files, and finally platform-specific, project-specific files.
 
@@ -2667,20 +2673,20 @@ Configuration files support comments via a semicolon `;`.
 
 Configuration files support special line prefix characters.
 
-* `+` - adds the property if it doesn't exist already (e.g. in the same file or a previous configuration)
-* `.` - adds a new property, potentially duplicate
+- `+` - adds the property if it doesn't exist already (e.g. in the same file or a previous configuration)
+- `.` - adds a new property, potentially duplicate
 
-    This is useful for bindings where the latest bind takes effect.
+  This is useful for bindings where the latest bind takes effect.
 
-    ``` ini
-    [/Script/Engine.PlayerInput]
-    Bindings=(Name="Q",Command="Foo")
-    .Bindings=(Name="Q",Command="Bar")
-    .Bindings=(Name="Q",Command="Foo")
-    ```
+  ```ini
+  [/Script/Engine.PlayerInput]
+  Bindings=(Name="Q",Command="Foo")
+  .Bindings=(Name="Q",Command="Bar")
+  .Bindings=(Name="Q",Command="Foo")
+  ```
 
-* `-` - removes a line. requires exact match
-* `!` - removes a property by name. doesn't require exact match
+- `-` - removes a line. requires exact match
+- `!` - removes a property by name. doesn't require exact match
 
 # Play-In-Editor
 
@@ -2696,17 +2702,17 @@ The **Play** button has a drop-down to the right displaying various simulation s
 
 Each frame is rendered in `FDeferredShadingSceneRenderer::Render`. The rendering thread runs in parallel to the game thread. Certain classes bridge the gap.
 
-* `UWorld`: contains a collection of Actors and Components. Levels can be streamed in and out of the world. Multiple worlds can be active.
-* `ULevel`: contains a collection of Actors and Components that are loaded and unloaded as a group and saved to a single map file
-* `USceneComponent`: base class of any object in an `FScene`
-* `UPrimitiveComponent`: base class of anything that can be rendered or that can interact with physic. visibility culling is performed at the granularity level of a `UPrimitiveComponent`. The game thread owns all variables and state, so the render thread should not access it directly.
-* `ULightComponent`: represents a light source that the renderer is responsible for computing and adding its light contribution to the scene
-* `FScene`: the renderer's view of a `UWorld`. objects are only known to the renderer once they're added to the `FScene`, which is known as registering a component. the render thread owns all of the state in `FScene` and the game thread should not modify it directly.
-* `FPrimitiveSceneProxy`: the renderer's view of `UPrimitiveComponent`. it's intended to be derived to support different types of primitives such as skeletal, rigid, and BSP. An `FPrimitiveSceneProxy` is created once the corresponding `UPrimitiveComponent` is registered
-* `FPrimitiveSceneInfo`:the internal, `FRendererModule` implementation-specific renderer state that corresponds to a `UPrimitiveComponent` and `FPrimitiveSceneProxy`
-* `FSceneView`: a single view into an `FScene` by the engine. Multiple views can be rendered with separate calls to `FSceneRenderer::Render`, such as to support multiple editor viewports, or multiple views can be rendered simultaneously with the same call to `FSceneRenderer::Render`, such as to support split-screen.
-* `FSceneViewState`: stores the renderer's private information about a view that is needed across frames. one `FSceneViewState` per `ULocalPlayer`
-* `FSceneRenderer`: created each frame to encapsulate inter-frame temporaries
+- `UWorld`: contains a collection of Actors and Components. Levels can be streamed in and out of the world. Multiple worlds can be active.
+- `ULevel`: contains a collection of Actors and Components that are loaded and unloaded as a group and saved to a single map file
+- `USceneComponent`: base class of any object in an `FScene`
+- `UPrimitiveComponent`: base class of anything that can be rendered or that can interact with physic. visibility culling is performed at the granularity level of a `UPrimitiveComponent`. The game thread owns all variables and state, so the render thread should not access it directly.
+- `ULightComponent`: represents a light source that the renderer is responsible for computing and adding its light contribution to the scene
+- `FScene`: the renderer's view of a `UWorld`. objects are only known to the renderer once they're added to the `FScene`, which is known as registering a component. the render thread owns all of the state in `FScene` and the game thread should not modify it directly.
+- `FPrimitiveSceneProxy`: the renderer's view of `UPrimitiveComponent`. it's intended to be derived to support different types of primitives such as skeletal, rigid, and BSP. An `FPrimitiveSceneProxy` is created once the corresponding `UPrimitiveComponent` is registered
+- `FPrimitiveSceneInfo`:the internal, `FRendererModule` implementation-specific renderer state that corresponds to a `UPrimitiveComponent` and `FPrimitiveSceneProxy`
+- `FSceneView`: a single view into an `FScene` by the engine. Multiple views can be rendered with separate calls to `FSceneRenderer::Render`, such as to support multiple editor viewports, or multiple views can be rendered simultaneously with the same call to `FSceneRenderer::Render`, such as to support split-screen.
+- `FSceneViewState`: stores the renderer's private information about a view that is needed across frames. one `FSceneViewState` per `ULocalPlayer`
+- `FSceneRenderer`: created each frame to encapsulate inter-frame temporaries
 
 This table shows the primary classes and their analogs in the corresponding module.
 
@@ -2724,7 +2730,7 @@ This table shows what class owns the state of the thread they're in.
 | :-------------------- | :--------------------------------------------- |
 | `UWorld`              | `FScene`                                       |
 | `UPrimitiveComponent` | `FPrimitiveSceneProxy` / `FPrimitiveSceneInfo` |
-|  &nbsp;               | `FSceneView` / `FViewInfo`                     |
+| &nbsp;                | `FSceneView` / `FViewInfo`                     |
 | `ULocalPlayer`        | `FSceneViewState`                              |
 | `ULightComponent`     | `FLightSceneProxy` / `FLightSceneInfo`         |
 
@@ -2760,60 +2766,60 @@ A high-level rendering order is:
 
 1. `GSceneRenderTargets.Allocate`
 
-    If needed, reallocates the global scene render targets to fit the current view.
+   If needed, reallocates the global scene render targets to fit the current view.
 
 2. `InitViews`
 
-    Uses various culling methods to initialize primitive visibility, sets up visible dynamic shadows, and intersects shadow frustrums with the world.
+   Uses various culling methods to initialize primitive visibility, sets up visible dynamic shadows, and intersects shadow frustrums with the world.
 
 3. `PrePass` and `FDepthDrawingPolicy` (Depth-only pass)
 
-    Renders occluders, outputting depth to the depth buffer. Can operate with occlusion only, complete depths, or disabled outright. The main purpose is to initialize Hierarchical Z to reduce shading cost of the base pass.
+   Renders occluders, outputting depth to the depth buffer. Can operate with occlusion only, complete depths, or disabled outright. The main purpose is to initialize Hierarchical Z to reduce shading cost of the base pass.
 
 4. `RenderBasePass` and `TBasePassDrawingPolicy`
 
-    Renders opaque and masked materials, outputting material attributes to the `GBuffer`. Lightmap contribution and sky lighting is also computed and put in the scene color.
+   Renders opaque and masked materials, outputting material attributes to the `GBuffer`. Lightmap contribution and sky lighting is also computed and put in the scene color.
 
 5. Issue Occlusion Queries and `BeginOcclusionTests`
 
-    Starts latent occlusion queries that are used in the next frame's `InitViews`. Occlusion queries are done by rendering bounding boxes around the objects being queried, sometimes merging bounding boxes to reduce draw calls.
+   Starts latent occlusion queries that are used in the next frame's `InitViews`. Occlusion queries are done by rendering bounding boxes around the objects being queried, sometimes merging bounding boxes to reduce draw calls.
 
 6. Lighting
 
-    Shadowmaps for each light are rendered and light contribution is accumulated to the scene color through a mix of standard and tiled deferred shading. Light is also accumulated in the translucency lighting volumes.
+   Shadowmaps for each light are rendered and light contribution is accumulated to the scene color through a mix of standard and tiled deferred shading. Light is also accumulated in the translucency lighting volumes.
 
 7. Fog
 
-    Fog and atmosphere are computed per-pixel for opaque surfaces in a deferred pass.
+   Fog and atmosphere are computed per-pixel for opaque surfaces in a deferred pass.
 
 8. Translucency
 
-    Translucency is accumulated into an offscreen render target, and fog is applied to it per-vertex so it can integrate into the scene. Lit translucency computes final lighting in a single pass to blend correctly.
+   Translucency is accumulated into an offscreen render target, and fog is applied to it per-vertex so it can integrate into the scene. Lit translucency computes final lighting in a single pass to blend correctly.
 
 9. Post-Processing
 
-    Post-processing effects are applied using the `GBuffer`s and translucency is composited into the scene.
+   Post-processing effects are applied using the `GBuffer`s and translucency is composited into the scene.
 
 ## Render Hardware Interface
 
 The Render Hardware Interface (RHI) is a thin wrapper around platform-specific graphics APIs, as low-level as possible. Feature sets are wrapped into `ERHIFeatureLevel`s, so that if a platform cannot support an entire feature level, it must drop to the feature level that it _can_ fully support.
 
-| Feature Level | Description |
-| :------------ | :---------- |
-| SM5 | Corresponds to D3D11 Shader model 5 with a cap on 16 textures due to OpenGL 4.3 limits. Supports tessellation, compute shaders, cubemap arrays, and the deferred shading path. |
-| SM4 | Corresponds to D3D11 Shader Model 4. Equivalent to Feature Level SM5 without tessellation, compute shaders, or cubemap arrays. |
-| ES2 | Corresponds to OpenGL ES2 feature sets. Uses a pared down forward shading path. |
+| Feature Level | Description                                                                                                                                                                    |
+| :------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| SM5           | Corresponds to D3D11 Shader model 5 with a cap on 16 textures due to OpenGL 4.3 limits. Supports tessellation, compute shaders, cubemap arrays, and the deferred shading path. |
+| SM4           | Corresponds to D3D11 Shader Model 4. Equivalent to Feature Level SM5 without tessellation, compute shaders, or cubemap arrays.                                                 |
+| ES2           | Corresponds to OpenGL ES2 feature sets. Uses a pared down forward shading path.                                                                                                |
 
 Render states are grouped based on the part of the pipeline that they affect, such as `RHISetDepthState` affecting all state relevant to depth buffering.
 
 Unreal Engine has an implicit set of states that it assumes are set to the defaults. If they're changed, they must be restored to the defaults. The following smaller set of states need to be set explicitly:
 
-* `RHISetRenderTargets`
-* `RHISetBoundShaderState`
-* `RHISetDepthState`
-* `RHISetBlendState`
-* `RHISetRasterizerState`
-* shader dependencies set by `RHISetBoundShaderState`
+- `RHISetRenderTargets`
+- `RHISetBoundShaderState`
+- `RHISetDepthState`
+- `RHISetBlendState`
+- `RHISetRasterizerState`
+- shader dependencies set by `RHISetBoundShaderState`
 
 The rest of the states are assumed to be set to their defaults, as determined by the corresponding `TStatic*State`, such as `RHISetStencilState(TStaticStencilState<>::GetRHI())`.
 
@@ -2850,14 +2856,14 @@ A `USkinnedMeshComponent` dynamic resource that is freed is handled by the rende
 
 There are some console commands that can help with profiling and debugging the rendering process.
 
-* `stat unit`: show overall frame time and game thread, rendering thread, and GPU times.
-* `recompileshaders changed` (<kbd>CTRL</kbd> + <kbd>SHIFT</kbd> + <kbd>.</kbd>): recompile shaders taht changed based on `.usf` file. Happens automatically on load.
-* `profilegpu` (<kbd>CTRL</kbd> + <kbd>SHIFT</kbd> + <kbd>;</kbd>): GPU timings for the view being rendered. View results in UI popup or engine log.
-* `Vis` or `Visualize Texture`: visualizes the contents of render targets
-* `show x`: toggles showflags
-* `pause`: pause simulation but continue rendering
-* `slomo x`: alter game speed. useful for slowing time without skipping simulation work when profiling
-* `debugcreateplayer 1`: testing splitscreen
+- `stat unit`: show overall frame time and game thread, rendering thread, and GPU times.
+- `recompileshaders changed` (<kbd>CTRL</kbd> + <kbd>SHIFT</kbd> + <kbd>.</kbd>): recompile shaders taht changed based on `.usf` file. Happens automatically on load.
+- `profilegpu` (<kbd>CTRL</kbd> + <kbd>SHIFT</kbd> + <kbd>;</kbd>): GPU timings for the view being rendered. View results in UI popup or engine log.
+- `Vis` or `Visualize Texture`: visualizes the contents of render targets
+- `show x`: toggles showflags
+- `pause`: pause simulation but continue rendering
+- `slomo x`: alter game speed. useful for slowing time without skipping simulation work when profiling
+- `debugcreateplayer 1`: testing splitscreen
 
 ## Coordinate-Space Terminology
 
@@ -2924,7 +2930,7 @@ The `bReplicateMovement` member variable can be set to allow the Actor to be mov
 
 The default network relevancy uses a distance test, but it can be overridden:
 
-``` cpp
+```cpp
 bool AActor::IsNetRelevantFor(const AActor* RealViewer,
                               const AActor* ViewTarget,
                               const FVector& SrcLocation);
@@ -2940,14 +2946,14 @@ By default, `AActor::GetNetPriority` prevents starvation by multiplying its `Net
 
 A property can be marked for replication with the `Replicated` property specifier.
 
-``` cpp
+```cpp
 UPROPERTY(Replicated)
 float Health;
 ```
 
 When the UHT encounters this property specifier, it automatically adds a declaration for the `GetLifetimeReplicatedProps` function. A definition for this function must be provided which specifies all of the properties that should be replicated via the `DOREPLIFETIME` macro, which will cause the property to replicate whenever it is changed.
 
-``` cpp
+```cpp
 virtual void AMyActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
   Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -2958,7 +2964,7 @@ virtual void AMyActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 This must be done unconditionally, since the function is only called once for the first instance, and uses the result of that call as the replication layout of the class, _not_ that particular instance. Conditions can be added via the `DOREPLIFETIME_CONDITION` macro, which takes the same first two parameters as `DOREPLIFETIME` and an additional third parameter of `ELifetimeCondition` enumeration type.
 
-``` cpp
+```cpp
 /** Secondary condition to check before considering the replication of a lifetime property. */
 enum ELifetimeCondition
 {
@@ -2988,7 +2994,7 @@ A PlayerController only exists on the owning-client and serves as the communicat
 
 A callback can be registered to invoke when a property value is updated via the `ReplicatedUsing` property specifier. The function takes no arguments and is called once the property has the new value. Property replication callbacks aren't automatically called on the server.
 
-``` cpp
+```cpp
 UPROPERTY(ReplicatedUsing = OnRep_Flag)
 uint32 bFlag;
 
@@ -3028,7 +3034,7 @@ A convention is to prepend RPC function names with the type of RPC it is, e.g. `
 
 The UHT detects RPC declarations and adds declarations for the implementation and optionally the validation function, which must then be defined by the user.
 
-``` cpp
+```cpp
 UFUNCTION(Client, WithValidation)
 void SomeCall();
 
@@ -3055,7 +3061,7 @@ Actor components and sub-objects should call `SetReplicates(true)` to have them 
 
 A custom `UObject` subclass may be replicated by overriding `UObject::IsSupportedForNetworking` to return `true` and implementing `UObject::GetLifetimeReplicatedProps`.
 
-``` cpp
+```cpp
 #pragma once
 #include "Core.h"
 #include "ReplicatedSubobject.generated.h"
@@ -3076,7 +3082,7 @@ public:
 };
 ```
 
-``` cpp
+```cpp
 #include "UnrealNetwork.h"
 
 UReplicatedSubobject::UReplicatedSubobject()
@@ -3093,7 +3099,7 @@ void UReplicatedSubobject::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 
 An Actor that wishes to replicate this object as a sub-object should then store it as a property and implement `AActor::ReplicateSubobjects`.
 
-``` cpp
+```cpp
 #pragma once
 #include "Core.h"
 #include "ReplicatedSubobject.h"
@@ -3116,7 +3122,7 @@ public:
 };
 ```
 
-``` cpp
+```cpp
 #include "ReplicatedActor.h"
 #include "UnrealNetwork.h"
 #include "Engine/ActorChannel.h"
@@ -3165,7 +3171,7 @@ The dedicated server build is only possible when building the Engine from source
 
 Certain code paths that are purely graphical in nature can be skipped on the server by testing if it's running on the dedicated server:
 
-``` cpp
+```cpp
 if (GEngine->GetNetMode(GetWorld()) != NM_DedicatedServer)
 {
   // Code for non-dedicated servers.
@@ -3188,9 +3194,9 @@ Seamless travel requires a transition map specified through the `UGameMapsSettin
 
 Seamless travel is achieved by marking all actors that will persist to the next loaded map. The following persist automatically:
 
-* `GameMode` (server) and any Actors added via `AGameModeBase::GetSeamlessTravelActorList`
-* Controllers with a valid `PlayerState` (server)
-* Local PlayerControllers (server and client) and any Actors added via `APlayerController::GetSeamlessTravelActorList`
+- `GameMode` (server) and any Actors added via `AGameModeBase::GetSeamlessTravelActorList`
+- Controllers with a valid `PlayerState` (server)
+- Local PlayerControllers (server and client) and any Actors added via `APlayerController::GetSeamlessTravelActorList`
 
 ## Online Beacons
 

@@ -65,7 +65,7 @@ public class SomeTest {
 
 Spring Boot auto-configures different application components based on dependencies present in the classpath (e.g. a database pool if a database dependency is detected). It appears it also does this based on the presence of properties, and many other reasons.
 
-In general, there are several annotations applied to certain classes which determine whether or not a class/configuration gets loaded. For example, the following appears to depend on classes `GraphQL` and `GraphQlSource` being in the classpath, the `GraphQlSource` bean not already existing, and the `GraphQlProperties` properties being defined, which it appears means at least the "root" (i.e. `spring.graphql`) such that the object gets created.
+In general, there are [several annotations](https://docs.spring.io/spring-boot/docs/current/reference/html/features.html#features.testing.spring-boot-applications.additional-autoconfiguration-and-slicing) applied to certain classes which determine whether or not a class/configuration gets loaded. For example, the following appears to depend on classes `GraphQL` and `GraphQlSource` being in the classpath, the `GraphQlSource` bean not already existing, and the `GraphQlProperties` properties being defined, which it appears means at least the "root" (i.e. `spring.graphql`) such that the object gets created.
 
 ```java
 @Configuration(proxyBeanMethods = false)

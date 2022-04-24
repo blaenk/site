@@ -33,7 +33,7 @@ date = 2012-09-21
 
 👀 I keep up with the latest developments and constantly read and learn new things, preferring source material like documentation and manuals, if available. See my extensive [notes](https://jip.dev/notes/) and my recent [reading list](https://jip.dev/reads/).
 
-<p align="center">✶✶✶✶✶</p>
+<p align="center">★★★★★</p>
 
 <details>
 <summary align="center"><strong>🔽 Click here to expand some of my varied open source contributions 🔽</strong></summary>

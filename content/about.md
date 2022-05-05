@@ -4,7 +4,7 @@ date = 2012-09-21
 +++
 
 <p align="center">
-  <a href="https://stackoverflow.com/users/101090/jorge-israel-pe%c3%b1a">stackoverflow</a> (top 0.74%) · <a href="https://www.linkedin.com/in/jorge-israel-p/">linkedin</a> · <a href="mailto:jorge.israel.p@gmail.com">jorge.israel.p@gmail.com</a>
+  <a href="https://stackoverflow.com/users/101090/jorge-israel-pe%c3%b1a">stackoverflow</a> (top 0.73%) · <a href="https://www.linkedin.com/in/jorge-israel-p/">linkedin</a> · <a href="mailto:jorge.israel.p@gmail.com">jorge.israel.p@gmail.com</a>
 </p>
 
 <p align="center">★★★★★</p>

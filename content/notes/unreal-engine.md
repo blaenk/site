@@ -2031,11 +2031,13 @@ The macros are variants of their non-slow counterparts and simply take on a `Slo
 
 This category of assertions don't halt execution but instead construct a call-stack if the expression evaluates to false. The expressions are always evaluated, but the call-stacks are only generated when `DO_CHECK` is defined.
 
-The `ensure()` macro generates the call-stack for that location if the expression fails.
+The `ensure()` macro generates the call-stack for that location if the expression fails. If running in debug mode, it'll trigger a breakpoint at that location when the expression fails, but it will do so only once and subsequent failures will simply evaluate to false. To trigger a breakpoint every time, use `ensureAlways()`.
 
 The `ensureMsg()` macro is similar to `ensure()` but additionally takes a string message to display as part of the call-stack.
 
 The `ensureMsgf()` macro is simlar to `ensureMsg()` but also takes string formatting parameters.
+
+If some C++ code was optimized preventing the breakpoint from being triggered, try running the Debug Editor profile.
 
 # Logging
 

@@ -827,7 +827,7 @@ struct Person {
 
 Protocol Buffers schema definition language looks like:
 
-```protocol-buffer
+```protobuf
 message Person {
   required string user_name = 1;
   optional int64 favorite_number = 2;

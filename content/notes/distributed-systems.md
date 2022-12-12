@@ -1,6 +1,6 @@
 +++
 title = "Distributed Systems"
-date = 2018-03-07
+date = 2016-02-09
 aliases = ["/notes/scalability"]
 
 [note]
@@ -27,7 +27,7 @@ For example, Twitter's scalability challenge was with respect to its fan-out, wh
 
 Look up all of the people they follow, find all of their recent tweets, and then merge them sorted by time.
 
-``` postgresql
+```postgresql
 SELECT tweets.*, users.* FROM tweets
   JOIN users ON tweets.sender_id = users.id
   JOIN follows ON follows.followee_id = users.id
@@ -42,8 +42,8 @@ The problem is that the number of followers per user highly varies, with an aver
 
 Given load parameters, a system's scalability can be analyzed by increasing a load parameter and:
 
-* with fixed system resources, and observing the system's performance
-* determining how to increase system resources to maintain the same level of performance
+- with fixed system resources, and observing the system's performance
+- determining how to increase system resources to maintain the same level of performance
 
 Throughput is the number of records that can be processed per second, or the total time it takes to run a job on a dataset of a certain size.
 
@@ -77,26 +77,26 @@ Operability refers to the ease of keeping a system running smoothly.
 
 An operations team may be responsible for:
 
-* monitoring system health and restoration
-* identifying causes of problems
-* keeping software up to date, e.g. security patches
-* taking note of how different systems affect each other, to prevent problems before they cause damage
-* anticipating future problems, e.g. capacity planning
-* establishing best practices, e.g. for deployment and configuration management
-* performing maintenance tasks, e.g. moving application to another platform
-* defining operations processes
-* preserving system knowledge
+- monitoring system health and restoration
+- identifying causes of problems
+- keeping software up to date, e.g. security patches
+- taking note of how different systems affect each other, to prevent problems before they cause damage
+- anticipating future problems, e.g. capacity planning
+- establishing best practices, e.g. for deployment and configuration management
+- performing maintenance tasks, e.g. moving application to another platform
+- defining operations processes
+- preserving system knowledge
 
 Good operability is facilitated by:
 
-* visibility into system internals and runtime behavior
-* automation and standard tool integration
-* avoiding machine dependencies, allowing any to be taken down
-* documenting
-* straightforward operational model, e.g. "If I do x, y will happen"
-* good defaults, but freedom to override
-* sensible self-healing with option for manual control of system state
-* minimize surprises through predictable behavior
+- visibility into system internals and runtime behavior
+- automation and standard tool integration
+- avoiding machine dependencies, allowing any to be taken down
+- documenting
+- straightforward operational model, e.g. "If I do x, y will happen"
+- good defaults, but freedom to override
+- sensible self-healing with option for manual control of system state
+- minimize surprises through predictable behavior
 
 ### Simplicity
 
@@ -123,11 +123,11 @@ There is an impedance mismatch between the relational model and mainstream objec
 
 Data normalization has many benefits:
 
-* consistent style and spelling of the data
-* avoiding ambiguity between duplicates
-* ease of updating
-* localization support
-* better search
+- consistent style and spelling of the data
+- avoiding ambiguity between duplicates
+- ease of updating
+- localization support
+- better search
 
 Document stores like MongoDB, RethinkDB, CouchDB, and Espresso typically store self-contained denormalized JSON documents instead of storing normalized data and then joining the disparate data in queries as in traditional relational databases. In this case, JSON has better locality than multi-table schemas.
 
@@ -171,18 +171,18 @@ Graphs are amenable to evolvability because they don't have a schema specifying 
 
 In the property graph model, each vertex consists of:
 
-* unique identifier
-* set of outgoing edges
-* set of incoming edges
-* collection of key-value pair properties
+- unique identifier
+- set of outgoing edges
+- set of incoming edges
+- collection of key-value pair properties
 
 Each edge consists of:
 
-* unique identifier
-* vertex at which the edge starts (tail vertex)
-* vertex at which the edge ends (head vertex)
-* label describing the relationship
-* collection of key-value pair properties
+- unique identifier
+- vertex at which the edge starts (tail vertex)
+- vertex at which the edge ends (head vertex)
+- label describing the relationship
+- collection of key-value pair properties
 
 ### Triple-Store Model
 
@@ -250,10 +250,10 @@ An example MongoDB MapReduce query will:
 4. group the emitted key-value pairs by key, then call the `reduce` function one for all key-value pairs with the same key
 5. the result is written to a collection named by the `out` key
 
-``` javascript
+```javascript
 db.observations.mapReduce(
   function map() {
-    var year  = this.observationTimestamp.getFullYear();
+    var year = this.observationTimestamp.getFullYear();
     var month = this.observationTimestamp.getMonth() + 1;
 
     emit(year + "-" + month, this.numAnimals);
@@ -263,7 +263,7 @@ db.observations.mapReduce(
   },
   {
     query: { family: "Sharks" },
-    out: "monthlySharkReport"
+    out: "monthlySharkReport",
   }
 );
 ```
@@ -272,16 +272,18 @@ Since MapReduce isn't declarative and loses out on a query optimizer's ability t
 
 The previous MapReduce query would look like this:
 
-``` javascript
+```javascript
 db.observations.aggregate([
   { $match: { family: "Sharks" } },
-  { $group: {
-    _id: {
-      year:  { $year:  "$observationTimestamp" },
-      month: { $month: "$observationTimestamp" }
+  {
+    $group: {
+      _id: {
+        year: { $year: "$observationTimestamp" },
+        month: { $month: "$observationTimestamp" },
+      },
+      totalAnimals: { $sum: "$numAnimals" },
     },
-    totalAnimals: { $sum: "$numAnimals" }
-  } }
+  },
 ]);
 ```
 
@@ -318,7 +320,7 @@ The Turtle triple-store format, a subset of Notation3, can be used to describe a
 
 Vertices are named with the syntax `_:someName` and are only for identification purposes within the format, but don't exist otherwise.
 
-``` turtle
+```turtle
 @prefix : <urn:example:>.
 _:lucy     a       :Person.
 _:lucy     :name   "Lucy".
@@ -338,7 +340,7 @@ _:namerica :type   "continent".
 
 The same data can be written more concisely by writing multiple relationships for a given subject on the same line.
 
-``` turtle
+```turtle
 @prefix : <urn:example:>.
 _:lucy     a :Person;   :name "Lucy";          :bornIn _:idaho.
 _:idaho    a :Location; :name "Idaho";         :type "state";   :within _:usa.
@@ -348,7 +350,7 @@ _:namerica a :Location; :name "North America"; :type "continent".
 
 The SPARQL query language for triple-stores using the RDF data model.
 
-``` sparql
+```sparql
 PREFIX : <urn:example:>
 
 SELECT ?personName WHERE {
@@ -366,7 +368,7 @@ Datalog's data model is similar to the triple-store model albeit generalized so 
 
 The previous data can be represented as Datalog facts.
 
-``` prolog
+```prolog
 name(namerica, 'North America').
 type(namerica, continent).
 
@@ -396,7 +398,7 @@ The following rules could be matched as:
 
 Then rule 3 can find people born in some location `BornIn` and living in some location `LivingIn`. Then querying with `BornIn` set to `'United States'` and `LivingIn` set to `'Europe'` leaving the name of the person as a variable `Who` asks the Datalog system to find out which values can appear for that variable `Who`.
 
-``` prolog
+```prolog
 /* Rule 1 */
 within_recursive(Location, Name) :- name(Location, Name).
 
@@ -423,7 +425,7 @@ SQL can also be used to graphs represented in relational databases, but the numb
 
 The length and complexity of the graph traversal emphasizes how certain data models are better suited for different use cases. Graph models naturally match graph traversal operations, whereas relational models don't, so the same operation is much more awkward in a relational model.
 
-``` postgresql
+```postgresql
 WITH RECURSIVE
 
   -- in_usa is the set of vertex IDs of all locations within the United States
@@ -658,9 +660,9 @@ Online Transaction Processing (OLTP) is an access pattern marked by interactive 
 
 By comparison, analytic queries need to scan over very large numbers of records, only reading a few columns per record, usually calculating aggregate statistics such as sum or average, instead of returning raw data to a user. Analytic queries can answer questions such as:
 
-* What was the total revenue of each of store in a given month?
-* How many more bananas were sold during the last promotion?
-* Which brand of baby food is most often purchased together with a given brand of diapers?
+- What was the total revenue of each of store in a given month?
+- How many more bananas were sold during the last promotion?
+- Which brand of baby food is most often purchased together with a given brand of diapers?
 
 Analytic queries are usually written by business analysts and fed into reports that help the company make better decisions, a process known as business intelligence.
 
@@ -708,13 +710,13 @@ If `$n$` is very small then the bitmaps can be stored with one bit per row, othe
 
 Bitmap indexes are well suited for common data warehouse queries. Some operations can be reduced to bitwise operations, because the bitmaps contains the rows in the same order.
 
-``` postgresql
+```postgresql
 WHERE product_sk IN (30, 68, 68);
 ```
 
 This query would load the three bitmaps for each `product_sk` referenced and calculate the bitwise OR of all of them.
 
-``` postgresql
+```postgresql
 WHERE product_sk = 31 AND store_sk = 3;
 ```
 
@@ -742,7 +744,7 @@ For example, a two-dimensional data cube for "date" (e.g. `date_key`) and "produ
 
 A date-product cube can have `product_sk` columns and `date_key` rows. Each cell would be constructed by a query such as:
 
-``` postgresql
+```postgresql
 SELECT SUM(fact_sales.net_price)
 FROM fact_sales
 WHERE date_key = row_num AND product_sk = column_num;
@@ -752,7 +754,7 @@ The aggregate can then be applied further on rows or columns of the cube to redu
 
 Aggregating (e.g. `SUM`) an entire `date_key` row in the data cube would correspond to the total `SUM` of `net_price` for a given `date_key` regardless of `product_sk`.
 
-``` postgresql
+```postgresql
 SELECT SUM(fact_sales.net_price)
 FROM fact_sales
 WHERE date_key = row_num;
@@ -760,7 +762,7 @@ WHERE date_key = row_num;
 
 Aggregating (e.g. `SUM`) an entire `product_sk` column in the data cube would correspond to the total `SUM` of `net_price` for a given `product_sk` regardless of `date_key`.
 
-``` postgresql
+```postgresql
 SELECT SUM(fact_sales.net_price)
 FROM face_sales
 WHERE product_sk = column_num;
@@ -815,7 +817,7 @@ Apache Thrift (originally created at Facebook) and Google Protocol Buffers (prot
 
 Thirft's Interface Definition Language (IDL) for describing a schema looks like:
 
-``` thrift
+```thrift
 struct Person {
   1: required string userName;
   2: optional i64 favoriteNumber;
@@ -825,7 +827,7 @@ struct Person {
 
 Protocol Buffers schema definition language looks like:
 
-``` protocol-buffer
+```protocol-buffer
 message Person {
   required string user_name = 1;
   optional int64 favorite_number = 2;
@@ -872,7 +874,7 @@ Thrift generic list data types don't support this schema evolution feature, but 
 
 Apache Avro is a binary encoding format that started from Hadoop since Thrift was not a good fit. Avro supports two schema languages: Avro IDL and JSON. Avro doesn't identify fields or their data types. Avro encoding simply consists of concatenated values.
 
-``` avro
+```avro
 record Person {
   string userName;
   union { null, long } favoriteNumber = null;
@@ -880,7 +882,7 @@ record Person {
 }
 ```
 
-``` json
+```json
 {
   "type": "record",
   "name": "Person",
@@ -891,10 +893,7 @@ record Person {
     },
     {
       "name": "favoriteNumber",
-      "type": [
-        "null",
-        "long"
-      ],
+      "type": ["null", "long"],
       "default": null
     },
     {
@@ -952,13 +951,13 @@ A design goal of service-oriented architectures (SOA), microservices, is to make
 
 Remote Procedure Calls (RPC) tries to make network requests appear as regular function calls through the _location transparency_ abstraction. RPC tends to be used for communication between services within the same organization. Hiding the location can be problematic because:
 
-* A network request may be lost or the connection may be slow or unavailable, so requests may need to be retried.
+- A network request may be lost or the connection may be slow or unavailable, so requests may need to be retried.
 
-* Simply resending a request may result in multiple requests being received if they actually are getting through but the responses are getting lost, which can result in the same action being performed multiple times if there isn't an idempotance mechanism to deduplicate requests.
+- Simply resending a request may result in multiple requests being received if they actually are getting through but the responses are getting lost, which can result in the same action being performed multiple times if there isn't an idempotance mechanism to deduplicate requests.
 
-* Latency is variable. The same identical calls may take different times to complete.
+- Latency is variable. The same identical calls may take different times to complete.
 
-* Client and Server may be implemented in different languages, allowing for inconsistencies, such as with JavaScript numbers.
+- Client and Server may be implemented in different languages, allowing for inconsistencies, such as with JavaScript numbers.
 
 Apache Thrift and Apache Avro have RPC support, and gRPC is an RPC built on top of Google Protocol Buffers. These RPC libraries are a new generation of RPC which explicitly acknowledge the network request rather than attempt to hide it.
 
@@ -980,13 +979,13 @@ Messages are usually just sequences of bytes with some metadata, so any encoding
 
 A message broker:
 
-* can improve system reliability by acting as a waiting queue when the recipient is unavailable or overloaded
+- can improve system reliability by acting as a waiting queue when the recipient is unavailable or overloaded
 
-* can automatically redeliver messages to processes that crashed, preventing message loss
+- can automatically redeliver messages to processes that crashed, preventing message loss
 
-* decouples the sender from the recipient, so that they don't have to know each others IP address and port
+- decouples the sender from the recipient, so that they don't have to know each others IP address and port
 
-* allows a single message to be sent to several recipients
+- allows a single message to be sent to several recipients
 
 ### Distributed Actor Model
 
@@ -1028,7 +1027,7 @@ A _replica_ is a node that stores a copy of the database. Every write needs to b
 
 ## Leader-Based Replication
 
-_Leader-based replication_ (aka _active/passive replication_, _master-slave replication_) works by designating one of the replicas as the _leader_ (aka _master_ or _primary_) and all writes are sent to and performed through it,  while reads can be processed by the leader or any follower. The other replicas are known as _followers_ (aka _read replicas_, _slaves_, _secondaries_, _hot standbys_). New writes that the leader completes are also propagated to all of the followers through a _replication log_ or _change stream_. Each follower then applies all writes in the same order as were processed on the leader, as specified in the log, to update its local copy of the data.
+_Leader-based replication_ (aka _active/passive replication_, _master-slave replication_) works by designating one of the replicas as the _leader_ (aka _master_ or _primary_) and all writes are sent to and performed through it, while reads can be processed by the leader or any follower. The other replicas are known as _followers_ (aka _read replicas_, _slaves_, _secondaries_, _hot standbys_). New writes that the leader completes are also propagated to all of the followers through a _replication log_ or _change stream_. Each follower then applies all writes in the same order as were processed on the leader, as specified in the log, to update its local copy of the data.
 
 Many applications feature leader-based replication, including relational databases such as PostgreSQL, MySQL, Oracle Data Guard, SQL Server's AlwaysOn Availability Groups, non-relational databases like RethinkDB, Espresso, and message brokers like Kafka and RabbitMQ.
 
@@ -1106,10 +1105,10 @@ Logical log formats are usually easier for external applications to parse, facil
 
 The logical log records may consist of:
 
-* Inserts: The new values of all columns
-* Deletions: Information to uniquely identify the row, such as primary key, or the values of all columns if there is no primary key
-* Updates: Information to uniquely identify the row and the new values of all columns (or those that changed)
-* Transactions: Transactions that modify several rows generate several records followed by a record indicating that the transaction was committed
+- Inserts: The new values of all columns
+- Deletions: Information to uniquely identify the row, such as primary key, or the values of all columns if there is no primary key
+- Updates: Information to uniquely identify the row and the new values of all columns (or those that changed)
+- Transactions: Transactions that modify several rows generate several records followed by a record indicating that the transaction was committed
 
 ## Trigger-Based Replication
 
@@ -1139,13 +1138,13 @@ _Read-after-write consistency_ (aka _read-your-writes consistency_) is a guarant
 
 Possible ways to implement read-after-write consistency include:
 
-* Assign leader to process reads of data that the user may have modified. However, this requires knowing what data may have been modified, or can simply entail assuming it for certain data, such as a user's own profile information.
+- Assign leader to process reads of data that the user may have modified. However, this requires knowing what data may have been modified, or can simply entail assuming it for certain data, such as a user's own profile information.
 
-* If most things are potentially editable by the user, the above approach would negate read scalability, since most reads would be processed by the leader. In this case another approach can be to read all recently-modified data from the leader.
+- If most things are potentially editable by the user, the above approach would negate read scalability, since most reads would be processed by the leader. In this case another approach can be to read all recently-modified data from the leader.
 
-* Clients can remember the timestamp of their most recent write, which the system can use to ensure that reads reflect updates at least up until that timestamp. If the replica is not caught up to that timestamp, the read can be processed by another replica or it can wait until the replica has caught up. The timestamp can be a logical timestamp or system clock timestamp, the latter of which requires clock synchronization.
+- Clients can remember the timestamp of their most recent write, which the system can use to ensure that reads reflect updates at least up until that timestamp. If the replica is not caught up to that timestamp, the read can be processed by another replica or it can wait until the replica has caught up. The timestamp can be a logical timestamp or system clock timestamp, the latter of which requires clock synchronization.
 
-* Distributing replicas across multiple datacenters has additional complexity, since any request that needs to be served by a leader needs to be routed to the datacenter containing it.
+- Distributing replicas across multiple datacenters has additional complexity, since any request that needs to be served by a leader needs to be routed to the datacenter containing it.
 
 A similar situation can occur with one user accessing data from multiple devices, in which case _cross-device read-after-write consistency_ may be necessary.
 
@@ -1214,26 +1213,26 @@ Databases must resolve conflicts in a _convergent_ way meaning that they must ar
 
 Most multi-leader replication tools allow writing conflict resolution logic in application code, which can be executed on write or on read:
 
-* On write as soon as the database detects a conflict in the log of replicated changes.
-* On read. When a conflict is detected, all conflicting writes are stored. Next time it is read, the multiple versions of the data are returned, then the resolved value can be written back.
+- On write as soon as the database detects a conflict in the log of replicated changes.
+- On read. When a conflict is detected, all conflicting writes are stored. Next time it is read, the multiple versions of the data are returned, then the resolved value can be written back.
 
 An important fact is that conflict resolution usually applies at row or document-level, regardless of whether they are part of a transaction.
 
 There are active areas of research into conflict resolution, such as:
 
-* **Conflict-free replicated datatypes** (CRDTs): data structures that can be used concurrently while automatically resolving conflicts via two-way merges
-* **Mergeable persistnent data structures**: tracking history and using a three-way merge function, similar to Git
-* **Operational transformation**: Designed for concurrent editing of ordered lists of items, such as a list of characters (i.e. a document). Used by collaborative editing applications like Google Docs
+- **Conflict-free replicated datatypes** (CRDTs): data structures that can be used concurrently while automatically resolving conflicts via two-way merges
+- **Mergeable persistnent data structures**: tracking history and using a three-way merge function, similar to Git
+- **Operational transformation**: Designed for concurrent editing of ordered lists of items, such as a list of characters (i.e. a document). Used by collaborative editing applications like Google Docs
 
 ### Multi-Leader Replication Topologies
 
 A _replication topology_ describes the communication paths for write propagation between nodes.
 
-* **All-to-all topology**: every leader sends its writes to every other leader.
+- **All-to-all topology**: every leader sends its writes to every other leader.
 
-* **Circular topology**: each node receives writes from one node and forwards the combination of those writes and its own writes to another node.
+- **Circular topology**: each node receives writes from one node and forwards the combination of those writes and its own writes to another node.
 
-* **Star topology**: a designated root node forwards writes to all other nodes. It can be generalized to a tree.
+- **Star topology**: a designated root node forwards writes to all other nodes. It can be generalized to a tree.
 
 In circular and star topologies, the nodes need to forward writes, so the flow of replication messages can be interrupted if just one node fails, requiring topology reconfiguration to reroute around the failed node.
 
@@ -1251,10 +1250,10 @@ For any one write the client performs writes to a certain set of nodes and consi
 
 Newly-available nodes achieve eventual consistency by two means in Dynamoc-style datastores.
 
-* **Read repair**: When a client detects a stale value during a multi-node read, it writes the new value to the stale node. This mainly works for values that are frequently read.
-* **Anti-entropy process**: Background processes look for differences between replicas and copy missing data. This is unlike a replication log in leader-based replication because writes are not replicated in any order, only the current latest values, and this process may be delayed and periodic rather than streaming and real-time.
+- **Read repair**: When a client detects a stale value during a multi-node read, it writes the new value to the stale node. This mainly works for values that are frequently read.
+- **Anti-entropy process**: Background processes look for differences between replicas and copy missing data. This is unlike a replication log in leader-based replication because writes are not replicated in any order, only the current latest values, and this process may be delayed and periodic rather than streaming and real-time.
 
-    Durability is decreased without this process because values that are rarely read may be missing entirely from replicas that were unavailable while the value was written.
+  Durability is decreased without this process because values that are rarely read may be missing entirely from replicas that were unavailable while the value was written.
 
 Leaderless replication is an option when requiring high availability and low latency, while tolerating occasional stale reads.
 
@@ -1280,9 +1279,9 @@ A common configuration is to pick an odd number for `$n$` and set:
 
 The quorum condition `$w + r > n$` enables varying levels of fault tolerance:
 
-* `$w < n$` can still process writes if a node is unavailable (e.g. `$n = 4$`, `$w = 3$` and one node goes down, we can still satisfy `$w$`).
-* `$r < n$` can still process reads if a node is unavailable
-* `$r > \frac n 2$` and `$w > \frac n 2$` (majorities) can tolerate up to `$\frac n 2$` node failures
+- `$w < n$` can still process writes if a node is unavailable (e.g. `$n = 4$`, `$w = 3$` and one node goes down, we can still satisfy `$w$`).
+- `$r < n$` can still process reads if a node is unavailable
+- `$r > \frac n 2$` and `$w > \frac n 2$` (majorities) can tolerate up to `$\frac n 2$` node failures
 
 If fewer than the required `$w$` or `$r$` nodes are available then reads or writes fail.
 
@@ -1290,12 +1289,12 @@ The Quorum Condition can be avoided, `$w + r \le n$`, for lower latency and high
 
 Stale values can still be read despite the Quorum Condition in certain edge cases:
 
-* In Sloppy Quorums writes may end up on different nodes than the `$r$` reads so there is no longer guaranteed overlap between `$r$` and `$w$` nodes
-* It is not clear which write happened first between concurrent writes. The only safe route is to merge the concurrent writes
-* Writes concurrent with reads may be reflected on only some of the replicas, so it is undetermined whether the read gets the new value
-* Writes that are partially successful on fewer than the `$w$` replicas are not rolled back, so subsequent reads may return that write's value
-* The number of replicas storing a new value may fall below `$w$` if it fails and its data is restored from a replica with an old value, breaking the Quorum Condition
-* Edge cases with timing
+- In Sloppy Quorums writes may end up on different nodes than the `$r$` reads so there is no longer guaranteed overlap between `$r$` and `$w$` nodes
+- It is not clear which write happened first between concurrent writes. The only safe route is to merge the concurrent writes
+- Writes concurrent with reads may be reflected on only some of the replicas, so it is undetermined whether the read gets the new value
+- Writes that are partially successful on fewer than the `$w$` replicas are not rolled back, so subsequent reads may return that write's value
+- The number of replicas storing a new value may fall below `$w$` if it fails and its data is restored from a replica with an old value, breaking the Quorum Condition
+- Edge cases with timing
 
 When a quorum cannot be reached for a given value due to an outage, either errors can be returned or writes can be accepted to be performed partially on some "overflow" nodes that aren't among the `$n$` "home" nodes, known as a _sloppy quorum_.
 
@@ -1321,17 +1320,17 @@ Two writes are no causally dependent if separate clients start the operation wit
 
 An operation A _happens before_ B if B:
 
-* knows about A
-* depends on A
-* builds on A in some way
+- knows about A
+- depends on A
+- builds on A in some way
 
 Two operations are _concurrent_ if neither happens before the other (neither knows about the other).
 
 Given two operations A and B, either:
 
-* A happened before B
-* B happened before A
-* A and B are concurrent
+- A happened before B
+- B happened before A
+- A and B are concurrent
 
 Only concurrent operations require conflict resolution.
 
@@ -1359,11 +1358,11 @@ Note that version vectors are different from version clocks.
 
 Partitioning (aka _sharding_) entails breaking datasets into smaller pieces (partitions or shards). They're known as:
 
-* _shards_ in MongoDB, Elasticsearch, and SolrCloud
-* _regions_ in HBase
-* _tablets_ in BigTable
-* _vnode_ in Cassandra and Riak
-* _vBucket_ in Couchbase
+- _shards_ in MongoDB, Elasticsearch, and SolrCloud
+- _regions_ in HBase
+- _tablets_ in BigTable
+- _vnode_ in Cassandra and Riak
+- _vBucket_ in Couchbase
 
 Usually partitions are chosen so that each record belongs to exactly one.
 
@@ -1578,8 +1577,8 @@ In other words an object is visible if:
 
 Indexes can be made to work in a multi-version database with a variety of different approaches:
 
-* The index points to all versions of the indexed object, and an index query filters out object versions that are not visible to the transaction. Garbage collection removes old index entries when the values are deleted.
-* Using immutable, persistent data structures like append-only/copy-on-write B-Trees, where every write transaction creates a new B-Tree root, with each such B-Tree root representing a consistent snapshot. Since the tree is immutable, subsequent writes cannot alter an existing tree. This requires compaction and garbage collection.
+- The index points to all versions of the indexed object, and an index query filters out object versions that are not visible to the transaction. Garbage collection removes old index entries when the values are deleted.
+- Using immutable, persistent data structures like append-only/copy-on-write B-Trees, where every write transaction creates a new B-Tree root, with each such B-Tree root representing a consistent snapshot. Since the tree is immutable, subsequent writes cannot alter an existing tree. This requires compaction and garbage collection.
 
 The imprecision and ambiguity of the SQL standard with respect to isolation levels means that nobody really knows what repeatable reads means.
 
@@ -1589,9 +1588,9 @@ Serializable isolation is the strongest isolation level, which guarantees that t
 
 Most implementations of serializability are implemented in one of three ways:
 
-* Executing all transactions in serial order
-* Two-phase locking
-* Serializable snapshot isolation (SSI)
+- Executing all transactions in serial order
+- Two-phase locking
+- Serializable snapshot isolation (SSI)
 
 #### Serial Execution
 
@@ -1651,8 +1650,8 @@ This is used in the serializable isolation level of PostgreSQL.
 
 SSI can prevent write skew (decisions based on an outdated premise) by:
 
-* detecting reads of stale MVCC versions
-* detecting writes that affect prior reads
+- detecting reads of stale MVCC versions
+- detecting writes that affect prior reads
 
 To detect reads of stale MVCC versions, the database tracks when a transaction ignores another transaction's writes due to MVCC visibility (i.e. that transaction has not yet committed by the time the read is initiated). When the transaction wants to commit it checks whether any ignored writes have now been committed, which would signify an outdated premise, so the transaction must be aborted.
 
@@ -1709,7 +1708,7 @@ Compare-and-set atomic operations are ones that perform the set only if the valu
 
 In SQL, this _may_ be done by comparing that the value remains the same, but whether or not it's correct depends on the database. For example, if the database allows the `WHERE` clause to read from the old snapshot, then this may always be true and so may not be preventing lost updates.
 
-``` sql
+```sql
 UPDATE pages
 SET content = 'edited'
 WHERE id = 123 AND content = 'old';
@@ -1771,12 +1770,12 @@ In this strategy, the table is purely a collection of locks, used to turn a phan
 
 In summary, the race conditions are:
 
-* Dirty reads: Reading another write before it has been committed. Prevented by: read committed isolation level and stronger.
-* Dirty writes: Overwriting a value that another client wrote but had not yet committed. Prevented by almost all transaction implementations.
-* Read skew (non-repeatable reads): Client sees different parts of the database at different points in time. Prevented by snapshot isolation, usually implemented with multi-version concurrency control (MVCC).
-* Lost updates: Two clients perform read-modify-write cycles, where one overwrites other's write without incorporating its changes, losing data. Some snapshot isolation prevents this, otherwise requires a manual lock e.g. `SELECT FOR UPDATE`.
-* Write skew: Transaction reads a value, decides based on its value, then writes the effect to the database. Before the write is made, the premise of the decision is no longer true. Prevented only by serializable isolation.
-* Phantom reads: Transaction reads objects matching a search condition, then another client writes objects affecting the results of the original search (e.g. insertion, deletion). Prevented by snapshot isolation in straightforward phantom reads, otherwise in context of write skew requires index-range locks.
+- Dirty reads: Reading another write before it has been committed. Prevented by: read committed isolation level and stronger.
+- Dirty writes: Overwriting a value that another client wrote but had not yet committed. Prevented by almost all transaction implementations.
+- Read skew (non-repeatable reads): Client sees different parts of the database at different points in time. Prevented by snapshot isolation, usually implemented with multi-version concurrency control (MVCC).
+- Lost updates: Two clients perform read-modify-write cycles, where one overwrites other's write without incorporating its changes, losing data. Some snapshot isolation prevents this, otherwise requires a manual lock e.g. `SELECT FOR UPDATE`.
+- Write skew: Transaction reads a value, decides based on its value, then writes the effect to the database. Before the write is made, the premise of the decision is no longer true. Prevented only by serializable isolation.
+- Phantom reads: Transaction reads objects matching a search condition, then another client writes objects affecting the results of the original search (e.g. insertion, deletion). Prevented by snapshot isolation in straightforward phantom reads, otherwise in context of write skew requires index-range locks.
 
 Weak isolation levels prevent against some while requiring explicit locking for others.
 
@@ -1794,8 +1793,8 @@ Even if network faults are/were rare, software needs to be designed to anticipat
 
 Some ways in which a client can detect that a node is not working include:
 
-* The process crashed but the node is otherwise reachable, in which case the operating system closes or refuses TCP connections with RST or FIN packets. If it crashed while handling a request, the client can't know how much data was processed.
-* If the process crashed (or was killed) but the operating system remains, a script can notify other nodes about the crash to preempt timeout expirations. HBase does this.
+- The process crashed but the node is otherwise reachable, in which case the operating system closes or refuses TCP connections with RST or FIN packets. If it crashed while handling a request, the client can't know how much data was processed.
+- If the process crashed (or was killed) but the operating system remains, a script can notify other nodes about the crash to preempt timeout expirations. HBase does this.
 
 A positive response from the application is necessary to be certain of a request's success.
 
@@ -1803,10 +1802,10 @@ Timeout durations pose a tradeoff between quick fault detection and increased fa
 
 Variability of packet delays on networks is usually due to queueing:
 
-* Network congestion is caused by congestion in a network switch queue. If the queue fills up then additional packets received are dropped, which causes the packet to be resent.
-* On arrival at the node, the request may be queued by the operating system.
-* If a virtual machine, the virtual machine may be paused while another virtual machine uses the CPU, so the incoming data is queued/buffered by the virtual machine monitor.
-* TCP flow control aka congestion avoidance aka backpressure limits the rate of sending to avoid overloading the network or receiving node, and it does this by queuing data.
+- Network congestion is caused by congestion in a network switch queue. If the queue fills up then additional packets received are dropped, which causes the packet to be resent.
+- On arrival at the node, the request may be queued by the operating system.
+- If a virtual machine, the virtual machine may be paused while another virtual machine uses the CPU, so the incoming data is queued/buffered by the virtual machine monitor.
+- TCP flow control aka congestion avoidance aka backpressure limits the rate of sending to avoid overloading the network or receiving node, and it does this by queuing data.
 
 Since UDP does not perform flow control or packet retransmission, it is good for situations where delayed data is worthless (e.g. audio or video calls), since it gets rid of some of the reasons for network delay variability.
 
@@ -1826,20 +1825,20 @@ Clock slew is when NTP adjusts the frequency at which a monotonic clock moves fo
 
 Clock synchronization is fraught with issues:
 
-* Quartz clocks in a computer can be inaccurate. Clock drift refers to running faster or slower than it should, which depends on the machine temperature.
-* If a computer clock is too different from NTP it can refuse to synchronize or be forcibly reset.
-* Nodes can be accidentally firewalled off from NTP servers.
-* NTP synchronization can only be as good as the network delay.
-* Smearing is when NTP servers lie about the time in order to perform leap second adjustment over the course of a day.
-* When virtual machines are paused and then resumed, an application sees that as the clock suddenly jumping forward.
+- Quartz clocks in a computer can be inaccurate. Clock drift refers to running faster or slower than it should, which depends on the machine temperature.
+- If a computer clock is too different from NTP it can refuse to synchronize or be forcibly reset.
+- Nodes can be accidentally firewalled off from NTP servers.
+- NTP synchronization can only be as good as the network delay.
+- Smearing is when NTP servers lie about the time in order to perform leap second adjustment over the course of a day.
+- When virtual machines are paused and then resumed, an application sees that as the clock suddenly jumping forward.
 
 If distributed software requires synchronized clocks, clock offsets between machines should be monitored and those that have drifted too far should be declared dead.
 
 If the conflict resolution strategy Last Write Wins (LWW) is used, there are a few problems that could occur related to unreliable clocks:
 
-* A node with a lagging clock will be unable to overwrite values previously written by a node with a faster clock until the clock skew has elapsed. This can lead to data being silently dropped without error.
-* LWW cannot distinguish between writes in quick succession and those occurring concurrently.
-* Two nodes can independently generate a write with the same timestamp.
+- A node with a lagging clock will be unable to overwrite values previously written by a node with a faster clock until the clock skew has elapsed. This can lead to data being silently dropped without error.
+- LWW cannot distinguish between writes in quick succession and those occurring concurrently.
+- Two nodes can independently generate a write with the same timestamp.
 
 A _locical clock_ is a better option for ordering events compared to timestamps derived from unreliable clocks (which the majority are). Logical clocks measure the relative ordering of events rather than _physical clocks_ measuring wall-clock time.
 
@@ -1851,7 +1850,7 @@ Leaders in a distributed system need a way to ensure that they are still conside
 
 Consider the following code that performs lease renewal prior to processing requests:
 
-``` python
+```python
 while True:
   req = get_request()
 
@@ -1870,14 +1869,14 @@ A process pause can happen after checking that we have at least ten seconds left
 
 Process pauses like this may occur because of:
 
-* Garbage collectors that operate in an "stop-the-world" fashion
-* Suspended and resumed virtual machines, such as due to live migration
-* Operating system context switching
-* Hypervisor switching virtual machines. The CPU time spent in other virtual machines is known as _steal time_
-* End-user device suspension
-* Asynchronous disk access where the thread is paused while waiting for slow disk I/O. Can happen even when code doesn't appear to read from disk, e.g. the Java classloader lazily loading class files when they are first used.
-* Paging/swapping to disk. In extreme cases, most of the time is spent swapping pages in and out of disk, aka thrashing. For this reason, paging is often disabled on servers, where one would prefer to kill a process to free up memory rather than risk thrashing.
-* Pausing with the `SIGSTOP` signal.
+- Garbage collectors that operate in an "stop-the-world" fashion
+- Suspended and resumed virtual machines, such as due to live migration
+- Operating system context switching
+- Hypervisor switching virtual machines. The CPU time spent in other virtual machines is known as _steal time_
+- End-user device suspension
+- Asynchronous disk access where the thread is paused while waiting for slow disk I/O. Can happen even when code doesn't appear to read from disk, e.g. the Java classloader lazily loading class files when they are first used.
+- Paging/swapping to disk. In extreme cases, most of the time is spent swapping pages in and out of disk, aka thrashing. For this reason, paging is often disabled on servers, where one would prefer to kill a process to free up memory rather than risk thrashing.
+- Pausing with the `SIGSTOP` signal.
 
 Because of this, a distributed system node must assume that it can be paused at any point for any length of time, during which it can be deemed dead by the rest of the system, and without the node knowing until it checks the clock.
 
@@ -1915,14 +1914,14 @@ Linearizability (aka atomic consistency, aka strong consistency, aka immediate c
 
 More specifically:
 
-* If a read begins before a write has completed, it must read the value from before the write
-* If a read begins after a write has completed, it must read the value from after the write
-* If a read begins sometime during a write, it may return either the old _or_ the new value. _However_, as soon as one read reads the new value, all future reads must read the new value as well, aka the _recency guarantee_.
+- If a read begins before a write has completed, it must read the value from before the write
+- If a read begins after a write has completed, it must read the value from after the write
+- If a read begins sometime during a write, it may return either the old _or_ the new value. _However_, as soon as one read reads the new value, all future reads must read the new value as well, aka the _recency guarantee_.
 
 Note that linearizability is a different guarantee from serializability.
 
-* Serializability guarantees that transactions behave the same as if they had executed in _some_ serial order.
-* Linearizability is a recency guarantee on reads and writes of an individual object. Since operations aren't grouped together into transactions, it doesn't prevent problems like write skew.
+- Serializability guarantees that transactions behave the same as if they had executed in _some_ serial order.
+- Linearizability is a recency guarantee on reads and writes of an individual object. Since operations aren't grouped together into transactions, it doesn't prevent problems like write skew.
 
 A database may provide both guarantees, the combination of which is often known as _strict serializability_ (aka strong one-copy serializability). Serializability implemented with two-phase locking or serial execution are usually linearizable. Serializable snapshot isolation is not linearizable by design, since the whole point is that reads from a consistent snapshot that does not include writes newer than the snapshot, in order to avoid lock contention between readers and writers.
 
@@ -1932,10 +1931,10 @@ Uniqueness constraints can only be enforced at write time with linearizability.
 
 Linearizability is often implemented with replication.
 
-* Single-leader replication may be linearizable if reads are made against the leader or from synchronously replicated followers.
-* Consensus algorithms can be linearizable, which is how ZooKeeper and etcd work.
-* Multi-leader replication is generally not linearizable due to concurrent writes, which can produce conflicting writes.
-* Leaderless replication is probably not linearizable (safe to assume not). Quorums can be made linearizable if readers perform read repair synchronously before returning results to the application, and writers read the latest state of a quorum of nodes before sending writes. A linearizable compare-and-set operation is not supported.
+- Single-leader replication may be linearizable if reads are made against the leader or from synchronously replicated followers.
+- Consensus algorithms can be linearizable, which is how ZooKeeper and etcd work.
+- Multi-leader replication is generally not linearizable due to concurrent writes, which can produce conflicting writes.
+- Leaderless replication is probably not linearizable (safe to assume not). Quorums can be made linearizable if readers perform read repair synchronously before returning results to the application, and writers read the latest state of a quorum of nodes before sending writes. A linearizable compare-and-set operation is not supported.
 
 If an application requires linearizability and some replicas are disconnected from others due to a network problem, then some replicas cannot process requests, they must either wait or return an error.
 
@@ -1975,11 +1974,11 @@ Linearizability can be implemented on top of total order broadcast by implementi
 
 Linearizable reads can be implemented by:
 
-* Append to the log and wait for the entry to appear in it, representing the point in time at which the read happens
-* Linearizable read of the latest log message position, then wait for all entries up to that position to appear in the log, then read
-* Read from a synchronous replica
+- Append to the log and wait for the entry to appear in it, representing the point in time at which the read happens
+- Linearizable read of the latest log message position, then wait for all entries up to that position to appear in the log, then read
+- Read from a synchronous replica
 
-Total order broadcast can be implemented on top of linearizable storage with either increment-and-get or compare-and-set operations. For every message sent, increment-and-get a  linearizable integer and use the result as a sequence number before sending to all nodes, which recipients receive by consecutive sequence number. Unlike Lamport timestamps, these sequence numbers would have no gaps so recipients would know to wait on out-of-order messages.
+Total order broadcast can be implemented on top of linearizable storage with either increment-and-get or compare-and-set operations. For every message sent, increment-and-get a linearizable integer and use the result as a sequence number before sending to all nodes, which recipients receive by consecutive sequence number. Unlike Lamport timestamps, these sequence numbers would have no gaps so recipients would know to wait on out-of-order messages.
 
 A linearizable compare-and-set or increment-and-get register and total order broadcast are both equivalent to consensus.
 
@@ -1987,15 +1986,15 @@ A linearizable compare-and-set or increment-and-get register and total order bro
 
 The idea of consensus is to get nodes to agree on something, such as:
 
-* Leader election: As in single-leader replication. A network fault may cause the leader position to become contested, so consensus is necessary to prevent a split brain situation which would lead to data divergence, inconsistency, and data loss.
-* Atomic commit: If a transaction spans nodes or partitions, it can fail on some nodes but succeed on others. Consensus ensures that either they all abort or they all commit.
+- Leader election: As in single-leader replication. A network fault may cause the leader position to become contested, so consensus is necessary to prevent a split brain situation which would lead to data divergence, inconsistency, and data loss.
+- Atomic commit: If a transaction spans nodes or partitions, it can fail on some nodes but succeed on others. Consensus ensures that either they all abort or they all commit.
 
 Some problems are reducible to consensus and are equivalent to each other:
 
-* Linearizable compare-and-set register: the register needs to atomically decide whether to set its value, based on whether its current value equals the parameter given in the operation.
-* Atomic transaction commit: the database must decide whether to commit or abort a distributed transaction
-* Total order broadcast: the messaging system must decide on the order in which to deliver messages
-* Locking and coordination: when several clients race to acquire a lock, the lock must decide which one successfully acquired it. Combined with a failure detector, a system must decide when to declare a client dead because its session timed out.
+- Linearizable compare-and-set register: the register needs to atomically decide whether to set its value, based on whether its current value equals the parameter given in the operation.
+- Atomic transaction commit: the database must decide whether to commit or abort a distributed transaction
+- Total order broadcast: the messaging system must decide on the order in which to deliver messages
+- Locking and coordination: when several clients race to acquire a lock, the lock must decide which one successfully acquired it. Combined with a failure detector, a system must decide when to declare a client dead because its session timed out.
 
 ## Two-Phase Commit (2PC)
 
@@ -2046,10 +2045,10 @@ XA has a tendency of amplifying failures, since any one failure in any part of t
 
 Consensus is when one or more nodes propose values and the algorithm decides on one of the values. Specifically, a consensus algorithm must satisfy:
 
-* Uniform agreement: no two nodes decide differently
-* Integrity: no node decides twice
-* Validity: a node can only decide on a value that was actually proposed by a node
-* Termination: every node that does not crash must eventually decide the same value
+- Uniform agreement: no two nodes decide differently
+- Integrity: no node decides twice
+- Validity: a node can only decide on a value that was actually proposed by a node
+- Termination: every node that does not crash must eventually decide the same value
 
 Everyone decides on the same outcome, and once decided, there's no changing your mind.
 
@@ -2057,10 +2056,10 @@ Any consensus algorithm needs at least a majority of nodes to remain functioning
 
 The best-known fault-tolerant consensus algorithms are:
 
-* Viewstamped Replication (VSR)
-* Paxos
-* Raft
-* Zab
+- Viewstamped Replication (VSR)
+- Paxos
+- Raft
+- Zab
 
 Total Order Broadcast is equivalent to multiple rounds of consensus, overall deciding on a sequence of values. Total Order Broadcast is implemented directly by Viewstamped Replication, Raft, Zab, and Paxos (Multi-Paxos) because it is more efficient than repeated rounds of one-value-at-a-time consensus.
 
@@ -2082,10 +2081,10 @@ ZooKeeper and etcd are described as distributed key-value stores, coordination a
 
 ZooKeeper also implements:
 
-* Linearizable atomic operations: An atomic compare-and-set operation can be used to implement a lock.
-* Total ordering of operations: Using locks to protect a resource requires _fencing tokens_ to guard against multiple clients conflicting due to e.g. a process pause. The fencing token is a number that monotonically increases whenever the lock is acquired. ZooKeeper provides this by ordering all operations by giving each operation a monotonically increasing transaction ID.
-* Failure detection: Clients maintain long-lived connections to the ZooKeeper servers with heartbeats. If ZooKeeper declares the session dead if the heartbeat times out. Any locks held by the session can be configured to be automatically deleted in this case. ZooKeeper calls these ephemeral nodes.
-* Event notifications: A client can read locks and values created by other clients and also watch them for changes. For example, a client can know when another client joins the cluster based on a value written to ZooKeeper, or if a client fails (due to ephemeral nodes disappearing on session timeout). This removes the need to continually poll for changes.
+- Linearizable atomic operations: An atomic compare-and-set operation can be used to implement a lock.
+- Total ordering of operations: Using locks to protect a resource requires _fencing tokens_ to guard against multiple clients conflicting due to e.g. a process pause. The fencing token is a number that monotonically increases whenever the lock is acquired. ZooKeeper provides this by ordering all operations by giving each operation a monotonically increasing transaction ID.
+- Failure detection: Clients maintain long-lived connections to the ZooKeeper servers with heartbeats. If ZooKeeper declares the session dead if the heartbeat times out. Any locks held by the session can be configured to be automatically deleted in this case. ZooKeeper calls these ephemeral nodes.
+- Event notifications: A client can read locks and values created by other clients and also watch them for changes. For example, a client can know when another client joins the cluster based on a value written to ZooKeeper, or if a client fails (due to ephemeral nodes disappearing on session timeout). This removes the need to continually poll for changes.
 
 The use of ZooKeeper can be useful when the system requires a leader with automatic fail-over (e.g. job schedulers), or for assigning partitions to nodes as they join and leave the cluster.
 
@@ -2106,4 +2105,3 @@ When a single leader fails or a network failure makes it unreachable, fail-over 
 1. Wait, accepting that the system will be blocked in the meantime. This happens in many XA/JTA transaction coordinators. This can leave the system blocked indefinitely.
 2. Manually intervene by choosing a new leader node and reconfiguring the system to use it.
 3. Automatically choose a new leader with a consensus algorithm.
-

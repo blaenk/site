@@ -63,45 +63,88 @@ See the full list [here](https://jip.dev/work/).
 
 <a name="background"></a>
 
-## Origin
+## About
 
-### TLDR
+I am a versatile software engineer with broad and reasonably deep experience in a variety of areas.
 
-I was computer illiterate until I was 11, when, while on the job with my dad (carpentry; real work, not just sitting around), during lunch, having nothing else to entertain me over the course of the many days I was there, I would flip through a "computer part ad magazine" (no content, just ads) that my dad got, and began to infer what parts were critical to a working computer and where to find them cheapest. I struck a deal with my dad to earn money to build our first computer.
+I would describe myself as being insatiably curious about a wide spectrum of software development. I am a voracious early-adopter but strive to remain practical by contrasting the pros and cons of any technology. This has taken me through all phases of the "bell curve meme" in many different instances of software development.
 
-I accomplished this soon after turning 12 and next I began to wonder how software applications were made: what caused a button to react to a click? Eventually, during one of my first few times on the Internet (itself a feat made possible by free AOL trials), I came across a post using words I had _never_ heard before: Visual Studio, C++, source code, compiler. I was extremely intrigued and wanted to learn everything I could about "programming."
+My boundless, cross-cutting interest in software development equips me with phenomenal debugging skills. I have dived into debugging using GDB to view raw memory of C FFI bindings for Rust, while also debugging problems like race conditions across multiple complex distributed systems. I have dived deep into building and contributing to esoteric vim and emacs packages, while also comfortably using JetBrains IDEs. I have built entire applications, back-end _and_ front-end, in Clojure, and others in Haskell, Rust, Go, TypeScript, Scala, and more—but also appreciate the reliability and consistency of something like vanilla Java.
 
-I couldn't ~~get ripped off by Game Stop~~ sell my video games quickly enough to buy used programming books, to my little brother's horror.
+I was a very early adopter of Rust back in 2014, back when the language was amorphous and only loosely-defined through a patchwork of RFCs that one had to read regularly to keep abreast of the latest state of the language. I contributed to Rust, its nascent ecosystem of packages, learning material, and offered help on IRC and [StackOverflow](https://stackoverflow.com/search?tab=oldest&q=user%3a101090%20%5brust%5d).
 
-### Motivation
+## Background
 
-I was computer illiterate before the age of 12. All of my life I had largely avoided computers, aside from specific instances in school when we were given time to work with them. This was the result of being warned and scolded away from them for fear that I break them since they were expensive.
+I was completely—and without exaggeration—computer illiterate when I began my journey into computer science back in 2001 when I was 11. All of my life I had largely avoided computers. This was the result of being warned and scolded away from them for fear that I break the very expensive devices.
 
-In third grade, my teacher, school principal, and other faculty worked with my parents to get me into a coveted magnet school through my grades. This school was attended by mostly well-off kids, so it was normal to expect homework assignments with even one day turnaround times to be neatly typed and printed.
+I began before the glamorization of software development and subsequent proliferation of (and easy access to) readily available learning resources through websites like YouTube, Wikipedia, StackOverflow, and without access to anyone whom I could reach out to for help or mentorship—in fact, I had no Internet. I was only bootstrapped with my insatiable curiosity for what seemed to me to be an exotic foreign realm.
 
-I was at a point in school where computers were a necessity. Without a computer, I had to go to the library to type up school assignments, which wasn't always possible on the more frequent short-notice assignments. Otherwise I had to write my assignments in _perfect_ inked cursive. I was forced to appease draconian requirements which demanded no mistakes at all---no white-out allowed.
+It is my perseverance through this trial-by-fire that fully equips me to never accept defeat by an unsolved problem, in the case of bugs it drives me incessantly to the root caus, even when there are absolutely no resources on the subject, even if it takes me through raw memory debugging in GDB or reading of third-party source code.
 
-I was the only student in my class at my well-off magnet school without a computer capable of producing neat computer-printed assignments. It was as if I was inconveniencing _the teacher_, rather than it being my inconvenience that I couldn't afford a computer and had to endure the toil as a result: while other students could lazily type up assignments in a matter of minutes, I had to meticulously obsess over my writing.
+I had a night-and-day jump from computer-illiterate to building my own computer, which I earned through manual labor with my dad.
 
-This led to many late nights, many rewrites, and stress---because I always cared for doing things right in school. I was tired of it and embarrassed for not being "with the times."
+By the age of 12 (2002), I was selling my video games to buy used programming books. I struggled, especially when experiencing technical errata without any recourse, but I had a laser-focused determination that saw me through many books.
 
-### Action
+By the age of 15 (2005) I was building more sophisticated things like:
 
-One of the times I was out on a construction job with my dad I noticed a computer ad magazine during lunch. Having nothing else to distract me, I began to read through it and---over the next few days on the job with no other form of entertainment---I naturally began to draw connections between prices and components. This gave me an idea of which parts were critical to a working computer and which weren't, which were the best parts for the money, and which places had them the cheapest. This was important considering we previously couldn't afford one.
+- a [graphical application](/work/mypod/) to recover music trapped in an iPod
+- a system-tray app for taking screenshots
+- an [app that I later learned](/work/musicaster/) was like [last.fm](https://last.fm), complete with plugin DLLs for various music players (Windows Media Player, iTunes, WinAmp, etc.)
+- WordPress blog CMS themes, mods, and plugins, including [the official reCAPTCHA plugin](https://jip.dev/work/wp-recaptcha/) commissioned at the time by Carnegie Mellon University, and subsequently credited in a physically-published book for my contribution
+- phpBB2 forum mods
+- a [stand-alone video game](/work/instagib-project/) built entirely upon the industry-standard Quake 3 Engine ([id Tech 3](https://en.wikipedia.org/wiki/Id_Tech_3)), complete with a custom game updater and NSIS application installer
 
-Armed with this information, I struck a deal with my dad which consisted of me keeping my grades up in school and helping him out at work for a few months so that I may earn the money needed for a cheap, custom built computer.
+It was also in 2005 when an Australian friend showed me Ruby, Ruby on Rails, and Archlinux for the first time while essentially pair-programming over SSH and tmux—all tools which I quickly adopted at the time.
 
-Eventually when I was 12 I did earn and build my computer, but over time I grew bored when I didn't think there was much more to learn about them beyond building one. I was always extremely curious though: what made a "window" react to a click? What put things together in a window and made it work the way it did?
+### Computer-illiteratacy
 
-### Taste
+I grew up computer illiterate and without a computer in our family until the age of 11, when I somehow pieced together---from computer component ads---which parts were critical to a functioning computer and where to find them cheapest. This was 2001, before the modern, more mainstream gamer/streamer culture.
 
-During this time we didn't have Internet most of the time except for the short breaths of air that I called free AOL trial periods, and even then I was rarely allowed to actually use it since it prevented phone calls from going through. On one of those rare opportunities I noticed an article on how to get started with "modding"---an unfamiliar term---the game that I loved to play offline: Star Wars: Jedi Outcast. The example was to write a mod to slow down the speed at which rockets from a rocket launcher traveled at. They used words I had never heard before such as Visual Studio, compiler, C++, source code, and so on.
+I felt compelled to do get a computer for two reasons: academic pressures and the desire for a better life.
+
+### Academic Pressures
+
+In 3rd grade my teacher, school principal, and other school faculty worked with my parents to get me into a coveted, wait-listed magnet school for 4th and 5th grade thanks to my grades. The school was primarily attended by (very) well-off kids that were all assumed to have computers, so we would frequently receive homework assignments with one day turnaround times that were expected to be typed and printed.
+
+I was at a point in school where computers were a necessity. Without a computer, I had to go to the library to type up school assignments and this wasn't always possible on the more frequent short-notice assignments. Alternatively, I had to write my assignments in _perfectly_ inked cursive. I was forced to appease draconian requirements which demanded no mistakes at all---the use of "white-out" was not allowed.
+
+I was the only student in my class without a computer, so it was as if _I_ was inconveniencing _the teacher_, rather than it being my inconvenience that I couldn't afford a computer and had to endure the tedious toil as a result. While other students could lazily type up assignments in a matter of minutes, I had to meticulously obsess over my writing.
+
+This led to many late nights, many rewrites, and stress (and neat handwriting!)---because I always cared for doing things right in school. I was tired of the toil and embarrassed for not being "with the times."
+
+I was also embarrassed to be unable to afford a computer along with many other things that my classmates and friends took for granted. This was the first time in my life that I became consciously aware of economic inequailty. This concept was driven home when a kid mocked me for living in an apartment complex rather than a single family house. This might seem like a pointless detail, "kids will be kids" after all, but these are often formative moments in one's life.
+
+### A Better Life
+
+I was used to going to work with my dad every so often since the age of 7-8. This was not "bring your child to work" day where the child plays video games in the corner, but actual work to the extent a kid reasonably could, often with long hours (e.g. 6am-11pm) and long commutes. During my vacations from school, this would sometimes entail multi-day work stints. It was not at all uncommon to hear half-joking comments about child labor and indentured servitude from uncomfortable clients.
+
+One of the times that I was out on a multi-day construction job with my dad I noticed a computer ad magazine during lunch. Having nothing else to distract myself with, I began to read through it and over the next few days on the job I naturally began to draw connections between prices and components. This gave me an idea of which parts were critical to a working computer and which were optional, which were the best parts for the money, and which places had them the cheapest—even if I had no clue what the parts actually did.
+
+It was at this point that I resolved myself to the idea that when I grew up I wanted to do something as far removed as possible from the manual labor that I was doing then. As much as I admired the skill and creativity that went into my father's craft—a craft which , I did not see it in my future.
+
+Although I hadn't seen it yet, I aspired to job at a place like "Initech" in the movie [Office Space](https://www.imdb.com/title/tt0151804/): a "conventionally boring" office job with business attire, cubicles, and boring beige (at the time) computers
+
+Despite the apparent blandness of such a job, my complete ignorance about computers and desire to make a better life for myself caused computers to seem alluringly exotic to me.
+
+I was completely ignorant as to what kinds of jobs even entailed the use of computers, in fact I didn't even know that something like "software development" existed.
+
+I settled on the cheapest parts that I could find and struck a deal with my dad: I would keep my grades up and continue to help him with work, and he would eventually buy me the computer. Not unlike [indentured servitude](https://en.wikipedia.org/wiki/Indentured_servitude) 🤡.
+
+### The Internet
+
+For a year or two after getting my computer we didn't have Internet.
+
+During that time, I would poke and prod my computer and its software to learn whatever I could. For example, I once found a favorite game's media assets on the my file system and experimented with editing them in an image editor. Soon enough I had my own custom player skins without ever knowing that "skins" were even a concept.
+
+But these dark years grew boring and I wanted more. I realized that I could get short breaths of air (Internet) by cycling through free AOL trial periods, and even then I was rarely allowed to actually use it since it prevented phone calls from going through.
+
+On one of those rare opportunities I noticed an article on how to get started with "modding" the game that I loved to play offline: Star Wars: Jedi Outcast. I had no idea what modding was but I was intrigued. The example was to write a mod to slow down the speed at which rockets from a rocket launcher traveled at. They used words I had never heard before such as Visual Studio, compiler, C++, and source code.
 
 I distinctly remember a part of the article that talked about editing some line in some "source code" that apparently had the literal effect of slowing down the rocket! Kids often wondered how games were made, and this article was nonchalantly talking about _modifying_ an existing game I loved. This blew my mind. This was around the time that the Matrix sequels were in theatres (in 2003, I was 13), and so out of ignorance I naturally imagined that this article was explaining how to get into something similar to the Matrix of the game. I felt a deep urge to understand all of it.
 
 ### Programming
 
-I felt an intense desire to learn everything about "programming," something I didn't even know existed. I felt as though it was a secret ability or language which unlocked great power. I didn't have access to YouTube, Wikipedia, role models, I didn't even know anyone who programmed, not even parents of friends or anything like that. I was entirely on my own.
+I felt an intense desire to learn everything about "programming," something I didn't even know existed. I felt as though it was a secret ability or language which unlocked great power.
 
 The only thing I could think to do, and did, was to sell my video games in order to buy used programming books, knowing full well Game Stop was ripping me off. I still remember my poor little brother lamenting me selling my video games to buy what looked to him like dry, boring books. I also remember making the innocent mistake of buying a C++ for Dummies book with a typo in the first code listing and being stumped for weeks.
 
@@ -109,6 +152,6 @@ Overall, however, I was on the fast track. I became a voracious reader and sold 
 
 ### Internet
 
-This also made me realize that I could save a lot of money if I could get access to the Internet, so I began to the long process of convincing my parents that it was a necessary cost and one that would pay huge dividends.
+My desire to read and learn more and more made me realize that I could save a lot of money if I could get access to the Internet, so I began the long process of convincing my parents that it was no longer a luxury but a _necessity_, and one that would pay huge dividends.
 
 Once I finally got access, I consumed anything and everything.

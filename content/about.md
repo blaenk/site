@@ -4,13 +4,13 @@ date = 2012-09-21
 +++
 
 <p align="center">
-  <a href="https://stackoverflow.com/users/101090/jorge-israel-pe%c3%b1a">stackoverflow</a> (top 0.71%) · <a href="https://github.com/blaenk">github</a> · <a href="https://www.linkedin.com/in/jorge-israel-p/">linkedin</a><br>
+  <a href="https://stackoverflow.com/users/101090/jorge-israel-pe%c3%b1a">stackoverflow</a> (top 0.7%) · <a href="https://github.com/blaenk">github</a> · <a href="https://www.linkedin.com/in/jorge-israel-p/">linkedin</a><br>
   <a href="mailto:jorge.israel.p@gmail.com">jorge.israel.p@gmail.com</a>
 </p>
 
 <p align="center">★★★★★</p>
 
-🙋🏻‍♂️ I am a versatile, self-directed engineer with +3 years of professional experience and +16 years of overall software engineering experience.
+🙋🏻‍♂️ I am a versatile, self-directed engineer with +4 years of professional experience and +18 years of overall software engineering experience.
 
 ❤️ I have a passion for software engineering that naturally drives me to [help others](https://stackoverflow.com/users/101090/jorge-israel-pe%c3%b1a), [read and learn new things](https://jip.dev/reads/), [write about what I learn](https://jip.dev/notes/), and put what I learn to action both in [personal projects](https://github.com/blaenk) (see below) and [at work](https://www.linkedin.com/in/jorge-israel-p/).
 

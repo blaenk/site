@@ -3,7 +3,7 @@ title = "Reads"
 date = 2013-07-05
 +++
 
-This is a list of books I've finished reading recently, in reverse chronological order. You can also see a list of books I'm [currently reading](/lately/#reading).
+This is a list of books I've finished reading recently, in reverse chronological order.
 
 <hr class="book">
 
@@ -17,7 +17,7 @@ I was specifically looking for a book that served more as a reference instead of
 
 <img src="/images/books/bitcoin.jpg" class="right" width="128">
 
-[Mastering Bitcoin](http://amzn.com/1449374042) --- I was late to  studying Bitcoin, and even now I've barely ever used it, but from the moment I learned of its existence I recognized that there was clearly something revolutionary about the fact that this was a decentralized monetary system which was used---and presumably by extension trusted---by people.
+[Mastering Bitcoin](http://amzn.com/1449374042) --- I was late to studying Bitcoin, and even now I've barely ever used it, but from the moment I learned of its existence I recognized that there was clearly something revolutionary about the fact that this was a decentralized monetary system which was used---and presumably by extension trusted---by people.
 
 I continue to be amazed at the foresight of Satoshi and sheer ingenuity of the solutions employed in Bitcoin. This book---and Bitcoin in general---triggered an epiphany in me: I realized that cryptography can be used for more than just maintaining user privacy, but also as a way to enforce conformance with a system.
 
@@ -183,7 +183,7 @@ At the time of writing, the book's reviews consist of 52 five-star reviews and o
 
 <img src="/images/books/cppprimer.jpg" class="right" width="128">
 
-<a href="http://amzn.com/0321714113" name="cpp-primer">C++ Primer</a> [[notes](/notes/cpp/)] ---  The 5th edition of the book was specifically updated for the new C++11 standard release. At one point I came to the realization that I didn't have enough experience with C++, and that my understanding of it was hazy at best. Recognizing this, I dedicated myself to bettering my understanding of C++ by rereading a book I already had on C++. However, I felt I was missing out on the new C++11 features that were recently introduced.
+<a href="http://amzn.com/0321714113" name="cpp-primer">C++ Primer</a> [[notes](/notes/cpp/)] --- The 5th edition of the book was specifically updated for the new C++11 standard release. At one point I came to the realization that I didn't have enough experience with C++, and that my understanding of it was hazy at best. Recognizing this, I dedicated myself to bettering my understanding of C++ by rereading a book I already had on C++. However, I felt I was missing out on the new C++11 features that were recently introduced.
 
 C++ Primer is what I look for in every programming book. It is direct and to the point, thanks in part to the assumption that the reader is already familiar with programming, or even C++ itself. It diligently scours every nook and cranny of the C++11 standard, almost reading as a commentary of it, and in so doing, masterfully conveys the various intricacies of shared and unique pointers, move semantics, lambdas, variadic templates, and more.
 
@@ -218,7 +218,6 @@ Best of all, however, was that it provided example algorithm implementations of 
 <hr class="book">
 
 <img src="/images/books/direct3d11.jpg" class="right" width="128">
-
 
 <a href="http://amzn.com/1936420228" name="d3d11">Introduction to 3D Game Programming with DirectX 11</a> --- After reading the 3D Math book mentioned below, I wanted to learn a graphics API to apply my newfound knowledge. I was previously familiar with basic, "immediate mode" OpenGL. However, modern graphics development favors the programmable pipeline, in which one uploads the vertex buffer to the GPU and writes vertex and pixel/fragment shaders to operate on that data.
 

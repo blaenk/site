@@ -20,7 +20,7 @@ I was known to the Rust core team as an early adopter and contributor to the Rus
 - provide helpful usability feedback
 - provide support to other early adopters [by answering questions on StackOverflow](https://stackoverflow.com/search?q=user:101090+[rust]), IRC, and so on
 
-During the crunch leading up to the 1.0 release, the [file system module `std::fs`](https://doc.rust-lang.org/std/fs/) and the [file path module `std::path`](https://doc.rust-lang.org/std/path/) were being redesigned and Rust core developers specifically reached out to me for my opinions and feedback on their proposal, since they knew me to be an active user of those APIs.
+During the crunch leading up to the 1.0 release, the [file system module `std::fs`](https://doc.rust-lang.org/std/fs/) and the [file path module `std::path`](https://doc.rust-lang.org/std/path/) were being redesigned and Rust core developers specifically reached out to me for my opinions and feedback on their proposals at certain points [[1]](https://github.com/rust-lang/rust/pull/22208#issuecomment-74022467)[[2]](https://github.com/rust-lang/rfcs/pull/529#issuecomment-88283983), since they knew me to be an active user of those APIs.
 
 Immediately after the redesign was actually implemented, I identified a subtle edge-case that was not accounted for and [quickly fixed it](https://github.com/rust-lang/rust/pull/22351) in time for the 1.0 release. Although the change is trivial, it is a culmination of:
 
